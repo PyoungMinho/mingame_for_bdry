@@ -13,6 +13,7 @@ import {
   GraduationCap,
   Image as ImageIcon,
   Loader2,
+  Mail,
   Plus,
   Printer,
   Sigma,
@@ -60,6 +61,21 @@ const PLACEHOLDER: Record<Subject, string> = {
   social: "예) 다음 중 기회비용의 사례로 적절한 것을 고르시오.",
 };
 
+// 강사용 정식 출시(결제 오픈) 알림 신청 — mailto로 사용자의 메일 작성창을 열어 직접 발송.
+// (DB·서버 없이 베타 기간 강사 수요/연락처를 모으는 무마찰 수집 채널)
+const BETA_CONTACT_EMAIL = "yuki000503@gmail.com";
+const BETA_NOTIFY_MAILTO =
+  `mailto:${BETA_CONTACT_EMAIL}` +
+  "?subject=" +
+  encodeURIComponent("[문제팩토리] 강사용 정식 출시 알림 신청") +
+  "&body=" +
+  encodeURIComponent(
+    "정식 출시(결제 오픈) 시 알림을 받고 싶습니다.\n\n" +
+      "• 사용 과목 / 학원명(선택): \n" +
+      "• 가장 자주 쓰는 기능(선택): \n\n" +
+      "보내주시면 출시 소식과 얼리버드 혜택을 가장 먼저 전해드릴게요. 감사합니다!"
+  );
+
 export default function ExamFactoryPage() {
   const [mode, setMode] = useState<ExamMode | null>(null);
 
@@ -84,6 +100,7 @@ export default function ExamFactoryPage() {
   const [bankOpen, setBankOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
   const [examMeta, setExamMeta] = useState({ academy: "○○학원", title: "변형 시험지", minutes: 50 });
+  const [withSolutions, setWithSolutions] = useState(true); // 정답·해설지 함께 출력 여부
   const [toast, setToast] = useState<{ msg: string; kind: "success" | "error" | "info" } | null>(null);
 
   const bank = useProblemBank();
@@ -259,6 +276,7 @@ export default function ExamFactoryPage() {
       </header>
 
       <main className="no-print relative mx-auto max-w-7xl px-5 py-7">
+        <ExamBetaBanner />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[400px_1fr]">
           {/* ── 좌: 입력 패널 ── */}
           <section className="lg:sticky lg:top-[88px] lg:h-fit">
@@ -499,12 +517,20 @@ export default function ExamFactoryPage() {
         <footer className="mt-8 border-t border-slate-200 pt-5">
           <div className="flex flex-col items-center justify-between gap-2 text-[12px] text-slate-400 sm:flex-row">
             <span>© 2026 문제팩토리 · 강사용 변형 시험지</span>
-            <Link
-              href="/privacy"
-              className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
-            >
-              개인정보처리방침
-            </Link>
+            <span className="flex items-center gap-3">
+              <Link
+                href="/terms"
+                className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
+              >
+                이용약관
+              </Link>
+              <Link
+                href="/privacy"
+                className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
+              >
+                개인정보처리방침
+              </Link>
+            </span>
           </div>
         </footer>
       </main>
@@ -549,13 +575,15 @@ export default function ExamFactoryPage() {
           meta={examMeta}
           setMeta={setExamMeta}
           count={sheet.length}
+          withSolutions={withSolutions}
+          setWithSolutions={setWithSolutions}
           onClose={() => setPrintOpen(false)}
           onPrint={doPrint}
         />
       )}
 
       {/* 인쇄 영역 (화면에서는 숨김, 인쇄 시에만 표시) */}
-      <PrintSheet meta={examMeta} variants={sheet} />
+      <PrintSheet meta={examMeta} variants={sheet} withSolutions={withSolutions} />
 
       {/* 저장 결과 토스트 */}
       {toast && (
@@ -586,6 +614,35 @@ export default function ExamFactoryPage() {
 // ─────────────────────────────────────────────────────────────
 // 하위 컴포넌트
 // ─────────────────────────────────────────────────────────────
+
+/** 베타 안내 + 정식 출시 알림 신청(mailto) — 결제 도입 전 강사 연락처 수집 */
+function ExamBetaBanner() {
+  return (
+    <div className="mb-6 overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-blue-50 shadow-sm">
+      <div className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="min-w-0">
+          <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-indigo-300 bg-white/70 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-700">
+            <Sparkles className="h-3 w-3" aria-hidden />
+            베타 기간 무료
+          </div>
+          <h2 className="font-serif text-[16px] font-bold leading-snug text-slate-900 sm:text-[17px]">
+            강사용 모든 기능을 지금 무료로 쓰세요
+          </h2>
+          <p className="mt-0.5 text-[13px] leading-relaxed text-slate-600">
+            정식 출시 때 결제가 열립니다. 미리 알림을 신청하면 출시 소식과 얼리버드 혜택을 가장 먼저 받아보실 수 있어요.
+          </p>
+        </div>
+        <a
+          href={BETA_NOTIFY_MAILTO}
+          className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-indigo-600 bg-white px-4 py-2.5 text-[13px] font-semibold text-indigo-700 shadow-sm transition-colors hover:bg-indigo-600 hover:text-white"
+        >
+          <Mail className="h-4 w-4" aria-hidden />
+          출시 알림 받기
+        </a>
+      </div>
+    </div>
+  );
+}
 
 function Segmented({
   label,
@@ -912,12 +969,16 @@ function PrintModal({
   meta,
   setMeta,
   count,
+  withSolutions,
+  setWithSolutions,
   onClose,
   onPrint,
 }: {
   meta: { academy: string; title: string; minutes: number };
   setMeta: (m: { academy: string; title: string; minutes: number }) => void;
   count: number;
+  withSolutions: boolean;
+  setWithSolutions: (v: boolean) => void;
   onClose: () => void;
   onPrint: () => void;
 }) {
@@ -926,7 +987,9 @@ function PrintModal({
       <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
         <h2 className="mb-1 font-serif text-[18px] font-bold text-slate-900">시험지 만들기</h2>
-        <p className="mb-5 text-[13px] text-slate-500">{count}문항이 시험지와 정답·해설지로 출력됩니다.</p>
+        <p className="mb-5 text-[13px] text-slate-500">
+          {count}문항이 시험지{withSolutions ? "와 정답·해설지" : "(문제만)"}로 출력됩니다.
+        </p>
         <div className="space-y-3">
           <div>
             <label htmlFor="academy" className="mb-1.5 block text-[12px] font-medium text-slate-500">
@@ -966,6 +1029,20 @@ function PrintModal({
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-[14px] text-slate-800 focus:border-indigo-500 focus:outline-none"
             />
           </div>
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <input
+              type="checkbox"
+              checked={withSolutions}
+              onChange={(e) => setWithSolutions(e.target.checked)}
+              className="h-4 w-4 cursor-pointer accent-indigo-600"
+            />
+            <span className="text-[13px] text-slate-700">
+              정답·해설지 함께 출력
+              <span className="ml-1 text-[11px] text-slate-400">
+                {withSolutions ? "(문제지 + 별지 해설)" : "(문제지만 출력)"}
+              </span>
+            </span>
+          </label>
         </div>
         <div className="mt-6 flex gap-2">
           <button
@@ -992,9 +1069,11 @@ function PrintModal({
 function PrintSheet({
   meta,
   variants,
+  withSolutions,
 }: {
   meta: { academy: string; title: string; minutes: number };
   variants: Variant[];
+  withSolutions: boolean;
 }) {
   const subjectLabel = SUBJECT_LABEL[dominantSubject(variants)];
   const totalPoints = variants.reduce((s, v) => s + (v.points ?? 3), 0);
@@ -1055,7 +1134,8 @@ function PrintSheet({
         </div>
       </div>
 
-      {/* ── 정답 및 해설 ── */}
+      {/* ── 정답 및 해설 (옵션: 문제만 출력 시 생략) ── */}
+      {withSolutions && (
       <div className="exam-page" style={{ breakBefore: "page" }}>
         <div className="exam-sol-head">정답 및 해설</div>
 
@@ -1093,6 +1173,7 @@ function PrintSheet({
           <span>문제팩토리로 출제</span>
         </div>
       </div>
+      )}
     </div>
   );
 }

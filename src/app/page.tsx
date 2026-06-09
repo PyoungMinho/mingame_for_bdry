@@ -230,7 +230,7 @@ function Hero() {
           </h1>
 
           <p className="mx-auto mb-9 max-w-xl break-keep text-base leading-relaxed text-slate-600 lg:mx-0 lg:text-lg">
-            공부할 주제만 입력하면, 수능 출제유형 그대로 문제를 만들어 문제집 풀듯 한 문제씩 풀고 즉시 채점·해설까지 받아요.
+            공부할 주제만 넣으면 수능 출제유형 그대로 문제를 만들어드려요. 문제집 풀듯 한 문제씩 풀고, 바로 채점과 해설까지.
           </p>
 
           <div className="mb-4 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
@@ -437,6 +437,12 @@ function PricingCompare() {
           <p className="text-slate-500 text-base max-w-xl mx-auto leading-relaxed">
             공부는 누구나 공짜로. 내 기출로 시험지를 찍어내고 자산으로 쌓는 건 강사용에서.
           </p>
+          <div className="mt-6 flex justify-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-[13px] font-semibold text-indigo-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" aria-hidden="true" />
+              지금은 베타 기간 — 강사용도 무료로 쓸 수 있어요
+            </span>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
@@ -569,6 +575,7 @@ function Footer() {
         <div className="flex items-center gap-6 text-sm">
           <Link href="/study" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">학생 자습</Link>
           <Link href="/exam" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">강사용</Link>
+          <Link href="/terms" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">이용약관</Link>
           <Link href="/privacy" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">개인정보처리방침</Link>
         </div>
         <p className="text-xs text-slate-400">© 2026 문제팩토리</p>

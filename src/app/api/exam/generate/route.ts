@@ -8,9 +8,27 @@
 import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { detectMode, generateVariants } from "@/lib/server/exam-engine";
+import { rateLimit } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// 비용/남용 방어 — IP별 분당·일일 호출 상한(환경변수로 조정 가능).
+// 인증·결제가 붙기 전 공개 엔드포인트라 라이브 Claude 토큰 비용을 1차로 막는다.
+const RATE_PER_MIN = Number(process.env.RATE_PER_MIN ?? 8);
+const RATE_PER_DAY = Number(process.env.RATE_PER_DAY ?? 80);
+const MINUTE_MS = 60_000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** 프록시(Vercel 등) 뒤 실제 클라이언트 IP 추정. 헤더가 없으면 단일 버킷으로 묶는다. */
+function clientKey(req: NextRequest): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) {
+    const first = fwd.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  return req.headers.get("x-real-ip")?.trim() || "unknown";
+}
 
 const BodySchema = z
   .object({
@@ -38,6 +56,25 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // 레이트리밋 — 테스트 환경에서는 건너뛴다(결정적 라우트 테스트 유지).
+  if (process.env.NODE_ENV !== "test") {
+    const key = clientKey(req);
+    const perMin = rateLimit(`${key}:min`, { limit: RATE_PER_MIN, windowMs: MINUTE_MS });
+    const perDay = rateLimit(`${key}:day`, { limit: RATE_PER_DAY, windowMs: DAY_MS });
+    const blocked = !perMin.ok ? perMin : !perDay.ok ? perDay : null;
+    if (blocked) {
+      const retryAfterSec = Math.ceil(blocked.retryAfterMs / 1000);
+      return Response.json(
+        {
+          error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+          code: "E_RATE_LIMITED",
+          retryAfterSec,
+        },
+        { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+      );
+    }
+  }
+
   let parsed: z.infer<typeof BodySchema>;
   try {
     const raw = await req.json();

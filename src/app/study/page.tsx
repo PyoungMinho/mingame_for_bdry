@@ -21,6 +21,8 @@ import {
   BookOpen,
   Trophy,
   PenLine,
+  CalendarDays,
+  Flame,
 } from "lucide-react";
 import {
   SUBJECTS,
@@ -38,6 +40,16 @@ import { AD_SLOTS } from "@/lib/ads";
 import UnitPicker from "@/components/exam/UnitPicker";
 import { CircledWord } from "@/app/_components/RedPenCircle";
 import { answersMatch } from "@/lib/grading";
+import {
+  daysUntil,
+  dateKey,
+  bumpDaily,
+  bumpStreak,
+  streakDisplay,
+  SUNEUNG,
+  type DailyProgress,
+  type StreakState,
+} from "@/lib/dday";
 
 type Phase = "setup" | "solve" | "result";
 
@@ -58,6 +70,38 @@ function loadStats(): StudyStats {
     };
   } catch {
     return EMPTY_STATS;
+  }
+}
+
+// 오늘 푼 문제 수(날짜 바뀌면 자동 리셋) — D-day HUD용. 통계와 분리된 로컬 키.
+const STUDY_DAILY_KEY = "munje-factory:study:daily:v1";
+
+function loadDaily(): DailyProgress | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STUDY_DAILY_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (typeof p?.date !== "string") return null;
+    return { date: p.date, solved: Number(p?.solved) || 0 };
+  } catch {
+    return null;
+  }
+}
+
+// 연속 학습일(streak) — 매일 한 세트씩 풀면 이어진다. 통계/일일과 분리된 로컬 키.
+const STUDY_STREAK_KEY = "munje-factory:study:streak:v1";
+
+function loadStreak(): StreakState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STUDY_STREAK_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (typeof p?.lastDate !== "string") return null;
+    return { lastDate: p.lastDate, count: Number(p?.count) || 0 };
+  } catch {
+    return null;
   }
 }
 
@@ -94,6 +138,9 @@ export default function StudyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<StudyStats>(EMPTY_STATS);
+  const [dday, setDday] = useState<number | null>(null);
+  const [daily, setDaily] = useState<DailyProgress | null>(null);
+  const [streak, setStreak] = useState<StreakState | null>(null);
   const committedRef = useRef(false);
 
   useEffect(() => {
@@ -102,6 +149,10 @@ export default function StudyPage() {
       .then((d) => setMode(d?.mode === "live" ? "live" : "demo"))
       .catch(() => setMode("demo"));
     setStats(loadStats());
+    // D-day·오늘 카운터는 클라이언트 로컬시간 기준 → SSR/하이드레이션 불일치 방지 위해 effect에서 계산
+    setDday(daysUntil(SUNEUNG.date, new Date()));
+    setDaily(loadDaily());
+    setStreak(loadStreak());
   }, []);
 
   const current = variants[index];
@@ -113,6 +164,13 @@ export default function StudyPage() {
     () => variants.filter((v) => graded[v.id]).length,
     [variants, graded]
   );
+  // 오늘 푼 문제 수 — daily가 오늘 날짜일 때만 유효(어제 기록이면 0으로 표시)
+  const todaySolved = useMemo(
+    () => (daily && daily.date === dateKey(new Date()) ? daily.solved : 0),
+    [daily]
+  );
+  // 연속 학습일 — 어제까지 이어졌으면 유지, 그보다 오래 비면 0(끊김)
+  const streakDays = useMemo(() => streakDisplay(streak, new Date()), [streak]);
 
   async function start() {
     setError(null);
@@ -187,6 +245,26 @@ export default function StudyPage() {
           localStorage.setItem(STUDY_STATS_KEY, JSON.stringify(next));
         } catch {
           /* 저장 공간 부족 등 — 통계는 비핵심이므로 무시 */
+        }
+        return next;
+      });
+      // 오늘 푼 문제 수 누적(날짜 바뀌면 bumpDaily가 자동 리셋)
+      setDaily((prev) => {
+        const next = bumpDaily(prev, solved, new Date());
+        try {
+          localStorage.setItem(STUDY_DAILY_KEY, JSON.stringify(next));
+        } catch {
+          /* 비핵심 — 무시 */
+        }
+        return next;
+      });
+      // 연속 학습일 갱신(하루 한 번만 +1, 빈 날 있으면 리셋)
+      setStreak((prev) => {
+        const next = bumpStreak(prev, new Date());
+        try {
+          localStorage.setItem(STUDY_STREAK_KEY, JSON.stringify(next));
+        } catch {
+          /* 비핵심 — 무시 */
         }
         return next;
       });
@@ -297,6 +375,9 @@ export default function StudyPage() {
             error={error}
             stats={stats}
             accuracy={accuracy}
+            dday={dday}
+            todaySolved={todaySolved}
+            streakDays={streakDays}
             onStart={start}
           />
         )}
@@ -336,12 +417,20 @@ export default function StudyPage() {
       <footer className="relative mx-auto max-w-3xl px-5 pb-8 pt-2">
         <div className="flex flex-col items-center justify-between gap-2 border-t border-slate-200 pt-5 text-[12px] text-slate-400 sm:flex-row">
           <span>무료 자습은 광고로 운영됩니다 · © 2026 문제팩토리</span>
-          <Link
-            href="/privacy"
-            className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
-          >
-            개인정보처리방침
-          </Link>
+          <span className="flex items-center gap-3">
+            <Link
+              href="/terms"
+              className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
+            >
+              이용약관
+            </Link>
+            <Link
+              href="/privacy"
+              className="cursor-pointer text-slate-500 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-slate-900"
+            >
+              개인정보처리방침
+            </Link>
+          </span>
         </div>
       </footer>
     </div>
@@ -367,11 +456,14 @@ function SetupView(props: {
   error: string | null;
   stats: StudyStats;
   accuracy: number;
+  dday: number | null;
+  todaySolved: number;
+  streakDays: number;
   onStart: () => void;
 }) {
   const {
     subject, setSubject, unitId, setUnitId, difficulty, setDifficulty, qType, setQType,
-    count, setCount, topic, setTopic, loading, error, stats, accuracy, onStart,
+    count, setCount, topic, setTopic, loading, error, stats, accuracy, dday, todaySolved, streakDays, onStart,
   } = props;
 
   return (
@@ -390,6 +482,8 @@ function SetupView(props: {
           개념·단원·틀린 문제를 입력하면 바로 풀 수 있는 문제를 만들어 채점·해설까지.
         </p>
       </div>
+
+      <StudyHud dday={dday} todaySolved={todaySolved} streakDays={streakDays} />
 
       {stats.sets > 0 && (
         <div className="flex items-center justify-center gap-5 rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-center text-[13px] shadow-sm">
@@ -819,6 +913,42 @@ function ResultView(props: {
 
 function Label({ children }: { children: React.ReactNode }) {
   return <div className="mb-1.5 text-[12px] font-semibold text-slate-500">{children}</div>;
+}
+
+/* D-day + 오늘 푼 문제 수 + 연속 학습일 — 학생 동기부여 슬림 HUD(타인 비교 없이 본인 진척만) */
+function StudyHud({
+  dday,
+  todaySolved,
+  streakDays,
+}: {
+  dday: number | null;
+  todaySolved: number;
+  streakDays: number;
+}) {
+  if (dday === null) return null; // 클라이언트 effect 계산 전 — 깜빡임 방지
+  const ddayLabel = dday > 0 ? `D-${dday}` : dday === 0 ? "D-DAY" : "수고했어요";
+  return (
+    <div className="mx-auto flex w-fit flex-wrap items-center justify-center gap-x-3 gap-y-1.5 rounded-xl border border-slate-200 bg-white/70 px-4 py-2.5 text-[13px] shadow-sm backdrop-blur-sm">
+      <span className="flex items-center gap-1.5">
+        <CalendarDays className="h-4 w-4 text-indigo-500" aria-hidden />
+        <span className="font-medium text-slate-700">{SUNEUNG.year} 수능</span>
+        <span className="font-mono font-bold text-indigo-600">{ddayLabel}</span>
+      </span>
+      <span className="h-4 w-px bg-slate-200" aria-hidden />
+      <span className="text-slate-600">
+        오늘 푼 문제 <span className="font-mono font-bold text-emerald-600">{todaySolved}</span>
+      </span>
+      {streakDays > 0 && (
+        <>
+          <span className="h-4 w-px bg-slate-200" aria-hidden />
+          <span className="flex items-center gap-1 text-slate-600" title="매일 한 세트씩 풀면 이어져요">
+            <Flame className="h-4 w-4 text-orange-500" aria-hidden />
+            연속 <span className="font-mono font-bold text-orange-600">{streakDays}</span>일
+          </span>
+        </>
+      )}
+    </div>
+  );
 }
 
 function Pill({
