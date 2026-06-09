@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Loader2,
   Mail,
+  Pencil,
   Plus,
   Printer,
   Sigma,
@@ -265,6 +266,13 @@ export default function ExamFactoryPage() {
                 </span>
               )}
             </button>
+            <Link
+              href="/study"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <Pencil className="h-4 w-4" aria-hidden />
+              학생용
+            </Link>
             <Link
               href="/"
               className="hidden cursor-pointer rounded-lg px-3 py-2 text-[13px] text-slate-500 transition-colors hover:text-slate-900 sm:block"
