@@ -1,0 +1,335 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* REDLINE: 타인 비교/외모 점수 UI 금지 */
+
+@layer base {
+  /* 한글 행간 1.6 고정 (design-final.md §4-3) */
+  body {
+    line-height: 1.6;
+    /* 숫자 균등 너비 (점수 카운트업 레이아웃 안정성) */
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 포커스 링 — accent-500 50% 3px (design-final.md §4-3) */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 122, 41, 0.5);
+  }
+
+  /* 스크롤바 스타일 */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(15, 27, 61, 0.2);
+    border-radius: 9999px;
+  }
+
+  /* 모션 감소 설정 (design-final.md §4-3) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* 터치 타겟 유틸 (design-final.md §4-3 ≥ 44×44px) */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* 스크롤 영역 — 상단 AppBar(56px) + 하단 TabBar(80px) */
+  .scroll-area {
+    height: calc(100dvh - 56px - 80px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 스크롤 영역 (탭바 없는 페이지) */
+  .scroll-area-no-tab {
+    height: calc(100dvh - 56px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Safe Area */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* 모눈종이(graph paper) 배경 — 문제팩토리 워크시트 톤
+   * 22px 잔금 + 110px(5칸) 굵은 선으로 실제 수학 노트 느낌 */
+  .graph-paper {
+    background-color: #fafaf7;
+    background-image:
+      linear-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+      linear-gradient(rgba(15, 23, 42, 0.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.075) 1px, transparent 1px);
+    background-size: 22px 22px, 22px 22px, 110px 110px, 110px 110px;
+    background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+  }
+
+  /* 라이트 워크시트 영역 — 인디고 포커스 링(전역 오렌지 링 대체) */
+  .graph-paper :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35);
+  }
+}
+
+/* 페르소나 테마 전환 (design-final.md §4-3 — 250ms, chroma-js 보간) */
+[data-persona="mentor"] {
+  --persona-accent: #FF7A29;
+  --persona-surface: #FFF8F4;
+}
+[data-persona="spartan"] {
+  --persona-accent: #FF4D00;
+  --persona-surface: #F7F8FA;
+}
+[data-persona="friend"] {
+  --persona-accent: #3DBE9C;
+  --persona-surface: #FFFBF7;
+}
+
+/* ───────────────────────── 인쇄 (변형 시험지) ─────────────────────────
+ * 문제팩토리 PrintSheet 전용. 화면에서는 .print-area 숨김,
+ * 인쇄 시 다크 테마를 흑백 A4 시험지로 전환한다.
+ */
+.print-area {
+  display: none;
+}
+
+@media print {
+  /* 화면 전용 UI 숨김 (헤더·입력 패널·드로어·모달 등) */
+  .no-print {
+    display: none !important;
+  }
+
+  /* 다크 배경 → 흰 종이, 글자 검정 */
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  /* 인쇄 영역 노출 — 교과서 톤 세리프(명조) */
+  .print-area {
+    display: block !important;
+    color: #000;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: "Crimson Pro", "Gowun Batang", Georgia, serif;
+  }
+
+  /* 발문·정답은 또렷하게 */
+  .exam-stem,
+  .exam-sol-answer {
+    font-family: "Crimson Pro", "Gowun Batang", Georgia, serif;
+  }
+
+  /* ── 시험지 머리말 (단 위, 전체 폭) ── */
+  .exam-head {
+    border-bottom: 2.5px solid #000;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+
+  .exam-head-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .exam-academy {
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+  }
+
+  .exam-subject-tag {
+    border: 1.5px solid #000;
+    padding: 2px 11px;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .exam-title {
+    font-size: 21px;
+    font-weight: 700;
+    margin: 4px 0 7px;
+    letter-spacing: -0.3px;
+  }
+
+  .exam-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #111;
+  }
+
+  .exam-meta-row .sep {
+    color: #999;
+    margin: 0 5px;
+  }
+
+  /* ── 수능형 2단 조판 — 가운데 분리선 ── */
+  .exam-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    column-count: 2;
+    column-gap: 11mm;
+    column-rule: 1px solid #000;
+  }
+
+  /* 해설지는 가독성을 위해 1단 */
+  .exam-sol-list {
+    column-count: 1;
+  }
+
+  /* 문항이 페이지·단 경계에서 잘리지 않도록 */
+  .exam-item {
+    margin-bottom: 15px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .exam-q {
+    display: flex;
+    gap: 7px;
+    align-items: baseline;
+  }
+
+  .exam-num {
+    font-weight: 700;
+    min-width: 20px;
+    flex-shrink: 0;
+  }
+
+  .exam-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .exam-passage {
+    border: 1px solid #444;
+    background: #fafafa;
+    padding: 9px 11px;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 12.5px;
+  }
+
+  .exam-stem {
+    font-weight: 500;
+    margin-bottom: 7px;
+    white-space: pre-wrap;
+  }
+
+  /* 배점 표기 [3점] — 발문 끝/정답 옆 */
+  .exam-points {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* 보기 — 좁은 단 안에서는 세로 1열 (수능 표준) */
+  .exam-choices {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    margin-top: 5px;
+  }
+
+  .exam-choice {
+    white-space: pre-wrap;
+    line-height: 1.55;
+  }
+
+  .exam-answer-line {
+    margin-top: 12px;
+    color: #333;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── 정답 및 해설지 ── */
+  .exam-sol-head {
+    border-bottom: 2.5px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .exam-quickans {
+    border: 1px solid #000;
+    padding: 7px 10px;
+    margin-bottom: 13px;
+    font-size: 12.5px;
+    line-height: 1.95;
+  }
+
+  .exam-sol {
+    display: flex;
+    gap: 7px;
+    align-items: baseline;
+    margin-bottom: 13px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .exam-sol-answer {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  /* 단원·배점 꼬리표 — 해설지에서 교육과정 정합성 노출 */
+  .exam-unit-tag {
+    display: inline-block;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 0 6px;
+    margin-left: 7px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .exam-sol-exp {
+    white-space: pre-wrap;
+    line-height: 1.62;
+    color: #222;
+    font-size: 13px;
+  }
+
+  /* ── 페이지 꼬리말 ── */
+  .exam-foot {
+    margin-top: 16px;
+    padding-top: 6px;
+    border-top: 1px solid #000;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: #555;
+  }
+}

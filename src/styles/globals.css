@@ -1,0 +1,152 @@
+/* 오름(Oreum) 글로벌 스타일 */
+/* Pretendard Variable 폰트 import */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── 디자인 토큰 CSS 변수 ── */
+  :root {
+    /* 폰트 */
+    --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+
+    /* Surface (라이트) */
+    --surface-bg: #f9fafb;
+    --surface-card: #ffffff;
+    --surface-elevated: #ffffff;
+    --surface-overlay: rgba(0, 0, 0, 0.48);
+
+    /* 포커스 링 */
+    --focus-ring: 0 0 0 3px rgba(255, 122, 41, 0.5);
+    --focus-ring-dark: 0 0 0 3px rgba(255, 122, 41, 0.8);
+
+    /* 페르소나 CSS 변수 (기본=멘토) */
+    --persona-primary: #0f1b3d;
+    --persona-accent: #ff7a29;
+    --persona-surface-bg: #fff8f4;
+  }
+
+  /* 다크모드 — 시스템 따름 (design-final.md D2) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-bg: #080e20;
+      --surface-card: #0f1b3d;
+      --surface-elevated: #152e5a;
+      --surface-overlay: rgba(0, 0, 0, 0.64);
+    }
+  }
+
+  /* 페르소나 토큰 — <html data-persona="..."> 교체 시 250ms 전환 */
+  [data-persona="mentor"] {
+    --persona-primary: #0f1b3d;
+    --persona-accent: #ff7a29;
+    --persona-surface-bg: #fff8f4;
+  }
+
+  [data-persona="spartan"] {
+    --persona-primary: #0a1528;
+    --persona-accent: #ff4d00;
+    --persona-surface-bg: #f7f8fa;
+  }
+
+  [data-persona="friend"] {
+    --persona-primary: #1a3060;
+    --persona-accent: #3dbe9c;
+    --persona-surface-bg: #fffbf7;
+  }
+
+  /* 페르소나 전환 트랜지션 */
+  [data-persona] {
+    transition:
+      background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── 베이스 리셋 ── */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 숫자 타뷸러 넘버 전역 적용 (ui-spec.md §7) */
+    font-variant-numeric: tabular-nums;
+  }
+
+  body {
+    background-color: var(--surface-bg);
+    color: #0f1b3d;
+    line-height: 1.6;
+    min-height: 100dvh;
+  }
+
+  /* 한글 행간 1.6 고정 (ui-spec.md §7) */
+  p,
+  li,
+  span,
+  div {
+    line-height: 1.6;
+  }
+
+  /* 숫자/한글 혼용 baseline 정렬 */
+  .numeric-mixed {
+    align-items: baseline;
+  }
+
+  /* ── 포커스 링 (ui-spec.md §8) ── */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: 4px;
+  }
+
+  /* ── 모션 감소 대응 (design-final.md §4-3) ── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ── 탭 피드백 오버레이 (ui-spec.md §7 토스 스타일) ── */
+  .tap-feedback {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tap-feedback::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.04);
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+    pointer-events: none;
+  }
+
+  .tap-feedback:active::after {
+    opacity: 1;
+  }
+
+  /* 스크롤바 숨김 (모바일 PWA) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
