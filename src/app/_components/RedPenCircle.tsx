@@ -7,10 +7,18 @@ import type { ReactNode } from "react";
  */
 function RedPenCircle({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 320 120" fill="none" preserveAspectRatio="none" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 320 120"
+      fill="none"
+      preserveAspectRatio="none"
+      className={className}
+      aria-hidden="true"
+    >
       <path
+        className="mf-draw"
         d="M168 13 C92 4 27 24 17 54 C9 80 70 105 166 107 C258 109 313 82 302 49 C293 23 236 10 149 16"
-        stroke="#DC2626"
+        pathLength={1}
+        stroke="currentColor"
         strokeWidth="2.5"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
@@ -27,9 +35,10 @@ function RedPenCircle({ className }: { className?: string }) {
  */
 export function CircledWord({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <span className="relative inline-block whitespace-nowrap align-baseline">
+    <span className="relative inline-block whitespace-nowrap align-baseline leading-none">
       <span className={`relative z-10 ${className ?? ""}`}>{children}</span>
-      <RedPenCircle className="pointer-events-none absolute -inset-x-3 -inset-y-1.5 z-20" />
+      {/* 글자 박스 정중앙에 배치 — 위치·크기 모두 %/em 기반이라 폰트 크기·line-height에 무관하게 정렬된다. */}
+      <RedPenCircle className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-[1.5em] w-[calc(100%_+_0.8em)] -translate-x-1/2 -translate-y-1/2 text-redpen" />
     </span>
   );
 }

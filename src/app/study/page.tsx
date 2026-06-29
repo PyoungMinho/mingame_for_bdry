@@ -930,9 +930,9 @@ function StudyHud({
   return (
     <div className="mx-auto flex w-fit flex-wrap items-center justify-center gap-x-3 gap-y-1.5 rounded-xl border border-slate-200 bg-white/70 px-4 py-2.5 text-[13px] shadow-sm backdrop-blur-sm">
       <span className="flex items-center gap-1.5">
-        <CalendarDays className="h-4 w-4 text-indigo-500" aria-hidden />
+        <CalendarDays className="h-4 w-4 text-redpen" aria-hidden />
         <span className="font-medium text-slate-700">{SUNEUNG.year} 수능</span>
-        <span className="font-mono font-bold text-indigo-600">{ddayLabel}</span>
+        <span className="font-mono font-bold text-redpen">{ddayLabel}</span>
       </span>
       <span className="h-4 w-px bg-slate-200" aria-hidden />
       <span className="text-slate-600">

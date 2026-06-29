@@ -43,6 +43,73 @@
   }
 }
 
+/* ───────────────────────── 문제팩토리 로드 모션 (CSS-only · 1회) ─────────────────────────
+ * mf-draw: 빨간펜 동그라미가 그려지는 시그니처 모션(stroke-dashoffset, pathLength=1 정규화).
+ * mf-rise: 히어로 요소 staggered 페이드업. transform/opacity만 써 GPU 합성·리플로우 없음.
+ * 위 @layer base 의 전역 prefers-reduced-motion 규칙으로 자동 정지되며,
+ * 아래 블록에서 최종 상태(동그라미 완성/요소 노출)를 한 번 더 못박아 깜빡임을 막는다.
+ */
+@keyframes mf-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes mf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* 기본 상태 = "완성·노출" — JS 미실행·구형 브라우저·백그라운드 탭에서도 콘텐츠 항상 보임.
+ * 애니메이션은 LoadReveal이 페이지가 보일 때 <html>.mf-anim-ready를 붙여야만 1회 재생된다.
+ * (mf-rise는 클래스 없으면 opacity/transform 미지정 = 기본 노출 상태 그대로) */
+.mf-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.mf-anim-ready .mf-draw {
+  animation: mf-draw 0.7s ease-out 0.2s both;
+}
+.mf-anim-ready .mf-rise {
+  animation: mf-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.mf-anim-ready .mf-rise-1 {
+  animation-delay: 0.05s;
+}
+.mf-anim-ready .mf-rise-2 {
+  animation-delay: 0.13s;
+}
+.mf-anim-ready .mf-rise-3 {
+  animation-delay: 0.21s;
+}
+.mf-anim-ready .mf-rise-4 {
+  animation-delay: 0.29s;
+}
+.mf-anim-ready .mf-rise-5 {
+  animation-delay: 0.37s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mf-anim-ready .mf-draw {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .mf-anim-ready .mf-rise,
+  .mf-anim-ready .mf-rise-1,
+  .mf-anim-ready .mf-rise-2,
+  .mf-anim-ready .mf-rise-3,
+  .mf-anim-ready .mf-rise-4,
+  .mf-anim-ready .mf-rise-5 {
+    animation: none !important;
+  }
+}
+
 @layer utilities {
   /* 터치 타겟 유틸 (design-final.md §4-3 ≥ 44×44px) */
   .touch-target {

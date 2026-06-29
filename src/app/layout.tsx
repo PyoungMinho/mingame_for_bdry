@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Providers } from "./providers";
 import { ADS_ENABLED, ADSENSE_CLIENT } from "@/lib/ads";
+import LoadReveal from "@/app/_components/LoadReveal";
 import "./globals.css";
 
 // ---------------------------------------------------------------------------
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans antialiased bg-[#FAFAF7] text-slate-900 min-h-screen">
+        <LoadReveal />
         {/* Google AdSense 로더 — 프로덕션에서만 (학생 무료 모드 광고 수익) */}
         {ADS_ENABLED && (
           <Script

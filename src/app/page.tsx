@@ -217,23 +217,23 @@ function Hero() {
       <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.04fr_0.96fr] lg:gap-8">
         {/* ── 좌: 표지 타이틀 블록 ── */}
         <div className="text-center lg:text-left">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700">
+          <div className="mf-rise mf-rise-1 mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" aria-hidden="true" />
             무료 · 회원가입 없음 · 광고 후원으로 운영
           </div>
 
-          <h1 className="mb-6 break-keep font-serif text-[34px] font-bold leading-[1.16] tracking-tight text-slate-900 text-balance sm:text-5xl lg:text-[54px]">
+          <h1 className="mf-rise mf-rise-2 mb-6 break-keep font-serif text-[34px] font-bold leading-[1.16] tracking-tight text-slate-900 text-balance sm:text-5xl lg:text-[54px]">
             문제집 살 돈 걱정 없이,
             <br />
             <CircledWord className="text-indigo-600">수능형 문제</CircledWord>
             로 공부하세요
           </h1>
 
-          <p className="mx-auto mb-9 max-w-xl break-keep text-base leading-relaxed text-slate-600 lg:mx-0 lg:text-lg">
+          <p className="mf-rise mf-rise-3 mx-auto mb-9 max-w-xl break-keep text-base leading-relaxed text-slate-600 lg:mx-0 lg:text-lg">
             공부할 주제만 넣으면 수능 출제유형 그대로 문제를 만들어드려요. 문제집 풀듯 한 문제씩 풀고, 바로 채점과 해설까지.
           </p>
 
-          <div className="mb-4 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
+          <div className="mf-rise mf-rise-4 mb-4 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
             <Link
               href="/study"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 text-base font-semibold text-white shadow-sm shadow-indigo-600/20 transition-colors duration-200 hover:bg-indigo-700 cursor-pointer"
@@ -249,11 +249,11 @@ function Hero() {
               <IconArrow className="h-4 w-4" />
             </Link>
           </div>
-          <p className="text-xs text-slate-400">신용카드 불필요 · 지금 바로 시작</p>
+          <p className="mf-rise mf-rise-5 text-xs text-slate-400">신용카드 불필요 · 지금 바로 시작</p>
         </div>
 
         {/* ── 우: 책상 위 채점된 시험지 ── */}
-        <div className="relative mx-auto w-full max-w-sm sm:max-w-md">
+        <div className="mf-rise mf-rise-3 relative mx-auto w-full max-w-sm sm:max-w-md">
           <ExamSheetHero />
         </div>
       </div>

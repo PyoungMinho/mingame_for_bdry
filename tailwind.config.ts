@@ -85,6 +85,11 @@ const config: Config = {
           bg: "#FDE8E8",
           text: "#7A1A1A",
         },
+        // 브랜드 시그니처 — 빨간펜(채점·검증·강조). 동그라미/검증 도장/D-day 카운트다운 공통 액센트.
+        redpen: {
+          DEFAULT: "#DC2626",
+          soft: "#FEF2F2",
+        },
         info: {
           DEFAULT: "#2563EB",
           bg: "#E8F0FA",
