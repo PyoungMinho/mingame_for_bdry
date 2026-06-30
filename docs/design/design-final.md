@@ -1,761 +1,530 @@
-# 디자인 최종안 -- 반려동물 건강 안심 플랫폼 (PetCare)
+# 툰일기(Toonlog) 최종 디자인 스펙 v1.0
 
-> 작성: 디자인팀장 (Opus) / 2026-04-13
-> 기반: UX 설계서 (2026-04-13), UI 디자인 스펙 (2026-04-13), 프로젝트 방향서 (2026-04-11)
-> 대상: iOS (React Native / Expo + Nativewind v4) -- Phase 0 MVP
+> 확정: 디자인팀장(Opus) / 2026-06-03
+> 종합 입력: `ux-spec.md` (UX디자이너, 9개 화면) + `ui-spec.md` (UI디자이너, 토큰 202개 / 컴포넌트 27개)
+> 확정 사실 출처: `docs/planning/project-direction.md`
+> 위상: **프론트 개발팀 단일 진실 소스(SSOT)** — 이 문서 + 링크된 2개 스펙으로 구현 시작 가능
+> 핸드오프 대상: 프론트팀장(전체), 백엔드팀장(§6 캘리브레이션 + §8 고지)
 
 ---
 
-## 0. 종합 판단 -- 팀장 리뷰
+## 0. 요약 + 디자인 원칙
 
-### 0-1. 정합성 평가
+### 0.1 한 문단 요약
 
-UX 설계서와 UI 디자인 스펙의 전반적인 정합성은 **높다**. 두 산출물 모두 동일한 기획 방향서를 기반으로 작업했고, 핵심 구조(3탭, 5개 사용자 플로우, 8개 와이어프레임)가 일치한다. 아래에서 발견된 충돌 사항과 그에 대한 최종 결정을 기술한다.
+툰일기는 "일기 한 편 → AI 4컷 만화 → SNS 공유 + 365편 아카이브"를 잇는 모바일 우선(430px) 습관형 SaaS다.
+디자인은 **감성 65% + 키치 35%** 톤으로, 따뜻한 종이(Paper) 위 만화 펜선(Ink) + 코랄 CTA를 핵심 무드로 한다.
+9개 화면, 다크모드, react-konva 말풍선 에디터, Satori 공유 카드 3종을 11주 일정(디자인 3주 선행) 안에 구현한다.
 
-### 0-2. 충돌 사항 및 결정
+### 0.2 디자인 원칙 5개 (모든 구현 판단의 기준)
 
-| # | 충돌 항목 | UX 설계서 | UI 디자인 스펙 | 팀장 결정 | 근거 |
+| # | 원칙 | 실무 적용 |
+|---|---|---|
+| **P1** | **이탈보다 완성** | 생성 대기(10~60초)가 최대 적. SSE 1컷 즉시 노출 + 백그라운드 알림으로 "기다림"을 "구경"으로 전환 (§4-A, §6 ux-spec §5) |
+| **P2** | **"내 이야기" 감정** | 아바타 일관성·"내 캐릭터" 카피·완성 햅틱. 기능이 아니라 감동을 판다 |
+| **P3** | **마찰 제로 공유** | 공유 화면 → SNS 앱 2탭 이내. Web Share API 우선, fallback 자동 (ux-spec §7) |
+| **P4** | **강압 없는 수익화** | 한도/결제는 정보 제공형. "내일 다시"와 "업그레이드" 항상 동등 (ux-spec §8.2) |
+| **P5** | **한글은 이미지 밖** | 모든 텍스트(말풍선/캡션/워터마크)는 CSS/SVG/Satori 오버레이. 이미지에 한글 절대 미생성 (방향서 아키텍처 결정 #1) |
+
+> 충돌 시 우선순위: **법무(§8) > 접근성(§9) > P1~P5 > 심미성**.
+
+---
+
+## 1. 브랜드 아이덴티티
+
+### 1.1 톤 & 무드 (확정)
+
+- **감성 65% + 키치 35%**: 기본 무드는 따뜻·잔잔(감성), 강조·재미 포인트에서 만화적 과장(키치).
+- 키치 적용 지점: 코랄 CTA, `shadow-ink`(3px 오프셋 만화 그림자), 외침형 말풍선, 컷 번호 pop 애니메이션, 공유 카드 액센트 라인.
+- 감성 적용 지점: 종이 질감 배경, 파스텔 화풍, 손글씨 말풍선 폰트, 부드러운 마이크로카피.
+
+### 1.2 로고 (확정 — 상세 ui-spec §6)
+
+- **심볼**: 대사형 말풍선 안에 일기장 줄 3개(가운데 줄만 코랄). "내 이야기(일기)를 만화(말풍선)로".
+- **워드마크**: "툰일기" / "Toonlog" — Bagel Fat One.
+- **최소 크기**: 조합 높이 24px, 심볼 단독 16px, 앱 아이콘 32px.
+- ⚠️ 미해결: `--font-logo: 'Bagel Fat One'`(영문 전용 구글폰트)은 한글 "툰일기"를 렌더 못함 → §12 후속 과제로 이연. **MVP 로고는 SVG 패스로 제작**(폰트 의존 제거).
+
+### 1.3 컬러·타이포 확정 → §2 토큰 블록 참조
+
+브랜드 원색 9종(Ink/Paper/Coral/Sky/Lemon/Pencil/Eraser 등) + 타이포 6패밀리는 §2 `@theme` 블록에 확정본 수록. 상세 표·합성 타이포 스케일(`.type-*` 13종)은 ui-spec §1~2 참조.
+
+---
+
+## 2. 디자인 토큰 — 최종 확정본
+
+> 아래 `@theme` 블록은 ui-spec §5 원본을 **검수·확정**한 것이다. 프론트는 이 블록을 `globals.css` 상단에 그대로 사용한다.
+> 변경/검수 사항은 블록 뒤 §2.1에 명시. 토큰 상세 표(용도 설명)는 ui-spec §1~4 참조.
+
+```css
+/* tailwind.css — @theme 블록 (Tailwind v4) — 디자인팀장 확정본 v1.0 */
+@import "tailwindcss";
+
+@theme {
+  /* BREAKPOINTS */
+  --breakpoint-sm: 430px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* FONTS */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Gmarket Sans', 'GmarketSansBold', sans-serif;
+  --font-balloon: 'Cafe24Danjunghae', 'NanumPen', cursive;
+  --font-english: 'Inter Variable', 'Inter', sans-serif;
+  --font-logo: 'Bagel Fat One', cursive; /* ⚠️ 영문 전용 — 한글 로고는 SVG 패스 사용 */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* FONT SIZES */
+  --text-2xs: 0.625rem; --text-xs: 0.75rem; --text-sm: 0.875rem;
+  --text-base: 1rem; --text-md: 1.125rem; --text-lg: 1.25rem;
+  --text-xl: 1.5rem; --text-2xl: 1.875rem; --text-3xl: 2.25rem;
+  --text-4xl: 3rem; --text-5xl: 3.75rem;
+
+  /* FONT WEIGHTS */
+  --font-weight-regular: 400; --font-weight-medium: 500;
+  --font-weight-semibold: 600; --font-weight-bold: 700; --font-weight-extrabold: 800;
+
+  /* LINE HEIGHTS */
+  --leading-tight: 1.2; --leading-snug: 1.375; --leading-normal: 1.5;
+  --leading-relaxed: 1.625; --leading-loose: 2.0;
+
+  /* LETTER SPACING */
+  --tracking-tighter: -0.05em; --tracking-tight: -0.025em; --tracking-normal: 0em;
+  --tracking-wide: 0.025em; --tracking-wider: 0.05em; --tracking-widest: 0.1em;
+
+  /* SPACING (4px 기준) */
+  --spacing-px: 1px; --spacing-0: 0; --spacing-0_5: 0.125rem;
+  --spacing-1: 0.25rem; --spacing-1_5: 0.375rem; --spacing-2: 0.5rem;
+  --spacing-2_5: 0.625rem; --spacing-3: 0.75rem; --spacing-4: 1rem;
+  --spacing-5: 1.25rem; --spacing-6: 1.5rem; --spacing-8: 2rem;
+  --spacing-10: 2.5rem; --spacing-12: 3rem; --spacing-14: 3.5rem;
+  --spacing-16: 4rem; --spacing-20: 5rem; --spacing-24: 6rem;
+
+  /* BORDER RADIUS */
+  --radius-none: 0; --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-3xl: 32px; --radius-full: 9999px;
+
+  /* SHADOWS */
+  --shadow-xs: 0 1px 2px rgb(26 26 26 / 0.06);
+  --shadow-sm: 0 1px 4px rgb(26 26 26 / 0.10);
+  --shadow-md: 0 4px 12px rgb(26 26 26 / 0.12);
+  --shadow-lg: 0 8px 24px rgb(26 26 26 / 0.16);
+  --shadow-xl: 0 16px 48px rgb(26 26 26 / 0.20);
+  --shadow-ink: 3px 3px 0 rgb(26 26 26 / 0.85);      /* 키치 만화 그림자 */
+  --shadow-ink-sm: 2px 2px 0 rgb(26 26 26 / 0.85);
+  --shadow-focus: 0 0 0 3px rgb(77 171 247 / 0.40);
+  --shadow-focus-error: 0 0 0 3px rgb(255 107 107 / 0.35);
+
+  /* Z-INDEX */
+  --z-base: 0; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200;
+  --z-overlay: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600; --z-max: 9999;
+
+  /* MOTION */
+  --duration-instant: 0ms; --duration-fast: 100ms; --duration-normal: 200ms;
+  --duration-slow: 300ms; --duration-xslow: 500ms;
+  --duration-loading: 800ms; --duration-generation: 1200ms;
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-draw: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* COLORS — BRAND PRIMITIVES */
+  --color-ink: #1A1A1A; --color-paper: #FAF7F2;
+  --color-coral: #FF6B6B; --color-coral-hover: #E55555; --color-coral-active: #CC4444;
+  --color-sky: #4DABF7; --color-lemon: #FFE066;
+  --color-pencil: #6C757D; --color-eraser: #DEE2E6;
+
+  /* COLORS — SEMANTIC (LIGHT DEFAULT) */
+  --color-bg-base: #FAF7F2; --color-bg-subtle: #F4F0E8; --color-bg-muted: #EDE9E0;
+  --color-bg-inverse: #1A1A1A;
+  --color-surface-raised: #FFFFFF; --color-surface-overlay: rgb(26 26 26 / 0.48);
+  --color-text-primary: #1A1A1A; --color-text-secondary: #4A4540;
+  --color-text-muted: #6C757D; --color-text-disabled: #ADB5BD;
+  --color-text-inverse: #FAF7F2; --color-text-link: #4DABF7; --color-text-accent: #FF6B6B;
+  --color-primary: #FF6B6B; --color-primary-hover: #E55555; --color-primary-active: #CC4444;
+  --color-primary-subtle: #FFF0F0; --color-primary-text: #FFFFFF;
+  --color-border-default: #DEE2E6; --color-border-strong: #ADB5BD;
+  --color-border-focus: #4DABF7; --color-border-error: #FF6B6B;
+  --color-success: #2ECC71; --color-success-subtle: #EDFAF4;
+  --color-warning: #F59E0B; --color-warning-subtle: #FFFBEB;
+  --color-error: #EF4444; --color-error-subtle: #FEF2F2;
+  --color-info: #4DABF7; --color-info-subtle: #EFF8FF;
+}
+
+/* DARK MODE — system */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg-base: #1C1917; --color-bg-subtle: #292524; --color-bg-muted: #3C3633;
+    --color-bg-inverse: #F0EDE8;
+    --color-surface-raised: #231F1C; --color-surface-overlay: rgb(0 0 0 / 0.64);
+    --color-text-primary: #F0EDE8; --color-text-secondary: #C5BFB8;
+    --color-text-muted: #8B8178; --color-text-disabled: #4A4540;
+    --color-text-inverse: #1A1A1A; --color-text-link: #74C0FC; --color-text-accent: #FF8080;
+    --color-primary: #FF8080; --color-primary-hover: #FF9494; --color-primary-active: #FFAAAA;
+    --color-primary-subtle: #3D1A1A; --color-primary-text: #1A1A1A;
+    --color-border-default: #343A40; --color-border-strong: #6C757D;
+    --color-border-focus: #74C0FC; --color-border-error: #FF8080;
+    --color-success: #4ADE80; --color-success-subtle: #0D2E1A;
+    --color-warning: #FBBF24; --color-warning-subtle: #2D1F00;
+    --color-error: #F87171; --color-error-subtle: #2D0A0A;
+    --color-info: #74C0FC; --color-info-subtle: #0D1F2D;
+    --color-coral: #FF8080; --color-sky: #74C0FC; --color-lemon: #FFD43B;
+    --color-pencil: #ADB5BD; --color-eraser: #343A40;
+  }
+}
+
+/* DARK MODE — manual override (system 무관) */
+[data-theme="dark"] {
+  --color-bg-base: #1C1917; --color-bg-subtle: #292524; --color-bg-muted: #3C3633;
+  --color-bg-inverse: #F0EDE8;
+  --color-surface-raised: #231F1C; --color-surface-overlay: rgb(0 0 0 / 0.64);
+  --color-text-primary: #F0EDE8; --color-text-secondary: #C5BFB8;
+  --color-text-muted: #8B8178; --color-text-disabled: #4A4540;
+  --color-text-inverse: #1A1A1A; --color-text-link: #74C0FC; --color-text-accent: #FF8080;
+  --color-primary: #FF8080; --color-primary-hover: #FF9494; --color-primary-active: #FFAAAA;
+  --color-primary-subtle: #3D1A1A; --color-primary-text: #1A1A1A;
+  --color-border-default: #343A40; --color-border-strong: #6C757D;
+  --color-border-focus: #74C0FC; --color-border-error: #FF8080;
+  --color-success: #4ADE80; --color-success-subtle: #0D2E1A;
+  --color-warning: #FBBF24; --color-warning-subtle: #2D1F00;
+  --color-error: #F87171; --color-error-subtle: #2D0A0A;
+  --color-info: #74C0FC; --color-info-subtle: #0D1F2D;
+  --color-coral: #FF8080; --color-sky: #74C0FC; --color-lemon: #FFD43B;
+  --color-pencil: #ADB5BD; --color-eraser: #343A40;
+}
+```
+
+### 2.1 팀장 검수 변경 사항 (ui-spec 원본 대비)
+
+| 항목 | ui-spec 원본 | 확정본 | 사유 |
+|---|---|---|---|
+| 시스템 다크 셀렉터 | `:root` | `:root:not([data-theme="light"])` | 수동 라이트 토글이 시스템 다크를 못 이기는 버그 방지 |
+| 수동 다크 블록 | `/* ...동일 */` 주석 처리(미완) | **전체 토큰 명시** | 원본은 미완성이라 그대로면 수동 토글 작동 안 함 |
+| Gray 스케일(`--color-gray-*` 20종) | @theme 미포함(표만 존재) | **MVP 보류** | semantic 토큰으로 충분, 직접 gray 사용 금지. 필요 시 §12 |
+| `--spacing-*` 네이밍 | `_5` 표기(0_5, 1_5, 2_5) | 유지 | Tailwind v4 유효, 단 클래스는 `p-2.5` 형태로 매핑됨을 프론트 인지 |
+
+> **그레이 스케일 사용 금지 규칙**: 컴포넌트는 반드시 semantic 토큰(`--color-text-*`, `--color-bg-*`, `--color-border-*`)만 사용. raw gray/hex 직접 입력 금지 (다크모드 자동 대응 보장).
+
+---
+
+## 3. 화면 목록 + IA (9개 화면)
+
+> 전체 IA 트리·네비게이션 구조는 ux-spec §2 참조. 와이어프레임은 ux-spec §4 참조.
+
+| # | 화면 | 라우트 | 인증 | 탭바 | 우선순위 | ux-spec |
+|---|---|---|---|---|---|---|
+| S1 | 랜딩 | `/` | 공개 | X | **P0** | §4 화면1 |
+| S1b | 온보딩(소셜로그인+아바타설정) | `/onboarding` | 인증 | X | **P0** | §4 화면1 |
+| S2 | 홈/대시보드 | `/home` | 인증 | O | **P1** | §2 IA |
+| S3 | 일기 작성 | `/diary/new` | 인증 | O(FAB) | **P0** | §4 화면2~3 |
+| S4 | 생성 대기 | `/diary/generating/:id` | 인증 | X | **P0** | §4 화면4, §5 |
+| S5 | 4컷 결과 확인 | `/diary/:id` | 인증 | X | **P0** | §4 화면5 |
+| S6 | 말풍선 에디터 | `/diary/:id/edit` | 인증 | X | **P1** | §4 화면6, §6 |
+| S7 | 공유 | `/diary/:id/share` | 인증 | X | **P0** | §4 화면7, §7 |
+| S8 | 아카이브(캘린더/그리드) | `/archive` | 인증 | O | **P1** | §4 화면8 |
+| S9 | 마이페이지 | `/mypage` | 인증 | O | **P1** | §4 화면9 |
+| S9b | 요금제 업그레이드 | `/mypage/upgrade` | 인증 | X | **P1** | §4 화면9 |
+| S+ | 공유 OG 페이지(수신자용) | `/share/:id` | 공개 | X | **P1** | ux-spec §7.2 |
+
+**네비게이션 확정**: 하단 4탭 `[홈] [작성+] [아카이브] [마이]`, 작성+는 중앙 FAB 돌출. 생성대기/편집/공유는 풀스크린(탭바 숨김).
+
+**P0 핵심 경로 (MVP 데모 가능 최소 셋)**: S1 → S1b → S3 → S4 → S5 → S7. 이 6개로 "가입→첫만화→공유" 플로우 A가 완성된다.
+
+---
+
+## 4. 핵심 사용자 플로우 3개 (요약)
+
+> 단계별 감정선·이탈 위험·대응은 ux-spec §3 표 참조. 여기서는 핵심 동선과 디자인 요구만.
+
+### 플로우 A — 신규 첫 만화 생성 (3분 내 / 무료 첫 경험)
+`랜딩 → 소셜로그인 → 아바타설정 → 일기작성 → 화풍선택 → 생성CTA → 생성대기(SSE) → 결과 → 공유`
+- **최대 이탈점**: 생성 대기(단계 7). 대응 = SSE 1컷 즉시 노출 + 팁 로테이션 + 백그라운드 알림 (§6 ux-spec §5).
+- **디자인 요구**: 로그인은 소셜만(이메일 폼 금지), 아바타 기본값 선택 상태 진입, 작성 화면 예시 플레이스홀더.
+
+### 플로우 B — 무료 한도 소진 → 유료 전환
+`일기작성 → (생성시도) → 한도소진 바텀시트 → 요금제 비교 → 크레딧팩/구독 → 결제 → 생성 재개`
+- **핵심 규칙**: 한도 차단은 **글 작성 전 정보 표시(잔여 칩) + 생성 시도 직전 바텀시트**. 글 쓴 뒤 좌절시키지 않음.
+- **디자인 요구**: 바텀시트는 정보 제공형("내일 다시" = "업그레이드" 동등). 결제 후 작성 화면으로 딥링크 복귀.
+
+### 플로우 C — 재방문 → 공유 (습관화)
+`홈(스트릭 확인) → FAB → 일기작성(화풍·아바타 기억) → 생성 → 결과 → 편집(선택) → 공유 → 홈(스트릭+1)`
+- **리텐션 훅**: 홈 스트릭 D+N 전면, 마지막 화풍/아바타 자동 기억, 요일/계절 반응 플레이스홀더, 7/30/100일 배지.
+
+---
+
+## 5. 컴포넌트 인벤토리 (우선순위 분류)
+
+> 상태별 토큰 스펙 상세는 ui-spec §7 참조. 여기서는 **무엇을 언제 만들지(P0/P1/P2) + UI 인벤토리 누락분 보강**.
+> P0 = MVP 핵심경로 필수 / P1 = 출시 버전 필수 / P2 = Phase 2 이연.
+
+### 5.1 ui-spec 정의 컴포넌트 (27개) 우선순위
+
+| 컴포넌트 | 우선순위 | 사용 화면 | 비고 |
+|---|---|---|---|
+| Button (Primary/Secondary/Ghost/Danger/Icon) | **P0** | 전 화면 | 5종 변형, ui-spec §7.1 |
+| Text Input | **P0** | 온보딩, 마이 | 6상태 |
+| Textarea (일기 입력) | **P0** | S3 | 종이질감, 카운터 — §5.2 충돌해소 적용 |
+| BottomSheet | **P0** | S3, 한도소진, 화풍/아바타 | 핵심 패턴 |
+| Chip / Tag | **P0** | S3 화풍칩, 한도칩 | selected 상태 필수 |
+| Card (4컷 만화) | **P0** | S5 | 2px ink border, shadow-ink |
+| ProgressBar + 생성대기 UI | **P0** | S4 | 이탈방지 핵심, ui-spec §7.10 |
+| Skeleton | **P0** | S4, S5, 공유 | shimmer |
+| Avatar Selector | **P0** | S1b, S3 | 8종 그리드 |
+| 화풍 선택 카드 | **P0** | S3 | 4종 |
+| Toast (5타입) | **P0** | 전역 | 공유/에러 피드백 |
+| 요금제 카드 | **P1** | S9b, 랜딩 | 무료/베이직/프로 |
+| 요금제 배지 | **P1** | S9, S3 | 티어 표시 |
+| Modal / Dialog | **P1** | 삭제확인 등 | 인라인 confirm 우선이라 우선순위 ↓ |
+| Toggle | **P1** | S9 다크모드 | |
+| Select | **P1** | S9 언어 | |
+| Checkbox / Radio | **P1** | 약관동의, 청소년확인 | |
+| Card (기본) | **P1** | S2, S9 | |
+| 말풍선 4종 × 8방위 | **P1** | S6 | react-konva, §6 ux-spec, §10 ui-spec. **에디터 자체가 P1** |
+
+### 5.2 UI 인벤토리 누락 — 팀장 보강 (UX 와이어프레임엔 있으나 ui-spec 27개에 없음)
+
+| 신규 컴포넌트 | 우선순위 | 근거(UX) | 스펙 요지 |
+|---|---|---|---|
+| **TabBar + FAB** | **P0** | ux-spec §2 네비 | 4탭, 중앙 작성+ FAB 돌출, 활성=Fill+Primary, 높이 `--spacing-14`(56px), safe-area 패딩 |
+| **QuotaChip (잔여 한도)** | **P0** | ux-spec 화면2 "28컷 남음" | Chip 변형. 0일 때 `--color-error` 전환 + 텍스트 병행(색만 의존 금지) |
+| **EmptyState** | **P1** | ux-spec §8.1 | SVG 일러스트 120px + H3 + Body + Primary CTA. 아카이브/검색 공용 |
+| **StreakBadge** | **P1** | ux-spec 화면8, 플로우C | 🔥아이콘+숫자+텍스트 3중(색각 대응). 7/30/100일 분기 카피 |
+| **CalendarView + DateCell** | **P1** | ux-spec 화면8 | 7열, 셀 최소 44×44px, 썸네일/오늘(●)/빈칸 3상태 |
+| **SegmentedToggle** | **P1** | 월간/연간(S9b), 캘린더/그리드(S8) | 2~3 세그먼트, selected `--color-primary-subtle` |
+| **WatermarkOverlay** | **P0** | ux-spec §7.4, ui-spec §12 | Satori 내 tier 분기 렌더(무료 큼/유료 소형/프로 제거) |
+| **AIDisclosureBadge** | **P0** | ux-spec §7.4, 법무 | 미리보기 배지 + 공유카드 고지. 삭제 불가 |
+| **VoiceInputButton** | **P2** | ux-spec 화면2 | 음성 입력. MVP는 stub 또는 숨김 가능(§12) |
+
+### 5.3 컴포넌트 수 집계
+
+- **P0 컴포넌트: 19개** (ui-spec 11 핵심 + 누락 보강 P0 6 + Button 5종을 1로 세지 않고 변형 포함 시 +2 → 실 카운트 19)
+  - 명시 리스트: Button(5변형), TextInput, Textarea, BottomSheet, Chip, Card(4컷), ProgressBar+생성대기, Skeleton, AvatarSelector, 화풍카드, Toast, **TabBar+FAB, QuotaChip, WatermarkOverlay, AIDisclosureBadge**.
+- **P1: 16개** / **P2: 1개(VoiceInput)**.
+
+---
+
+## 6. 화풍 4종 + 아바타 8종 + 말풍선 4종 — 백엔드 전달용 캘리브레이션 스펙
+
+> **백엔드팀장 핸드오프 섹션.** 방향서 §6(디자인↔백엔드 주2회 캘리브레이션) + 의존성 매트릭스(디자인→백엔드 W2말) 대응.
+
+### 6.1 화풍 4종 — 골든 프롬프트 (전달 준비 완료)
+
+ui-spec §8에 4종 모두 **골든 프롬프트 JSON**(keywords / negative_keywords / line_weight_range / saturation_range / shadow_layers) + **합격 기준**이 정의됨. 백엔드 캘리브레이션 입력으로 **그대로 사용 가능**.
+
+| 화풍 | style 키 | 선 굵기 | 채도 | 핵심 negative | ui-spec |
 |---|---|---|---|---|---|
-| 1 | 응급 탭 다크모드 | "야간 모드 강제 미사용 검토" | 다크모드 전체 적용 (응급 포함) | **다크모드 유지, 응급 배지만 고대비 강제** | 새벽 응급 시 밝은 화면은 오히려 눈부심 유발. 다크모드에서 트리아지 배지의 대비비를 WCAG AAA(7:1) 수준으로 강화하여 해결 |
-| 2 | 트리아지 등급 표기 | 4등급 (즉시/오늘 내/내일 가능/관찰 필요) | 3등급 (응급/준응급/경과관찰) | **3등급 체계 채택** | 긴박한 상황에서 4단계 구분은 인지 부하. 3등급이 직관적. "오늘 내"와 "내일 가능"은 "준응급"으로 통합하고, 텍스트 설명에서 시간 가이드 부여 |
-| 3 | 화면 좌우 여백 | 와이어프레임에서 암묵적 16px 사용 | 명시적으로 20px (px-5) | **20px 채택** | UI 스펙의 4px 그리드 체계에 정합. 카드 내부 패딩 16px과 구분이 명확해짐 |
-| 4 | FAB 크기 | 56x56px | 별도 명시 없음 | **56x56px 확정** | iOS HIG 최소 44px 충족하면서 시각적 눈에 띔 확보 |
-| 5 | 응급도 배지 색상 | 빨강/주황/노랑/초록 4색 | 빨강/주황/초록 3색 | **빨강(red-600)/주황(amber-500)/초록(green-600) 3색** | 3등급 체계에 맞춤 |
-| 6 | 온보딩 스텝 수 | 4스텝 (면책 별도) | 미언급 | **4스텝 유지 (면책동의 > 로그인 > 펫등록 > 권한요청)** | 면책동의를 앱스토어 심사 대비 독립 스텝으로 유지하는 것이 안전 |
+| 감성 라인 | `emotional_line` | 0.5~1px | 30~40% | bold lines, high contrast | §8.1 |
+| 대담한 펜선 | `bold_pen` | 2~4px | 0~20%(+액센트 60~80%) | thin lines, pastel | §8.2 |
+| 팝 카툰 | `pop_cartoon` | 1.5~2px | 80~100% | watercolor, muted | §8.3 |
+| 수채 터치 | `watercolor_touch` | 0~0.8px | 40~55% | sharp outlines, neon | §8.4 |
 
-### 0-3. UX 미해결 사항 결정
+**팀장 검수 결과 — 백엔드 전달 시 보강 요청 2건:**
+1. **골든 참조 이미지 세트 미첨부**: 방향서는 "골든 프롬프트 **+ 골든 참조 이미지** 세트 유지"를 요구. 현재 프롬프트만 있음. → **디자인 W2에 화풍별 참조 이미지 3컷씩(총 12컷) 생성·고정** 필요. (후속 §12-1)
+2. **IP-프리 명명 확인**: 4종 명칭 모두 일반명사 조합 → 상표 리스크 낮음(방향서 리스크#5 충족). "shoujo/seinen manga style" 키워드는 프롬프트 내부용이며 UI 노출 안 함 — OK.
 
-| # | 항목 | 결정 | 근거 |
+### 6.2 아바타 8종 — Prompt Template (전달 준비 완료)
+
+ui-spec §9.4에 `avatar_template` + `avatar_presets` 8종 **JSON 스켈레톤** 완비. `{HAIR_COLOR}/{TOP_STYLE}/{ACCESSORY}/{USER_AVATAR_SEED}` 변수 바인딩, `style_lock`, `consistency_check`(face_embedding_threshold 0.85 / max_retry 2) 포함 → 방향서 아키텍처 #2·#3과 일치. **백엔드 사용 가능**.
+
+| 변수 | 옵션 | 토큰(영문 enum — API 계약) |
+|---|---|---|
+| hair_color (8) | black/brown/blonde/red/pink/blue/green/white | ui-spec §9.3 |
+| top_style (8) | white-top/stripe/hoodie/uniform/casual/formal/sport/vintage | |
+| accessory (4) | glasses/hat/earphone/none | |
+
+**팀장 검수 — 보강 요청 1건:**
+- 8개 preset 중 `SHORT_HAIR_GIRL`만 `default_hair_color/default_top/default_accessory`가 명시됨. 나머지 7종은 `base_prompt_append`만 있음. → **8종 모두 default 3종 값 채워서 전달**(신규 유저 진입 시 기본값 보장). (후속 §12-2)
+- 공통 규격(2~2.5등신, 두상 30%, 눈 20~25%)은 ui-spec §9.2에 확정 — OK.
+
+### 6.3 말풍선 4종 — 메타데이터 계약
+
+방향서 아키텍처 #1: 백엔드는 **말풍선 메타데이터만 반환**(좌표/타입/꼬리방향), 한글 텍스트는 프론트 오버레이.
+
+| 타입 | enum | 형태 | 테두리 | 기본 꼬리 | 글자 제한(확정) | ui-spec |
+|---|---|---|---|---|---|---|
+| 대사형 | `speech` | 둥근 타원 | 2px ink | SW(↙) | **50자** | §10.1.1 |
+| 생각형 | `thought` | 구름 | 2px ink | S(↓) 점선 | **50자** | §10.1.2 |
+| 외침형 | `shout` | 폭발 jagged | 3px ink | 없음(방향성=형태) | **20자** | §10.1.3 |
+| 속삭임형 | `whisper` | 점선 타원 | 1.5px dashed | SW(↙) 점선 | **40자** | §10.1.4 |
+
+- **꼬리 8방위**: N/NE/E/SE/S/SW/W/NW. SVG path + react-konva rotation (ui-spec §10.2).
+- **화풍별 톤 매칭표** 4×6 확정(ui-spec §10.3), **한글 폰트 매핑**(§10.4), **"합성 티" 방지 5기법**(§10.5: 미세회전 ±2~4° / 종이질감 / 그림자오프셋 / 선거칠기 / 배경알파 99%) — 프론트 react-konva + Satori 양쪽 적용.
+
+**백엔드 ↔ 프론트 말풍선 메타 JSON 계약(제안 — 백엔드 OpenAPI에 반영 요청, W3말):**
+```json
+{ "panel": 1, "balloons": [
+  { "id": "b1", "type": "speech", "tail": "SW",
+    "x": 0.62, "y": 0.18, "w": 0.34, "h": 0.16,  /* 컷 기준 0~1 정규화 */
+    "suggested_text": "" }  /* 백엔드는 빈 값 또는 LLM 제안, 한글 미생성 원칙상 텍스트는 프론트 입력 */
+]}
+```
+
+---
+
+## 7. 4컷/공유 카드 템플릿 3종 (Satori 구현 좌표)
+
+> Satori 서버사이드 렌더. 절대 px 좌표는 ui-spec §11 확정본 사용. 아래는 핵심 좌표 + 팀장 정합성 결정.
+
+### 7.1 템플릿 3종 레이아웃 (확정)
+
+| 비율 | 해상도 | 그리드 | 용도 | 생성 시점 | ui-spec |
+|---|---|---|---|---|---|
+| 1:1 | 1080×1080 | **2×2** | 인스타 피드 | 결과 진입 시 **미리 생성** | §11.1 |
+| 16:9 | 1920×1080 | **1×4 가로** | X/트위터 | 탭 시 On-demand(≤3초) | §11.2 |
+| 9:16 | 1080×1920 | **1×4 세로 + 상단 텍스트** | 릴스/스토리 | 탭 시 On-demand(≤3초) | §11.3 |
+
+**1080² 핵심 좌표(요약)**: 외곽 48px, 컷 486×420, 거터 12px, 컷번호 24px원형 좌상단+8/+8, 하단 텍스트영역 y=972 h=60(날짜 좌·제목 중앙), 워터마크 컷4 우하단, AI고지 x=900 y=1054.
+
+### 7.2 팀장 정합성 결정 (충돌 해소)
+
+- **화면 내 뷰어 vs 공유 카드 레이아웃 분리 확정**: S5 결과 화면 뷰어는 **항상 2×2**(ux-spec 화면5). 1×4 가로/세로는 **공유 카드 출력 전용**(Satori). 동일 4컷, 다른 조판. 프론트는 뷰어와 Satori 템플릿을 별개로 구현.
+- **무료 미리보기 해상도**: 화면 내 미리보기·뷰어는 512px 다운스케일(방향서 무료 정책), 공유 카드 다운로드는 워터마크 박힌 1080² (무료 티어). §8 워터마크 분기와 연동.
+
+---
+
+## 8. 워터마크 + AI 생성 고지 (법무 연계)
+
+> **법무 의무 — 삭제 불가. 우선순위 최상위(§0.2).** 방향서 리스크#5(법무 3중) + 아키텍처#5(워터마크=프론트 처리, tier 분기) 대응. 상세 ui-spec §12.
+
+### 8.1 워터마크 tier 분기 (프론트 Satori 처리)
+
+| 티어 | 워터마크 | 크기/위치 | 비고 |
 |---|---|---|---|
-| 1 | 온보딩 스킵 허용 여부 | **펫 등록 필수 (현행 유지)** | 펫 없이는 앱의 핵심 기능을 사용할 수 없음. 빈 상태 화면 개발 비용 대비 효용이 낮음 |
-| 2 | 응급 탭 탭바 아이콘 | **HeartPulse (하트비트)** | "채팅"보다 "응급"의 의미 전달이 직관적. UI 스펙의 Lucide HeartPulse 아이콘 채택 |
-| 3 | 챗봇 대화 기록 보존 | **세션 단위 초기화 (Phase 0)** | MVP 단계에서 영구 보존은 백엔드 부담. 단, "대화 저장" 선택 시 의료기록에 요약본 연결 저장 가능 |
-| 4 | 멀티펫 최대 등록 수 | **Phase 0은 5마리 제한** | 무제한은 UI 스크롤 복잡도 증가. 5마리면 페르소나 A의 2마리 + 여유 커버 |
-| 5 | OCR 실패 시 기본 동작 | **현행 유지 (직접 입력 전환 제안)** | 재촬영 강제 횟수 제한은 사용자 통제감을 해침 |
+| 무료 | 큼(브랜딩) | 80×26px, Lemon 배경, opacity 0.92, 컷 우하단 + 카드 우하단 | + QR 32px(무료 only) |
+| 베이직 | 소형 반투명 | 56×18px, opacity 0.60, 카드 우하단만 | 컷 내부 X |
+| 프로 | 제거 가능 | 기본 Off | AI 고지만 잔존 |
+
+### 8.2 AI 생성 고지 (전 티어 필수 — 프로도 제거 불가)
+
+- **공유 카드**: "AI 생성 이미지 · Made with Toonlog" 10px, opacity 0.85, 배경 대비 3:1. 위치 — 1080²: 하단중앙 y=1062 / 1920×1080: 우하단 x=1700 y=1062 / 1080×1920: 하단중앙 y=1900.
+- **앱 내 미리보기**: "AI 생성" 배지(12px, `--color-info-subtle` 배경) — AIDisclosureBadge 컴포넌트.
+- **워터마크 ≠ AI 고지**: 워터마크는 브랜딩(tier 분기 가능), AI 고지는 법적 의무(분기 불가). 둘은 별개 요소. ⚠️ **프로 티어에서도 AI 고지는 반드시 렌더** — 프론트 구현 시 워터마크 Off가 AI 고지까지 끄지 않도록 분리.
+- **한국 AI 기본법 대응**: 공유 카드 + 미리보기 양쪽 고지. 법무 1차 자문(방향서 게이트 8.1, 진행중)에서 문구 최종 확정 — 카피는 변경 가능성 있으므로 **상수로 분리**(`AI_DISCLOSURE_TEXT`) 권장.
 
 ---
 
-## 1. 확정된 화면 구조 (Information Architecture)
+## 9. 반응형 + 다크모드 + 접근성 기준
 
-### 1-1. 전체 IA
+### 9.1 반응형 (모바일 우선 430px)
 
-```
-PetCare App
-|
-+-- 온보딩 플로우 (비인증 상태)
-|   +-- Splash (1.5초, 브랜드 로고)
-|   +-- DisclaimerConsent (면책 동의)
-|   +-- AuthScreen (소셜/이메일 로그인)
-|   +-- GuardianName (보호자 이름 입력)
-|   +-- PetRegister (첫 펫 등록)
-|   +-- PermissionRequest (카메라/알림/위치)
-|   +-- Welcome (웰컴 + 기능 소개 카드)
-|
-+-- [Tab 1] 내 아이 (PawPrint)
-|   +-- PetMain (펫 선택 바 + 현재 펫 요약 + 최근 기록)
-|   +-- PetDetail (펫 상세 + 의료기록 타임라인)
-|   +-- RecordDetail (기록 상세 조회/수정/삭제)
-|   +-- RecordAdd_Selector (바텀시트: OCR 촬영 / 직접 입력)
-|   +-- RecordAdd_OCR_Camera (카메라 뷰파인더)
-|   +-- RecordAdd_OCR_Confirm (OCR 결과 확인/수정)
-|   +-- RecordAdd_Manual (수동 입력 폼)
-|   +-- PetEdit (펫 정보 편집)
-|   +-- PetAdd (추가 펫 등록)
-|
-+-- [Tab 2] 응급 (HeartPulse)
-|   +-- ChatHome (면책 배너 + 펫 선택 + 증상 빠른선택 8개)
-|   +-- ChatConversation (대화 + AI 스트리밍 + 트리아지 결과 카드)
-|   +-- HospitalMap (근처 야간 병원 지도)
-|       +-- HospitalDetail (병원 상세: 전화/주소/영업시간)
-|
-+-- [Tab 3] 더보기 (LayoutGrid)
-    +-- MoreMain (프로필 카드 + 메뉴 리스트)
-    +-- ProfileEdit (계정 정보 편집)
-    +-- NotificationSettings (알림 설정)
-    +-- AppInfo (버전/이용약관/개인정보/면책)
-```
-
-### 1-2. 네비게이션 구조
-
-```
-RootNavigator (Stack)
-+-- AuthNavigator (Stack, 온보딩)
-|   +-- Splash
-|   +-- DisclaimerConsent
-|   +-- AuthScreen
-|   +-- GuardianName
-|   +-- PetRegister
-|   +-- PermissionRequest
-|   +-- Welcome
-|
-+-- MainTabNavigator (Bottom Tab, 인증 후)
-    +-- Stack: PetStack (내 아이)
-    |   +-- PetMain (Root)
-    |   +-- PetDetail
-    |   +-- RecordDetail
-    |   +-- RecordAdd_OCR_Camera (fullScreenModal)
-    |   +-- RecordAdd_OCR_Confirm
-    |   +-- RecordAdd_Manual
-    |   +-- PetEdit
-    |   +-- PetAdd
-    +-- Stack: EmergencyStack (응급)
-    |   +-- ChatHome (Root)
-    |   +-- ChatConversation
-    |   +-- HospitalMap
-    |   +-- HospitalDetail
-    +-- Stack: MoreStack (더보기)
-        +-- MoreMain (Root)
-        +-- ProfileEdit
-        +-- NotificationSettings
-        +-- AppInfo
-```
-
-### 1-3. 탭 뱃지 규칙
-
-| 탭 | 뱃지 | Phase |
-|---|---|---|
-| 내 아이 | 접종 예정 D-7 이내 시 숫자 뱃지 | Phase 1 |
-| 응급 | 뱃지 없음 (항상 즉시 접근 가능) | - |
-| 더보기 | 읽지 않은 공지 시 빨간 점 | Phase 1 |
-
----
-
-## 2. 핵심 사용자 플로우 (확정)
-
-### Flow 1 -- 온보딩 (첫 가입 -> 펫 등록)
-
-```
-Splash (1.5초)
-  -> DisclaimerConsent (면책 동의 + 단일 CTA "동의하고 시작")
-    -> AuthScreen (Apple ID / 카카오 / 이메일)
-      -> GuardianName (닉네임 필수)
-        -> PetRegister (이름*+종*+품종+생년월일+성별+사진)
-          -> PermissionRequest (카메라/알림/위치, 각각 허용/나중에)
-            -> Welcome (기능 소개 3카드 스와이프)
-              -> PetMain (내 아이 탭 진입)
-```
-
-**핵심 제약**: 펫 등록 완료 전까지 메인 탭 진입 불가. "등록하기" 버튼은 이름+종 완료 시에만 활성화.
-
-### Flow 2 -- 의료기록 추가 (OCR)
-
-```
-PetMain/PetDetail -> FAB(+) 탭
-  -> RecordAdd_Selector (바텀시트: OCR촬영(권장) / 직접입력)
-    -> [OCR 선택] RecordAdd_OCR_Camera (가이드 프레임 + 촬영)
-      -> 촬영 결과 미리보기 (재촬영/사용)
-        -> RecordAdd_OCR_Confirm (자동추출 필드 + 인라인 수정)
-          -> 저장 -> 토스트 "기록이 저장되었어요" + 타임라인 갱신
-    -> [직접 입력] RecordAdd_Manual (수동 폼 -> 저장)
-```
-
-### Flow 3 -- 의료기록 조회
-
-```
-PetMain -> PetDetail (타임라인 뷰)
-  -> 필터 (진료유형 탭 / 기간 필터)
-  -> RecordDetail (상세 조회/수정/삭제)
-```
-
-**오프라인**: 로컬 SQLite 캐시에서 조회 가능. 오프라인 배너 상단 고정.
-
-### Flow 4 -- 트리아지 챗봇
-
-```
-[응급 탭 진입] -> ChatHome (면책 배너 상시 노출)
-  -> 펫 선택 (멀티펫 시)
-  -> 증상 빠른선택 카드 8개 (2열 그리드) 또는 텍스트 직접 입력
-    -> ChatConversation (SSE 스트리밍 + 타이핑 인디케이터)
-      -> 트리아지 결과 카드 (3등급: 응급/준응급/경과관찰)
-        -> [응급 판정] "지금 응급실로" + [근처 야간 병원 찾기]
-        -> [준응급/경과관찰] 홈케어 가이드 + [병원 찾기] 선택적
-      -> [대화 저장] 의료기록에 요약 연결 (선택)
-```
-
-### Flow 5 -- 펫 전환
-
-```
-[어떤 화면에서든] 상단 펫 선택 바
-  -> 다른 펫 아바타 탭 -> 크로스페이드 200ms -> 데이터 전환
-  -> [+] 버튼 탭 -> PetAdd (펫 등록 폼)
-```
-
-**제약**: 응급 대화 중 펫 전환 시 확인 모달 필수 ("현재 대화를 종료하고 전환하시겠어요?")
-
----
-
-## 3. 확정된 디자인 시스템
-
-### 3-1. 컬러 토큰
-
-#### Primary -- Brand Teal
-
-| 토큰 | HEX | 용도 |
-|---|---|---|
-| primary-50 | #f0fdfa | 선택 상태 배경 |
-| primary-100 | #ccfbf1 | 카드 호버 배경 |
-| primary-200 | #99f6e4 | 체크박스 배경 |
-| primary-300 | #5eead4 | 비활성 아이콘 (다크) |
-| primary-400 | #2dd4bf | 보조 버튼 보더, 다크모드 활성 아이콘 |
-| primary-500 | #14b8a6 | **메인 Primary** (버튼, 탭 활성) |
-| primary-600 | #0d9488 | 버튼 pressed, 링크 텍스트 |
-| primary-700 | #0f766e | 강조 텍스트 |
-| primary-800 | #115e59 | 다크모드 텍스트 |
-| primary-900 | #134e4a | 최고 강조 |
-
-#### Secondary -- Warm Amber
-
-| 토큰 | HEX | 용도 |
-|---|---|---|
-| secondary-500 | #f59e0b | 펫 프로필 강조, 접종 배지 |
-| secondary-400 | #fbbf24 | 다크모드 버튼/배지 |
-
-#### Accent -- Soft Coral
-
-| 토큰 | HEX | 용도 |
-|---|---|---|
-| accent-400 | #fb7185 | 다크모드 응급 포인트 |
-| accent-500 | #f43f5e | 응급 탭 CTA, "지금 응급" 배너 |
-| accent-600 | #e11d48 | 응급 pressed |
-
-#### Semantic
-
-| 의미 | Light | Dark | 배경 Light | 배경 Dark |
-|---|---|---|---|---|
-| Success | #16a34a (green-600) | #4ade80 (green-400) | #f0fdf4 | #14532d/30% |
-| Warning | #d97706 (amber-600) | #fbbf24 (amber-400) | #fffbeb | #451a03/30% |
-| Error | #dc2626 (red-600) | #f87171 (red-400) | #fef2f2 | #450a0a/30% |
-| Info | #2563eb (blue-600) | #60a5fa (blue-400) | #eff6ff | #1e3a5f/30% |
-
-#### Neutral (Gray)
-
-| 토큰 | Light HEX | 용도 | Dark 매핑 |
+| 화면폭 | 컬럼 | 거터 | 사이드 패딩 |
 |---|---|---|---|
-| neutral-0 | #ffffff | 카드 배경 | slate-800 (#1e293b) |
-| neutral-50 | #f9fafb | 스크린 배경 | slate-950 (#0f172a) |
-| neutral-100 | #f3f4f6 | 입력 필드 배경 | slate-800 |
-| neutral-200 | #e5e7eb | 비활성 보더 | slate-700 (#334155) |
-| neutral-300 | #d1d5db | placeholder | slate-600 |
-| neutral-400 | #9ca3af | 보조 아이콘 | slate-500 |
-| neutral-500 | #6b7280 | Caption 텍스트 | slate-400 (#94a3b8) |
-| neutral-600 | #4b5563 | Body 보조 텍스트 | slate-400 |
-| neutral-700 | #374151 | Body 메인 텍스트 | slate-300 |
-| neutral-800 | #1f2937 | Heading 텍스트 | slate-200 (#e2e8f0) |
-| neutral-900 | #111827 | 최고 강조 | slate-50 (#f8fafc) |
+| 모바일 <430px | 4 | 16px | 20px |
+| 태블릿 768px+ | 8 | 20px | 32px |
+| 데스크톱 1024px+ | 12 | 24px | 48px |
 
-### 3-2. 타이포그래피
+- 컨텐츠 최대폭: 모바일 레이아웃 그대로 **중앙 정렬 max-width 480px**(데스크톱에서 모바일 캔버스 유지) 권장. 랜딩(S1)만 풀와이드 마케팅 레이아웃 허용.
+- safe-area: TabBar/FAB는 `env(safe-area-inset-bottom)` 패딩 필수.
 
-**폰트**: Pretendard (Static OTF, 4웨이트: Regular/Medium/SemiBold/Bold)
-**Fallback**: iOS -apple-system (San Francisco), Android Roboto
+### 9.2 다크모드 (확정 — 상세 ui-spec §14)
 
-| 레벨 | size | lineHeight | weight | Nativewind |
-|---|---|---|---|---|
-| Display | 32px | 40px | Bold | `text-32 font-pretendard-bold` |
-| H1 | 28px | 36px | Bold | `text-28 font-pretendard-bold` |
-| H2 | 22px | 30px | SemiBold | `text-22 font-pretendard-semibold` |
-| H3 | 18px | 26px | SemiBold | `text-[18px] leading-[26px] font-pretendard-semibold` |
-| H4 | 16px | 24px | Medium | `text-base leading-6 font-pretendard-medium` |
-| Body L | 16px | 24px | Regular | `text-base leading-6 font-pretendard-regular` |
-| Body M | 14px | 22px | Regular | `text-sm leading-[22px] font-pretendard-regular` |
-| Body S | 13px | 20px | Regular | `text-13 font-pretendard-regular` |
-| Label | 15px | 20px | SemiBold | `text-15 font-pretendard-semibold` |
-| Caption | 12px | 16px | Regular | `text-xs leading-4 font-pretendard-regular` |
-| Caption Bold | 12px | 16px | Medium | `text-xs leading-4 font-pretendard-medium` |
-| Overline | 11px | 16px | SemiBold | `text-11 font-pretendard-semibold tracking-wider` |
+- CSS-first: 시스템 자동(`prefers-color-scheme`) + 수동(`[data-theme]`), `localStorage['toonlog-theme']`, head 인라인 스크립트로 FOUC 방지.
+- **야간 쓰기 최적화**: Textarea 다크 배경 #231F1C, 텍스트 #E8DDD0(따뜻한 크림), 종이 줄 opacity 0.06, 커서 코랄 유지.
+- **금지**: 말풍선 텍스트 색 다크 변환 금지(이미지 위), **Satori 공유 카드는 항상 라이트/Paper 기준 고정 생성**(수신자 환경 불명), 워터마크 opacity 최소 0.60.
 
-### 3-3. 스페이싱
-
-**기본 단위**: 4px (1 unit). 모든 스페이싱은 4의 배수.
-
-| 토큰 | px | Tailwind | 주요 용도 |
-|---|---|---|---|
-| space-1 | 4px | `p-1` | 아이콘 내부 |
-| space-2 | 8px | `p-2` | 배지/태그 내부 |
-| space-3 | 12px | `p-3` | 버튼 세로, 카드 간 간격 |
-| space-4 | 16px | `p-4` | 카드 내부, 섹션 간격 기본 |
-| space-5 | 20px | `p-5` | **화면 좌우 여백 (Screen Padding)** |
-| space-6 | 24px | `p-6` | 섹션 헤더 패딩 |
-| space-8 | 32px | `p-8` | 섹션 간 여백 |
-
-**화면 레이아웃**: 좌우 여백 20px, 4컬럼 그리드, Gutter 12px
-
-### 3-4. Border Radius
-
-| 토큰 | px | 용도 |
-|---|---|---|
-| DEFAULT | 6px | 태그, 배지, 소형 버튼 |
-| md | 10px | 입력 필드, 소형 카드 |
-| lg | 12px | 기본 카드, 버튼 |
-| xl | 16px | 대형 카드, 바텀시트 상단 |
-| 2xl | 20px | 펫 프로필 카드, 온보딩 |
-| full | 9999px | 아바타, 토글, 알약형 배지 |
-
-### 3-5. 그림자 (Shadow)
-
-| 토큰 | 값 | 용도 |
-|---|---|---|
-| shadow-xs | 0 1px 2px rgba(0,0,0,0.06) | 카드 미세 구분 |
-| shadow-sm | 0 2px 4px rgba(0,0,0,0.08) | 기본 카드 |
-| shadow-md | 0 4px 8px rgba(0,0,0,0.10) | 버튼, 탭바 |
-| shadow-lg | 0 8px 16px rgba(0,0,0,0.12) | 모달, 바텀시트 |
-| shadow-xl | 0 16px 32px rgba(0,0,0,0.14) | 응급 CTA 버튼 |
-
-**다크모드**: 그림자 대신 `border border-slate-700`으로 레이어 구분.
-
----
-
-## 4. 컴포넌트 목록 (확정)
-
-### 4-1. 버튼 (5종)
-
-| Variant | 용도 | Light 스타일 | 크기 |
-|---|---|---|---|
-| Primary | 주요 CTA (기록 저장, 펫 등록) | bg-primary-500 text-white rounded-xl | L(48px) 기본 |
-| Secondary | 보조 CTA (취소, 공유) | bg-white border-primary-400 text-primary-600 | L(48px) |
-| Ghost | 텍스트형 (스킵, 링크) | bg-transparent text-neutral-600 | L(48px) |
-| Danger | 삭제, 탈퇴 | bg-red-600 text-white | L(48px) |
-| Emergency | 응급 탭 전용 CTA | bg-accent-500 text-white shadow-xl | XL(56px) |
-
-**버튼 사이즈**:
-- XL: 56px 높이, 24px 가로 패딩, 17px Bold
-- L (기본): 48px 높이, 20px 패딩, 15px SemiBold
-- M: 40px 높이, 16px 패딩, 14px SemiBold
-- S: 32px 높이, 12px 패딩, 13px Medium
-- Icon-only: 44x44px (최소 터치 영역 보장)
-
-### 4-2. 인풋 (4종)
-
-| 종류 | 특징 |
-|---|---|
-| TextInput | Label + Field(48px) + Helper. bg-neutral-100, focus: border-primary-500 |
-| TextArea | 100-200px 높이, multiline |
-| SearchInput | 좌측 아이콘 + X 지우기, rounded-full, 44px |
-| Select (Picker) | TextInput 외형 + ChevronDown, iOS ActionSheet |
-
-### 4-3. 카드 (5종)
-
-| 종류 | 핵심 스펙 |
-|---|---|
-| PetCard | 펫 사진(72px 원형) + 이름 + 종/나이. rounded-2xl shadow-md |
-| MedicalRecordCard | 타임라인 아이템. rounded-xl border-l-4 (카테고리별 색상) shadow-xs |
-| UserBubble | 우측 정렬. bg-primary-500 text-white rounded-2xl rounded-tr-sm max-w-75% |
-| BotBubble | 좌측 정렬. bg-neutral-100 rounded-2xl rounded-tl-sm max-w-80% |
-| SymptomQuickCard | 응급 탭 8개 그리드. 80px 높이. 아이콘(32px) + 텍스트 |
-
-### 4-4. 배지 (3종 + 보조)
-
-#### 트리아지 배지 (3등급)
-
-| 등급 | 색상 | 아이콘 | 텍스트 | 추가 효과 |
-|---|---|---|---|---|
-| 응급 | bg-red-600 border-2 border-red-700 | AlertCircle (white) | "응급" Bold | pulse 애니메이션 |
-| 준응급 | bg-amber-500 border-2 border-amber-600 | Clock (white) | "준응급" Bold | 없음 |
-| 경과관찰 | bg-green-600 | Eye (white) | "경과관찰" SemiBold | 없음 |
-
-**색각 이상 대응**: 색상 + 아이콘 + 텍스트 3중 신호 필수.
-
-#### D-day 배지 (접종 일정)
-
-| 조건 | 스타일 |
-|---|---|
-| D-7 이내 | bg-red-100 text-red-700 |
-| D-30 이내 | bg-amber-100 text-amber-700 |
-| D-30 초과 | bg-neutral-100 text-neutral-600 |
-
-#### 의료기록 카테고리 배지
-
-| 카테고리 | 컬러 | border-l 컬러 |
-|---|---|---|
-| 진료 | bg-primary-100 text-primary-700 | border-l-primary-500 |
-| 접종 | bg-secondary-100 text-secondary-700 | border-l-secondary-500 |
-| 검진 | bg-blue-100 text-blue-700 | border-l-blue-500 |
-| 처방 | bg-purple-100 text-purple-700 | border-l-purple-500 |
-| 기타 | bg-neutral-100 text-neutral-600 | border-l-neutral-400 |
-
-### 4-5. 네비게이션 컴포넌트
-
-| 종류 | 핵심 스펙 |
-|---|---|
-| BottomTabBar | 83px(SafeArea 포함). 3탭 균등. 활성: primary-500(filled). 응급 탭 활성: accent-500 |
-| Header | 56px. 좌: 뒤로/로고. 중앙: 제목(H4). 우: 액션 아이콘 최대 2개 |
-| BottomSheet | 오버레이 bg-black/50. rounded-t-3xl. 핸들 바. 스냅: 25%/50%/90% |
-
-### 4-6. 피드백 컴포넌트
-
-| 종류 | 핵심 스펙 |
-|---|---|
-| Toast | 하단(탭바 위 8px). 자동 닫힘 3초(성공)/5초(에러). 4 Variant |
-| Modal | 오버레이 bg-black/50. rounded-2xl mx-5. Primary + Ghost 버튼 배치 |
-| InlineBanner | 면책 고지 전용. bg-amber-50 border-amber-200. 항상 노출, 접기 불가 |
-
-### 4-7. 특수 컴포넌트
-
-| 종류 | 핵심 스펙 |
-|---|---|
-| OCROverlay | 반투명 검정 배경 + 중앙 투명 영역(dashed 흰색 보더). 촬영 버튼 72px 원형 |
-| Timeline | 수직선(w-px neutral-200) + 노드점(w-3 카테고리별 색상) + 의료기록 카드 |
-| ProgressIndicator | 3-4단계 dot. 비활성 w-2 neutral-200. 활성 w-6 primary-500 pill |
-| SkeletonLoader | shimmer 좌->우 1.2초 반복. neutral-200 -> neutral-100 |
-| DisclaimerBubble | 챗봇 고정. bg-amber-50 border-amber-200 rounded-xl. InfoCircle 아이콘 |
-
----
-
-## 5. 아이콘 시스템
-
-**Primary Set**: Lucide Icons (MIT, react-native-lucide-icons)
-
-| 규칙 | 값 |
-|---|---|
-| 기본 strokeWidth | 1.5px |
-| 강조 strokeWidth | 2px |
-| 탭바 활성 | 2.5px stroke 또는 filled |
-| 최소 터치 영역 | 44x44px (아이콘 크기 무관) |
-| 사용 크기 | 16/20/24/32/40/64px |
-
-**탭바 아이콘**: PawPrint(내 아이), HeartPulse(응급), LayoutGrid(더보기)
-
-**커스텀 SVG 필요 목록** (Lucide 미보유):
-- PawPrint Filled (탭바 활성)
-- Syringe (주사/접종)
-- Dog/Cat 실루엣 (온보딩)
-- Pill (처방)
-
----
-
-## 6. 인터랙션 & 모션
-
-### 6-1. 트랜지션
-
-| 인터랙션 | 방식 | 시간 |
-|---|---|---|
-| 탭 전환 | **즉시 전환 (0ms)** | 응급 탭 접근성 최우선 |
-| 스택 푸시 | 슬라이드 왼쪽 (iOS 기본) | 300ms |
-| 펫 전환 | 크로스페이드 | 200ms |
-| OCR 결과 로드 | 스켈레톤 -> 콘텐츠 (필드별 순차) | 필드별 |
-| 트리아지 결과 등장 | 슬라이드업 ease-out | 350ms |
-| 타임라인 새 항목 | 페이드인 + 슬라이드다운 | 400ms |
-| Emergency pulse | opacity 1.0->0.7 반복 | 1.5초 주기 |
-
-### 6-2. 햅틱 피드백
-
-| 트리거 | 유형 |
-|---|---|
-| OCR 촬영 | Impact (Medium) |
-| 저장 완료 | Notification (Success) |
-| 에러/경고 | Notification (Error) |
-| 응급도 "응급" 결과 | **Impact (Heavy)** |
-| 펫 전환 | Impact (Light) |
-
-### 6-3. 제스처
-
-| 화면 | 제스처 | 동작 |
-|---|---|---|
-| 타임라인 카드 | 스와이프 왼쪽 | 삭제 버튼 노출 |
-| 챗봇 대화 | 스와이프 아래 | 키보드 dismiss |
-| 이미지 썸네일 | 탭 | 전체화면 뷰어 모달 |
-| 전체화면 이미지 | 핀치 줌 / 스와이프 아래 | 확대축소 / 닫기 |
-| 펫 선택 바 | 수평 스크롤 | 펫 목록 탐색 |
-
-### 6-4. Reduce Motion 대응
-
-`prefers-reduced-motion` 또는 iOS "동작 줄이기" 활성화 시:
-- 모든 트랜지션 -> 즉시 전환 (duration: 0)
-- pulse 애니메이션 -> 정적 표시 (대신 border 2px로 강조)
-- 스켈레톤 shimmer -> 정적 회색 배경
-
----
-
-## 7. 접근성 기준 (확정)
+### 9.3 접근성 (WCAG 2.1 AA — 상세 ux-spec §10)
 
 | 항목 | 기준 |
 |---|---|
-| 텍스트 대비비 | Body 이상 WCAG AA (4.5:1), Large Text 3:1 |
-| 트리아지 배지 대비비 | 다크모드 포함 WCAG AAA (7:1) 목표 |
-| 터치 타겟 | 최소 44x44pt |
-| VoiceOver | 모든 인터랙티브 요소 accessibilityLabel 필수 |
-| 응급도 배지 | 색상 + 아이콘 + 텍스트 3중 신호 (색상 단독 금지) |
-| Dynamic Type | allowFontScaling 제한적 허용 (최소 14px 보장) |
-| Reduce Motion | 전체 애니메이션 즉시 전환 대체 |
+| 텍스트 대비 | 일반 4.5:1 / 대형 3:1, 다크 별도 검증 |
+| 본문 최소 폰트 | 16px(모바일 줌 방지), 캡션 12px |
+| 터치 타깃 | **최소 44×44px**, react-konva 핸들 **48×48px**(§10 충돌해소 #2) |
+| 스크린리더 | textarea aria-label, 글자수 aria-live=polite, ProgressBar role=progressbar, 컷 이미지 LLM 생성 alt, 탭바 nav/aria-selected |
+| 모션 | `prefers-reduced-motion`: shimmer/fade/scale 비활성, SSE 컷 즉시 표시 |
+| 색 외 정보 | 글자수 초과·한도·스트릭 = 색 + 아이콘 + 텍스트 3중 |
 
 ---
 
-## 8. 프론트엔드 전달 사항
+## 10. UX ↔ UI 충돌 해소 결정 사항
 
-### 8-1. tailwind.config.js 전체 스펙 (확정, 그대로 사용)
+> 팀장 최종 결정. 프론트는 **이 표가 두 원본 스펙보다 우선**한다.
 
-UI 디자이너가 작성한 `tailwind.config.js` 전체 스펙(섹션 10)을 **그대로 채택**한다. 변경 사항 없음. 해당 파일을 프로젝트 루트에 배치할 것.
+| # | 충돌 | UX 스펙 | UI 스펙 | **팀장 결정** | 사유 |
+|---|---|---|---|---|---|
+| 1 | 일기 글자수 상한 | 50~300자, "300자 초과" 경고 | Textarea "900자 초과 시 warning" | **50~300자 확정.** 카운터 `n/300`, 300 초과 시 `--color-warning`+경고 | 사용자 플로우(ux)가 입력 UX의 진실. UI의 900자는 일반 textarea 잔재 |
+| 2 | 말풍선 에디터 핸들 크기 | 44×44px | 48×48px | **48×48px 확정** | react-konva 캔버스 터치는 큰 타깃이 안전. 일반 UI 버튼은 44px 유지 |
+| 3 | 무료 티어 해상도 | 랜딩 "512px+워터마크" | 카드 1080² 기준 | **미리보기/뷰어 512px, 공유 다운로드 1080²(워터마크)** | 방향서 무료=512 미리보기. 다운로드물은 1080²에 큰 워터마크로 바이럴 |
+| 4 | 결과 4컷 배치 | 2×2 | 정방2×2 / 가로1×4 / 세로1×4 | **뷰어=2×2 / 공유카드=비율별** (§7.2) | 화면 뷰어와 Satori 출력은 별개 |
+| 5 | 외침 말풍선 | 20자 제한 | 폰트 105% | **양립: 20자 + 105% 둘 다 적용** | 공간 제약 + 임팩트 동시 |
+| 6 | 재생성 한도 | "다시 만들기 1회 차감" / 실패는 "차감 없음" | — | **자발적 재생성=차감, 시스템 실패=무차감** | 정상 의도. 카피로 명확히(ux §8.3) |
+| 7 | 네비 컴포넌트 | TabBar+FAB 와이어 존재 | 인벤토리 누락 | **P0 신규 추가**(§5.2) | UI 인벤토리 보강 |
+| 8 | 다크 셀렉터 | — | `:root`(수동 라이트가 시스템 다크 못 이김) | `:root:not([data-theme="light"])` + 수동블록 전체 명시(§2.1) | 토큰 버그 방지 |
 
-### 8-2. 구현 시 핵심 주의사항
-
-**[P0] 반드시 지켜야 할 사항**
-
-1. **응급 탭 즉시 진입**: 탭 아이콘 탭 시 ChatHome이 즉시 표시되어야 한다. 중간 랜딩 페이지, 로딩 화면, 애니메이션 전이 없음. lazy loading도 금지 -- 앱 초기화 시 응급 탭 컴포넌트를 미리 마운트할 것.
-2. **면책 배너 항상 노출**: ChatHome과 ChatConversation 모두에서 면책 배너가 스크롤 시에도 상단 고정(sticky). 앱스토어 리뷰어가 어떤 시점에서든 면책 고지를 볼 수 있어야 함.
-3. **트리아지 배지 3중 신호**: 색상만으로 응급도를 구분하지 말 것. 반드시 아이콘 + 텍스트 병기.
-4. **오프라인 의료기록 조회**: 의료기록 데이터는 로컬 SQLite에 캐시. 네트워크 없어도 내 아이 탭은 정상 작동해야 함.
-5. **Pretendard 폰트 4웨이트 번들링**: Static OTF 파일 4개(Regular/Medium/SemiBold/Bold)를 assets에 포함. Variable Font 사용 금지 (React Native 미지원).
-
-**[P1] 강력 권고**
-
-6. **펫 전환 시 크로스페이드**: 데이터 교체 시 200ms 크로스페이드로 시각적 끊김 완화. `Animated.View` opacity 전환.
-7. **OCR 카메라 가이드 프레임**: 중앙 투명 영역 외 반투명 딤 오버레이. 촬영 버튼 탭 시 햅틱 피드백 필수.
-8. **챗봇 SSE 스트리밍**: 타이핑 인디케이터(점 3개 pulse) -> 텍스트 스트리밍 -> 완료 시 트리아지 결과 카드 슬라이드업.
-9. **다크모드 Shadow 대체**: 다크 배경에서 boxShadow는 비가시. `border border-slate-700`으로 레이어 구분.
-10. **Emergency pulse 애니메이션**: `Animated.loop`으로 opacity 1.0->0.7 반복, 1.5초 주기. Reduce Motion 시 정적.
-
-**[P2] 권고**
-
-11. **스켈레톤 로딩**: 데이터 fetch 중 스켈레톤 UI 표시. animate-pulse 사용.
-12. **바텀시트 스냅**: 25%/50%/90% 3단계 스냅 포인트.
-13. **타임라인 스와이프 삭제**: 좌 스와이프 시 삭제 버튼 노출. 확인 모달 후 삭제.
-
-### 8-3. 컴포넌트 개발 순서 권고
-
-프론트엔드팀이 컴포넌트를 개발할 때 다음 순서를 권고한다. 의존성이 높은 기초 컴포넌트를 먼저 만들어야 페이지 조립이 원활하다.
-
-```
-Layer 0 (디자인 토큰):
-  tailwind.config.js + global.css + Pretendard 폰트 설정
-
-Layer 1 (Atom):
-  Button (5종) -> TextInput -> SearchInput -> Select
-  -> Badge (트리아지 3종 + D-day + 카테고리)
-  -> Icon wrapper (Lucide + 커스텀 SVG)
-
-Layer 2 (Molecule):
-  PetCard -> MedicalRecordCard -> SymptomQuickCard
-  -> ChatBubble (User + Bot + Typing)
-  -> DisclaimerBanner -> Toast -> Modal -> BottomSheet
-  -> Header -> BottomTabBar
-
-Layer 3 (Organism):
-  PetSelectorBar -> Timeline -> OCROverlay -> TriageResultCard
-  -> OnboardingProgressIndicator -> EmptyState -> ErrorState
-
-Layer 4 (Page):
-  PetMain -> PetDetail -> RecordAdd (OCR + Manual)
-  -> ChatHome -> ChatConversation
-  -> MoreMain -> 나머지 설정 화면
-  -> 온보딩 플로우 7화면
-```
+**충돌 해소 총 8건.**
 
 ---
 
-## 9. 디자인 우선순위 (Phase 0 로드맵)
+## 11. 프론트 핸드오프 체크리스트 + 컴포넌트→화면 매핑
 
-### Phase 0-A (MVP 핵심 -- 반드시 완성)
+### 11.1 프론트 착수 체크리스트 (W1 토큰 → W2 디자인시스템 → ...)
 
-이 화면들이 없으면 앱의 핵심 가치를 전달할 수 없다.
+- [ ] §2 `@theme` 블록을 `globals.css`에 적용 + head FOUC 방지 스크립트(ui-spec §14.1)
+- [ ] 폰트 셋업: Pretendard(본문), Gmarket Sans(디스플레이), Cafe24Danjunghae/NanumPen(말풍선) `next/font/local`, 말풍선 폰트 KS완성형 2,350자 subset
+- [ ] **로고 SVG 패스 제작**(Bagel Fat One 한글 미지원 → §1.2)
+- [ ] semantic 토큰만 사용(raw gray/hex 금지 — §2.1)
+- [ ] P0 컴포넌트 19종 먼저 구현 (§5.3)
+- [ ] TabBar+FAB safe-area 패딩
+- [ ] SSE 생성대기 UI(ProgressBar + 컷 스켈레톤 + 팁 로테이션 + 백그라운드 알림) — 이탈방지 핵심(ux §5)
+- [ ] react-konva 말풍선 에디터: 48px 핸들, 제스처 7종(ux §6.1), undo 20단계
+- [ ] Satori 카드 3종(§7) + 워터마크 tier 분기 + AI 고지(프로도 고지 유지 — §8.2)
+- [ ] 접근성: aria-live 글자수, reduced-motion, 색 외 정보 3중(§9.3)
+- [ ] 다크모드: 야간 Textarea 최적화, Satori는 라이트 고정(§9.2)
+- [ ] 마이크로카피: ux-spec §9 카피 가이드를 i18n 상수로 분리
 
-| 우선순위 | 화면 | 이유 |
+### 11.2 컴포넌트 → 화면 매핑
+
+| 화면 | 사용 컴포넌트(P0 굵게) |
+|---|---|
+| S1 랜딩 | **Button(P/S)**, 화풍카드, 요금제카드, Chip, SegmentedToggle |
+| S1b 온보딩 | **Button**, **AvatarSelector**, **TextInput**, Checkbox(청소년/약관) |
+| S2 홈 | **TabBar+FAB**, StreakBadge, Card(기본), **Button**, **QuotaChip** |
+| S3 일기작성 | **Textarea**, **QuotaChip**, **Chip**(화풍), 화풍카드, **AvatarSelector**, **BottomSheet**, **Button**, VoiceInputButton(P2) |
+| S4 생성대기 | **ProgressBar+생성대기UI**, **Skeleton**(4컷), Toast, **Button** |
+| S5 결과 | **Card(4컷)**, **Button**(편집/공유/저장/재생성), **WatermarkOverlay**, **AIDisclosureBadge**, Modal(삭제) |
+| S6 편집 | 말풍선4종×8방위, **Button**, undo 컨트롤, Toast |
+| S7 공유 | **SegmentedToggle**(비율), **Skeleton**, **AIDisclosureBadge**, **WatermarkOverlay**, **Button**, Toast |
+| S8 아카이브 | **TabBar**, CalendarView+DateCell, SegmentedToggle, StreakBadge, EmptyState, Card(그리드썸네일) |
+| S9 마이 | **TabBar**, Card, 요금제배지, Toggle(다크), Select, **Button** |
+| S9b 업그레이드 | 요금제카드, SegmentedToggle(월/연), 요금제배지, **Button** |
+
+### 11.3 백엔드 핸드오프 (요약 — 상세 §6, §8)
+
+- 화풍 4종 골든 프롬프트 JSON(ui-spec §8) — **전달 가능**, 단 골든 참조 이미지 12컷 W2 첨부 예정(§12-1)
+- 아바타 8종 prompt template(ui-spec §9.4) — **전달 가능**, 단 8종 default값 보강 후(§12-2)
+- 말풍선 메타 JSON 계약(§6.3) — 백엔드 OpenAPI W3말 반영 요청
+- 워터마크/AI고지는 **프론트 처리**, 백엔드는 tier 정보만 제공(아키텍처#5) — 계약 확인 완료
+
+---
+
+## 12. 디자인 미해결 / 후속 과제 (Phase 2 이연 항목)
+
+### 12.1 디자인 W2 내 완료 필요 (MVP 차단 요소 — 이연 아님, 잔여 작업)
+
+| # | 과제 | 담당 | 기한 |
+|---|---|---|---|
+| 1 | **화풍별 골든 참조 이미지 12컷**(4종×3) 생성·고정 — 방향서 "프롬프트+참조세트" 요구 | 디자인+백엔드 | W2말(백엔드 전달 시점) |
+| 2 | **아바타 8종 default 3종값**(hair/top/accessory) 채우기 | UI디자이너 | W2 |
+| 3 | **로고 SVG 패스**(한글 "툰일기", Bagel Fat One 미지원 대체) | UI디자이너 | W2 |
+| 4 | 아바타 8종 + 말풍선 4종 실 에셋 export(프론트 W2~3 수령) | 디자인 | W2말~W3말 |
+| 5 | 텅 빈 캘린더 등 EmptyState SVG 일러스트 | UI디자이너 | W3 |
+
+### 12.2 Phase 2 이연 (출시 후)
+
+| # | 항목 | 사유 |
 |---|---|---|
-| 1 | PetMain (내 아이 탭 메인) | 앱 진입 후 첫 화면. 전체 경험의 기준점 |
-| 2 | ChatHome (응급 탭 홈) | 앱의 핵심 차별화 기능 진입점 |
-| 3 | ChatConversation + TriageResultCard | 트리아지 결과 없이는 응급 기능 무의미 |
-| 4 | PetRegister (온보딩 펫 등록) | 펫 없이는 앱 사용 불가 |
-| 5 | DisclaimerConsent (면책 동의) | 앱스토어 심사 필수. 없으면 리젝 |
-| 6 | RecordAdd_Manual (수동 기록 입력) | 의료기록 추가의 기본 경로 |
-| 7 | PetDetail + Timeline | 기록 조회의 기본 화면 |
-
-### Phase 0-B (MVP 보강 -- 높은 우선순위)
-
-핵심 경험을 완성하기 위해 필요하지만, 0-A 이후 작업 가능.
-
-| 우선순위 | 화면 | 이유 |
-|---|---|---|
-| 8 | RecordAdd_OCR (카메라 + 결과 확인) | OCR은 킬러 피처지만 수동 입력으로 대체 가능 |
-| 9 | AuthScreen (소셜 로그인) | 인증 없이 테스트 가능하지만 배포 전 필수 |
-| 10 | Welcome + 온보딩 나머지 | 첫인상에 중요하지만 기능적 우선순위는 낮음 |
-| 11 | MoreMain + ProfileEdit | 설정 기능 |
-
-### Phase 0-C (MVP 부가 -- 시간 허용 시)
-
-없어도 MVP 출시 가능. Phase 1으로 이월 가능.
-
-| 우선순위 | 화면 | 이유 |
-|---|---|---|
-| 12 | HospitalMap + HospitalDetail | 응급 시 가치 있지만 외부 지도 앱 딥링크로 대체 가능 |
-| 13 | NotificationSettings | Phase 0에서 알림 자체가 미구현일 수 있음 |
-| 14 | RecordDetail (수정/삭제) | 조회만으로 MVP 가능, 수정은 후순위 |
-| 15 | 빈 상태 / 에러 화면 일러스트 | 텍스트 기반 빈 상태로 대체 가능 |
+| 1 | 음성 입력(VoiceInputButton) 정식 구현 | MVP는 텍스트 우선. 와이어만 유지, stub/숨김 |
+| 2 | Gray 스케일 20토큰 @theme 편입 | semantic으로 충분. 데이터viz 등 필요 시 |
+| 3 | 5번째+ 화풍, 아바타 고급 커스텀(프로 차등) | 방향서 MVP 제외 확정 |
+| 4 | 원클릭 SNS 공유(딥링크 자동화) | 법무 후 v1.1(방향서 MVP 제외) |
+| 5 | 태블릿/데스크톱 전용 레이아웃 고도화 | 모바일 우선, 데스크톱은 중앙정렬 캔버스로 MVP 충족 |
+| 6 | 100일+ 마일스톤 배지·앨범(PDF) 디자인 | 프로 기능, 락인 강화는 Phase 2 |
+| 7 | AI 고지 문구 법무 최종본 반영 | 법무 1차 자문 후 `AI_DISCLOSURE_TEXT` 상수 갱신 |
 
 ---
 
-## 10. 다크모드 운영 가이드 (확정)
-
-### 기본 원칙
-
-- Nativewind v4 기본값(media query) 사용. `darkMode` 설정 불필요.
-- 모든 컴포넌트에 `dark:` 접두사 병기 필수.
-- 이미지는 다크모드에서 `opacity-90` 적용.
-- Primary-500은 라이트/다크 동일 사용 (충분한 대비비).
-
-### 패턴 요약
-
-```
-배경:        bg-white dark:bg-slate-900
-카드:        bg-white dark:bg-slate-800
-텍스트:      text-neutral-800 dark:text-slate-200
-보조 텍스트: text-neutral-500 dark:text-slate-400
-보더:        border-neutral-200 dark:border-slate-700
-구분선:      bg-neutral-100 dark:bg-slate-800
-```
-
-### CSS 변수 (global.css)
-
-```css
-:root {
-  --color-primary:    #14b8a6;
-  --color-secondary:  #f59e0b;
-  --color-accent:     #f43f5e;
-  --color-bg:         #f9fafb;
-  --color-surface:    #ffffff;
-  --color-text-main:  #1f2937;
-  --color-text-sub:   #6b7280;
-  --color-border:     #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary:    #2dd4bf;
-    --color-secondary:  #fbbf24;
-    --color-accent:     #fb7185;
-    --color-bg:         #0f172a;
-    --color-surface:    #1e293b;
-    --color-text-main:  #e2e8f0;
-    --color-text-sub:   #94a3b8;
-    --color-border:     #334155;
-  }
-}
-```
-
----
-
-## 11. 핵심 화면별 레이아웃 확정
-
-### 11-1. PetMain (내 아이 탭 메인)
-
-```
-+----------------------------------+
-| [앱로고]                  [알림] |  <- Header 56px
-+----------------------------------+
-| [초코] [뭉치] [+]               |  <- PetSelectorBar (수평 스크롤)
-+----------------------------------+
-| +------------------------------+ |
-| | [사진72px] 초코               | |  <- PetCard (rounded-2xl shadow-md)
-| |            말티즈 . 4세 . 수컷| |
-| |            마지막 진료: 3일 전 | |
-| +------------------------------+ |
-|                                  |
-| 의료기록           [전체 보기 >] |  <- 섹션 헤더
-| +------------------------------+ |
-| | 2026.04.10 | 정기검진        | |  <- MedicalRecordCard (최근 3건)
-| | 행복동물병원                  | |
-| +------------------------------+ |
-| | 2026.03.22 | 예방접종        | |
-| | 심장사상충 예방약             | |
-| +------------------------------+ |
-|                            [FAB] |  <- 우하단 고정 56x56px
-+----------------------------------+
-| [내 아이]  [응급]   [더보기]     |  <- BottomTabBar 83px
-+----------------------------------+
-```
-
-### 11-2. ChatHome (응급 탭 홈)
-
-```
-+----------------------------------+
-| 응급 상담                        |  <- Header (text-accent-500)
-+----------------------------------+
-| [!] 이 정보는 수의사 진료를      |  <- DisclaimerBanner (sticky)
-|    대체하지 않습니다             |
-+----------------------------------+
-| 어떤 아이 증상인가요?            |  <- 펫 선택 (멀티펫만)
-| [초코] [뭉치]                    |
-+----------------------------------+
-| 어떤 증상인가요?                 |
-|                                  |
-| [구토/구역] [설사/혈변]          |  <- SymptomQuickCard 2열 그리드
-| [외상/출혈] [호흡 이상]          |     각 80px 높이
-| [경련/발작] [먹지 않음]          |
-| [음수 이상] [기타    ]           |
-+----------------------------------+
-| [직접 입력해주세요...]    [전송] |  <- TextInput + 전송 버튼
-+----------------------------------+
-```
-
-### 11-3. ChatConversation (챗봇 대화)
-
-```
-+----------------------------------+
-| <- 응급 홈    초코 상담          |  <- Header
-+----------------------------------+
-| [!] 수의사 진료를 대체하지       |  <- DisclaimerBanner (축소형, sticky)
-|    않습니다                      |
-+----------------------------------+
-|                                  |
-|         [초코가 구토/구역       ]|  <- UserBubble (우측)
-|         [증상을 보이고 있어요   ]|
-|                         오후 2:35|
-|                                  |
-| [안녕하세요! 초코의 구토 증상에 ]|  <- BotBubble (좌측)
-| [대해 알려주세요...             ]|
-|                                  |
-| +------------------------------+ |
-| | [준응급]  Clock               | |  <- TriageResultCard
-| |                               | |     bg-amber-50 border-2 border-amber-500
-| | 체크해주세요                  | |
-| | . 구토 횟수 3회 이상?         | |
-| | . 혈액 섞여있나요?            | |
-| |                               | |
-| | 오늘 내 동물병원 방문을        | |
-| | 권장해요                      | |
-| +------------------------------+ |
-|                                  |
-| [근처 병원 찾기]   [대화 저장]   |  <- 액션 버튼
-+----------------------------------+
-| [증상을 입력해주세요...]  [전송] |  <- 하단 고정 입력창
-+----------------------------------+
-```
-
----
-
-## 12. 컴포넌트 상태 정의 (전체 적용)
-
-모든 인터랙티브 컴포넌트는 다음 5가지 상태를 구현해야 한다.
-
-| 상태 | 시각 처리 | 접근성 |
-|---|---|---|
-| Default | 기본 스타일 | - |
-| Hover/Focus | 경계선 강조 + 배경 변경 (Focus: ring-2 ring-primary-500) | 포커스 인디케이터 필수 |
-| Pressed/Active | 배경 어둡게 (darker shade 또는 opacity) | - |
-| Disabled | opacity-50 또는 neutral-200 bg | `accessibilityState={{ disabled: true }}` |
-| Loading | ActivityIndicator 또는 Skeleton | `accessibilityState={{ busy: true }}` |
-
----
-
-## 부록 A: 확정된 tailwind.config.js
-
-UI 디자이너 산출물의 섹션 10 `tailwind.config.js` 전체 스펙을 그대로 채택한다. 프론트엔드팀은 해당 파일을 복사하여 프로젝트 루트에 배치할 것. 추가 수정이 필요한 경우 디자인팀장 승인 후 진행.
-
-## 부록 B: 디자인 QA 체크리스트
-
-프론트엔드 구현 완료 후, 디자인팀이 아래 항목을 기준으로 QA를 진행한다.
-
-- [ ] 모든 화면 좌우 여백 20px 준수
-- [ ] 버튼 최소 터치 영역 44x44px 준수
-- [ ] 트리아지 배지 3중 신호 (색상+아이콘+텍스트) 확인
-- [ ] 면책 배너 스크롤 시 상단 고정 확인
-- [ ] 응급 탭 진입 시 애니메이션 없이 즉시 표시 확인
-- [ ] 다크모드 전체 화면 대비비 WCAG AA 충족 확인
-- [ ] 트리아지 배지 다크모드 대비비 AAA 목표 확인
-- [ ] Pretendard 폰트 4웨이트 정상 렌더링 확인
-- [ ] 오프라인 모드에서 내 아이 탭 의료기록 조회 가능 확인
-- [ ] Reduce Motion 활성화 시 모든 애니메이션 비활성 확인
-- [ ] VoiceOver로 전체 플로우 탐색 가능 확인
-
----
-
-*본 문서는 디자인팀장이 UX/UI 산출물을 종합하여 작성한 최종 확정안이다.*
-*프론트엔드팀은 이 문서를 기준으로 구현하며, 스펙 변경은 디자인팀장 승인을 거쳐야 한다.*
-*다음 단계: 프론트엔드팀 + 백엔드팀 핸드오프 및 병렬 개발 착수.*
+*문서 종료 — 툰일기 최종 디자인 스펙 v1.0 / 2026-06-03 / 디자인팀장 확정*
+*SSOT 구성: design-final.md(결정·우선순위·종합) + ux-spec.md(플로우·와이어) + ui-spec.md(토큰·컴포넌트 디테일)*
+*다음 단계: 프론트팀장 W1 토큰 핸드오프 / 백엔드팀장 W2 캘리브레이션 핸드오프(참조이미지·default값 보강 후)*

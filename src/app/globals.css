@@ -159,6 +159,83 @@
   }
 }
 
+/* ───────────────────────── 모이라(Moira) 상태 모션 ─────────────────────────
+ * 스켈레톤 시머 + '공평성 계산 중' 인디터미닛 바. moira- 프리픽스로 격리(문제팩토리 무손상).
+ * prefers-reduced-motion 시 위 @layer base 규칙이 자동으로 애니메이션을 정지시킨다.
+ */
+@keyframes moira-shimmer {
+  0% {
+    background-position: 180% 0;
+  }
+  100% {
+    background-position: -180% 0;
+  }
+}
+@keyframes moira-indeterminate {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+@keyframes moira-soft-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.moira-skeleton {
+  background: linear-gradient(100deg, #e7ecf3 25%, #f2f6fb 50%, #e7ecf3 75%);
+  background-size: 220% 100%;
+  animation: moira-shimmer 1.5s ease-in-out infinite;
+}
+.moira-indeterminate {
+  animation: moira-indeterminate 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.moira-soft-pulse {
+  animation: moira-soft-pulse 1.3s ease-in-out infinite;
+}
+
+/* ── RouteMap 경로선 수렴 애니메이션 (moira-routemap-design-final.md §3) ──
+ * stroke-dashoffset N→0 으로 경로선을 그려나감.
+ * will-change 로 GPU 레이어 분리. JS rAF 없이 순수 CSS.
+ * stagger는 animation-delay 인라인으로 제어(멤버당 다름).
+ */
+@keyframes moira-route-draw {
+  from {
+    stroke-dashoffset: var(--route-length, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* prefers-reduced-motion: 경로선·마커 즉시 최종 상태
+ * 위 @layer base 의 전역 규칙(animation-duration: 0.01ms)으로도 정지되지만
+ * stroke-dashoffset·opacity 를 명시적으로 최종값으로 고정해 어중간한 상태 방지. */
+@media (prefers-reduced-motion: reduce) {
+  .route-polyline {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+  .route-marker {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* 모이라 포커스 링 — 전역 오렌지 링(문제팩토리/오름 accent) 대신 브랜드 인디고.
+ * design-final.md §6 "포커스 링 brand 35%". moira-scope 안에서만 적용돼 타 제품 무손상.
+ * 언레이어드 규칙이라 @layer base 의 전역 *:focus-visible 를 확실히 덮어쓴다. */
+.moira-scope :focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35);
+}
+
 /* 페르소나 테마 전환 (design-final.md §4-3 — 250ms, chroma-js 보간) */
 [data-persona="mentor"] {
   --persona-accent: #FF7A29;

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HWP를 PDF로 변환 — 무료, 가입 없음 | HWP to PDF Converter</title>
+<meta name="description" content="한컴오피스 없이 .hwp / .hwpx 파일을 PDF로 무료 변환. 가입 없음, 광고 없음, 변환 후 즉시 삭제. Convert Korean HWP/HWPX files to PDF online — free, no sign-up, files deleted right after." />
+<meta name="keywords" content="hwp pdf 변환, hwp to pdf, hwpx pdf, 한글파일 pdf, hwp viewer mac, open hwp file, 한컴오피스 없이 hwp, convert hwp" />
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="__SITE_URL__/" />
+<link rel="alternate" hreflang="ko" href="__SITE_URL__/" />
+<link rel="alternate" hreflang="en" href="__SITE_URL__/en" />
+<link rel="alternate" hreflang="x-default" href="__SITE_URL__/" />
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="hwp2pdf" />
+<meta property="og:title" content="HWP를 PDF로 변환 — 무료, 가입 없음" />
+<meta property="og:description" content="한컴오피스 없이 .hwp/.hwpx를 PDF로. 가입 없음, 변환 후 즉시 삭제. Convert HWP to PDF free." />
+<meta property="og:url" content="__SITE_URL__/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="HWP를 PDF로 변환 — 무료, 가입 없음" />
+<meta name="twitter:description" content="한컴오피스 없이 .hwp/.hwpx를 PDF로. 변환 후 즉시 삭제. Convert HWP to PDF free." />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%232563eb'/%3E%3Ctext x='12' y='16' font-size='9' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'%3EPDF%3C/text%3E%3C/svg%3E" />
+
+<!-- 구조화 데이터: 검색엔진이 서비스/FAQ를 이해하도록 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "hwp2pdf",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "url": "__SITE_URL__/",
+      "description": "Convert Korean HWP / HWPX files to PDF online for free. No sign-up. Files are deleted right after conversion.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "한컴오피스 없이 HWP 파일을 PDF로 변환할 수 있나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "네. 파일을 올리기만 하면 서버의 오픈소스 변환 엔진(LibreOffice + H2Orestart)이 PDF로 바꿔 돌려드립니다. 설치도 가입도 필요 없습니다." } },
+        { "@type": "Question", "name": "맥(Mac)에서 HWP 파일을 어떻게 여나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "맥에는 HWP 기본 뷰어가 없습니다. 이 페이지에서 PDF로 변환하면 미리보기·크롬 등 어떤 기기에서도 열 수 있습니다." } },
+        { "@type": "Question", "name": "업로드한 파일은 안전한가요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "변환이 끝나는 즉시 입력 파일과 결과 PDF를 모두 삭제합니다. 서버에 저장하거나 열어보지 않습니다." } },
+        { "@type": "Question", "name": ".hwp와 .hwpx를 모두 지원하나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "네, 둘 다 지원합니다. 표·이미지·서식 보존에 강합니다." } },
+        { "@type": "Question", "name": "변환이 깨지면 어떻게 하나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "수식이 많거나 복잡한 특수 개체가 든 문서는 일부 레이아웃이 깨질 수 있습니다. 해당 유형은 개선 중입니다." } },
+        { "@type": "Question", "name": "비용이 드나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "현재 무료입니다. 가입도, 광고도 없습니다." } }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#6b7280;
+    --line:#e5e7eb; --brand:#2563eb; --brand-d:#1d4ed8; --ok:#059669; --err:#dc2626;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",
+       "Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:600px;margin:0 auto;padding:24px 20px 64px}
+
+  /* 언어 토글 */
+  .topbar{display:flex;justify-content:flex-end;margin-bottom:8px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+  .lang button{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:5px 12px;color:var(--muted)}
+  .lang button[aria-pressed="true"]{background:var(--brand);color:#fff}
+
+  header{text-align:center;margin-bottom:24px}
+  h1{font-size:27px;margin:0 0 8px;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:15px;margin:0}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+        padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  #drop{border:2px dashed #c7ccd4;border-radius:12px;padding:34px 16px;text-align:center;
+        cursor:pointer;transition:.15s;background:#fcfcfd}
+  #drop.hover{border-color:var(--brand);background:#f0f5ff}
+  #drop.has{border-style:solid;border-color:#bcd0fb;background:#f5f8ff}
+  #drop .big{font-size:16px;font-weight:600;margin-bottom:4px}
+  #drop .small{font-size:13px;color:var(--muted)}
+  #file{display:none}
+  .chosen{margin-top:14px;font-size:14px;display:none;align-items:center;gap:8px;
+          justify-content:center;color:var(--ink)}
+  .chosen b{font-weight:600;word-break:break-all}
+
+  button.go{margin-top:16px;width:100%;border:0;border-radius:10px;padding:14px;
+         font-size:16px;font-weight:600;color:#fff;background:var(--brand);cursor:pointer;transition:.15s}
+  button.go:hover{background:var(--brand-d)}
+  button.go:disabled{background:#9db4e8;cursor:default}
+
+  /* 진행률 */
+  .progress{display:none;margin-top:16px}
+  .bar{height:8px;border-radius:999px;background:#eef1f6;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3b82f6,#2563eb);
+           border-radius:999px;transition:width .2s ease}
+  .steps{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+  .steps span{transition:.2s}
+  .steps span.on{color:var(--brand);font-weight:600}
+  .steps span.done{color:var(--ok);font-weight:600}
+
+  .status{margin-top:14px;text-align:center;font-size:14px;min-height:20px}
+  .status.ok{color:var(--ok);font-weight:600}
+  .status.err{color:var(--err);font-weight:600}
+
+  .dl{display:none;margin-top:14px;text-align:center}
+  .dl a{display:inline-block;color:#fff;background:var(--ok);font-weight:600;text-decoration:none;
+        border-radius:10px;padding:12px 18px;font-size:15px}
+  .dl .again{display:block;margin-top:10px;font-size:13px;color:var(--muted);cursor:pointer;
+             background:none;border:0;width:100%}
+
+  .trust{margin-top:20px;display:flex;gap:8px;align-items:flex-start;justify-content:center;
+         color:var(--muted);font-size:13px;text-align:center}
+  .trust svg{flex:0 0 auto;margin-top:1px}
+  .trust b{color:var(--ok)}
+
+  .pills{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .pill{font-size:12px;color:#374151;background:#eef2ff;border:1px solid #e0e7ff;
+        border-radius:999px;padding:5px 11px}
+  .note{margin-top:14px;text-align:center;color:var(--muted);font-size:12.5px}
+  .note b{color:#374151}
+
+  section.info{margin-top:36px}
+  section.info h2{font-size:18px;margin:0 0 12px}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:10px}
+  details + details{margin-top:0}
+  summary{cursor:pointer;font-weight:600;font-size:14.5px;padding:14px 0;list-style:none;
+          display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--muted);font-weight:400;font-size:18px}
+  details[open] summary::after{content:"\2212"}
+  details .body{padding:0 0 16px;font-size:13.5px;color:#374151;line-height:1.6}
+
+  footer{margin-top:40px;border-top:1px solid var(--line);padding-top:18px;color:#9aa1ab;font-size:12px}
+  footer .legal{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px}
+  footer .legal a{color:var(--muted);text-decoration:none;cursor:pointer}
+  footer .legal a:hover{text-decoration:underline}
+  footer .small{line-height:1.6}
+
+  /* 약관/개인정보 모달 대용: 숨겨진 본문 토글 */
+  .legaldoc{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;
+            padding:16px;margin-top:14px;font-size:13px;color:#374151;line-height:1.7}
+  .legaldoc.show{display:block}
+  .legaldoc h3{font-size:14px;margin:0 0 8px;color:var(--ink)}
+  .legaldoc ul{margin:0;padding-left:18px}
+  .legaldoc li{margin-bottom:5px}
+
+  /* 언어 전환: 비활성 언어 숨김 (양쪽 모두 DOM에 존재 → 크롤링 가능) */
+  body[data-lang="ko"] .t-en{display:none}
+  body[data-lang="en"] .t-ko{display:none}
+  /* 인라인 텍스트는 span으로 자연스럽게 */
+  .t-ko, .t-en{}
+</style>
+</head>
+<body data-lang="ko">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="lang" role="group" aria-label="Language">
+        <button id="lang-ko" aria-pressed="true">한국어</button>
+        <button id="lang-en" aria-pressed="false">English</button>
+      </div>
+    </div>
+
+    <header>
+      <h1>HWP → PDF</h1>
+      <p class="sub">
+        <span class="t-ko">한컴오피스 없이, 한글 파일(.hwp·.hwpx)을 PDF로 바로 변환하세요.</span>
+        <span class="t-en">Convert Korean .hwp / .hwpx files to PDF — free, no sign-up.</span>
+      </p>
+    </header>
+
+    <div class="card">
+      <label id="drop" for="file">
+        <div class="big">
+          <span class="t-ko">파일을 끌어다 놓거나 클릭</span>
+          <span class="t-en">Drag &amp; drop a file, or click</span>
+        </div>
+        <div class="small">.hwp · .hwpx · <span class="t-ko">최대 20MB</span><span class="t-en">up to 20MB</span></div>
+      </label>
+      <input id="file" type="file" accept=".hwp,.hwpx" />
+      <div class="chosen" id="chosen"></div>
+
+      <button class="go" id="go" disabled>
+        <span class="t-ko">PDF로 변환</span><span class="t-en">Convert to PDF</span>
+      </button>
+
+      <div class="progress" id="progress">
+        <div class="bar"><i id="barfill"></i></div>
+        <div class="steps">
+          <span id="st1" class="on"><span class="t-ko">업로드</span><span class="t-en">Upload</span></span>
+          <span id="st2"><span class="t-ko">변환 중</span><span class="t-en">Converting</span></span>
+          <span id="st3"><span class="t-ko">완료</span><span class="t-en">Done</span></span>
+        </div>
+      </div>
+
+      <div class="status" id="status" aria-live="polite"></div>
+      <div class="dl" id="dl"></div>
+
+      <div class="trust">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2">
+          <path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>
+        </svg>
+        <span>
+          <span class="t-ko"><b>변환 후 즉시 삭제</b> · 서버에 저장하지 않습니다.</span>
+          <span class="t-en"><b>Deleted right after conversion</b> · never stored on our server.</span>
+        </span>
+      </div>
+
+      <div class="pills">
+        <span class="pill t-ko">가입 없음</span><span class="pill t-en">No sign-up</span>
+        <span class="pill t-ko">광고 없음</span><span class="pill t-en">No ads</span>
+        <span class="pill t-ko">표·이미지·서식 보존</span><span class="pill t-en">Keeps tables &amp; images</span>
+        <span class="pill t-ko">.hwp / .hwpx</span><span class="pill t-en">.hwp / .hwpx</span>
+      </div>
+
+      <div class="note">
+        <span class="t-ko"><b>수식이 많은 문서</b>는 일부 깨질 수 있어요(개선 중).</span>
+        <span class="t-en"><b>Equation-heavy documents</b> may not render perfectly yet (improving).</span>
+      </div>
+    </div>
+
+    <!-- SEO/도움 콘텐츠: 자주 묻는 질문 -->
+    <section class="info">
+      <h2><span class="t-ko">자주 묻는 질문</span><span class="t-en">Frequently asked questions</span></h2>
+
+      <details open>
+        <summary><span class="t-ko">한컴오피스 없이 HWP를 PDF로 바꿀 수 있나요?</span><span class="t-en">Can I convert HWP to PDF without Hancom Office?</span></summary>
+        <div class="body">
+          <span class="t-ko">네. 파일을 올리기만 하면 서버의 오픈소스 변환 엔진(LibreOffice + H2Orestart)이 PDF로 바꿔 돌려드립니다. 프로그램 설치도, 회원가입도 필요 없습니다.</span>
+          <span class="t-en">Yes. Just upload your file — our open-source engine (LibreOffice + H2Orestart) converts it to PDF and sends it back. No software to install, no account needed.</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="t-ko">맥(Mac)에서 HWP 파일을 어떻게 여나요?</span><span class="t-en">How do I open an HWP file on a Mac?</span></summary>
+        <div class="body">
+          <span class="t-ko">맥에는 HWP 기본 뷰어가 없습니다. 이 페이지에서 PDF로 변환하면 미리보기(Preview)·크롬 등 어떤 기기에서도 열 수 있습니다.</span>
+          <span class="t-en">macOS has no built-in HWP viewer. Convert the file to PDF here and open it in Preview, Chrome, or any device.</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="t-ko">업로드한 파일은 안전한가요?</span><span class="t-en">Is my uploaded file safe?</span></summary>
+        <div class="body">
+          <span class="t-ko">변환이 끝나는 즉시 입력 파일과 결과 PDF를 모두 삭제합니다. 서버에 저장하거나 열어보지 않으며, 파일 내용은 로그에도 남기지 않습니다.</span>
+          <span class="t-en">The moment conversion finishes, both your upload and the resulting PDF are deleted. We never store them or look inside, and file contents are never logged.</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="t-ko">.hwp와 .hwpx를 모두 지원하나요?</span><span class="t-en">Do you support both .hwp and .hwpx?</span></summary>
+        <div class="body">
+          <span class="t-ko">네, 둘 다 지원합니다. 표·이미지·일반 서식 보존에 강합니다.</span>
+          <span class="t-en">Yes, both formats are supported. Tables, images, and general formatting are preserved well.</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="t-ko">변환이 깨지거나 실패하면?</span><span class="t-en">What if the result looks broken or fails?</span></summary>
+        <div class="body">
+          <span class="t-ko">수식이 많거나 복잡한 특수 개체가 든 문서는 일부 레이아웃이 깨질 수 있습니다. 그런 유형은 개선 중이며, 실패 시 어떤 유형이었는지만 익명으로 기록해 품질을 높이는 데 씁니다.</span>
+          <span class="t-en">Documents with many equations or complex special objects may not render perfectly. We're improving those cases; on failure we record only the document type (anonymously) to improve quality.</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><span class="t-ko">비용이 드나요?</span><span class="t-en">Is it free?</span></summary>
+        <div class="body">
+          <span class="t-ko">현재 무료입니다. 가입도, 광고도 없습니다.</span>
+          <span class="t-en">It's free right now. No sign-up, no ads.</span>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <div class="legal">
+        <a id="open-terms"><span class="t-ko">이용약관·면책</span><span class="t-en">Terms &amp; disclaimer</span></a>
+        <a id="open-privacy"><span class="t-ko">개인정보 처리</span><span class="t-en">Privacy</span></a>
+      </div>
+
+      <div class="legaldoc" id="doc-terms">
+        <h3><span class="t-ko">이용약관 및 면책</span><span class="t-en">Terms of use &amp; disclaimer</span></h3>
+        <ul class="t-ko">
+          <li>본 서비스는 오픈소스 변환 엔진(LibreOffice, H2Orestart)을 사용하며, 변환 결과의 완전한 정확성·서식 일치를 보장하지 않습니다(특히 수식·복잡한 레이아웃).</li>
+          <li>이용자는 본인이 적법한 이용 권리를 가진 문서만 업로드해야 합니다. 업로드 파일에 대한 책임은 이용자에게 있습니다.</li>
+          <li>업로드된 파일은 변환 직후 자동 삭제되며 서버에 저장되지 않습니다.</li>
+          <li>본 서비스는 무중단·무오류 동작을 보장하지 않으며, 변환 결과의 이용에 따른 책임은 이용자 본인에게 있습니다.</li>
+          <li>악성·불법 파일 업로드 시 변환이 거부될 수 있습니다.</li>
+        </ul>
+        <ul class="t-en">
+          <li>This service uses open-source engines (LibreOffice, H2Orestart) and does not guarantee fully accurate or identical formatting of the output, especially for equations and complex layouts.</li>
+          <li>You may upload only documents you have the legal right to use. You are responsible for the files you upload.</li>
+          <li>Uploaded files are deleted automatically right after conversion and are never stored on the server.</li>
+          <li>The service is provided "as is" without guarantee of uptime or error-free operation; you are responsible for how you use the converted output.</li>
+          <li>Malicious or unlawful files may be refused.</li>
+        </ul>
+      </div>
+
+      <div class="legaldoc" id="doc-privacy">
+        <h3><span class="t-ko">개인정보 처리 방침</span><span class="t-en">Privacy</span></h3>
+        <ul class="t-ko">
+          <li>회원가입이 없으므로 이름·이메일 등 개인정보를 수집하지 않습니다.</li>
+          <li>업로드한 파일은 변환 직후 즉시 삭제되며 서버에 저장하지 않습니다. 파일 내용은 어떤 형태로도 기록·열람하지 않습니다.</li>
+          <li>서비스 운영을 위해 변환 성공/실패 유형, 처리 시간 등 익명 운영 지표만 기록합니다(파일 내용 제외).</li>
+        </ul>
+        <ul class="t-en">
+          <li>There is no sign-up, so we collect no personal data such as name or email.</li>
+          <li>Uploaded files are deleted immediately after conversion and never stored. File contents are never logged or viewed.</li>
+          <li>For operations we record only anonymous metrics — success/failure type and processing time — never file contents.</li>
+        </ul>
+      </div>
+
+      <div class="small">
+        <span class="t-ko">© hwp2pdf — LibreOffice + H2Orestart 기반 오픈 변환. HWP는 한글과컴퓨터의 문서 형식입니다(비제휴).</span>
+        <span class="t-en">© hwp2pdf — open conversion powered by LibreOffice + H2Orestart. HWP is a document format by Hancom (not affiliated).</span>
+      </div>
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const drop=$('drop'), input=$('file'), chosen=$('chosen'), go=$('go'),
+        statusEl=$('status'), dl=$('dl'),
+        progress=$('progress'), barfill=$('barfill'),
+        st1=$('st1'), st2=$('st2'), st3=$('st3');
+  let current=null, lastUrl=null, anim=null;
+
+  // ── i18n: 동적 메시지 ──
+  const L=()=>document.body.dataset.lang||'ko';
+  const T={
+    only:{ko:'hwp 또는 hwpx 파일만 변환할 수 있어요.', en:'Only .hwp or .hwpx files are supported.'},
+    big:{ko:'파일이 너무 큽니다 (최대 20MB).', en:'File is too large (max 20MB).'},
+    converting:{ko:'변환 중', en:'Converting'},
+    done:{ko:'변환 완료!', en:'Done!'},
+    fail:{ko:'변환에 실패했어요.', en:'Conversion failed.'},
+    net:{ko:'네트워크 오류가 발생했어요. 다시 시도해 주세요.', en:'Network error. Please try again.'},
+    download:{ko:'내려받기', en:'Download'},
+    again:{ko:'다른 파일 변환하기', en:'Convert another file'},
+    sec:{ko:'초', en:'s'}
+  };
+  const tr=k=>T[k][L()];
+
+  // ── 언어 토글 ──
+  function setLang(lang){
+    document.body.dataset.lang=lang;
+    document.documentElement.lang=lang;
+    $('lang-ko').setAttribute('aria-pressed', lang==='ko');
+    $('lang-en').setAttribute('aria-pressed', lang==='en');
+    try{ history.replaceState(null,'', lang==='en'?'/en':'/'); }catch(_){}
+  }
+  $('lang-ko').addEventListener('click',()=>setLang('ko'));
+  $('lang-en').addEventListener('click',()=>setLang('en'));
+  // 진입 경로(/en)나 브라우저 언어로 초기값 결정
+  if(location.pathname.replace(/\/+$/,'')==='/en') setLang('en');
+  else if(document.body.dataset.lang!=='en' && (navigator.language||'').toLowerCase().indexOf('ko')!==0
+          && location.pathname==='/') { /* 기본 ko 유지: 한국 시장 우선 */ }
+
+  // ── 약관/개인정보 토글 ──
+  function toggleDoc(id){ const el=$(id); const show=!el.classList.contains('show');
+    $('doc-terms').classList.remove('show'); $('doc-privacy').classList.remove('show');
+    if(show) el.classList.add('show'); }
+  $('open-terms').addEventListener('click',()=>toggleDoc('doc-terms'));
+  $('open-privacy').addEventListener('click',()=>toggleDoc('doc-privacy'));
+
+  // ── 파일 선택 ──
+  function fmtSize(n){ return n<1024*1024 ? (n/1024).toFixed(0)+'KB' : (n/1024/1024).toFixed(1)+'MB'; }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function clearStatus(){ statusEl.className='status'; statusEl.textContent=''; }
+
+  function pick(f){
+    if(!f) return;
+    if(!/\.(hwp|hwpx)$/i.test(f.name)){ fail(tr('only')); return; }
+    if(f.size>20*1024*1024){ fail(tr('big')); return; }
+    current=f;
+    chosen.style.display='flex';
+    chosen.innerHTML='&#128196; <b>'+escapeHtml(f.name)+'</b> &middot; '+fmtSize(f.size);
+    drop.classList.add('has');
+    go.disabled=false; clearStatus(); dl.style.display='none'; progress.style.display='none';
+  }
+  function fail(msg){ statusEl.className='status err'; statusEl.textContent='⚠ '+msg; }
+
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('hover');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('hover'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('hover');pick(e.dataTransfer.files[0]);});
+  input.addEventListener('change',()=>pick(input.files[0]));
+
+  // ── 진행률(추정) ──
+  // 서버가 단일 응답을 주므로 실제 %는 알 수 없다. 경과시간 기반으로
+  // 90%까지 부드럽게 채우다가 응답이 오면 100%로 스냅한다(업로드/변환 통념적 UX).
+  function startProgress(){
+    progress.style.display='block'; clearStatus(); dl.style.display='none';
+    st1.className='done'; st2.className='on'; st3.className='';
+    const t0=performance.now();
+    cancelAnimationFrame(anim);
+    const tick=()=>{
+      const t=(performance.now()-t0)/1000;
+      const pct=90*(1-Math.exp(-t/2.5));      // 부드러운 점근
+      barfill.style.width=pct.toFixed(1)+'%';
+      statusEl.className='status';
+      statusEl.textContent=tr('converting')+'… '+t.toFixed(1)+tr('sec');
+      anim=requestAnimationFrame(tick);
+    };
+    tick();
+  }
+  function finishProgress(){
+    cancelAnimationFrame(anim);
+    barfill.style.width='100%';
+    st2.className='done'; st3.className='done';
+  }
+  function resetProgress(){ cancelAnimationFrame(anim); progress.style.display='none'; barfill.style.width='0'; }
+
+  // ── 변환 ──
+  go.addEventListener('click',async()=>{
+    if(!current) return;
+    go.disabled=true;
+    if(lastUrl){ URL.revokeObjectURL(lastUrl); lastUrl=null; }
+    startProgress();
+    const fd=new FormData(); fd.append('file',current,current.name);
+    try{
+      const r=await fetch('/api/convert',{method:'POST',body:fd});
+      if(!r.ok){
+        let m=tr('fail');
+        try{ const j=await r.json(); if(j&&j.message) m=j.message; }catch(_){}
+        resetProgress(); fail(m); go.disabled=false; return;
+      }
+      const blob=await r.blob();
+      finishProgress();
+      lastUrl=URL.createObjectURL(blob);
+      const name=current.name.replace(/\.(hwp|hwpx)$/i,'')+'.pdf';
+      const a=document.createElement('a'); a.href=lastUrl; a.download=name;
+      a.innerHTML='⬇ '+escapeHtml(name);
+      const again=document.createElement('button'); again.className='again'; again.textContent=tr('again');
+      again.addEventListener('click',()=>{ current=null; go.disabled=true; chosen.style.display='none';
+        drop.classList.remove('has'); dl.style.display='none'; resetProgress(); clearStatus(); input.value=''; });
+      dl.innerHTML=''; dl.appendChild(a); dl.appendChild(again); dl.style.display='block';
+      statusEl.className='status ok'; statusEl.textContent='✓ '+tr('done');
+      a.click(); // 자동 다운로드 시도
+    }catch(err){
+      resetProgress(); fail(tr('net')); go.disabled=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
+    "@supabase/supabase-js": "^2.109.0",
     "@tanstack/react-query": "^5.40.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.381.0",

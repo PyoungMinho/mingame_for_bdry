@@ -1,0 +1,123 @@
+/**
+ * 툰일기 컴포넌트 애니메이션 키프레임
+ * 페이지개발자 / 팀장이 layout.tsx 에 @import 하거나 globals.css에 추가 요청.
+ * design-final §4.3 특수 모션 스펙 대응
+ *
+ * globals.css 수정 지시가 있으므로 여기서 정의하고
+ * layout.tsx 에서 import './components/ui/animations.css' 로 로드.
+ */
+
+/* Skeleton shimmer (ui-spec §7.9) */
+@keyframes shimmer {
+  from {
+    background-color: var(--color-bg-muted);
+  }
+  to {
+    background-color: var(--color-bg-subtle);
+  }
+}
+
+/* Toast slide-up (ui-spec §7.8) */
+@keyframes slideUp {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 4컷 컷 등장 fade-slide (design-final §4.3) */
+@keyframes panelEnter {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 아바타 선택 bounce (ui-spec §4.3) */
+@keyframes avatarBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* 컷 번호 pop (design-final §4.3) */
+@keyframes pop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ═══ RISO EDITION 모션 (v2.0) ═══ */
+
+/* 도장 찍힘 — 버튼/배지/스탬프 등장 */
+@keyframes inkStamp {
+  0%   { transform: scale(1.3) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(0.94) rotate(1.5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 페이지 넘김 — 만화책 페이지 플립 */
+@keyframes pageTurn {
+  0%   { transform: perspective(1200px) rotateY(-14deg) translateX(-6%); opacity: 0; }
+  100% { transform: perspective(1200px) rotateY(0deg) translateX(0); opacity: 1; }
+}
+
+/* 하프톤 드리프트 — 톤 오버레이가 천천히 흐름 */
+@keyframes halftoneDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 24px 24px; }
+}
+
+/* 잉크 번짐 등장 — 리소 등록오차(살짝 어긋난 페이드) */
+@keyframes inkBleed {
+  0%   { opacity: 0; filter: blur(2px); transform: translate(2px, -1px); }
+  100% { opacity: 1; filter: blur(0); transform: translate(0, 0); }
+}
+
+/* 만화 위글 — hover 강조(말풍선/스티커) */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2deg); }
+}
+
+/* 4컷 패널 스탬프 인 — 컷이 도장처럼 쾅 */
+@keyframes panelStamp {
+  0%   { transform: scale(1.12) rotate(-1.5deg); opacity: 0; }
+  55%  { transform: scale(0.98) rotate(0.6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* 로딩 점 점프 (생성 대기) */
+@keyframes dotJump {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-6px); }
+}
+
+/* 깜빡이는 잉크 강조/커서 */
+@keyframes inkPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* 데코 톤 오버레이가 흐르는 헬퍼(장식 레이어 전용) */
+.anim-halftone-drift {
+  animation: halftoneDrift 7s linear infinite;
+}
+
+/* ─── safe-area 유틸리티 (design-final §9.1 — TabBar/FAB/하단 CTA iOS 홈 인디케이터 대응)
+ * Tailwind v4 기본 미제공 → 프로젝트 커스텀 유틸로 정의. 컴포넌트는 className="pb-safe" 사용. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* 기존 패딩과 합산이 필요한 경우 (예: px-5 pb-6 + safe-area) */
+.pb-safe-area {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+}

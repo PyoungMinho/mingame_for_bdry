@@ -1,1461 +1,1842 @@
-# UI 디자인 스펙 — 반려동물 건강 안심 플랫폼
-
-> 작성: UI 디자이너 / 2026-04-13
-> 기반 문서: 프로젝트 방향서(2026-04-11), 기획 최종안
-> 기술 스택: React Native (Expo) + Nativewind v4 (Tailwind 기반)
-> 적용 범위: iOS 우선, Android Phase 1 확장 / 라이트·다크모드 동시 설계
+# 툰일기(Toonlog) UI 디자인 명세서 v1.0
+> 작성: UI디자이너 / 2026-06-03
+> 기준: 프로젝트 방향서 v1.0 + 디자인팀장 확정 방향
+> 기술 스택: Next.js 15 + Tailwind v4 + react-konva + Satori
 
 ---
 
-## 1. 브랜딩 & 톤앤매너
+## 목차
 
-### 브랜드 포지셔닝
-
-"응급 상황에서도 흔들리지 않는 조용한 안심"
-
-보호자는 반려동물이 아플 때 극도로 불안하다. 이 앱은 그 불안을 증폭시키는 것이 아니라 차분하게 잡아주는 역할을 해야 한다. 의료 데이터를 다루는 앱이지만, 차가운 병원 느낌이 아닌 "신뢰할 수 있는 이웃 수의사"의 온기를 가져야 한다.
-
-### 브랜드 키워드
-
-- 신뢰 (Trust): 의료 데이터를 맡길 수 있다는 확신
-- 안심 (Reassurance): 응급 상황에서 패닉하지 않도록 돕는 차분함
-- 온기 (Warmth): 반려동물과 보호자의 정서적 유대 반영
-- 명료함 (Clarity): 위기 상황에서 정보를 빠르게 파악할 수 있는 명확함
-
-### 시각적 성격
-
-| 속성 | 방향 |
-|---|---|
-| 전체 톤 | 소프트하되 의료적 신뢰감 유지 |
-| 모서리 | 둥근 모서리 (radius 12~20px) — 딱딱하지 않은 친근함 |
-| 그림자 | 얕은 소프트 섀도 — 플랫 + 레이어 구분 |
-| 일러스트 | 미니멀 라인 아이콘 + 포인트 필 컬러 |
-| 사진 | 원형 크롭 펫 사진 (프로필), 그리드형 (갤러리) |
-| 애니메이션 | 빠르고 의도적인 마이크로인터랙션 (200~300ms) |
+1. [디자인 토큰 — 컬러](#1-디자인-토큰--컬러)
+2. [디자인 토큰 — 타이포그래피](#2-디자인-토큰--타이포그래피)
+3. [디자인 토큰 — 스페이싱 · 레이아웃](#3-디자인-토큰--스페이싱--레이아웃)
+4. [디자인 토큰 — 모션 · 이펙트](#4-디자인-토큰--모션--이펙트)
+5. [Tailwind v4 @theme 전체 코드](#5-tailwind-v4-theme-전체-코드)
+6. [로고 시스템](#6-로고-시스템)
+7. [핵심 컴포넌트 스펙](#7-핵심-컴포넌트-스펙)
+8. [화풍 4종 시각 토큰표](#8-화풍-4종-시각-토큰표)
+9. [아바타 8종 디자인 가이드](#9-아바타-8종-디자인-가이드)
+10. [말풍선 디자인 시스템](#10-말풍선-디자인-시스템)
+11. [4컷 카드 + 공유 카드 템플릿](#11-4컷-카드--공유-카드-템플릿)
+12. [워터마크 + AI 생성 고지](#12-워터마크--ai-생성-고지)
+13. [아이콘 세트 가이드](#13-아이콘-세트-가이드)
+14. [다크모드 전략](#14-다크모드-전략)
 
 ---
 
-## 2. 컬러 시스템
+## 1. 디자인 토큰 — 컬러
 
-### 설계 원칙
+### 1.1 브랜드 원색 팔레트
 
-- Primary는 신뢰/안심을 상징하는 **Teal-Blue** 계열로 설정
-- Accent는 반려동물의 따뜻한 감성을 반영하는 **Warm Amber**
-- 응급 탭의 긴장감을 위해 Error/Warning 컬러는 채도를 높게 유지
-- 다크모드에서도 모든 Semantic 컬러의 WCAG AA 기준 (대비비 4.5:1 이상) 충족
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-ink` | `#1A1A1A` | `#F0EDE8` | 만화 펜선, 본문, CTA 텍스트 |
+| `--color-paper` | `#FAF7F2` | `#1C1917` | 배경, 종이 질감 베이스 |
+| `--color-coral` | `#FF6B6B` | `#FF8080` | Primary CTA, 강조 액션 |
+| `--color-coral-hover` | `#E55555` | `#FF9494` | CTA 호버 상태 |
+| `--color-coral-active` | `#CC4444` | `#FFAAAA` | CTA 클릭 상태 |
+| `--color-sky` | `#4DABF7` | `#74C0FC` | 링크, 정보성 UI |
+| `--color-lemon` | `#FFE066` | `#FFD43B` | 워터마크, 형광펜 강조 |
+| `--color-pencil` | `#6C757D` | `#ADB5BD` | 보조 텍스트, 아이콘 기본 |
+| `--color-eraser` | `#DEE2E6` | `#343A40` | 구분선, 비활성 Border |
 
-### 2-1. Primary 컬러
+### 1.2 Semantic 컬러 토큰
 
-```
-Brand Teal
+#### Surface / Background
 
-Light mode:
-  primary-50:  #f0fdfa  — 배경 틴트, 선택 상태 배경
-  primary-100: #ccfbf1  — 카드 호버 배경
-  primary-200: #99f6e4  — 체크박스 배경
-  primary-300: #5eead4  — 비활성 아이콘
-  primary-400: #2dd4bf  — 보조 버튼 보더
-  primary-500: #14b8a6  — 메인 Primary 색상 (버튼, 탭 활성)
-  primary-600: #0d9488  — 버튼 hover/pressed
-  primary-700: #0f766e  — 강조 텍스트
-  primary-800: #115e59  — 다크모드 배경 위 텍스트
-  primary-900: #134e4a  — 최고 강조
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-bg-base` | `#FAF7F2` | `#1C1917` | 앱 전체 배경 |
+| `--color-bg-subtle` | `#F4F0E8` | `#292524` | 카드 배경, 입력 배경 |
+| `--color-bg-muted` | `#EDE9E0` | `#3C3633` | 호버 배경, 선택 배경 |
+| `--color-bg-inverse` | `#1A1A1A` | `#F0EDE8` | 다크 배경 (피처드) |
+| `--color-surface-raised` | `#FFFFFF` | `#231F1C` | 카드 라이즈드, 모달 배경 |
+| `--color-surface-overlay` | `rgba(26,26,26,0.48)` | `rgba(0,0,0,0.64)` | 오버레이, 딤처리 |
 
-Dark mode:
-  primary-400 → 활성 아이콘, 탭바 선택
-  primary-500 → 버튼 배경
-  primary-300 → 비활성 상태
-```
+#### Text
 
-**Tailwind 토큰 키**: `primary-*`
-**Nativewind 클래스 예시**: `bg-primary-500`, `text-primary-700`, `border-primary-400`
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-text-primary` | `#1A1A1A` | `#F0EDE8` | 주요 본문, 제목 |
+| `--color-text-secondary` | `#4A4540` | `#C5BFB8` | 부제목, 설명 |
+| `--color-text-muted` | `#6C757D` | `#8B8178` | 메타 정보, 플레이스홀더 |
+| `--color-text-disabled` | `#ADB5BD` | `#4A4540` | 비활성 텍스트 |
+| `--color-text-inverse` | `#FAF7F2` | `#1A1A1A` | 다크 배경 위 텍스트 |
+| `--color-text-link` | `#4DABF7` | `#74C0FC` | 링크 텍스트 |
+| `--color-text-accent` | `#FF6B6B` | `#FF8080` | 강조 텍스트 |
 
-### 2-2. Secondary 컬러
+#### Primary Action (Coral)
 
-```
-Warm Amber (온기, 반려동물 감성)
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-primary` | `#FF6B6B` | `#FF8080` | Primary 버튼/액션 배경 |
+| `--color-primary-hover` | `#E55555` | `#FF9494` | 호버 |
+| `--color-primary-active` | `#CC4444` | `#FFAAAA` | 클릭/프레스 |
+| `--color-primary-subtle` | `#FFF0F0` | `#3D1A1A` | Primary 연한 배경 (배지, 칩) |
+| `--color-primary-text` | `#FFFFFF` | `#1A1A1A` | Primary 버튼 위 텍스트 |
 
-Light mode:
-  secondary-50:  #fffbeb
-  secondary-100: #fef3c7
-  secondary-200: #fde68a
-  secondary-300: #fcd34d
-  secondary-400: #fbbf24
-  secondary-500: #f59e0b  — 메인 Secondary (펫 프로필 강조, 배지)
-  secondary-600: #d97706
-  secondary-700: #b45309
-  secondary-800: #92400e
-  secondary-900: #78350f
+#### Border
 
-Dark mode:
-  secondary-300 → 아이콘 강조
-  secondary-400 → 버튼/배지 배경
-```
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-border-default` | `#DEE2E6` | `#343A40` | 기본 테두리 |
+| `--color-border-strong` | `#ADB5BD` | `#6C757D` | 강조 테두리 |
+| `--color-border-focus` | `#4DABF7` | `#74C0FC` | 포커스 링 |
+| `--color-border-error` | `#FF6B6B` | `#FF8080` | 에러 상태 테두리 |
 
-**Tailwind 토큰 키**: `secondary-*`
+#### Semantic Status
 
-### 2-3. Accent 컬러
+| 토큰명 | 라이트 | 다크 | 용도 |
+|---|---|---|---|
+| `--color-success` | `#2ECC71` | `#4ADE80` | 성공, 완료 |
+| `--color-success-subtle` | `#EDFAF4` | `#0D2E1A` | 성공 배경 |
+| `--color-warning` | `#F59E0B` | `#FBBF24` | 경고, 주의 |
+| `--color-warning-subtle` | `#FFFBEB` | `#2D1F00` | 경고 배경 |
+| `--color-error` | `#EF4444` | `#F87171` | 에러, 삭제 |
+| `--color-error-subtle` | `#FEF2F2` | `#2D0A0A` | 에러 배경 |
+| `--color-info` | `#4DABF7` | `#74C0FC` | 정보, 안내 |
+| `--color-info-subtle` | `#EFF8FF` | `#0D1F2D` | 정보 배경 |
 
-```
-Soft Coral (CTA 보조, 감성 포인트)
+### 1.3 그레이 스케일 (Neutral)
 
-  accent-400: #fb7185
-  accent-500: #f43f5e  — 응급 진입 버튼 강조, "지금 응급" 배너
-  accent-600: #e11d48
-```
+| 토큰명 | 라이트값 | 다크값 |
+|---|---|---|
+| `--color-gray-50` | `#FAFAFA` | `#0A0A0A` |
+| `--color-gray-100` | `#F4F4F5` | `#18181B` |
+| `--color-gray-200` | `#E4E4E7` | `#27272A` |
+| `--color-gray-300` | `#D4D4D8` | `#3F3F46` |
+| `--color-gray-400` | `#A1A1AA` | `#52525B` |
+| `--color-gray-500` | `#71717A` | `#71717A` |
+| `--color-gray-600` | `#52525B` | `#A1A1AA` |
+| `--color-gray-700` | `#3F3F46` | `#D4D4D8` |
+| `--color-gray-800` | `#27272A` | `#E4E4E7` |
+| `--color-gray-900` | `#18181B` | `#F4F4F5` |
 
-**Tailwind 토큰 키**: `accent-*`
-**용도**: 응급 탭 CTA, 면책 고지 배너 포인트, 좋아요/즐겨찾기
+---
 
-### 2-4. Semantic 컬러
+## 2. 디자인 토큰 — 타이포그래피
 
-#### Success (완료, 정상, 접종 완료)
-```
-Light: #16a34a (green-600)
-Dark:  #4ade80 (green-400)
-Background Light: #f0fdf4 (green-50)
-Background Dark:  #14532d / 30% opacity
-```
-**Nativewind**: `text-green-600 dark:text-green-400`, `bg-green-50 dark:bg-green-950`
+### 2.1 폰트 패밀리
 
-#### Warning (주의, 준응급, 접종 임박)
-```
-Light: #d97706 (amber-600)
-Dark:  #fbbf24 (amber-400)
-Background Light: #fffbeb (amber-50)
-Background Dark:  #451a03 / 30% opacity
-```
-**Nativewind**: `text-amber-600 dark:text-amber-400`, `bg-amber-50 dark:bg-amber-950`
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--font-sans` | `'Pretendard Variable', 'Pretendard', -apple-system, sans-serif` | 본문, UI 전반 |
+| `--font-display` | `'Gmarket Sans', 'GmarketSansBold', sans-serif` | 카드 타이틀, 강조 헤드라인 |
+| `--font-balloon` | `'Cafe24Danjunghae', 'NanumPen', cursive` | 말풍선 대사, 일기 인용 |
+| `--font-english` | `'Inter Variable', 'Inter', sans-serif` | 영문 UI, 메타 정보 |
+| `--font-logo` | `'Bagel Fat One', cursive` | 로고 워드마크 |
+| `--font-mono` | `'JetBrains Mono', 'Fira Code', monospace` | 코드, 날짜/시간 (고정폭) |
 
-#### Error (응급, 오류, 삭제 확인)
-```
-Light: #dc2626 (red-600)
-Dark:  #f87171 (red-400)
-Background Light: #fef2f2 (red-50)
-Background Dark:  #450a0a / 30% opacity
-```
-**Nativewind**: `text-red-600 dark:text-red-400`, `bg-red-50 dark:bg-red-950`
+### 2.2 폰트 사이즈 스케일
 
-#### Info (정보, 팁, 안내)
-```
-Light: #2563eb (blue-600)
-Dark:  #60a5fa (blue-400)
-Background Light: #eff6ff (blue-50)
-Background Dark:  #1e3a5f / 30% opacity
-```
-**Nativewind**: `text-blue-600 dark:text-blue-400`, `bg-blue-50 dark:bg-blue-950`
+| 토큰명 | 값(rem) | 값(px) | 용도 |
+|---|---|---|---|
+| `--text-2xs` | `0.625rem` | `10px` | 법적 고지, 미세 레이블 |
+| `--text-xs` | `0.75rem` | `12px` | 태그, 배지, 캡션 |
+| `--text-sm` | `0.875rem` | `14px` | 보조 텍스트, 버튼 small |
+| `--text-base` | `1rem` | `16px` | 기본 본문 (일기 입력) |
+| `--text-md` | `1.125rem` | `18px` | 강조 본문, 버튼 기본 |
+| `--text-lg` | `1.25rem` | `20px` | 소제목, 카드 제목 |
+| `--text-xl` | `1.5rem` | `24px` | 섹션 헤딩 |
+| `--text-2xl` | `1.875rem` | `30px` | 페이지 타이틀 |
+| `--text-3xl` | `2.25rem` | `36px` | 히어로 텍스트 |
+| `--text-4xl` | `3rem` | `48px` | 공유 카드 대형 타이틀 |
+| `--text-5xl` | `3.75rem` | `60px` | 랜딩 강조 |
 
-### 2-5. Neutral (Gray 스케일)
+### 2.3 폰트 웨이트
 
-```
-Light mode 기준:
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--font-regular` | `400` | 본문, 설명 |
+| `--font-medium` | `500` | UI 레이블, 버튼 |
+| `--font-semibold` | `600` | 소제목, 강조 |
+| `--font-bold` | `700` | 헤딩, CTA 버튼 |
+| `--font-extrabold` | `800` | 히어로, 카드 타이틀 |
 
-  neutral-0:   #ffffff  — 최상위 배경, 카드 배경
-  neutral-50:  #f9fafb  — 앱 배경 (스크린 기본)
-  neutral-100: #f3f4f6  — 입력 필드 배경, 구분선
-  neutral-200: #e5e7eb  — 비활성 보더
-  neutral-300: #d1d5db  — placeholder
-  neutral-400: #9ca3af  — 보조 아이콘
-  neutral-500: #6b7280  — Caption 텍스트
-  neutral-600: #4b5563  — Body 보조 텍스트
-  neutral-700: #374151  — Body 메인 텍스트
-  neutral-800: #1f2937  — Heading 텍스트
-  neutral-900: #111827  — 최고 강조 텍스트
+### 2.4 라인 하이트
 
-Dark mode 매핑:
-  배경:         #0f172a  (slate-950) — 스크린 배경
-  카드 배경:    #1e293b  (slate-800)
-  보더:         #334155  (slate-700)
-  보조 텍스트:  #94a3b8  (slate-400)
-  메인 텍스트:  #e2e8f0  (slate-200)
-  강조 텍스트:  #f8fafc  (slate-50)
-```
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--leading-tight` | `1.2` | 제목, 한 줄 레이블 |
+| `--leading-snug` | `1.375` | 서브헤딩, 카드 요약 |
+| `--leading-normal` | `1.5` | 기본 본문 |
+| `--leading-relaxed` | `1.625` | 일기 입력, 긴 문단 |
+| `--leading-loose` | `2.0` | 말풍선 텍스트 |
 
-### 2-6. tailwind.config.js 컬러 토큰 정의
+### 2.5 Letter Spacing
 
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50:  '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-        },
-        secondary: {
-          50:  '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        accent: {
-          400: '#fb7185',
-          500: '#f43f5e',
-          600: '#e11d48',
-        },
-        // Semantic은 Tailwind 기본 green/amber/red/blue 활용
-        surface: {
-          // 다크모드 전용 surface 토큰
-          DEFAULT: '#ffffff',       // light
-          dark:    '#0f172a',       // dark screen bg
-          card:    '#ffffff',       // light card
-          'card-dark': '#1e293b',   // dark card
-        },
-      },
-    },
-  },
-}
-```
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--tracking-tighter` | `-0.05em` | 대형 디스플레이 제목 |
+| `--tracking-tight` | `-0.025em` | 헤딩 |
+| `--tracking-normal` | `0em` | 기본 |
+| `--tracking-wide` | `0.025em` | UI 레이블, 버튼 |
+| `--tracking-wider` | `0.05em` | 캡션, 배지 |
+| `--tracking-widest` | `0.1em` | 대문자 레이블 |
 
-### 2-7. CSS 변수 (global.css — Nativewind v4)
+### 2.6 타이포그래피 조합 스케일 (합성 토큰)
+
+| 클래스명 | 폰트 | 사이즈 | 웨이트 | 라인높이 | 용도 |
+|---|---|---|---|---|---|
+| `.type-display-lg` | Gmarket Sans | 3xl | extrabold | tight | 공유 카드 메인 제목 |
+| `.type-display-md` | Gmarket Sans | 2xl | bold | tight | 페이지 타이틀 |
+| `.type-heading-lg` | Pretendard | xl | bold | snug | 섹션 헤딩 |
+| `.type-heading-md` | Pretendard | lg | semibold | snug | 카드 타이틀 |
+| `.type-heading-sm` | Pretendard | md | semibold | normal | 그룹 레이블 |
+| `.type-body-lg` | Pretendard | md | regular | relaxed | 일기 입력 본문 |
+| `.type-body-md` | Pretendard | base | regular | normal | 기본 본문 |
+| `.type-body-sm` | Pretendard | sm | regular | normal | 설명 텍스트 |
+| `.type-caption` | Pretendard | xs | regular | normal | 메타, 캡션 |
+| `.type-label-lg` | Pretendard | sm | medium | tight | 버튼, UI 레이블 |
+| `.type-label-sm` | Pretendard | xs | medium | tight | 배지, 태그 |
+| `.type-balloon` | Cafe24Danjunghae | base | regular | loose | 말풍선 대사 |
+| `.type-legal` | Pretendard | 2xs | regular | normal | 법적 고지 |
+
+---
+
+## 3. 디자인 토큰 — 스페이싱 · 레이아웃
+
+### 3.1 스페이싱 스케일
+
+기본 단위: `4px (0.25rem)`
+
+| 토큰명 | 값(rem) | 값(px) | 용도 |
+|---|---|---|---|
+| `--space-0` | `0` | `0px` | — |
+| `--space-px` | `0.0625rem` | `1px` | 미세 오프셋 |
+| `--space-0.5` | `0.125rem` | `2px` | 아이콘 내부 패딩 |
+| `--space-1` | `0.25rem` | `4px` | 최소 간격 |
+| `--space-1.5` | `0.375rem` | `6px` | 아이콘-텍스트 간격 |
+| `--space-2` | `0.5rem` | `8px` | 인라인 패딩 |
+| `--space-2.5` | `0.625rem` | `10px` | 작은 패딩 |
+| `--space-3` | `0.75rem` | `12px` | 컴포넌트 내부 패딩 small |
+| `--space-4` | `1rem` | `16px` | 기본 패딩/간격 |
+| `--space-5` | `1.25rem` | `20px` | 컴포넌트 간 간격 |
+| `--space-6` | `1.5rem` | `24px` | 섹션 내 여백 |
+| `--space-8` | `2rem` | `32px` | 카드 내부 패딩 |
+| `--space-10` | `2.5rem` | `40px` | 섹션 간 여백 |
+| `--space-12` | `3rem` | `48px` | 카드 외곽 여백, 페이지 상하 패딩 |
+| `--space-14` | `3.5rem` | `56px` | 탭바 높이 |
+| `--space-16` | `4rem` | `64px` | 헤더 높이 |
+| `--space-20` | `5rem` | `80px` | 대형 섹션 간격 |
+| `--space-24` | `6rem` | `96px` | 히어로 패딩 |
+
+### 3.2 Border Radius
+
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--radius-none` | `0` | 만화 컷 외곽, 펜선 요소 |
+| `--radius-sm` | `4px` | 배지, 태그 작은 요소 |
+| `--radius-md` | `8px` | 버튼 small, 인풋 |
+| `--radius-lg` | `12px` | 카드, 버튼 기본 |
+| `--radius-xl` | `16px` | 모달, 바텀시트 상단 |
+| `--radius-2xl` | `24px` | 말풍선 대사형 |
+| `--radius-3xl` | `32px` | 아바타 컨테이너 |
+| `--radius-full` | `9999px` | 알약형 버튼, 컷 번호 원형 |
+
+### 3.3 Box Shadow
+
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--shadow-xs` | `0 1px 2px rgba(26,26,26,0.06)` | 미세 올라옴 |
+| `--shadow-sm` | `0 1px 4px rgba(26,26,26,0.10)` | 기본 카드 |
+| `--shadow-md` | `0 4px 12px rgba(26,26,26,0.12)` | 라이즈드 카드 |
+| `--shadow-lg` | `0 8px 24px rgba(26,26,26,0.16)` | 모달, 드롭다운 |
+| `--shadow-xl` | `0 16px 48px rgba(26,26,26,0.20)` | 바텀시트, 공유 카드 |
+| `--shadow-ink` | `3px 3px 0 rgba(26,26,26,0.85)` | 만화 스타일 그림자 (키치) |
+| `--shadow-ink-sm` | `2px 2px 0 rgba(26,26,26,0.85)` | 소형 키치 요소 |
+| `--shadow-focus` | `0 0 0 3px rgba(77,171,247,0.40)` | 포커스 링 |
+| `--shadow-focus-error` | `0 0 0 3px rgba(255,107,107,0.35)` | 에러 포커스 링 |
+
+### 3.4 Z-Index
+
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--z-base` | `0` | 기본 레이어 |
+| `--z-raised` | `10` | 카드 호버 상태 |
+| `--z-dropdown` | `100` | 드롭다운, 팝오버 |
+| `--z-sticky` | `200` | 스티키 헤더 |
+| `--z-overlay` | `300` | 오버레이 배경 |
+| `--z-modal` | `400` | 모달, 바텀시트 |
+| `--z-toast` | `500` | 토스트 알림 |
+| `--z-tooltip` | `600` | 툴팁 |
+| `--z-max` | `9999` | 강제 최상위 |
+
+### 3.5 Breakpoint
+
+| 토큰명 | 값 | 기준 |
+|---|---|---|
+| `--screen-mobile` | `430px` | 모바일 기준 (iPhone 최대폭) |
+| `--screen-tablet` | `768px` | 태블릿 세로 |
+| `--screen-desktop` | `1024px` | 데스크톱 |
+| `--screen-wide` | `1280px` | 와이드 데스크톱 |
+
+**그리드 시스템**
+
+| 화면 | 컬럼 | 거터 | 사이드 패딩 |
+|---|---|---|---|
+| 모바일 (< 430px) | 4컬럼 | 16px | 20px |
+| 태블릿 (768px+) | 8컬럼 | 20px | 32px |
+| 데스크톱 (1024px+) | 12컬럼 | 24px | 48px |
+
+### 3.6 히트 에어리어 (모바일 터치)
+
+- 최소 터치 히트 에어리어: **44×44px** (WCAG 2.5.5)
+- 말풍선 에디터 핸들: **48×48px** (react-konva 터치 타겟)
+- 화풍 선택 카드: **최소 height 80px**
+- 아바타 선택 셀: **최소 72×72px**
+
+---
+
+## 4. 디자인 토큰 — 모션 · 이펙트
+
+### 4.1 Duration (지속 시간)
+
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--duration-instant` | `0ms` | 즉각 피드백 |
+| `--duration-fast` | `100ms` | 버튼 클릭, 체크박스 |
+| `--duration-normal` | `200ms` | 기본 호버/포커스 트랜지션 |
+| `--duration-slow` | `300ms` | 패널 슬라이드, 모달 등장 |
+| `--duration-xslow` | `500ms` | 바텀시트, 페이지 전환 |
+| `--duration-loading` | `800ms` | 스켈레톤 펄스 사이클 |
+| `--duration-generation` | `1200ms` | 4컷 생성 진행 애니메이션 사이클 |
+
+### 4.2 Easing
+
+| 토큰명 | 값 | 용도 |
+|---|---|---|
+| `--ease-linear` | `linear` | 로딩 바 등 균일 진행 |
+| `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | 요소 퇴장 |
+| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | 요소 등장, 드롭 |
+| `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` | 기본 상태 변화 |
+| `--ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | 바운스 피드백 (버튼 클릭) |
+| `--ease-draw` | `cubic-bezier(0.25, 0.46, 0.45, 0.94)` | 만화 선 그리기 애니메이션 |
+
+### 4.3 특수 모션
+
+| 효과 | 트리거 | 구현 | 값 |
+|---|---|---|---|
+| 스켈레톤 펄스 | 로딩 | shimmer gradient animation | 200→100→200% background-position |
+| 4컷 카드 등장 | SSE 컷 도착 | 위→아래 fade-slide | translateY(12px)→0, opacity 0→1, 300ms ease-out |
+| 버튼 프레스 | active | scale | scale(0.96), 100ms ease-spring |
+| 바텀시트 등장 | open | slide up | translateY(100%)→0, 500ms ease-out |
+| 토스트 | show | slide + fade | translateY(8px)→0 + opacity, 200ms ease-out |
+| 아바타 선택 | click | bounce | scale(1)→(1.08)→(1), 200ms ease-spring |
+| 말풍선 배치 | drop | scale | scale(0.85)→1, 150ms ease-spring |
+| 프로그레스 | generation | draw bar | width 0→100%, linear, 실제 진행 동기화 |
+| 컷 번호 | 등장 | pop | scale(0)→(1.15)→(1), 250ms |
+
+---
+
+## 5. Tailwind v4 @theme 전체 코드
 
 ```css
-/* global.css */
-:root {
-  --color-primary:    #14b8a6;
-  --color-secondary:  #f59e0b;
-  --color-accent:     #f43f5e;
-  --color-bg:         #f9fafb;
-  --color-surface:    #ffffff;
-  --color-text-main:  #1f2937;
-  --color-text-sub:   #6b7280;
-  --color-border:     #e5e7eb;
+/* tailwind.css — @theme 블록 (Tailwind v4) */
+/* 이 파일을 globals.css 상단에 import 또는 직접 포함 */
+
+@import "tailwindcss";
+
+@theme {
+  /* ========================
+     BREAKPOINTS
+     ======================== */
+  --breakpoint-sm: 430px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* ========================
+     FONTS
+     ======================== */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Gmarket Sans', 'GmarketSansBold', sans-serif;
+  --font-balloon: 'Cafe24Danjunghae', 'NanumPen', cursive;
+  --font-english: 'Inter Variable', 'Inter', sans-serif;
+  --font-logo: 'Bagel Fat One', cursive;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ========================
+     FONT SIZES
+     ======================== */
+  --text-2xs: 0.625rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+  --text-5xl: 3.75rem;
+
+  /* ========================
+     FONT WEIGHTS
+     ======================== */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ========================
+     LINE HEIGHTS
+     ======================== */
+  --leading-tight: 1.2;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2.0;
+
+  /* ========================
+     LETTER SPACING
+     ======================== */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ========================
+     SPACING
+     ======================== */
+  --spacing-px: 1px;
+  --spacing-0: 0;
+  --spacing-0_5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1_5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2_5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+
+  /* ========================
+     BORDER RADIUS
+     ======================== */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+
+  /* ========================
+     SHADOWS
+     ======================== */
+  --shadow-xs: 0 1px 2px rgb(26 26 26 / 0.06);
+  --shadow-sm: 0 1px 4px rgb(26 26 26 / 0.10);
+  --shadow-md: 0 4px 12px rgb(26 26 26 / 0.12);
+  --shadow-lg: 0 8px 24px rgb(26 26 26 / 0.16);
+  --shadow-xl: 0 16px 48px rgb(26 26 26 / 0.20);
+  --shadow-ink: 3px 3px 0 rgb(26 26 26 / 0.85);
+  --shadow-ink-sm: 2px 2px 0 rgb(26 26 26 / 0.85);
+  --shadow-focus: 0 0 0 3px rgb(77 171 247 / 0.40);
+  --shadow-focus-error: 0 0 0 3px rgb(255 107 107 / 0.35);
+
+  /* ========================
+     Z-INDEX
+     ======================== */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+  --z-max: 9999;
+
+  /* ========================
+     MOTION
+     ======================== */
+  --duration-instant: 0ms;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-xslow: 500ms;
+  --duration-loading: 800ms;
+  --duration-generation: 1200ms;
+
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-draw: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ========================
+     COLORS — BRAND PRIMITIVES
+     ======================== */
+  --color-ink: #1A1A1A;
+  --color-paper: #FAF7F2;
+  --color-coral: #FF6B6B;
+  --color-coral-hover: #E55555;
+  --color-coral-active: #CC4444;
+  --color-sky: #4DABF7;
+  --color-lemon: #FFE066;
+  --color-pencil: #6C757D;
+  --color-eraser: #DEE2E6;
+
+  /* ========================
+     COLORS — SEMANTIC (LIGHT DEFAULT)
+     ======================== */
+  /* Background */
+  --color-bg-base: #FAF7F2;
+  --color-bg-subtle: #F4F0E8;
+  --color-bg-muted: #EDE9E0;
+  --color-bg-inverse: #1A1A1A;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-overlay: rgb(26 26 26 / 0.48);
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4540;
+  --color-text-muted: #6C757D;
+  --color-text-disabled: #ADB5BD;
+  --color-text-inverse: #FAF7F2;
+  --color-text-link: #4DABF7;
+  --color-text-accent: #FF6B6B;
+
+  /* Primary */
+  --color-primary: #FF6B6B;
+  --color-primary-hover: #E55555;
+  --color-primary-active: #CC4444;
+  --color-primary-subtle: #FFF0F0;
+  --color-primary-text: #FFFFFF;
+
+  /* Border */
+  --color-border-default: #DEE2E6;
+  --color-border-strong: #ADB5BD;
+  --color-border-focus: #4DABF7;
+  --color-border-error: #FF6B6B;
+
+  /* Status */
+  --color-success: #2ECC71;
+  --color-success-subtle: #EDFAF4;
+  --color-warning: #F59E0B;
+  --color-warning-subtle: #FFFBEB;
+  --color-error: #EF4444;
+  --color-error-subtle: #FEF2F2;
+  --color-info: #4DABF7;
+  --color-info-subtle: #EFF8FF;
 }
 
+/* ========================
+   DARK MODE TOKEN OVERRIDES
+   ======================== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary:    #2dd4bf;
-    --color-secondary:  #fbbf24;
-    --color-accent:     #fb7185;
-    --color-bg:         #0f172a;
-    --color-surface:    #1e293b;
-    --color-text-main:  #e2e8f0;
-    --color-text-sub:   #94a3b8;
-    --color-border:     #334155;
+    --color-bg-base: #1C1917;
+    --color-bg-subtle: #292524;
+    --color-bg-muted: #3C3633;
+    --color-bg-inverse: #F0EDE8;
+    --color-surface-raised: #231F1C;
+    --color-surface-overlay: rgb(0 0 0 / 0.64);
+
+    --color-text-primary: #F0EDE8;
+    --color-text-secondary: #C5BFB8;
+    --color-text-muted: #8B8178;
+    --color-text-disabled: #4A4540;
+    --color-text-inverse: #1A1A1A;
+    --color-text-link: #74C0FC;
+    --color-text-accent: #FF8080;
+
+    --color-primary: #FF8080;
+    --color-primary-hover: #FF9494;
+    --color-primary-active: #FFAAAA;
+    --color-primary-subtle: #3D1A1A;
+    --color-primary-text: #1A1A1A;
+
+    --color-border-default: #343A40;
+    --color-border-strong: #6C757D;
+    --color-border-focus: #74C0FC;
+    --color-border-error: #FF8080;
+
+    --color-success: #4ADE80;
+    --color-success-subtle: #0D2E1A;
+    --color-warning: #FBBF24;
+    --color-warning-subtle: #2D1F00;
+    --color-error: #F87171;
+    --color-error-subtle: #2D0A0A;
+    --color-info: #74C0FC;
+    --color-info-subtle: #0D1F2D;
+
+    --color-coral: #FF8080;
+    --color-sky: #74C0FC;
+    --color-lemon: #FFD43B;
+    --color-pencil: #ADB5BD;
+    --color-eraser: #343A40;
+  }
+}
+
+/* data-theme 속성 기반 강제 다크 (시스템 무관) */
+[data-theme="dark"] {
+  --color-bg-base: #1C1917;
+  /* ... (위와 동일) */
+}
+```
+
+---
+
+## 6. 로고 시스템
+
+### 6.1 심볼 컨셉 상세
+
+**형태**: 말풍선(대사형 타원) 안에 일기장 줄(가로 rule line 3개)이 그려진 모노그램
+- 말풍선 외곽: 2px solid Ink, 둥근 모서리 radius 24px
+- 내부 줄: 1px solid, 3줄, 간격 균등, 가운데 줄만 Coral 강조색
+- 꼬리: 좌하단 방향, 말풍선 대사형 꼬리, 펜선 스타일
+
+**의미**: "내 이야기(일기)를 만화(말풍선)로 만든다" — 브랜드 핵심 가치 시각화
+
+### 6.2 워드마크
+
+- "툰일기" (한글) — Bagel Fat One, 폰트 사이즈 로고 맥락 가변, 자간 -0.02em
+- "Toonlog" (영문) — Bagel Fat One, 자간 -0.01em
+- 기본 조합: 심볼 + "툰일기" 우측 배치, 수직 중앙 정렬
+- 선택 조합: 심볼 단독 (파비콘, 앱 아이콘)
+
+### 6.3 컬러 변형
+
+| 변형 | 배경 | 심볼 | 워드마크 | 용도 |
+|---|---|---|---|---|
+| Primary (라이트) | Paper White | Ink + Coral 강조줄 | Ink | 기본 라이트 배경 |
+| Primary (다크) | Ink | Paper White + Coral 강조줄 | Paper White | 다크 배경 |
+| Mono White | 투명 | White | White | 다크 배경 위 단색 |
+| Mono Black | 투명 | Black | Black | 인쇄, 라이트 위 단색 |
+| Coral (키치) | Coral | White | White | 공유 카드, 특별 캠페인 |
+
+### 6.4 클리어스페이스
+
+- 최소 클리어스페이스: 심볼 높이의 **0.5배** 사방
+- 클리어스페이스 내 다른 텍스트/요소 배치 금지
+
+### 6.5 최소 크기
+
+| 사용처 | 최소 크기 |
+|---|---|
+| 심볼+워드마크 조합 | 높이 24px |
+| 심볼 단독 | 16px × 16px |
+| 앱 아이콘 | 최소 32px × 32px |
+
+### 6.6 사용 금지
+
+- 기울임 변형 금지
+- 외곽선(stroke)만 남기는 아웃라인 변형 금지
+- 배경색과 대비 3:1 미달 조합 사용 금지
+- 이미지 위에 배치 시 투명도 없이 단색 버전 사용
+
+---
+
+## 7. 핵심 컴포넌트 스펙
+
+> 상태 5종: `default` / `hover` / `active` / `disabled` / `loading`
+> 모바일 퍼스트 기준 (430px), 다크모드 병행 명시
+
+---
+
+### 7.1 Button
+
+#### Button — Primary (Coral CTA)
+
+```
+크기: height 48px (md), 40px (sm), 56px (lg)
+패딩: 수평 24px (md), 16px (sm), 32px (lg)
+폰트: Pretendard, 16px, font-weight 700, tracking-wide
+반경: radius-lg (12px)
+min-width: 120px
+```
+
+| 상태 | 배경 | 텍스트 | 테두리 | 그림자 | 기타 |
+|---|---|---|---|---|---|
+| default | `--color-primary` | White | none | shadow-ink-sm | — |
+| hover | `--color-primary-hover` | White | none | shadow-ink | translateY(-1px) |
+| active | `--color-primary-active` | White | none | shadow-xs | scale(0.97) |
+| disabled | `--color-border-default` | `--color-text-disabled` | none | none | cursor-not-allowed, opacity 0.5 |
+| loading | `--color-primary` | transparent | none | shadow-ink-sm | Spinner 오버레이 (White, 20px) |
+
+#### Button — Secondary
+
+| 상태 | 배경 | 텍스트 | 테두리 | 그림자 |
+|---|---|---|---|---|
+| default | transparent | `--color-text-primary` | 1.5px solid `--color-border-default` | none |
+| hover | `--color-bg-subtle` | `--color-text-primary` | 1.5px solid `--color-border-strong` | shadow-xs |
+| active | `--color-bg-muted` | `--color-text-primary` | 1.5px solid `--color-border-strong` | none |
+| disabled | transparent | `--color-text-disabled` | 1px solid `--color-border-default` | none |
+| loading | transparent | transparent | 1.5px solid `--color-border-default` | none |
+
+#### Button — Ghost
+
+| 상태 | 배경 | 텍스트 | 테두리 |
+|---|---|---|---|
+| default | transparent | `--color-primary` | none |
+| hover | `--color-primary-subtle` | `--color-primary-hover` | none |
+| active | `--color-primary-subtle` | `--color-primary-active` | none |
+| disabled | transparent | `--color-text-disabled` | none |
+
+#### Button — Danger
+
+| 상태 | 배경 | 텍스트 | 테두리 |
+|---|---|---|---|
+| default | `--color-error` | White | none |
+| hover | `#DC2626` | White | none |
+| active | `#B91C1C` | White | none |
+| disabled | `--color-bg-subtle` | `--color-text-disabled` | none |
+
+#### Button — Icon Only
+
+```
+크기: 44×44px (md), 36×36px (sm), 52×52px (lg)
+반경: radius-lg 또는 radius-full (원형 변형)
+아이콘: 20px (md 기준)
+```
+
+---
+
+### 7.2 Input / Textarea (일기 입력)
+
+#### Text Input
+
+```
+height: 48px
+padding: 수직 14px, 수평 16px
+폰트: Pretendard, 16px, font-weight 400
+반경: radius-lg (12px)
+border: 1.5px solid
+transition: border-color 200ms ease-in-out, box-shadow 200ms
+```
+
+| 상태 | 배경 | 테두리 | 텍스트 | 그림자 |
+|---|---|---|---|---|
+| default | `--color-bg-subtle` | `--color-border-default` | `--color-text-primary` | none |
+| hover | `--color-bg-subtle` | `--color-border-strong` | `--color-text-primary` | none |
+| focus | `--color-surface-raised` | `--color-border-focus` | `--color-text-primary` | shadow-focus |
+| filled | `--color-bg-subtle` | `--color-border-default` | `--color-text-primary` | none |
+| error | `--color-error-subtle` | `--color-border-error` | `--color-text-primary` | shadow-focus-error |
+| disabled | `--color-bg-muted` | `--color-border-default` | `--color-text-disabled` | none |
+
+**레이블**: 12px, Pretendard, font-weight 500, `--color-text-secondary`, 인풋 위 8px
+**플레이스홀더**: `--color-text-muted`
+**에러 메시지**: 12px, `--color-error`, 인풋 아래 4px
+**카운터**: 12px, `--color-text-muted`, 인풋 우측 하단 (textarea 전용)
+
+#### Textarea (일기 입력용)
+
+```
+min-height: 200px (모바일), 280px (데스크톱)
+max-height: 480px
+padding: 16px
+resize: none (자동 높이 확장)
+폰트: Pretendard Variable, 16px, line-height 1.625 (--leading-relaxed)
+```
+
+**특이사항**:
+- 일기 입력 textarea는 배경을 **종이 질감** CSS 패턴으로 처리
+  ```css
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    var(--color-border-default) 31px,
+    var(--color-border-default) 32px
+  );
+  background-attachment: local;
+  ```
+- 글자 수 실시간 카운터: 하단 우측, `현재수/최대수` 형식, 900자 초과 시 `--color-warning`으로 전환
+
+#### Select (화풍 선택 드롭다운)
+
+```
+height: 48px
+padding: 0 16px
+아이콘: 우측 ChevronDown 16px, --color-text-muted
+appearance: none
+```
+
+#### Checkbox / Radio
+
+```
+크기: 20×20px (체크박스 정사각, 라디오 원형)
+체크 시: --color-primary 배경 + White 체크마크/도트
+미체크: 2px border --color-border-default
+포커스: shadow-focus
+disabled: opacity 0.5
+```
+
+---
+
+### 7.3 Card
+
+#### 기본 카드
+
+```
+배경: --color-surface-raised
+반경: radius-xl (16px)
+패딩: 16px (모바일), 20px (데스크톱)
+border: 1px solid --color-border-default
+shadow: shadow-sm
+transition: shadow 200ms ease-out, transform 200ms ease-out
+```
+
+| 상태 | shadow | transform |
+|---|---|---|
+| default | shadow-sm | none |
+| hover | shadow-md | translateY(-2px) |
+| active | shadow-xs | translateY(0) |
+
+#### 4컷 만화 카드
+
+```
+배경: --color-surface-raised
+반경: radius-lg (12px)
+테두리: 2px solid --color-ink (만화 스타일)
+shadow: shadow-ink
+오버플로: hidden
+가로세로비: 1:1 (모바일 기본 — 1080×1080 기준)
+```
+
+#### 화풍 선택 카드 (이하 §7.10에서 상세)
+
+---
+
+### 7.4 BottomSheet
+
+```
+배경: --color-surface-raised
+반경: 상단 radius-xl (16px), 하단 0
+shadow: shadow-xl
+max-height: 90dvh
+패딩: 8px (드래그 핸들 영역) + 20px (콘텐츠)
+z-index: --z-modal
+```
+
+**드래그 핸들**:
+```
+width: 40px
+height: 4px
+배경: --color-border-strong
+반경: radius-full
+위치: 상단 중앙 8px 아래
+```
+
+**애니메이션**:
+- 등장: translateY(100%) → 0, 500ms ease-out
+- 퇴장: translateY(100%), 300ms ease-in
+- 백드롭: opacity 0 → 1, 300ms
+
+**스크롤 처리**: 내부 콘텐츠 스크롤 가능, 바텀시트 상단 드래그 시 닫힘
+
+---
+
+### 7.5 Chip / Tag
+
+#### 화풍/카테고리 칩
+
+```
+height: 32px (기본), 28px (small)
+padding: 수평 12px
+폰트: 12px, font-weight 500
+반경: radius-full
+border: 1.5px solid
+```
+
+| 상태 | 배경 | 테두리 | 텍스트 |
+|---|---|---|---|
+| default | --color-bg-subtle | --color-border-default | --color-text-secondary |
+| hover | --color-bg-muted | --color-border-strong | --color-text-primary |
+| selected | --color-primary-subtle | --color-primary | --color-primary |
+| disabled | --color-bg-subtle | --color-border-default | --color-text-disabled |
+
+#### 요금제 배지
+
+```
+height: 20px
+padding: 수평 8px
+폰트: 10px, font-weight 600, tracking-wider
+반경: radius-sm
+```
+
+| 티어 | 배경 | 텍스트 |
+|---|---|---|
+| 무료 | --color-bg-muted | --color-text-secondary |
+| 베이직 | --color-sky (투명도 0.15) | --color-sky |
+| 프로 | --color-lemon (투명도 0.20) | #B7860A |
+| 얼리버드 | --color-coral (투명도 0.15) | --color-coral |
+
+---
+
+### 7.6 Toggle (다크모드 등)
+
+```
+width: 48px, height: 28px
+반경: radius-full
+thumb: 22×22px, 라이트 배경 White, 위치 translateX(2px) off / translateX(22px) on
+transition: 200ms ease-in-out
+```
+
+| 상태 | 트랙 배경 | 섀도 |
+|---|---|---|
+| off | --color-border-strong | none |
+| on | --color-primary | none |
+| disabled (off) | --color-bg-muted | none |
+| disabled (on) | --color-primary (opacity 0.4) | none |
+| focus | — | shadow-focus |
+
+---
+
+### 7.7 Modal / Dialog
+
+```
+배경: --color-surface-raised
+반경: radius-xl (16px)
+max-width: 320px (모바일), 480px (데스크톱)
+padding: 24px
+shadow: shadow-xl
+z-index: --z-modal
+백드롭: --color-surface-overlay (blur 4px)
+```
+
+**구성 요소**:
+- 헤더: 제목 (18px bold) + 닫기 버튼 (44×44px, X 아이콘)
+- 콘텐츠 영역: 패딩 내 자유 배치
+- 액션 영역: 하단, 버튼 1~2개 (취소=Secondary, 확인=Primary)
+
+**애니메이션**: scale(0.95)+opacity(0) → scale(1)+opacity(1), 200ms ease-out
+
+---
+
+### 7.8 Toast
+
+```
+height: 48px (single line), 최대 64px
+width: calc(100vw - 40px), max-width 380px
+padding: 수직 12px, 수평 16px
+반경: radius-lg (12px)
+shadow: shadow-lg
+z-index: --z-toast
+위치: 하단 중앙, bottom: 24px (탭바 위 20px 이격)
+폰트: 14px, font-weight 500
+```
+
+| 타입 | 배경 | 텍스트 | 아이콘 |
+|---|---|---|---|
+| default | --color-bg-inverse | --color-text-inverse | White |
+| success | --color-success | White | CheckCircle |
+| warning | --color-warning | White | AlertTriangle |
+| error | --color-error | White | XCircle |
+| info | --color-sky | White | InfoCircle |
+
+**자동 소멸**: 3초 (에러/경고는 4초), 스와이프 업으로 수동 닫기
+
+---
+
+### 7.9 Skeleton
+
+```
+배경: --color-bg-muted
+반경: 콘텐츠와 동일 반경 사용
+animation: shimmer 800ms ease-in-out infinite alternate
+```
+
+```css
+@keyframes shimmer {
+  from { background-color: var(--color-bg-muted); }
+  to   { background-color: var(--color-bg-subtle); }
+}
+```
+
+**4컷 카드 스켈레톤**:
+- 2×2 그리드 각 컷 셀에 동일 크기 Skeleton
+- 각 컷마다 100ms delay 차이 (왼쪽 위 → 오른쪽 아래 순)
+- 하단에 제목 Skeleton (너비 60%, height 16px) + 날짜 (너비 30%, height 12px)
+
+**일기 목록 스켈레톤**: 카드 height 80px, 아바타 40×40px 원형 + 텍스트 2줄
+
+---
+
+### 7.10 ProgressBar (4컷 생성 대기)
+
+```
+width: 100%
+height: 8px
+반경: radius-full
+배경: --color-bg-muted
+바: --color-primary (라이트), 그라디언트 옵션: linear-gradient(90deg, --color-coral, --color-lemon)
+transition: width linear, 실제 SSE 진행과 동기화
+```
+
+**생성 진행 UI 전체 구성**:
+
+```
+[아바타 애니메이션 영역]
+  - 선택된 아바타 캐릭터: 연필로 그리는 드로잉 애니메이션 (stroke-dashoffset CSS)
+  - 너비 120px, 중앙 배치
+
+[컷 진행 표시]
+  1컷 [완료] 2컷 [생성 중...] 3컷 [대기] 4컷 [대기]
+  - 각 스텝 24×24px 원형 (완료=Coral fill+Check, 중=Coral border+Spinner, 대기=gray)
+
+[프로그레스 바]
+  height: 8px, 너비 100%, Coral 계열
+
+[메시지]
+  "2번째 컷을 그리는 중..."
+  14px, --color-text-secondary, 중앙 정렬
+
+[취소 링크]
+  "생성 취소" — Ghost 버튼 small, 우측 상단
+```
+
+---
+
+### 7.11 Avatar Selector
+
+아바타 선택 UI는 "캐릭터 꾸미기" 바텀시트에서 표시됨.
+
+**그리드**: 2열 × 4행 = 아바타 8종 카드
+
+```
+각 셀:
+  width: (100% - gap) / 2
+  padding: 12px
+  반경: radius-xl
+  border: 2px solid --color-border-default
+  배경: --color-bg-subtle
+```
+
+| 상태 | 테두리 | 배경 | 그림자 |
+|---|---|---|---|
+| default | --color-border-default | --color-bg-subtle | none |
+| hover | --color-border-strong | --color-bg-muted | shadow-xs |
+| selected | --color-primary (2.5px) | --color-primary-subtle | shadow-focus |
+| disabled | --color-border-default | --color-bg-muted | none |
+
+**커스텀 슬라이더 (선택 후 표시)**:
+- 헤어컬러 8종: 20px 원형 스와치, 가로 스크롤
+- 상의 8종: 아이콘+텍스트 칩
+- 액세서리 4종: 안경/모자/이어폰/없음 — 아이콘 토글 버튼
+
+---
+
+### 7.12 화풍 선택 카드
+
+```
+width: 100%
+height: 100px
+반경: radius-xl (16px)
+border: 2px solid
+overflow: hidden
+```
+
+**내부 구성**:
+- 좌측 1/3: 썸네일 이미지 영역 (화풍 샘플, 배경 채움)
+- 우측 2/3: 화풍명 (16px bold) + 한 줄 설명 (12px muted)
+- 우측 끝: 라디오 인디케이터 원형 (22px)
+
+| 상태 | 테두리 | 배경 |
+|---|---|---|
+| default | --color-border-default | --color-surface-raised |
+| hover | --color-border-strong | --color-bg-subtle |
+| selected | --color-primary (2.5px) | --color-primary-subtle |
+
+---
+
+### 7.13 요금제 카드 (Pricing Card)
+
+```
+width: 100% (모바일 세로 배치), max-width 320px (데스크톱 3열)
+반경: radius-2xl (24px)
+padding: 24px
+border: 2px solid --color-border-default
+shadow: shadow-md
+```
+
+**프로 티어 강조**:
+- 테두리: 2px solid --color-lemon
+- 최상단 뱃지: "가장 인기" — Lemon 배경 + Ink 텍스트, 12px, 카드 상단 중앙 offset -12px
+- shadow-ink (키치 스타일)
+
+**카드 구성**:
+```
+[배지 영역] — 프로만 표시
+[티어명] 20px bold
+[가격] 32px extrabold / 월 12px regular
+[연간 할인] 12px muted (연간 결제 시 x개월 무료)
+[구분선]
+[기능 목록] 14px, CheckCircle 아이콘 (Coral) 좌측
+[CTA 버튼] 하단 전폭, Primary or Secondary
+```
+
+---
+
+### 7.14 말풍선 컴포넌트 (react-konva 에디터)
+
+이하 §10 말풍선 디자인 시스템에서 상세 명세.
+
+---
+
+## 8. 화풍 4종 시각 토큰표
+
+### 8.1 감성 라인 (Emotional Line)
+
+| 속성 | 값 |
+|---|---|
+| **선 굵기** | 0.5~1px 가변 (가장 얇음) |
+| **채도** | 30~40% (파스텔) |
+| **명암** | 셀셰이딩 1단계 (그림자 단색 1개) |
+| **배경** | Paper White + 미세 lin-gradient 종이 질감 |
+| **색 팔레트** | 파스텔 핑크 `#FECDD3`, 파스텔 스카이 `#BAE6FD`, 파스텔 민트 `#A7F3D0`, 크림 `#FEF3C7` |
+| **텍스처** | 미세 grain (CSS noise overlay, opacity 0.06) |
+| **분위기** | 잔잔, 따뜻, 일상적 |
+| **주요 폰트** | Cafe24Danjunghae (말풍선) |
+
+**프롬프트 캘리브레이션 키워드 (백엔드 전달)**:
+```json
+{
+  "style": "emotional_line",
+  "keywords": [
+    "thin line art 0.5-1px",
+    "pastel color palette",
+    "soft shading single tone",
+    "warm cozy atmosphere",
+    "shoujo manga style",
+    "minimal cel shading",
+    "light paper texture",
+    "low saturation 30-40%"
+  ],
+  "negative_keywords": [
+    "bold lines",
+    "high contrast",
+    "bright neon colors",
+    "heavy shadows",
+    "cross-hatching"
+  ],
+  "line_weight_range": [0.5, 1.0],
+  "saturation_range": [30, 40],
+  "shadow_layers": 1
+}
+```
+
+**합격 기준**:
+- 선 굵기 일관성: 동일 컷 내 최대 선 굵기 편차 0.3px 이내
+- 채도 평균: 30~45% (HSL 기준)
+- 배경 vs 인물 채도 차: 10% 이내
+- 인물 4컷 간 외곽선 스타일 일치도: 시각 검수 Pass
+- 분위기 평가: 내부 검수 3인 중 2인 "잔잔/따뜻" 선택
+
+---
+
+### 8.2 대담한 펜선 (Bold Pen)
+
+| 속성 | 값 |
+|---|---|
+| **선 굵기** | 2~4px 가변 굵기 (외곽 4px, 내부 디테일 2px) |
+| **채도** | 60~80% (강렬) |
+| **명암** | 강한 대비, 흑백 명암 + 망점(halftone) 패턴 |
+| **배경** | Ink 또는 White + 스크린톤(25% dot pattern) |
+| **색 팔레트** | Ink `#1A1A1A`, Pure White `#FFFFFF`, Coral `#FF6B6B`, Lemon `#FFE066` (포인트만) |
+| **텍스처** | Halftone dot 25% (스크린톤 오마주) |
+| **분위기** | 임팩트, 강렬, 드라마틱 |
+
+**프롬프트 캘리브레이션 키워드**:
+```json
+{
+  "style": "bold_pen",
+  "keywords": [
+    "bold ink lines 2-4px variable weight",
+    "high contrast black and white",
+    "halftone screen tone pattern",
+    "dramatic shading",
+    "seinen manga style",
+    "strong outlines",
+    "limited color accent",
+    "comic book style"
+  ],
+  "negative_keywords": [
+    "thin lines",
+    "pastel colors",
+    "full color painting",
+    "watercolor",
+    "soft edges"
+  ],
+  "line_weight_range": [2.0, 4.0],
+  "saturation_range": [0, 20],
+  "accent_saturation": [60, 80],
+  "shadow_layers": "high_contrast",
+  "halftone": true
+}
+```
+
+**합격 기준**:
+- 외곽선 최소 2px 유지 (4컷 전체)
+- 명암 대비: 배경/인물 명도 차 40% 이상
+- 망점 패턴 중간 그림자 영역 적용: 전체 면적 20~40%
+- 포인트 색 사용: 전체 면적 15% 이하 (강조 극대화)
+
+---
+
+### 8.3 팝 카툰 (Pop Cartoon)
+
+| 속성 | 값 |
+|---|---|
+| **선 굵기** | 1.5~2px 균일선 |
+| **채도** | 80~100% (형광 원색) |
+| **명암** | 거의 없음 (flat fill, max 2단계 음영) |
+| **배경** | 원색 flat 배경 + 폭발형 방사선 패턴 |
+| **색 팔레트** | 프라이머리 레드 `#FF3B3B`, 옐로우 `#FFD600`, 블루 `#0077FF`, 그린 `#00C851`, Ink 외곽 |
+| **텍스처** | 없음 (clean flat) |
+| **분위기** | 발랄, 에너지, SNS 바이럴 |
+
+**프롬프트 캘리브레이션 키워드**:
+```json
+{
+  "style": "pop_cartoon",
+  "keywords": [
+    "uniform line 1.5-2px",
+    "flat color fills",
+    "vibrant neon colors",
+    "minimal shading",
+    "pop art style",
+    "bold outlines",
+    "bright saturated palette",
+    "cartoon sticker aesthetic"
+  ],
+  "negative_keywords": [
+    "watercolor",
+    "realistic shading",
+    "muted colors",
+    "thin lines",
+    "gradient fills",
+    "texture"
+  ],
+  "line_weight_range": [1.5, 2.0],
+  "saturation_range": [80, 100],
+  "shadow_layers": "flat_only",
+  "flat_fill": true
+}
+```
+
+**합격 기준**:
+- 선 굵기 균일성: 동일 캐릭터 외곽선 전체 1.5±0.3px 범위
+- 채도 평균: 80% 이상
+- 배경 flat 면적: 인물 외곽 80% 이상이 단색
+
+---
+
+### 8.4 수채 터치 (Watercolor Touch)
+
+| 속성 | 값 |
+|---|---|
+| **선** | 거의 없음 / 세피아 브라운 `#7B5B3A` 옅은 외곽 |
+| **채도** | 40~55% (중간, 번진 느낌) |
+| **명암** | 색 번짐으로 입체감, 하드 엣지 없음 |
+| **배경** | 종이 크림 `#FAF0E0` + 번짐 텍스처 |
+| **색 팔레트** | 수채 로즈 `#E8A0A0`, 수채 스카이 `#9EC8E8`, 수채 그린 `#A8D8A0`, 세피아 브라운 `#7B5B3A` |
+| **텍스처** | 종이 질감 강 (grain opacity 0.12) + 번짐 watercolor wash |
+| **분위기** | 몽환, 감성, 아날로그 |
+
+**프롬프트 캘리브레이션 키워드**:
+```json
+{
+  "style": "watercolor_touch",
+  "keywords": [
+    "watercolor painting style",
+    "soft bleeding color edges",
+    "paper texture grain",
+    "sepia outline minimal",
+    "wet-on-wet technique impression",
+    "dreamy soft focus",
+    "medium saturation 40-55%",
+    "organic irregular shapes"
+  ],
+  "negative_keywords": [
+    "sharp outlines",
+    "flat fills",
+    "high contrast",
+    "neon colors",
+    "clean edges",
+    "manga screentone"
+  ],
+  "line_weight_range": [0, 0.8],
+  "saturation_range": [40, 55],
+  "shadow_layers": "bleed_wash",
+  "texture_grain": 0.12,
+  "sepia_outline": true
+}
+```
+
+**합격 기준**:
+- 외곽선 최대 0.8px 이하 또는 부재
+- 채도 35~60% 범위 (너무 탁하거나 선명하면 불합격)
+- 번짐 효과 인물 경계면 80% 이상 적용
+- 종이 질감 텍스처 감지 가능
+
+---
+
+## 9. 아바타 8종 디자인 가이드
+
+### 9.1 아바타 목록 및 핵심 시각 특징
+
+| # | 이름 | 헤어 스타일 | 특징 키워드 | 기본 아바타 대상 |
+|---|---|---|---|---|
+| 1 | 단발소녀 | 턱선 단발, 앞머리 내려옴 | 귀엽고 세련된, 20대 여성 톤 | 여성 범용 |
+| 2 | 포니테일 | 하이 포니테일, 잔머리 있음 | 활발하고 에너지 넘치는, 10~20대 | 여성 활발 |
+| 3 | 안경청년 | 중간 길이, 흐트러진 자연스러운 | 지적이고 차분한, 20~30대 남성 | 남성 지적 |
+| 4 | 까까머리 | 극단발/버즈컷, 선명한 윤곽 | 시원시원한, 20대 남성 | 남성 청량 |
+| 5 | 장발 | 어깨 이하, 웨이브 또는 스트레이트 | 우아하고 감성적인, 20~30대 | 여성 감성 |
+| 6 | 곱슬 | 볼륨 있는 자연 곱슬 | 개성 강한, 성별 중립 | 중성 개성 |
+| 7 | 어린이 | 짧고 단순, 앙증맞은 비율 | 귀엽고 어린, SD 비율 | 아동 보호자 |
+| 8 | 시니어 | 흰색/회색 단발 또는 숱 적음 | 온화하고 든든한, 50대+ | 중장년 |
+
+### 9.2 공통 캐릭터 규격
+
+```
+두상 크기: 전체 높이의 30% (SD 비율 — 만화적 과장)
+눈 크기: 두상 높이의 20~25%
+코/입: 미니멀 (점/단선 처리)
+체형: 2~2.5 등신 (만화 기호화)
+팔다리: 단순화, 명확한 자세 실루엣
+```
+
+### 9.3 커스텀 범위
+
+| 카테고리 | 선택지 | 토큰 | 비고 |
+|---|---|---|---|
+| 헤어컬러 | 8종 | black/brown/blonde/red/pink/blue/green/white | 베이직 이상 |
+| 상의 컬러/스타일 | 8종 | white-top/stripe/hoodie/uniform/casual/formal/sport/vintage | 베이직 이상 |
+| 액세서리 | 4종 | glasses/hat/earphone/none | 베이직 이상 |
+
+### 9.4 Prompt Template JSON 스켈레톤 (백엔드 전달용)
+
+```json
+{
+  "avatar_template": {
+    "avatar_id": "SHORT_HAIR_GIRL",
+    "base_description": "short bob hair girl, 2.5 head proportion, simple cartoon style",
+    "customization": {
+      "hair_color": "{HAIR_COLOR}",
+      "top_style": "{TOP_STYLE}",
+      "accessory": "{ACCESSORY}"
+    },
+    "style_lock": {
+      "eye_style": "large expressive eyes, simple manga dot",
+      "nose_style": "minimal dot or absent",
+      "mouth_style": "simple curve line",
+      "body_proportion": "2.5 heads tall, SD ratio",
+      "outline_consistency": "same stroke weight as reference image"
+    },
+    "reference_seed": "{USER_AVATAR_SEED}",
+    "multi_turn_anchor": true,
+    "consistency_check": {
+      "face_embedding_threshold": 0.85,
+      "max_retry": 2
+    }
+  },
+  "avatar_presets": {
+    "SHORT_HAIR_GIRL": {
+      "default_hair_color": "black",
+      "default_top": "casual",
+      "default_accessory": "none",
+      "base_prompt_append": "chin-length bob with bangs, cute and stylish"
+    },
+    "PONYTAIL": {
+      "base_prompt_append": "high ponytail with loose strands, energetic"
+    },
+    "GLASSES_GUY": {
+      "base_prompt_append": "medium length natural messy hair, round glasses, intellectual look"
+    },
+    "BUZZ_CUT": {
+      "base_prompt_append": "very short buzz cut, clean sharp silhouette, refreshing"
+    },
+    "LONG_HAIR": {
+      "base_prompt_append": "long wavy or straight hair past shoulders, elegant"
+    },
+    "CURLY": {
+      "base_prompt_append": "voluminous natural curly hair, gender neutral, unique personality"
+    },
+    "CHILD": {
+      "base_prompt_append": "short simple hair, chibi proportion 2 heads, adorable"
+    },
+    "SENIOR": {
+      "base_prompt_append": "white or grey short hair, warm gentle expression, 50s+"
+    }
   }
 }
 ```
 
 ---
 
-## 3. 타이포그래피
+## 10. 말풍선 디자인 시스템
 
-### 3-1. 폰트 패밀리 선택
+### 10.1 말풍선 4종 기본 스펙
 
-#### Primary Font: Pretendard
-
-- 선택 이유: 한국어-영어 혼용 앱에 최적. Apple SD Gothic Neo 대비 가독성 우수. OFL 라이선스로 상업 사용 무료. iOS/Android 동일 렌더링 품질
-- 파일 규격: Static OTF (Variable Font 불가 — React Native 제한)
-- 필요 웨이트: Regular(400), Medium(500), SemiBold(600), Bold(700)
+#### 10.1.1 대사형 (Speech)
 
 ```
-Pretendard-Regular.otf    → font-pretendard-regular
-Pretendard-Medium.otf     → font-pretendard-medium
-Pretendard-SemiBold.otf   → font-pretendard-semibold
-Pretendard-Bold.otf       → font-pretendard-bold
+형태: 타원 또는 둥근 직사각형
+테두리: 2px solid --color-ink
+배경: White (라이트) / --color-surface-raised (다크)
+반경: 24px (타원 근사)
+내부 패딩: 수직 8px, 수평 14px
+꼬리: 삼각형, 말풍선 외곽에서 자연스럽게 뻗어나옴, 2px stroke
+꼬리 크기: 길이 16px, 폭 10px
 ```
 
-#### Fallback (시스템 폰트)
+#### 10.1.2 생각형 (Thought)
 
 ```
-iOS:     -apple-system (San Francisco)
-Android: Roboto
+형태: 구름 (불규칙 원 5~7개 연결)
+테두리: 2px solid --color-ink
+배경: White / 라이트 블루 wash (rgba(77,171,247,0.08))
+꼬리: 점 3개 점선형 꼬리 (6px, 4px, 3px 원 순서로 작아짐), 간격 4px
+점 테두리: 2px solid --color-ink, fill white
 ```
 
-### 3-2. 타이포그래피 스케일
+#### 10.1.3 외침형 (Shout)
 
-| 레벨 | 이름 | size | lineHeight | weight | Nativewind 클래스 |
+```
+형태: 폭발형 jagged (톱니 8~12개)
+테두리: 3px solid --color-ink
+배경: Lemon #FFE066 or Coral #FF6B6B (화풍별 분기)
+꼬리: 없음 (폭발 외곽 전체가 방향성)
+내부 패딩: 수직 10px, 수평 16px
+텍스트: 폰트 105% 크기, font-weight 700
+```
+
+#### 10.1.4 속삭임형 (Whisper)
+
+```
+형태: 타원
+테두리: 1.5px dashed --color-pencil (dash 6px, gap 4px)
+배경: rgba(250,247,242,0.85) / 반투명
+꼬리: 점선 꼬리, 길이 12px
+내부 패딩: 수직 6px, 수평 12px
+텍스트: italic 적용
+```
+
+### 10.2 꼬리 8방위 정의
+
+```
+N  : 상단 중앙
+NE : 상단 우측 (약 1/4 지점)
+E  : 우측 중앙
+SE : 하단 우측 (약 1/4 지점)
+S  : 하단 중앙 (기본)
+SW : 하단 좌측 (약 1/4 지점)
+W  : 좌측 중앙
+NW : 상단 좌측 (약 1/4 지점)
+```
+
+**SVG 꼬리 처리**: 각 방위별 `<path>` 정의, react-konva에서 rotation 변환
+- 기본 꼬리 path (S 방위 기준): `M 0 0 L 8 16 L 16 0` (대사형)
+- 생각형 점 꼬리: 별도 원 3개 SVG 그룹
+- 외침형: 꼬리 없음, 방향은 jagged 패턴 rotation으로 표현
+
+### 10.3 화풍별 말풍선 톤 매칭
+
+| 화풍 | 테두리 굵기 | 테두리 색상 | 내부 배경 | 텍스트 컬러 | 폰트 |
 |---|---|---|---|---|---|
-| Display | - | 32px | 40px | Bold (700) | `text-[32px] leading-[40px] font-pretendard-bold` |
-| H1 | 화면 제목 | 28px | 36px | Bold (700) | `text-[28px] leading-[36px] font-pretendard-bold` |
-| H2 | 섹션 헤딩 | 22px | 30px | SemiBold (600) | `text-[22px] leading-[30px] font-pretendard-semibold` |
-| H3 | 카드 제목 | 18px | 26px | SemiBold (600) | `text-[18px] leading-[26px] font-pretendard-semibold` |
-| H4 | 서브 제목 | 16px | 24px | Medium (500) | `text-base leading-6 font-pretendard-medium` |
-| Body L | 본문 큰 | 16px | 24px | Regular (400) | `text-base leading-6 font-pretendard-regular` |
-| Body M | 본문 기본 | 14px | 22px | Regular (400) | `text-sm leading-[22px] font-pretendard-regular` |
-| Body S | 보조 본문 | 13px | 20px | Regular (400) | `text-[13px] leading-5 font-pretendard-regular` |
-| Label | 버튼/탭 레이블 | 15px | 20px | SemiBold (600) | `text-[15px] leading-5 font-pretendard-semibold` |
-| Caption | 부가 정보 | 12px | 16px | Regular (400) | `text-xs leading-4 font-pretendard-regular` |
-| Caption Bold | 강조 캡션 | 12px | 16px | Medium (500) | `text-xs leading-4 font-pretendard-medium` |
-| Overline | 카테고리 태그 | 11px | 16px | SemiBold (600) | `text-[11px] leading-4 font-pretendard-semibold tracking-wider` |
+| 감성 라인 | 1px | #2A2A2A | rgba(255,255,255,0.95) | #2A2A2A | Cafe24Danjunghae |
+| 대담한 펜선 | 3px | #000000 | #FFFFFF | #000000 | Cafe24Danjunghae or NanumPen |
+| 팝 카툰 | 2px | #000000 | #FFFFFF | #000000 | NanumPen (굵은 느낌) |
+| 수채 터치 | 0.8px | #7B5B3A | rgba(250,240,224,0.92) | #3B2A1A | Cafe24Danjunghae |
 
-### 3-3. tailwind.config.js 폰트 설정
+### 10.4 한글 폰트 매핑
 
-```js
-theme: {
-  extend: {
-    fontFamily: {
-      'pretendard-regular':  ['Pretendard-Regular'],
-      'pretendard-medium':   ['Pretendard-Medium'],
-      'pretendard-semibold': ['Pretendard-SemiBold'],
-      'pretendard-bold':     ['Pretendard-Bold'],
-    },
-    fontSize: {
-      // Tailwind 기본 외 커스텀
-      '11': ['11px', { lineHeight: '16px' }],
-      '13': ['13px', { lineHeight: '20px' }],
-      '15': ['15px', { lineHeight: '20px' }],
-      '28': ['28px', { lineHeight: '36px' }],
-      '32': ['32px', { lineHeight: '40px' }],
-    },
-  },
-}
-```
-
-### 3-4. 텍스트 컬러 적용 규칙
-
-| 용도 | Light | Dark | Nativewind |
+| 말풍선 타입 | 1차 폰트 | 2차 폰트(폴백) | 비고 |
 |---|---|---|---|
-| 주요 텍스트 | neutral-800 (#1f2937) | slate-200 (#e2e8f0) | `text-neutral-800 dark:text-slate-200` |
-| 보조 텍스트 | neutral-500 (#6b7280) | slate-400 (#94a3b8) | `text-neutral-500 dark:text-slate-400` |
-| 비활성 텍스트 | neutral-300 (#d1d5db) | slate-600 (#475569) | `text-neutral-300 dark:text-slate-600` |
-| 링크/강조 | primary-600 (#0d9488) | primary-400 (#2dd4bf) | `text-primary-600 dark:text-primary-400` |
-| 에러 텍스트 | red-600 (#dc2626) | red-400 (#f87171) | `text-red-600 dark:text-red-400` |
+| 대사형 | Cafe24Danjunghae | NanumPen | 기본 |
+| 생각형 | Cafe24Danjunghae | NanumBarunpen | 옅은 느낌 |
+| 외침형 | NanumPen | Black Han Sans | 굵고 임팩트 |
+| 속삭임형 | Cafe24Danjunghae (italic) | Nanum Gothic Coding | 흘림 느낌 |
 
----
+**폰트 로딩**: Next.js `next/font/local` + `font-display: swap`, 말풍선 폰트만 별도 subset 구성 (한글 KS 완성형 2,350자)
 
-## 4. 스페이싱 & 그리드
+### 10.5 "합성한 티" 방지
 
-### 4-1. 기본 스페이싱 단위
-
-기본 단위: **4px (1 unit)**
-모든 스페이싱은 4의 배수로 설계.
-
-| 토큰 | px | Tailwind 클래스 | 용도 |
-|---|---|---|---|
-| space-1 | 4px | `p-1`, `m-1` | 아이콘 내부 패딩 |
-| space-2 | 8px | `p-2`, `m-2` | 배지, 태그 내부 패딩 |
-| space-3 | 12px | `p-3`, `m-3` | 버튼 세로 패딩 |
-| space-4 | 16px | `p-4`, `m-4` | 카드 내부 패딩, 섹션 간격 기본 |
-| space-5 | 20px | `p-5`, `m-5` | 카드 헤더 패딩 |
-| space-6 | 24px | `p-6`, `m-6` | 화면 좌우 여백 (Screen Padding) |
-| space-8 | 32px | `p-8`, `m-8` | 섹션 간 여백 |
-| space-10 | 40px | `p-10`, `m-10` | 대형 섹션 구분 |
-| space-12 | 48px | `p-12`, `m-12` | 온보딩 섹션 간격 |
-| space-16 | 64px | `p-16`, `m-16` | 빈 상태 여백 |
-| space-20 | 80px | `p-20`, `m-20` | 탭바 높이 버퍼 |
-
-### 4-2. 화면 레이아웃 그리드
-
-```
-화면 좌우 여백 (Screen Padding): 20px (space-5)
-컬럼 수: 4 컬럼 (모바일 기준)
-컬럼 간격 (Gutter): 12px
-콘텐츠 최대 너비: 화면 너비 - 40px
-
-Safe Area:
-  - 상단: StatusBar 높이 + 4px
-  - 하단: TabBar 높이(83px) + Safe Area Inset
-```
-
-**Nativewind 적용**:
-```
-<View className="px-5">  {/* 화면 좌우 여백 */}
-<View className="gap-3">  {/* 컴포넌트 간 간격 */}
-```
-
-### 4-3. Border Radius 스케일
-
-| 토큰 | px | Tailwind | 용도 |
-|---|---|---|---|
-| radius-sm | 6px | `rounded` | 태그, 배지, 소형 버튼 |
-| radius-md | 10px | `rounded-xl` (사실상 10px 커스텀) | 입력 필드, 소형 카드 |
-| radius-lg | 12px | `rounded-xl` | 기본 카드, 버튼 |
-| radius-xl | 16px | `rounded-2xl` | 대형 카드, 바텀시트 상단 |
-| radius-2xl | 20px | `rounded-[20px]` | 펫 프로필 카드, 온보딩 카드 |
-| radius-full | 9999px | `rounded-full` | 아바타, 토글, 알약형 배지 |
-
-```js
-// tailwind.config.js
-borderRadius: {
-  'DEFAULT': '6px',
-  'md': '10px',
-  'lg': '12px',
-  'xl': '16px',
-  '2xl': '20px',
-  '3xl': '24px',
-  'full': '9999px',
-},
-```
-
-### 4-4. 그림자 (Shadow) 스케일
-
-```
-shadow-xs:  { shadowOffset: {w:0,h:1}, shadowRadius:2, shadowOpacity:0.06 }  — 카드 미세 구분
-shadow-sm:  { shadowOffset: {w:0,h:2}, shadowRadius:4, shadowOpacity:0.08 }  — 기본 카드
-shadow-md:  { shadowOffset: {w:0,h:4}, shadowRadius:8, shadowOpacity:0.10 }  — 버튼, 탭바
-shadow-lg:  { shadowOffset: {w:0,h:8}, shadowRadius:16, shadowOpacity:0.12 } — 모달, 바텀시트
-shadow-xl:  { shadowOffset: {w:0,h:16}, shadowRadius:32, shadowOpacity:0.14 } — 응급 CTA 버튼
-```
-
-다크모드에서는 그림자 대신 border-1 (slate-700) 로 레이어 구분.
-
----
-
-## 5. 컴포넌트 라이브러리
-
-### 5-1. 버튼 (Button)
-
-#### 버튼 Variant
-
-**Primary Button**
-```
-용도: 주요 CTA (기록 저장, 펫 등록, 응급 전송)
-Light: bg-primary-500, text-white
-Dark:  bg-primary-500, text-white
-Pressed: bg-primary-600
-Disabled: bg-neutral-200, text-neutral-400
-
-Nativewind:
-  <TouchableOpacity
-    className="bg-primary-500 active:bg-primary-600
-               disabled:bg-neutral-200
-               rounded-xl px-5 py-3.5
-               items-center justify-center"
-  >
-    <Text className="text-white text-[15px] leading-5
-                     font-pretendard-semibold">
-      버튼 텍스트
-    </Text>
-  </TouchableOpacity>
-```
-
-**Secondary Button**
-```
-용도: 보조 CTA (취소, 더보기, 공유)
-Light: bg-white, border border-primary-400, text-primary-600
-Dark:  bg-transparent, border border-primary-400, text-primary-400
-Pressed: bg-primary-50 dark:bg-primary-900/20
-
-Nativewind:
-  className="bg-white dark:bg-transparent
-             border border-primary-400
-             rounded-xl px-5 py-3.5"
-  Text: "text-primary-600 dark:text-primary-400"
-```
-
-**Ghost Button**
-```
-용도: 텍스트형 버튼 (스킵, 나중에, 링크형)
-Light: bg-transparent, text-neutral-600
-Dark:  bg-transparent, text-slate-400
-Pressed: bg-neutral-100 dark:bg-slate-800
-
-Nativewind:
-  className="bg-transparent active:bg-neutral-100
-             dark:active:bg-slate-800
-             rounded-xl px-5 py-3.5"
-  Text: "text-neutral-600 dark:text-slate-400"
-```
-
-**Danger Button**
-```
-용도: 삭제, 의료기록 제거, 계정 탈퇴
-Light: bg-red-600, text-white
-Dark:  bg-red-600, text-white
-Pressed: bg-red-700
-
-Nativewind:
-  className="bg-red-600 active:bg-red-700
-             rounded-xl px-5 py-3.5"
-  Text: "text-white font-pretendard-semibold"
-```
-
-**Emergency Button (응급 탭 전용)**
-```
-용도: 응급 탭 메인 CTA ("지금 증상 말하기")
-bg-accent-500, text-white, shadow-xl
-pulse 애니메이션 적용 (위급 인지용)
-
-Nativewind:
-  className="bg-accent-500 active:bg-accent-600
-             rounded-2xl px-6 py-4 shadow-xl"
-  Text: "text-white text-[17px] font-pretendard-bold"
-```
-
-#### 버튼 Size 스펙
-
-| 사이즈 | 높이 | 가로 패딩 | 폰트 | 용도 |
-|---|---|---|---|---|
-| XL | 56px | 24px | 17px Bold | 온보딩, 응급 CTA |
-| L (기본) | 48px | 20px | 15px SemiBold | 화면 내 주요 버튼 |
-| M | 40px | 16px | 14px SemiBold | 인라인 버튼 |
-| S | 32px | 12px | 13px Medium | 태그형 버튼, 필터 |
-| Icon-only | 44px(W) x 44px(H) | - | - | 헤더 아이콘 버튼 (최소 터치 44px) |
-
----
-
-### 5-2. 인풋 (Input)
-
-#### Text Input
-
-```
-구조: Label + Input Field + Helper/Error Text
-
-기본 상태:
-  bg-neutral-100 dark:bg-slate-800
-  border border-transparent rounded-xl
-  px-4 py-3 (높이 약 48px)
-  text-neutral-800 dark:text-slate-200
-  placeholder: text-neutral-400 dark:text-slate-500
-
-Focus 상태:
-  border-primary-500
-  bg-white dark:bg-slate-700
-  ring-2 ring-primary-200 dark:ring-primary-900
-
-Error 상태:
-  border-red-500
-  bg-red-50 dark:bg-red-950/30
-
-Disabled:
-  bg-neutral-100 dark:bg-slate-900
-  text-neutral-400 dark:text-slate-600
-  opacity-60
-
-Nativewind:
-  <View className="gap-1.5">
-    <Text className="text-sm font-pretendard-medium
-                     text-neutral-700 dark:text-slate-300">
-      레이블
-    </Text>
-    <TextInput
-      className="bg-neutral-100 dark:bg-slate-800
-                 border border-transparent
-                 focus:border-primary-500
-                 rounded-xl px-4 py-3
-                 text-base text-neutral-800
-                 dark:text-slate-200
-                 font-pretendard-regular"
-      placeholder="입력해주세요"
-      placeholderTextColor="#9ca3af"
-    />
-    <Text className="text-xs text-neutral-500
-                     dark:text-slate-400">
-      도움말 텍스트
-    </Text>
-  </View>
-```
-
-#### TextArea (의료기록 메모)
-
-```
-minHeight: 100px, maxHeight: 200px
-나머지 스타일은 Text Input과 동일
-multiline={true}, textAlignVertical="top"
-
-className="bg-neutral-100 dark:bg-slate-800
-           rounded-xl px-4 py-3 min-h-[100px]
-           border border-transparent
-           focus:border-primary-500"
-```
-
-#### Search Input
-
-```
-아이콘: 왼쪽 Search 아이콘 (16px)
-지우기: 오른쪽 X 버튼 (텍스트 입력 시 표시)
-bg-neutral-100 dark:bg-slate-800
-rounded-full px-4 py-2.5
-height: 44px
-
-Nativewind:
-  <View className="flex-row items-center
-                   bg-neutral-100 dark:bg-slate-800
-                   rounded-full px-4 h-11 gap-2">
-    <SearchIcon size={16} color="#9ca3af" />
-    <TextInput className="flex-1 text-sm
-                          text-neutral-800 dark:text-slate-200" />
-  </View>
-```
-
-#### Select (Picker)
-
-```
-외형: Text Input과 동일
-오른쪽: ChevronDown 아이콘
-iOS: ActionSheet 스타일 Picker
-Android: native Picker
-
-className="flex-row items-center justify-between
-           bg-neutral-100 dark:bg-slate-800
-           rounded-xl px-4 py-3 h-12"
-```
-
-#### Checkbox
-
-```
-체크 전:
-  width: 20px, height: 20px
-  border: 2px, border-color: neutral-300
-  rounded: 4px
-  bg: transparent
-
-체크 후:
-  bg-primary-500
-  border-primary-500
-  체크 아이콘: white, 12px
-
-Nativewind (커스텀 구현):
-  <Pressable
-    className={`w-5 h-5 rounded border-2
-      ${checked
-        ? 'bg-primary-500 border-primary-500'
-        : 'bg-transparent border-neutral-300 dark:border-slate-600'
-      } items-center justify-center`}
-  >
-    {checked && <CheckIcon size={12} color="white" />}
-  </Pressable>
-```
-
-#### Radio Button
-
-```
-외형: Checkbox와 동일 구조, rounded-full
-선택 후 내부 원 채우기 (dot 스타일)
-
-inner dot: width 10px, height 10px, rounded-full
-bg-primary-500 (선택 시)
-```
-
-#### Toggle Switch
-
-```
-iOS 네이티브 Switch 사용
-trackColor: { false: '#d1d5db', true: '#14b8a6' }
-thumbColor: '#ffffff'
-ios_backgroundColor: '#d1d5db'
-```
-
----
-
-### 5-3. 카드 컴포넌트
-
-#### 펫 프로필 카드 (Pet Card)
-
-```
-용도: 홈 탭 상단 스와이프 카드 (멀티펫)
-크기: 너비 화면 - 40px, 높이 auto (최소 120px)
-bg-white dark:bg-slate-800
-rounded-2xl shadow-md
-padding: 16px
-
-레이아웃:
-  [펫 사진 72px 원형] [펫 이름 H3] [종/나이 Body S]
-                       [최근 접종 D-day 배지]
-                       [빠른 기록 추가 버튼]
-
-Nativewind:
-  <View className="bg-white dark:bg-slate-800
-                   rounded-2xl p-4 shadow-md
-                   flex-row items-center gap-4">
-    <Image className="w-[72px] h-[72px] rounded-full
-                      bg-neutral-100" />
-    <View className="flex-1 gap-1">
-      <Text className="text-[18px] leading-[26px]
-                       font-pretendard-semibold
-                       text-neutral-800 dark:text-slate-200">
-        펫 이름
-      </Text>
-      <Text className="text-sm text-neutral-500
-                       dark:text-slate-400">
-        말티즈 · 3세
-      </Text>
-    </View>
-  </View>
-```
-
-#### 의료기록 카드 (Medical Record Card)
-
-```
-용도: 타임라인 아이템
-크기: 전체 너비, 높이 auto
-bg-white dark:bg-slate-800
-rounded-xl border-l-4 (카테고리별 색상)
-shadow-xs
-padding: 12px 16px
-
-왼쪽 보더 컬러:
-  진료: border-l-primary-500
-  접종: border-l-secondary-500
-  검진: border-l-blue-500
-  처방: border-l-purple-500
-
-레이아웃:
-  상단: [날짜 Caption] [카테고리 배지]
-  중단: [병원명 Body M Bold] [진단/처치 내용 Body S]
-  하단: [비용 Caption] [첨부파일 아이콘]
-
-Nativewind:
-  <View className="bg-white dark:bg-slate-800
-                   rounded-xl border-l-4
-                   border-l-primary-500
-                   shadow-xs px-4 py-3 gap-2">
-```
-
-#### 챗봇 메시지 버블
-
-**사용자 메시지 (User Bubble)**
-```
-정렬: 오른쪽
-bg-primary-500
-text-white
-rounded-2xl rounded-tr-sm  ← 꼬리 표현
-max-width: 75%
-padding: 10px 14px
-font: Body M, Regular
-
-Nativewind:
-  className="bg-primary-500 rounded-2xl rounded-tr-sm
-             px-3.5 py-2.5 max-w-[75%] self-end"
-  Text: "text-white text-sm font-pretendard-regular"
-```
-
-**AI 메시지 버블 (Bot Bubble)**
-```
-정렬: 왼쪽
-bg-neutral-100 dark:bg-slate-800
-text-neutral-800 dark:text-slate-200
-rounded-2xl rounded-tl-sm
-max-width: 80%
-padding: 10px 14px
-
-Nativewind:
-  className="bg-neutral-100 dark:bg-slate-800
-             rounded-2xl rounded-tl-sm
-             px-3.5 py-2.5 max-w-[80%] self-start"
-```
-
-**타이핑 인디케이터 버블**
-```
-AI Bubble 스타일 동일
-내부: 3개 dot 펄스 애니메이션 (200ms 딜레이)
-dot: w-2 h-2 rounded-full bg-neutral-400
-```
-
-**면책 고지 버블 (항상 챗봇 최하단 고정)**
-```
-bg-amber-50 dark:bg-amber-950/30
-border border-amber-200 dark:border-amber-800
-rounded-xl px-4 py-3
-text-amber-700 dark:text-amber-400
-font: Caption, Regular
-아이콘: InfoCircle (amber-500)
-```
-
-#### 증상 빠른선택 카드 (Symptom Quick Card)
-
-```
-용도: 응급 탭 — 8개 증상 카테고리 그리드
-크기: (화면너비 - 40px - 12px) / 2 × 2, 높이 80px
-bg-white dark:bg-slate-800
-rounded-xl border border-neutral-200
-          dark:border-slate-700
-padding: 12px
-
-레이아웃: 아이콘 (32px) + 텍스트 (Body S)
-선택 시: bg-primary-50 border-primary-400
-          dark:bg-primary-900/20 dark:border-primary-500
-
-Nativewind:
-  <Pressable
-    className={`rounded-xl border p-3 flex-row
-                items-center gap-2
-      ${selected
-        ? 'bg-primary-50 border-primary-400 dark:bg-primary-900/20 dark:border-primary-500'
-        : 'bg-white dark:bg-slate-800 border-neutral-200 dark:border-slate-700'
-      }`}
-  >
-```
-
-#### 빈 상태 카드 (Empty State)
-
-```
-전체 화면 센터 정렬
-아이콘: 64px, color neutral-300 dark:slate-600
-제목: H3, neutral-600 dark:slate-400
-설명: Body S, neutral-400 dark:slate-500
-CTA 버튼: Primary (있을 경우)
-
-Nativewind:
-  <View className="flex-1 items-center justify-center
-                   gap-4 px-8 py-16">
-```
-
----
-
-### 5-4. 네비게이션
-
-#### 탭바 (Bottom Tab Bar)
-
-```
-높이: 83px (Safe Area 포함 시 iOS 기준 약 83px)
-bg-white dark:bg-slate-900
-border-t border-neutral-100 dark:border-slate-800
-shadow-md
-
-탭 항목: 3개 균등 분할
-각 탭: 44px 터치 영역, 아이콘(24px) + 레이블(11px)
-
-비활성:
-  아이콘: neutral-400 dark:slate-500
-  텍스트: neutral-400 dark:slate-500
-
-활성:
-  아이콘: primary-500 (filled 버전)
-  텍스트: primary-600 dark:primary-400
-  텍스트 weight: SemiBold
-
-응급 탭 아이콘:
-  비활성: 아웃라인 하트비트 아이콘, neutral-400
-  활성: 필드 하트비트 아이콘, accent-500
-  (응급 탭은 특별히 accent 컬러 사용 — 긴장감 부여)
-
-Nativewind:
-  <View className="flex-row bg-white dark:bg-slate-900
-                   border-t border-neutral-100
-                   dark:border-slate-800 shadow-md
-                   pb-[env(safe-area-inset-bottom)]">
-    {/* 각 탭 아이템 */}
-    <Pressable className="flex-1 items-center
-                          justify-center pt-2 pb-1 gap-1">
-      <Icon size={24} color={isActive ? '#14b8a6' : '#9ca3af'} />
-      <Text className={`text-[11px] leading-4
-        font-pretendard-semibold
-        ${isActive
-          ? 'text-primary-600 dark:text-primary-400'
-          : 'text-neutral-400 dark:text-slate-500'
-        }`}>
-        내 아이
-      </Text>
-    </Pressable>
-  </View>
-```
-
-#### 헤더 (Navigation Header)
-
-```
-높이: 56px (+ SafeAreaTop)
-bg-white dark:bg-slate-900
-border-b border-neutral-100 dark:border-slate-800
-
-구성 요소:
-  - 왼쪽: 뒤로가기 버튼 (ChevronLeft, 24px) 또는 앱 로고
-  - 가운데: 화면 제목 (H4, 15px SemiBold)
-  - 오른쪽: 액션 버튼 (아이콘, 최대 2개)
-
-제목 정렬: 좌측 정렬 (iOS 네이티브 패턴)
-
-특수 헤더 — 응급 탭:
-  bg-white dark:bg-slate-900
-  제목: "응급 상담" text-accent-500
-  아이콘: PhoneCall (야간병원 연결 버튼) — accent-500
-
-Nativewind:
-  <View className="flex-row items-center px-4
-                   bg-white dark:bg-slate-900
-                   border-b border-neutral-100
-                   dark:border-slate-800 h-14">
-    <Pressable className="w-11 h-11 items-center
-                          justify-center -ml-1">
-      <ChevronLeftIcon size={24} color="#374151" />
-    </Pressable>
-    <Text className="flex-1 text-[15px] leading-5
-                     font-pretendard-semibold
-                     text-neutral-800 dark:text-slate-200">
-      화면 제목
-    </Text>
-  </View>
-```
-
-#### 바텀시트 (Bottom Sheet)
-
-```
-오버레이: bg-black/50
-시트 배경: bg-white dark:bg-slate-900
-상단 모서리: rounded-t-3xl (24px)
-상단 핸들: w-10 h-1 rounded-full bg-neutral-300
-           dark:bg-slate-600 mx-auto mt-3
-
-높이 스냅:
-  - 25%: 미니 시트 (확인/취소)
-  - 50%: 기본 시트 (옵션 선택)
-  - 90%: 확장 시트 (날짜 선택, 상세 입력)
-
-padding: px-5 py-4
-
-Nativewind:
-  <View className="bg-white dark:bg-slate-900
-                   rounded-t-3xl px-5 pt-4 pb-8">
-    <View className="w-10 h-1 rounded-full
-                     bg-neutral-300 dark:bg-slate-600
-                     self-center mb-6" />
-    {/* 컨텐츠 */}
-  </View>
-```
-
----
-
-### 5-5. 알림 / 토스트 / 모달
-
-#### 토스트 (Toast)
-
-```
-위치: 화면 하단 (탭바 위 8px)
-또는 화면 상단 (StatusBar 아래 8px, 에러/경고)
-width: 화면 너비 - 40px, max-width: 360px
-border-radius: rounded-xl
-padding: px-4 py-3
-
-Variant:
-  Success: bg-green-600, text-white, CheckCircle 아이콘
-  Warning: bg-amber-500, text-white, AlertTriangle 아이콘
-  Error:   bg-red-600, text-white, XCircle 아이콘
-  Info:    bg-neutral-800 dark:bg-slate-700, text-white, Info 아이콘
-
-레이아웃: [아이콘 20px] [메시지 Body S] [닫기 X 버튼 (선택)]
-자동 닫힘: 3초 (Success/Info), 5초 (Warning/Error)
-
-Nativewind:
-  <View className="flex-row items-center gap-3
-                   bg-green-600 rounded-xl
-                   px-4 py-3 mx-5 shadow-lg">
-    <CheckCircleIcon size={20} color="white" />
-    <Text className="flex-1 text-white text-sm
-                     font-pretendard-regular">
-      저장되었습니다.
-    </Text>
-  </View>
-```
-
-#### 모달 (Modal)
-
-```
-오버레이: bg-black/50
-모달 박스:
-  bg-white dark:bg-slate-800
-  rounded-2xl
-  mx-5 (화면 좌우 20px)
-  padding: px-6 py-6
-  max-height: 80%
-
-구성:
-  제목: H3 (18px SemiBold) — 텍스트 가운데 정렬
-  본문: Body M — 텍스트 가운데 정렬 (짧을 경우) / 좌측 정렬 (목록)
-  버튼 영역: 하단, 세로 스택 또는 가로 2버튼 (Primary + Secondary)
-  닫기: 오른쪽 상단 X 아이콘 (Ghost, 선택적)
-
-버튼 배치 규칙:
-  - 주요 액션 버튼은 항상 Primary, 최하단
-  - 취소는 Ghost, 주요 버튼 위
-
-Nativewind:
-  <View className="bg-white dark:bg-slate-800
-                   rounded-2xl px-6 py-6 mx-5
-                   shadow-xl gap-4">
-    <Text className="text-[18px] font-pretendard-semibold
-                     text-neutral-800 dark:text-slate-200
-                     text-center">
-      모달 제목
-    </Text>
-    <Text className="text-sm text-neutral-600
-                     dark:text-slate-400 text-center">
-      설명 텍스트
-    </Text>
-    <View className="gap-2 mt-2">
-      {/* Primary Button */}
-      {/* Ghost Button */}
-    </View>
-  </View>
-```
-
-#### 알림 배너 (Inline Banner)
-
-```
-용도: 면책 고지, 중요 안내, 서비스 공지
-bg-amber-50 dark:bg-amber-950/30
-border border-amber-200 dark:border-amber-700
-rounded-xl px-4 py-3
-text-amber-800 dark:text-amber-300
-
-Nativewind:
-  <View className="bg-amber-50 dark:bg-amber-950/30
-                   border border-amber-200
-                   dark:border-amber-700
-                   rounded-xl px-4 py-3
-                   flex-row gap-3 items-start">
-    <AlertTriangleIcon size={18} color="#d97706" />
-    <Text className="flex-1 text-xs text-amber-800
-                     dark:text-amber-300
-                     font-pretendard-regular">
-      이 앱은 수의사의 진료를 대체하지 않습니다.
-    </Text>
-  </View>
-```
-
----
-
-### 5-6. 트리아지 결과 배지 (Triage Badge)
-
-이 앱의 핵심 기능인 응급도 분류 결과는 즉각적으로 인식 가능해야 한다. 색상 + 아이콘 + 텍스트 3중 신호를 사용한다.
-
-#### 응급 (Emergency)
-
-```
-레벨: 즉시 응급실 방문 필요
-배지 배경: bg-red-600
-텍스트: "응급" — text-white font-pretendard-bold
-아이콘: AlertCircle (solid, white)
-테두리: border-2 border-red-700
-pulse 애니메이션 적용 (시각적 긴장감)
-
-크기 Variant:
-  Large: rounded-xl px-4 py-2 text-base
-  Small: rounded-full px-3 py-1 text-xs
-
-Nativewind (Large):
-  className="flex-row items-center gap-2
-             bg-red-600 rounded-xl px-4 py-2"
-  Text: "text-white text-base font-pretendard-bold"
-
-Nativewind (Small):
-  className="flex-row items-center gap-1
-             bg-red-600 rounded-full px-3 py-1"
-  Text: "text-white text-xs font-pretendard-bold"
-```
-
-#### 준응급 (Urgent)
-
-```
-레벨: 당일 진료 권장 (수 시간 내)
-배지 배경: bg-amber-500
-텍스트: "준응급" — text-white font-pretendard-bold
-아이콘: Clock (solid, white)
-테두리: border-2 border-amber-600
-
-Nativewind (Large):
-  className="flex-row items-center gap-2
-             bg-amber-500 rounded-xl px-4 py-2"
-  Text: "text-white text-base font-pretendard-bold"
-```
-
-#### 경과관찰 (Watch)
-
-```
-레벨: 자택 관찰 가능, 증상 악화 시 내원
-배지 배경: bg-green-600
-텍스트: "경과관찰" — text-white font-pretendard-semibold
-아이콘: Eye (outline, white)
-
-Nativewind (Large):
-  className="flex-row items-center gap-2
-             bg-green-600 rounded-xl px-4 py-2"
-  Text: "text-white text-base font-pretendard-semibold"
-```
-
-#### 트리아지 결과 카드 (전체 결과 화면)
-
-```
-응급 시:
-  bg-red-50 dark:bg-red-950/30
-  border-2 border-red-500
-  rounded-2xl p-5
-
-준응급 시:
-  bg-amber-50 dark:bg-amber-950/30
-  border-2 border-amber-500
-  rounded-2xl p-5
-
-경과관찰 시:
-  bg-green-50 dark:bg-green-950/30
-  border-2 border-green-500
-  rounded-2xl p-5
-
-카드 내 구성:
-  상단: 트리아지 배지 (Large)
-  중단: 한 줄 권고 메시지 (H3)
-  하단: 세부 안내 (Body M)
-  CTA: 근처 병원 보기 (Primary) / 증상 재설명 (Ghost)
-  최하단: 면책 고지 (Caption, amber)
-```
-
-#### D-day 배지 (접종 일정)
-
-```
-D-7 이내: bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400
-D-30 이내: bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400
-D-30 초과: bg-neutral-100 text-neutral-600 dark:bg-slate-700 dark:text-slate-400
-
-Nativewind:
-  className="rounded-full px-2.5 py-1 text-[11px]
-             font-pretendard-semibold"
-```
-
-#### 의료기록 카테고리 배지
-
-```
-진료:     bg-primary-100 text-primary-700
-접종:     bg-secondary-100 text-secondary-700
-검진:     bg-blue-100 text-blue-700
-처방:     bg-purple-100 text-purple-700
-기타:     bg-neutral-100 text-neutral-600
-
-Dark mode:
-진료:     dark:bg-primary-900/30 dark:text-primary-400
-접종:     dark:bg-secondary-900/30 dark:text-secondary-400
-검진:     dark:bg-blue-900/30 dark:text-blue-400
-처방:     dark:bg-purple-900/30 dark:text-purple-400
-기타:     dark:bg-slate-700 dark:text-slate-400
-
-크기: rounded-full px-2.5 py-1 text-xs font-pretendard-medium
-```
-
----
-
-## 6. 스페셜 컴포넌트
-
-### 6-1. OCR 촬영 화면 오버레이
-
-```
-카메라 뷰 위 오버레이:
-  반투명 검정 배경 (중앙 영수증 영역만 투명)
-  투명 영역: rounded-xl 흰색 보더 2px dashed
-  안내 텍스트: "영수증을 박스 안에 맞춰주세요"
-              bg-black/70 rounded-xl px-4 py-2
-              text-white text-sm
-
-촬영 버튼:
-  w-[72px] h-[72px] rounded-full
-  border-4 border-white bg-white/30
-  내부 원: w-[56px] h-[56px] rounded-full bg-white
-```
-
-### 6-2. 타임라인 컴포넌트 (의료기록)
-
-```
-수직 타임라인:
-  왼쪽 선: w-px bg-neutral-200 dark:bg-slate-700
-  노드 점: w-3 h-3 rounded-full
-           진료: bg-primary-500
-           접종: bg-secondary-500
-           검진: bg-blue-500
-  간격: gap-0 (선이 이어지도록)
-
-각 아이템: 왼쪽 노드 + 오른쪽 의료기록 카드
-카드 상단 여백: mt-0 (선과 카드 정렬)
-```
-
-### 6-3. 프로그레스 인디케이터 (온보딩)
-
-```
-스텝 수: 3-4단계
-비활성: w-2 h-2 rounded-full bg-neutral-200 dark:bg-slate-700
-활성: w-6 h-2 rounded-full bg-primary-500 (pill 형태)
-간격: gap-1.5
-전환 애니메이션: 너비 w-2 → w-6 (spring 300ms)
-```
-
-### 6-4. 스켈레톤 로딩 (Skeleton)
-
-```
-색상:
-  Light: bg-neutral-200 (기본) → bg-neutral-100 (shimmer)
-  Dark:  bg-slate-700 (기본) → bg-slate-600 (shimmer)
-
-shimmer 방향: 왼쪽 → 오른쪽, 1.2초 반복
-
-사용 위치:
-  - 펫 카드 로딩
-  - 의료기록 타임라인 로딩
-  - 챗봇 응답 대기 시 (타이핑 인디케이터로 대체 가능)
-
-Nativewind:
-  className="bg-neutral-200 dark:bg-slate-700
-             rounded-xl animate-pulse"
-```
-
----
-
-## 7. 아이콘 스타일
-
-### 7-1. 아이콘 세트 선택
-
-**Primary: Lucide Icons (react-native-lucide-icons 또는 lucide-react-native)**
-
-선택 이유:
-- MIT 라이선스, 상업 사용 완전 무료
-- 1,500개 이상 아이콘 (의료/동물 관련 포함)
-- Stroke 기반 아웃라인 스타일 — 깔끔하고 현대적
-- React Native 지원 공식 패키지 존재
-- strokeWidth, size, color Props 커스터마이징 용이
-
-### 7-2. 아이콘 사용 규칙
-
-| 규칙 | 내용 |
-|---|---|
-| 기본 strokeWidth | 1.5px (비활성/일반) |
-| 강조 strokeWidth | 2px (활성/중요 상태) |
-| 탭바 아이콘 | 비활성 outline 1.5px → 활성 filled 또는 2.5px stroke |
-| 최소 터치 영역 | 아이콘 크기 무관하게 터치 영역은 44x44px 보장 |
-| 아이콘 컬러 | 단독 컬러 사용 (그라디언트 없음) |
-| 아이콘 크기 | 16 / 20 / 24 / 32 / 40 / 64px |
-
-### 7-3. 탭바 아이콘 지정
-
-| 탭 | 비활성 아이콘 | 활성 아이콘 | 아이콘명 |
-|---|---|---|---|
-| 내 아이 | PawPrint outline | PawPrint fill (커스텀) | PawPrint |
-| 응급 | HeartPulse outline | HeartPulse stroke 2.5 | HeartPulse |
-| 더보기 | Menu / Grid2x2 | Menu filled | LayoutGrid |
-
-### 7-4. 주요 화면별 아이콘 매핑
-
-| 기능 | 아이콘 | 크기 |
+| 기법 | 구현 | 목적 |
 |---|---|---|
-| 뒤로가기 | ChevronLeft | 24 |
-| 닫기 | X | 20 |
-| 추가 | Plus | 20 / 24 |
-| 편집 | Pencil | 16 |
-| 삭제 | Trash2 | 16 |
-| 카메라 (OCR) | Camera | 24 |
-| 이미지 첨부 | ImagePlus | 20 |
-| 캘린더 | Calendar | 20 |
-| 검색 | Search | 18 |
-| 알림 | Bell | 22 |
-| 설정 | Settings | 22 |
-| 응급 전화 | PhoneCall | 20 |
-| 지도 (야간병원) | MapPin | 20 |
-| 접종 완료 | CheckCircle2 | 16 |
-| 경고 | AlertTriangle | 18 |
-| 정보 | Info | 16 |
-| 시계 (준응급) | Clock | 16 |
-| 눈 (경과관찰) | Eye | 16 |
-| 공유 | Share2 | 20 |
-| 파일 첨부 | FileText | 16 |
-| 보험 | Shield | 20 |
-
-### 7-5. 커스텀 아이콘 (SVG)
-
-Lucide에 없는 반려동물 특화 아이콘은 SVG로 커스텀 제작:
-
-- PawPrint Filled (탭바 활성)
-- Syringe (주사/접종)
-- Stethoscope — Lucide에 있음, 활용
-- Dog / Cat 실루엣 (온보딩)
-- Pill (처방)
-
-커스텀 SVG는 `react-native-svg`로 래핑, 동일 Props 인터페이스 유지.
+| 미세 회전 | ±2~4° 랜덤 (컷당 다른 값, 시드 고정) | 딱딱한 컴퓨터 느낌 제거 |
+| 종이 질감 | SVG feTurbulence + feDisplacementMap 필터 overlay | 아날로그 질감 |
+| 그림자 오프셋 | 1~2px x/y offset, 화풍에 맞는 색상 | 입체감, 이미지 위 부착 느낌 |
+| 선 거칠기 | SVG stroke + feTurbulence (감성/수채 화풍만) | 손 그린 느낌 |
+| 배경 알파 | 99% 불투명 (완전 흰색 X) | 이미지 배경 살짝 비침 |
 
 ---
 
-## 8. 다크모드 운영 가이드
+## 11. 4컷 카드 + 공유 카드 템플릿
 
-### 8-1. Nativewind v4 다크모드 설정
+> Satori로 서버 사이드 렌더링. 모든 좌표는 px 절대값 기준.
 
-```js
-// tailwind.config.js
-module.exports = {
-  // darkMode 설정 제거 — Nativewind v4는 media query 기본값 사용
-  content: [
-    './app/**/*.{js,jsx,ts,tsx}',
-    './components/**/*.{js,jsx,ts,tsx}',
-  ],
-  theme: { extend: { /* 위 컬러 토큰 */ } },
-  plugins: [],
-}
-```
-
-```css
-/* global.css */
-/* 위 2-7 섹션의 CSS 변수 적용 */
-```
-
-### 8-2. 컬러 스위칭 원칙
-
-- 배경: white → slate-950 / slate-900 (카드)
-- 텍스트: neutral-800 → slate-200
-- 보더: neutral-200 → slate-700
-- Shadow 대신 미세 보더 사용 (다크 배경에서 shadow 비가시)
-- 이미지는 다크모드에서 opacity-90 적용 (눈 부심 방지)
-- Primary-500은 라이트/다크 동일 사용 (충분한 대비비 확보됨)
-
-### 8-3. Nativewind 다크모드 클래스 패턴
+### 11.1 정방형 카드 — 1080×1080
 
 ```
-배경 패턴:   bg-white dark:bg-slate-900
-카드 패턴:   bg-white dark:bg-slate-800
-텍스트:      text-neutral-800 dark:text-slate-200
-보조 텍스트: text-neutral-500 dark:text-slate-400
-보더:        border-neutral-200 dark:border-slate-700
-구분선:      bg-neutral-100 dark:bg-slate-800
-아이콘:      color="#374151" dark:color="#e2e8f0"
+전체 캔버스: 1080 × 1080 px
+
+[외곽 여백]
+  상하좌우: 48px
+
+[2×2 그리드]
+  컷 영역: 1080 - 48×2 = 984px 양분
+  컷 크기: (984 - 12(거터)) / 2 = 486px × 각 컷
+  컷 높이: 자동 계산, 텍스트 영역 80px 하단 배치 고려
+
+  컷 1: x=48, y=48, w=486, h=동적
+  컷 2: x=48+486+12=546, y=48, w=486, h=동적
+  컷 3: x=48, y=48+컷1높이+12, w=486, h=동적
+  컷 4: x=546, y=동일 행, w=486, h=동적
+
+  컷 기본 높이(이미지 영역): 420px
+  컷 텍스트 영역(말풍선): 이미지 위 SVG 오버레이
+
+[컷 번호]
+  위치: 각 컷 좌상단 x+8, y+8
+  크기: 24×24 원형
+  배경: --color-ink
+  텍스트: White, 12px, bold
+  
+[하단 텍스트 영역]
+  y: 1080 - 48 - 60 = 972
+  높이: 60px
+  날짜: 좌측, Gmarket Sans, 14px, --color-text-muted
+  제목 (있을 경우): 중앙, Gmarket Sans, 16px, --color-text-primary
+
+[워터마크]
+  위치: 우하단 컷4 기준 x+466, y+410 (컷 내부 우하단)
+  무료: 72×24px, opacity 0.9, --color-lemon 배경, "툰일기" 텍스트
+  유료 small: 48×16px, opacity 0.45, same
+  제거(pro): 없음
+
+[AI 고지]
+  위치: 우하단 전체 캔버스 x=900, y=1054
+  텍스트: "AI 생성 이미지", 10px, --color-text-muted, opacity 0.8
+  
+[QR 코드 영역]
+  위치: 워터마크 좌측 8px 이격
+  크기: 32×32px (무료 only)
+  서비스 URL QR
+```
+
+### 11.2 가로형 카드 — 1920×1080 (1×4)
+
+```
+전체 캔버스: 1920 × 1080 px
+
+[외곽 여백]
+  상하: 48px, 좌우: 80px
+
+[1×4 가로 그리드]
+  유효 폭: 1920 - 80×2 = 1760px
+  컷 폭: (1760 - 12×3) / 4 = 431px
+  컷 높이: 1080 - 48×2 = 984px
+
+  컷1: x=80, y=48
+  컷2: x=80+431+12=523
+  컷3: x=523+431+12=966
+  컷4: x=966+431+12=1409
+
+[컷 번호] 각 컷 좌상단 +8, +8, 동일 스펙
+
+[좌측 브랜드 영역]
+  x=0, y=0, w=48px 좌측 여백에 로고 세로 배치 (vertical text, rotate -90deg)
+  또는: 좌측 여백에 간단 로고 심볼만 (24×24)
+
+[AI 고지 + 워터마크]
+  우측 80px 여백 중앙 또는 마지막 컷 우하단
+```
+
+### 11.3 세로형 카드 — 1080×1920 (1×4 + 상단 텍스트)
+
+```
+전체 캔버스: 1080 × 1920 px
+
+[상단 텍스트 영역]
+  x=0, y=0, w=1080, h=280px
+  배경: --color-bg-base 또는 --color-ink (다크 배리언트)
+  
+  날짜: x=60, y=60, Gmarket Sans, 18px, --color-text-muted
+  일기 제목: x=60, y=100, Gmarket Sans, 36px bold, --color-text-primary
+    최대 2줄, 넘치면 ellipsis
+  감성 태그/화풍: x=60, y=190, Chip 스타일, 12px
+  
+  대각선 장식 요소 (선택): 우측 Lemon 또는 Coral accent line
+
+[1×4 세로 그리드]
+  상단 텍스트 영역 하단부터 시작: y=296
+  유효 높이: 1920 - 296 - 48 = 1576px
+  컷 높이: (1576 - 12×3) / 4 = 385px
+  컷 폭: 1080 - 48×2 = 984px
+
+  컷1: x=48, y=296
+  컷2: x=48, y=296+385+12=693
+  컷3: x=48, y=693+385+12=1090
+  컷4: x=48, y=1090+385+12=1487
+
+[하단 여백 영역 48px]
+  워터마크 + AI 고지 + 해시태그
+  
+[해시태그]
+  x=60, y=1868, 14px, --color-text-muted
+  "#툰일기 #오늘의만화 #일기만화" 등 자동 생성
 ```
 
 ---
 
-## 9. 컴포넌트 상태 정의 요약
+## 12. 워터마크 + AI 생성 고지
 
-모든 인터랙티브 컴포넌트는 5가지 상태를 정의:
+### 12.1 워터마크 — 무료 티어
 
-| 상태 | 시각 처리 |
+```
+텍스트: "툰일기" + 로고 심볼
+크기: 80×26px
+배경: --color-lemon (#FFE066), 반경 radius-sm (4px)
+텍스트: 14px, Gmarket Sans, font-weight 700, --color-ink
+테두리: 1.5px solid rgba(26,26,26,0.3)
+위치: 각 컷 우하단 또는 공유 카드 전체 우하단
+불투명도: 0.92
+```
+
+### 12.2 워터마크 — 베이직 티어
+
+```
+크기: 56×18px
+배경: rgba(255,224,102,0.75) (반투명)
+텍스트: 10px, font-weight 600
+불투명도: 0.60
+위치: 공유 카드 전체 우하단만 (컷 내부 X)
+```
+
+### 12.3 워터마크 — 프로 티어
+
+```
+제거 가능: 서비스 설정에서 Off 선택 시 완전 제거
+기본값: Off (워터마크 없음)
+대체: AI 고지 텍스트만 소형으로 유지 (법적 의무)
+```
+
+### 12.4 AI 생성 고지 (법적 의무)
+
+**표시 위치**: 공유 카드 하단 또는 우하단 모서리
+**스펙**:
+```
+텍스트: "AI 생성 이미지 · Made with Toonlog"
+폰트: 10px, Pretendard, font-weight 400
+컬러: --color-text-muted, opacity 0.85
+배경: 없음 (텍스트만)
+최소 대비: 배경과 3:1 이상 (WCAG)
+```
+
+**위치 규칙**:
+- 정방형 1080²: 하단 중앙, y=1062
+- 가로형 1920×1080: 우측 하단, x=1700, y=1062
+- 세로형 1080×1920: 하단 중앙, y=1900
+
+**한국 AI 기본법 준수 고려**:
+- 공유 카드에 고지 텍스트 필수 (삭제 불가)
+- 서비스 내부 미리보기에도 배지 표시 ("AI 생성" 배지, 12px, --color-info-subtle 배경)
+- 워터마크와 AI 고지는 별개 (워터마크는 브랜딩, 고지는 법적 의무)
+
+---
+
+## 13. 아이콘 세트 가이드
+
+### 13.1 스타일 원칙
+
+| 항목 | 값 |
 |---|---|
-| Default | 기본 스타일 |
-| Hover / Focus | 경계선 강조, 배경 색상 변경 |
-| Pressed / Active | 배경 어둡게 (opacity 또는 darker shade) |
-| Disabled | opacity-50 또는 neutral-200 bg, 터치 이벤트 차단 |
-| Loading | ActivityIndicator 또는 Skeleton, 터치 이벤트 차단 |
+| 라이브러리 | Lucide Icons (메인) + 커스텀 SVG (브랜드/화풍 전용) |
+| 스타일 | Line (2px stroke) — UI 아이콘 전반 |
+| 채움 | Fill — 선택/활성 상태 전환용 |
+| 기본 크기 | 20px × 20px (UI 기본), 16px (작은 컨텍스트), 24px (강조) |
+| 선 굵기 | 1.5px (16px 아이콘), 2px (20px+) |
+| 모서리 | round cap + round join |
+
+### 13.2 필수 아이콘 목록
+
+| 카테고리 | 아이콘명 | Lucide 이름 | 커스텀 여부 | 용도 |
+|---|---|---|---|---|
+| **네비게이션** | 홈 | `home` | N | 탭바 홈 |
+| | 일기쓰기 | `pen-line` | N | 일기 입력 탭 |
+| | 아카이브 | `calendar-days` | N | 아카이브 탭 |
+| | 공유 | `share-2` | N | 공유 탭 |
+| | 프로필 | `user-circle` | N | 마이페이지 탭 |
+| **일기 입력** | 화풍 선택 | `palette` | N | 화풍 변경 |
+| | 아바타 | `contact` | Y | 아바타 선택 (커스텀 필요) |
+| | 생성 시작 | `wand-2` | N | AI 생성 CTA 아이콘 |
+| | 글자 수 | `type` | N | 글자 수 표시 |
+| **4컷 결과** | 재생성 | `refresh-cw` | N | 컷 재생성 |
+| | 편집 | `edit-3` | N | 말풍선 편집 |
+| | 저장 | `download` | N | 이미지 저장 |
+| | 공유 | `send` | N | SNS 공유 |
+| **말풍선 에디터** | 말풍선 추가 | (커스텀) | Y | 대사/생각/외침/속삭임 4종 |
+| | 꼬리 방향 | (커스텀) | Y | 8방위 꼬리 선택 |
+| | 텍스트 편집 | `type` | N | 텍스트 직접 편집 |
+| | 삭제 | `trash-2` | N | 말풍선 삭제 |
+| **공유 카드** | 카드 비율 | `layout-template` | Y | 1:1 / 16:9 / 9:16 전환 |
+| | 링크 복사 | `link` | N | URL 복사 |
+| | 인스타 | (커스텀) | Y | Instagram 공유 |
+| **요금제** | 왕관 | `crown` | N | 프로 티어 표시 |
+| | 번개 | `zap` | N | 빠른 생성 표시 |
+| | 무한 | `infinity` | N | 무제한 표시 |
+| **공통** | 닫기 | `x` | N | 모달/바텀시트 닫기 |
+| | 뒤로 | `chevron-left` | N | 뒤로가기 |
+| | 더보기 | `more-horizontal` | N | 옵션 메뉴 |
+| | 검색 | `search` | N | 검색 |
+| | 알림 | `bell` | N | 알림 |
+| | 설정 | `settings` | N | 설정 |
+| | 체크 | `check` | N | 완료, 선택 확인 |
+| | 정보 | `info` | N | 도움말, 안내 |
+| | 경고 | `alert-triangle` | N | 경고 토스트 |
+| | 에러 | `x-circle` | N | 에러 토스트 |
+| | 성공 | `check-circle` | N | 성공 토스트 |
+
+### 13.3 커스텀 SVG 제작 규칙
+
+- 뷰박스: `0 0 24 24` (스케일 기준)
+- 선 굵기: `stroke-width="2"` (기본), `stroke-linecap="round"`, `stroke-linejoin="round"`
+- 색상: `currentColor` (CSS로 제어)
+- 채움: `fill="none"` (라인형), 선택 시 `fill="currentColor"` + stroke 제거
+- 말풍선 아이콘 4종: 각 말풍선 형태를 24×24 SVG로 직접 제작
+
+### 13.4 아이콘 사용 규칙
+
+- **아이콘 + 텍스트**: 간격 `--space-1.5` (6px)
+- **단독 아이콘 버튼**: 반드시 `aria-label` 또는 `title` 속성
+- **탭바 아이콘**: 비활성=라인, 활성=Fill 전환 + Primary 색상
+- **아이콘 컬러 기본값**: `--color-text-muted` → 호버/활성 시 `--color-text-primary`
 
 ---
 
-## 10. Nativewind tailwind.config.js 전체 스펙
+## 14. 다크모드 전략
 
-```js
-const { hairlineWidth } = require('nativewind/theme')
+### 14.1 구현 방식
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './app/**/*.{js,jsx,ts,tsx}',
-    './components/**/*.{js,jsx,ts,tsx}',
-    './features/**/*.{js,jsx,ts,tsx}',
-  ],
-  presets: [require('nativewind/preset')],
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4',
-          300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6',
-          600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a',
-        },
-        secondary: {
-          50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a',
-          300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b',
-          600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f',
-        },
-        accent: {
-          400: '#fb7185',
-          500: '#f43f5e',
-          600: '#e11d48',
-        },
-        neutral: {
-          0: '#ffffff', 50: '#f9fafb', 100: '#f3f4f6',
-          200: '#e5e7eb', 300: '#d1d5db', 400: '#9ca3af',
-          500: '#6b7280', 600: '#4b5563', 700: '#374151',
-          800: '#1f2937', 900: '#111827',
-        },
-      },
-      fontFamily: {
-        'pretendard-regular':  ['Pretendard-Regular'],
-        'pretendard-medium':   ['Pretendard-Medium'],
-        'pretendard-semibold': ['Pretendard-SemiBold'],
-        'pretendard-bold':     ['Pretendard-Bold'],
-      },
-      fontSize: {
-        '11': ['11px', { lineHeight: '16px' }],
-        '13': ['13px', { lineHeight: '20px' }],
-        '15': ['15px', { lineHeight: '20px' }],
-        '17': ['17px', { lineHeight: '24px' }],
-        '22': ['22px', { lineHeight: '30px' }],
-        '28': ['28px', { lineHeight: '36px' }],
-        '32': ['32px', { lineHeight: '40px' }],
-      },
-      borderRadius: {
-        'DEFAULT': '6px',
-        'md':      '10px',
-        'lg':      '12px',
-        'xl':      '16px',
-        '2xl':     '20px',
-        '3xl':     '24px',
-        'full':    '9999px',
-      },
-      spacing: {
-        // 4px 베이스 그리드, Tailwind 기본값 활용
-        // 커스텀 추가값:
-        '4.5': '18px',
-        '5.5': '22px',
-        '13':  '52px',
-        '15':  '60px',
-        '18':  '72px',
-        '22':  '88px',
-      },
-      boxShadow: {
-        xs: '0 1px 2px rgba(0,0,0,0.06)',
-        sm: '0 2px 4px rgba(0,0,0,0.08)',
-        md: '0 4px 8px rgba(0,0,0,0.10)',
-        lg: '0 8px 16px rgba(0,0,0,0.12)',
-        xl: '0 16px 32px rgba(0,0,0,0.14)',
-      },
-      borderWidth: {
-        hairline: hairlineWidth(),
-      },
-    },
-  },
-  plugins: [],
-}
+**CSS-first 전략**: Tailwind v4 `@media (prefers-color-scheme: dark)` + `[data-theme="dark"]` 양쪽 지원
+- 시스템 설정 자동 감지 (기본)
+- 앱 내 수동 토글 (`data-theme` 속성으로 override)
+- 상태 저장: `localStorage['toonlog-theme']`, 초기 렌더 깜빡임 방지 스크립트 `<head>` 인라인
+
+```html
+<!-- _document.tsx 또는 layout.tsx head에 삽입 -->
+<script>
+  (function() {
+    var t = localStorage.getItem('toonlog-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.setAttribute('data-theme', 'dark');
+  })();
+</script>
 ```
 
+### 14.2 토큰 매핑 원칙
+
+1. **브랜드 원색은 다크모드에서 밝기 +10~15% 이동** (Coral #FF6B6B → #FF8080)
+2. **배경 계층 순서 유지**: base < subtle < muted (라이트)의 관계를 다크에서도 base > subtle > muted (어두운 쪽이 base)
+3. **텍스트 대비 4.5:1 이상 유지** (WCAG AA) — 모든 semantic 텍스트 토큰에서 배경과의 대비 검증 필수
+4. **Ink → Paper 반전 아님**: 다크 배경은 `#1C1917` (따뜻한 어두운 갈색), 라이트 텍스트는 `#F0EDE8` (따뜻한 오프화이트) — 차갑지 않게
+5. **이미지 위에 얹는 요소** (말풍선, 워터마크): 다크모드와 무관, 항상 이미지 대비 기준으로 처리
+
+### 14.3 일기 작성 최적화 (밤 사용 多)
+
+**야간 쓰기 환경 고려 사항**:
+
+| 항목 | 라이트 | 다크 (야간 최적화) |
+|---|---|---|
+| Textarea 배경 | #FAF7F2 (오프화이트) | #231F1C (매우 어두운 갈색) |
+| Textarea 선 | --color-border-default | rgba(255,255,255,0.08) (거의 안 보임) |
+| Textarea 텍스트 | #1A1A1A | #E8DDD0 (따뜻한 크림 — 눈 덜 피로) |
+| 배경 brightness | 100% | 다크모드 전체: `filter: brightness(0.98)` 옵션 |
+| 글자 size | 16px | 16px 고정 (모바일 줌 방지) |
+| 커서 색 | Coral | Coral (동일 — 눈에 띄게 유지) |
+| 종이 줄 | opacity 0.12 | opacity 0.06 (더 희미하게) |
+
+**블루라이트 고려**:
+- 다크모드에서 Sky 계열 (`#4DABF7`) 사용 최소화 — 야간 UI에서 warm 계열 `#FF8080`, `#FFD43B`로 대체
+- 정보성 아이콘: 야간에는 Coral/Lemon 계열 우선
+
+### 14.4 만화 이미지와 다크 UI 공존
+
+- 4컷 이미지는 AI 생성 → 화풍별 배경색 고정 (Paper White 기반) — 다크모드에서도 이미지 자체는 변경 없음
+- 이미지 컨테이너에 `box-shadow: 0 0 0 1px var(--color-border-default)` 미세 테두리로 어두운 배경에서 이미지 경계 인지
+- 감성 라인/수채 화풍: 이미지 배경이 밝은 크림 → 다크 UI와 대비 강해짐 → 컨테이너 패딩 8px + `--color-bg-subtle` 배경으로 완충
+
+### 14.5 다크모드 금지 사항
+
+- 말풍선 내 텍스트 색 다크 변환 금지 (이미지 위에 얹히므로, 항상 화풍 기준 색상 유지)
+- Satori 공유 카드: 시스템 다크모드 무관, 라이트/Paper 기준으로 고정 생성 (수신자 환경 알 수 없음)
+- 워터마크 투명도: 다크 배경에서 더 낮아지지 않게 (opacity 최소 0.60 유지)
+
 ---
 
-## 11. 접근성 (Accessibility) 기준
+## 부록 A. 토큰 인벤토리 요약
 
-| 항목 | 기준 |
+| 카테고리 | 토큰 수 |
 |---|---|
-| 텍스트 대비비 | Body 이상: WCAG AA (4.5:1), Large Text: 3:1 |
-| 최소 터치 영역 | 44 x 44px (iOS HIG 기준) |
-| 포커스 인디케이터 | ring-2 ring-primary-500 ring-offset-2 |
-| 스크린 리더 | accessibilityLabel 필수 (아이콘 버튼) |
-| 동적 텍스트 크기 | allowFontScaling=false (UI 깨짐 방지) — 대신 최대 폰트 단계 제한 |
-| 색각 이상 대응 | 트리아지 배지: 색상 + 아이콘 + 텍스트 3중 표현 (색상만 의존 금지) |
-| 응급 관련 UI | 응급/준응급/경과관찰 구분을 색상 단독이 아닌 텍스트+아이콘 병용 |
+| 컬러 (브랜드 원색) | 9 |
+| 컬러 (Semantic — 라이트) | 33 |
+| 컬러 (Semantic — 다크 override) | 33 |
+| 컬러 (Neutral gray) | 10 × 2 = 20 |
+| 타이포 (family) | 6 |
+| 타이포 (size) | 11 |
+| 타이포 (weight) | 5 |
+| 타이포 (leading) | 5 |
+| 타이포 (tracking) | 6 |
+| 스페이싱 | 20 |
+| Radius | 8 |
+| Shadow | 9 |
+| Z-index | 9 |
+| Duration | 7 |
+| Easing | 6 |
+| **총 토큰 수** | **약 202개** |
 
 ---
 
-## 12. 산출물 체크리스트
+## 부록 B. 컴포넌트 인벤토리
 
-| 항목 | 완료 |
-|---|---|
-| 컬러 시스템 (Primary/Secondary/Accent/Semantic/Neutral) | v |
-| 다크모드 컬러 매핑 | v |
-| CSS 변수 / tailwind.config.js 토큰 | v |
-| 타이포그래피 스케일 (11단계) | v |
-| 폰트 패밀리 선택 및 설정 | v |
-| 버튼 (Primary/Secondary/Ghost/Danger/Emergency) | v |
-| 버튼 사이즈 스펙 (XL/L/M/S/Icon-only) | v |
-| 인풋 (Text/TextArea/Search/Select/Checkbox/Radio/Toggle) | v |
-| 카드 (펫/의료기록/메시지버블/빠른선택/빈상태) | v |
-| 네비게이션 (탭바/헤더/바텀시트) | v |
-| 알림/토스트/모달/인라인배너 | v |
-| 트리아지 배지 (응급/준응급/경과관찰) | v |
-| D-day 배지 / 카테고리 배지 | v |
-| OCR 촬영 오버레이 | v |
-| 타임라인 컴포넌트 | v |
-| 프로그레스 인디케이터 | v |
-| 스켈레톤 로딩 | v |
-| 스페이싱 & 그리드 | v |
-| Border Radius 스케일 | v |
-| Shadow 스케일 | v |
-| 아이콘 세트 선택 및 매핑 | v |
-| 컴포넌트 상태 (5가지) | v |
-| 접근성 기준 | v |
-| Nativewind 전체 tailwind.config.js | v |
+| # | 컴포넌트 | 상태 수 | 비고 |
+|---|---|---|---|
+| 1 | Button (Primary) | 5 | |
+| 2 | Button (Secondary) | 5 | |
+| 3 | Button (Ghost) | 4 | |
+| 4 | Button (Danger) | 4 | |
+| 5 | Button (Icon Only) | 4 | |
+| 6 | Text Input | 6 | 에러 상태 포함 |
+| 7 | Textarea | 6 | 일기 입력 전용 특수처리 |
+| 8 | Select | 3 | |
+| 9 | Checkbox | 4 | |
+| 10 | Radio | 4 | |
+| 11 | Card (기본) | 3 | |
+| 12 | Card (4컷 만화) | 1 | 스타일 고정 |
+| 13 | BottomSheet | 2 | open/closed |
+| 14 | Chip / Tag | 4 | |
+| 15 | 요금제 배지 | 4 | 티어별 |
+| 16 | Toggle | 4 | |
+| 17 | Modal / Dialog | 2 | open/closed |
+| 18 | Toast (5 타입) | 1 each | success/warning/error/info/default |
+| 19 | Skeleton | 3 | 카드/리스트/텍스트 |
+| 20 | ProgressBar | 1 | + 생성 대기 UI 전체 구성 |
+| 21 | Avatar Selector | 3 | default/hover/selected |
+| 22 | 화풍 선택 카드 | 3 | |
+| 23 | 요금제 카드 | 3 | 무료/베이직/프로 |
+| 24 | 말풍선 (대사) | 8방위 | |
+| 25 | 말풍선 (생각) | 8방위 | |
+| 26 | 말풍선 (외침) | 8방위 | |
+| 27 | 말풍선 (속삭임) | 8방위 | |
+| **총** | **27개 컴포넌트** | | |
 
 ---
 
-*작성: UI 디자이너 / 2026-04-13*
-*다음 단계: @디자인팀장 검토 후 프론트엔드팀 핸드오프*
+*UI 디자인 명세서 v1.0 — 2026-06-03 작성 완료*
+*다음 단계: 디자인팀장 종합 → design-final.md 확정 → 프론트팀 W1 토큰 핸드오프*

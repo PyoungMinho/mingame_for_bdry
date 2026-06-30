@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --realestate-brand-primary: #1c1917;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-realestate-neutral-50 text-realestate-neutral-700 antialiased;
+    font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+  }
+
+  /* 키보드 포커스 가시성 (디자인 §8.3) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-realestate-brand-primary;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

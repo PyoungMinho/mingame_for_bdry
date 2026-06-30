@@ -1,0 +1,335 @@
+/* 툰일기(Toonlog) globals.css — RISO EDITION v2.0
+ * 비주얼 아이덴티티: "잉크 & 리소(Risograph)" — 인디 만화 zine 인쇄소 감성
+ *   · 신문지 크림 종이 + 따뜻한 잉크 블랙
+ *   · 리소 잉크 3색: 형광핑크 / 리소블루 / 팝옐로우
+ *   · 하드 오프셋 그림자(blur 0) + 굵은 잉크 아웃라인
+ *   · 하프톤 점묘 / 스크린톤 / 종이 그레인 텍스처
+ * 규칙: 컴포넌트는 semantic 토큰만 사용(raw hex 금지 → 다크모드 자동 대응).
+ *   · 아웃라인/그림자 색은 --color-line(잉크↔크림 자동 반전) 사용.
+ */
+
+/* ── FONT IMPORTS (전부 신뢰 가능한 CDN) ── */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
+@import url("https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gaegu:wght@300;400;700&family=Anton&family=Gamja+Flower&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* BREAKPOINTS */
+  --breakpoint-sm: 430px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* FONTS — 리소 만화 스택
+   *  display : 헤드라인/로고 (블랙한산스 — 묵직한 임팩트)
+   *  heading : UI 강조 제목 (도현 — 둥근 굵은 고딕, 만화 친화)
+   *  sans    : 본문 (Pretendard — 깔끔한 한글 본문)
+   *  balloon : 말풍선/손글씨 (Gaegu — 손으로 쓴 대사)
+   *  marker  : 보조 손글씨 강조 (감자꽃)
+   *  english : 영문 콘덴스드 디스플레이/숫자 (Anton)
+   *  logo    : 로고 영문 폴백 = display 와 통일 */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Black Han Sans', 'Do Hyeon', 'Pretendard Variable', sans-serif;
+  --font-heading: 'Do Hyeon', 'Pretendard Variable', sans-serif;
+  --font-balloon: 'Gaegu', 'Gamja Flower', 'Pretendard Variable', cursive;
+  --font-marker: 'Gamja Flower', 'Gaegu', cursive;
+  --font-english: 'Anton', 'Black Han Sans', sans-serif;
+  --font-logo: 'Black Han Sans', 'Do Hyeon', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* FONT SIZES */
+  --text-2xs: 0.625rem; --text-xs: 0.75rem; --text-sm: 0.875rem;
+  --text-base: 1rem; --text-md: 1.125rem; --text-lg: 1.25rem;
+  --text-xl: 1.5rem; --text-2xl: 1.875rem; --text-3xl: 2.25rem;
+  --text-4xl: 3rem; --text-5xl: 3.75rem; --text-6xl: 4.5rem;
+
+  /* FONT WEIGHTS */
+  --font-weight-regular: 400; --font-weight-medium: 500;
+  --font-weight-semibold: 600; --font-weight-bold: 700; --font-weight-extrabold: 800; --font-weight-black: 900;
+
+  /* LINE HEIGHTS */
+  --leading-tight: 1.15; --leading-snug: 1.35; --leading-normal: 1.55;
+  --leading-relaxed: 1.7; --leading-loose: 2.0;
+
+  /* LETTER SPACING */
+  --tracking-tighter: -0.04em; --tracking-tight: -0.02em; --tracking-normal: 0em;
+  --tracking-wide: 0.02em; --tracking-wider: 0.06em; --tracking-widest: 0.14em;
+
+  /* SPACING (4px 기준) */
+  --spacing-px: 1px; --spacing-0: 0; --spacing-0_5: 0.125rem;
+  --spacing-1: 0.25rem; --spacing-1_5: 0.375rem; --spacing-2: 0.5rem;
+  --spacing-2_5: 0.625rem; --spacing-3: 0.75rem; --spacing-4: 1rem;
+  --spacing-5: 1.25rem; --spacing-6: 1.5rem; --spacing-8: 2rem;
+  --spacing-10: 2.5rem; --spacing-12: 3rem; --spacing-14: 3.5rem;
+  --spacing-16: 4rem; --spacing-20: 5rem; --spacing-24: 6rem;
+
+  /* BORDER RADIUS — 리소는 각진 인쇄물 느낌. 과한 라운드 지양 */
+  --radius-none: 0; --radius-sm: 3px; --radius-md: 6px; --radius-lg: 10px;
+  --radius-xl: 14px; --radius-2xl: 20px; --radius-3xl: 28px; --radius-full: 9999px;
+
+  /* BORDER WIDTH — 굵은 잉크 아웃라인 */
+  --border-hair: 1px; --border-ink: 2px; --border-ink-bold: 3px;
+
+  /* SHADOWS — 하드 오프셋(blur 0)이 시그니처. --color-line 기반 → 다크 자동 반전 */
+  --shadow-pop-xs: 1px 1px 0 0 var(--color-line);
+  --shadow-pop-sm: 2px 2px 0 0 var(--color-line);
+  --shadow-pop: 4px 4px 0 0 var(--color-line);
+  --shadow-pop-lg: 6px 6px 0 0 var(--color-line);
+  --shadow-pop-xl: 10px 10px 0 0 var(--color-line);
+  /* 컬러 그림자 (강조 카드용) */
+  --shadow-pop-pink: 4px 4px 0 0 var(--color-coral);
+  --shadow-pop-blue: 4px 4px 0 0 var(--color-sky);
+  /* 백워드 호환 별칭 (기존 컴포넌트가 참조) */
+  --shadow-ink: 4px 4px 0 0 var(--color-line);
+  --shadow-ink-sm: 2px 2px 0 0 var(--color-line);
+  /* 소프트 그림자는 오버레이/모달에만 최소 사용 */
+  --shadow-xs: 0 1px 2px rgb(22 19 15 / 0.08);
+  --shadow-sm: 0 2px 6px rgb(22 19 15 / 0.10);
+  --shadow-md: 0 6px 16px rgb(22 19 15 / 0.14);
+  --shadow-lg: 0 12px 30px rgb(22 19 15 / 0.18);
+  --shadow-xl: 0 20px 50px rgb(22 19 15 / 0.24);
+  --shadow-focus: 0 0 0 3px rgb(255 61 127 / 0.45);
+  --shadow-focus-error: 0 0 0 3px rgb(215 38 56 / 0.40);
+
+  /* Z-INDEX */
+  --z-base: 0; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200;
+  --z-overlay: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600; --z-max: 9999;
+
+  /* MOTION */
+  --duration-instant: 0ms; --duration-fast: 100ms; --duration-normal: 200ms;
+  --duration-slow: 300ms; --duration-xslow: 500ms;
+  --duration-loading: 800ms; --duration-generation: 1200ms;
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-stamp: cubic-bezier(0.2, 1.4, 0.3, 1);   /* 도장 찍는 듯 탄성 */
+  --ease-draw: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ── COLORS — RISO INK PRIMITIVES ── */
+  --color-ink: #16130F;          /* 따뜻한 잉크 블랙 */
+  --color-ink-soft: #3A332A;     /* 옅은 잉크 */
+  --color-paper: #F5F0E6;        /* 신문지 크림 */
+  --color-paper-deep: #EBE3D2;   /* 깊은 크림 */
+  /* 리소 잉크 3색 */
+  --color-coral: #FF3D7F;        /* 형광핑크 (primary) */
+  --color-coral-hover: #ED2A6C;
+  --color-coral-active: #D31A59;
+  --color-sky: #2541B2;          /* 리소블루 */
+  --color-sky-hover: #1C3596;
+  --color-lemon: #FFD400;        /* 팝옐로우 */
+  --color-mint: #00A95C;         /* 리소그린 */
+  --color-pencil: #857A6A;       /* 연필 그레이(따뜻) */
+  --color-eraser: #DFD6C2;       /* 지우개 톤 */
+
+  /* ── COLORS — SEMANTIC (LIGHT = 종이 모드, 기본) ── */
+  --color-line: #16130F;         /* 아웃라인/하드그림자 전용 (다크에서 반전) */
+  --color-bg-base: #F5F0E6;
+  --color-bg-subtle: #EFE8D9;
+  --color-bg-muted: #E5DCC8;
+  --color-bg-inverse: #16130F;
+  --color-surface-raised: #FFFCF5;   /* 카드 스톡(살짝 밝은 종이) */
+  --color-surface-overlay: rgb(22 19 15 / 0.55);
+
+  --color-text-primary: #16130F;
+  --color-text-secondary: #443C30;
+  --color-text-muted: #655C4E;   /* AA 4.5:1↑ on paper/subtle/muted (was #857A6A=3.7:1). 장식용 연필톤은 --color-pencil 사용 */
+  --color-text-disabled: #B5AB97;
+  --color-text-inverse: #F5F0E6;
+  --color-text-link: #2541B2;
+  --color-text-accent: #FF3D7F;
+
+  --color-primary: #FF3D7F; --color-primary-hover: #ED2A6C; --color-primary-active: #D31A59;
+  --color-primary-subtle: #FFE3ED; --color-primary-text: #FFFFFF;
+  --color-secondary: #2541B2; --color-secondary-subtle: #E1E6F7; --color-secondary-text: #FFFFFF;
+  --color-accent: #FFD400; --color-accent-subtle: #FFF6CC; --color-accent-text: #16130F;
+
+  --color-border-default: #16130F;   /* 리소는 기본 테두리도 잉크 */
+  --color-border-subtle: #D8CEB8;    /* 옅은 구분선 */
+  --color-border-strong: #16130F;
+  --color-border-focus: #FF3D7F;
+  --color-border-error: #D72638;
+
+  --color-success: #00A95C; --color-success-subtle: #DDF3E7;
+  --color-warning: #FF8A00; --color-warning-subtle: #FFEFD6;
+  --color-error: #D72638; --color-error-subtle: #FBE0E3;
+  --color-info: #2541B2; --color-info-subtle: #E1E6F7;
+
+  /* 텍스처 색(반투명 톤 오버레이용) */
+  --tone-ink-10: rgb(22 19 15 / 0.10);
+  --tone-ink-16: rgb(22 19 15 / 0.16);
+}
+
+/* ── DARK MODE — "야간 인쇄" : 잉크/종이 반전 + 리소 잉크는 더 밝게 ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-line: #F2ECDD;          /* 아웃라인/그림자가 크림으로 반전 */
+    --color-ink: #F2ECDD;
+    --color-paper: #1A1714;
+    --color-bg-base: #1A1714;
+    --color-bg-subtle: #242019;
+    --color-bg-muted: #2F2A22;
+    --color-bg-inverse: #F2ECDD;
+    --color-surface-raised: #221E18;
+    --color-surface-overlay: rgb(0 0 0 / 0.66);
+
+    --color-text-primary: #F2ECDD;
+    --color-text-secondary: #CFC6B4;
+    --color-text-muted: #968B78;
+    --color-text-disabled: #5B5347;
+    --color-text-inverse: #16130F;
+    --color-text-link: #8EA2F0;
+    --color-text-accent: #FF6FA0;
+
+    --color-primary: #FF6FA0; --color-primary-hover: #FF87B2; --color-primary-active: #FFA0C4;
+    --color-primary-subtle: #3A1726; --color-primary-text: #16130F;
+    --color-secondary: #8EA2F0; --color-secondary-subtle: #1B2348; --color-secondary-text: #16130F;
+    --color-accent: #FFE04D; --color-accent-subtle: #2E2602; --color-accent-text: #16130F;
+
+    --color-border-default: #F2ECDD; --color-border-subtle: #3A342B; --color-border-strong: #F2ECDD;
+    --color-border-focus: #FF6FA0; --color-border-error: #FF7A88;
+
+    --color-success: #3FD18A; --color-success-subtle: #0C2A1B;
+    --color-warning: #FFAF45; --color-warning-subtle: #2E1F02;
+    --color-error: #FF7A88; --color-error-subtle: #2E0F12;
+    --color-info: #8EA2F0; --color-info-subtle: #161E3E;
+
+    --color-coral: #FF6FA0; --color-sky: #8EA2F0; --color-lemon: #FFE04D; --color-mint: #3FD18A;
+    --color-pencil: #968B78; --color-eraser: #3A342B;
+    --tone-ink-10: rgb(242 236 221 / 0.10);
+    --tone-ink-16: rgb(242 236 221 / 0.16);
+  }
+}
+
+/* DARK MODE — manual override */
+[data-theme="dark"] {
+  --color-line: #F2ECDD;
+  --color-ink: #F2ECDD;
+  --color-paper: #1A1714;
+  --color-bg-base: #1A1714;
+  --color-bg-subtle: #242019;
+  --color-bg-muted: #2F2A22;
+  --color-bg-inverse: #F2ECDD;
+  --color-surface-raised: #221E18;
+  --color-surface-overlay: rgb(0 0 0 / 0.66);
+
+  --color-text-primary: #F2ECDD;
+  --color-text-secondary: #CFC6B4;
+  --color-text-muted: #968B78;
+  --color-text-disabled: #5B5347;
+  --color-text-inverse: #16130F;
+  --color-text-link: #8EA2F0;
+  --color-text-accent: #FF6FA0;
+
+  --color-primary: #FF6FA0; --color-primary-hover: #FF87B2; --color-primary-active: #FFA0C4;
+  --color-primary-subtle: #3A1726; --color-primary-text: #16130F;
+  --color-secondary: #8EA2F0; --color-secondary-subtle: #1B2348; --color-secondary-text: #16130F;
+  --color-accent: #FFE04D; --color-accent-subtle: #2E2602; --color-accent-text: #16130F;
+
+  --color-border-default: #F2ECDD; --color-border-subtle: #3A342B; --color-border-strong: #F2ECDD;
+  --color-border-focus: #FF6FA0; --color-border-error: #FF7A88;
+
+  --color-success: #3FD18A; --color-success-subtle: #0C2A1B;
+  --color-warning: #FFAF45; --color-warning-subtle: #2E1F02;
+  --color-error: #FF7A88; --color-error-subtle: #2E0F12;
+  --color-info: #8EA2F0; --color-info-subtle: #161E3E;
+
+  --color-coral: #FF6FA0; --color-sky: #8EA2F0; --color-lemon: #FFE04D; --color-mint: #3FD18A;
+  --color-pencil: #968B78; --color-eraser: #3A342B;
+  --tone-ink-10: rgb(242 236 221 / 0.10);
+  --tone-ink-16: rgb(242 236 221 / 0.16);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    position: relative;
+  }
+
+  /* 종이 그레인 — 페이지 전역 위에 깔리는 미세 노이즈(곱하기 블렌드) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-max);
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* 디스플레이 헤딩 기본 자간 */
+  h1, h2, h3 { letter-spacing: var(--tracking-tight); }
+
+  /* 접근성: prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    body::before { display: none; }
+  }
+  /* 포커스 가시성 — 리소 핑크 링 */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+    border-radius: var(--radius-sm);
+  }
+  ::selection {
+    background: var(--color-lemon);
+    color: var(--color-ink);
+  }
+}
+
+/* ── RISO 텍스처/유틸리티 헬퍼 ──
+ * 데코 오버레이 div 에 사용. currentColor 기반이라 text 색으로 톤 색을 제어.
+ * 예: <span aria-hidden className="tone-dots absolute inset-0 text-[var(--color-ink)] opacity-10" /> */
+@layer components {
+  .tone-dots {
+    background-image: radial-gradient(currentColor 1.1px, transparent 1.4px);
+    background-size: 6px 6px;
+    background-position: 0 0;
+  }
+  .tone-dots-lg {
+    background-image: radial-gradient(currentColor 2px, transparent 2.5px);
+    background-size: 12px 12px;
+  }
+  .tone-lines {
+    background-image: repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 6px);
+  }
+  .tone-grid {
+    background-image:
+      linear-gradient(currentColor 1px, transparent 1px),
+      linear-gradient(90deg, currentColor 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  /* 잉크 아웃라인 + 하드 그림자 묶음(컴포넌트 편의) */
+  .ink-card {
+    border: var(--border-ink) solid var(--color-line);
+    box-shadow: var(--shadow-pop);
+    background: var(--color-surface-raised);
+  }
+  /* 눌림 인터랙션: hover 시 그림자 커지고, active 시 도장처럼 내려앉음 */
+  .pop-press {
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .pop-press:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-pop-lg); }
+  .pop-press:active { transform: translate(2px, 2px); box-shadow: var(--shadow-pop-sm); }
+  /* 살짝 기울어진 스티커/스탬프 느낌 */
+  .tilt-l { transform: rotate(-1.5deg); }
+  .tilt-r { transform: rotate(1.5deg); }
+}

@@ -1,0 +1,244 @@
+{
+  "nav": {
+    "models": "Models",
+    "compare": "Compare",
+    "find": "Find AI",
+    "leaderboard": "Leaderboard",
+    "searchPlaceholder": "Search models... (e.g. GPT-4o, Claude)",
+    "toggleTheme": "Toggle theme",
+    "switchLanguage": "한국어로 보기"
+  },
+  "footer": {
+    "about": "About",
+    "dataSources": "Data Sources",
+    "changelog": "Changelog",
+    "admin": "Admin",
+    "adPolicy": "Ad Policy",
+    "copyright": "© 2026 Tier.gg — AI Model Rankings",
+    "disclaimer": "Scores are sourced from public benchmarks. Not directly measured.",
+    "githubPR": "Contribute data via GitHub"
+  },
+  "home": {
+    "heroTitle": "Find the right AI model — instantly.",
+    "heroSubtitle": "Compare LLM performance, pricing, and benchmarks across every major provider. No signup required.",
+    "searchLabel": "Search AI models",
+    "compareButton": "Compare",
+    "wizardCTA": "Not sure which AI fits your needs? Answer 3 questions →",
+    "popularPairs": "Popular Comparisons",
+    "topModels": "Top Models by Category",
+    "categoryLabels": {
+      "coding": "Coding",
+      "reasoning": "Reasoning",
+      "writing": "Writing"
+    },
+    "viewAll": "View all →",
+    "recentChangelog": "Recent Updates",
+    "seeSource": "Source ↗",
+    "emptyPairs": "No comparison data yet.",
+    "emptyPairsAction": "Browse all models",
+    "errorData": "Could not load data. Please try again later.",
+    "retry": "Retry"
+  },
+  "models": {
+    "pageTitle": "All AI Models",
+    "pageDescription": "Browse and filter AI models by provider, modality, and use case.",
+    "filterProvider": "Provider",
+    "filterModality": "Modality",
+    "filterAll": "All",
+    "sortBy": "Sort by",
+    "emptyResults": "No models match your filters.",
+    "emptyResultsAction": "Clear filters"
+  },
+  "modelDetail": {
+    "by": "by",
+    "released": "Released",
+    "lastVerified": "Last verified",
+    "daysAgo": "{days} days ago",
+    "contextWindow": "Context",
+    "inputPrice": "Input",
+    "outputPrice": "Output",
+    "perMillion": "/ 1M tokens",
+    "addToCompare": "Compare this model",
+    "shareModel": "Share",
+    "officialPage": "Official page ↗",
+    "benchmarks": "Benchmarks",
+    "benchmarkTable": {
+      "metric": "Metric",
+      "score": "Score",
+      "rank": "Rank",
+      "source": "Source",
+      "freshness": "Last Updated"
+    },
+    "frequentlyCompared": "Frequently Compared With",
+    "disclaimer": "Scores are sourced from public benchmarks and are not directly measured by this site. Always verify with the original source.",
+    "sourcesMeta": "Sources & Reliability",
+    "reliability": {
+      "high": "High",
+      "mid": "Medium",
+      "low": "Low"
+    },
+    "emptyBenchmark": "Benchmark data not yet collected for this metric.",
+    "reportSource": "Submit a source →",
+    "notFound": "Model not found.",
+    "notFoundAction": "Browse all models →",
+    "jsonLdDescription": "Compare {model} performance, pricing, and benchmarks."
+  },
+  "compare": {
+    "pageTitle": "{a} vs {b}",
+    "addModel": "Add model (max 4)",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "maxModels": "You can compare up to 4 models at once.",
+    "matrix": {
+      "caption": "Side-by-side model comparison",
+      "provider": "Provider",
+      "contextWindow": "Context window",
+      "inputPrice": "Input price",
+      "outputPrice": "Output price",
+      "multimodal": "Multimodal",
+      "officialApi": "Official API",
+      "winner": "Best in category"
+    },
+    "tabs": {
+      "coding": "Coding",
+      "reasoning": "Reasoning",
+      "writing": "Writing",
+      "pricing": "Pricing"
+    },
+    "shareCTA": "Share this comparison",
+    "shareTwitter": "Share on X",
+    "invalidSlug": "'{slug}' model not found. Please select a different model.",
+    "invalidPair": "Invalid comparison URL.",
+    "backHome": "Back to home →",
+    "browseModels": "Browse models"
+  },
+  "find": {
+    "pageTitle": "Find Your AI Model",
+    "pageDescription": "Answer 3 quick questions and we'll recommend the best AI model for your needs.",
+    "progress": {
+      "job": "Role",
+      "task": "Task",
+      "budget": "Budget",
+      "result": "Results"
+    },
+    "step1": {
+      "question": "What best describes your role?",
+      "developer": "Developer",
+      "marketer": "Marketer",
+      "designer": "Designer",
+      "student": "Student / Researcher",
+      "other": "Other"
+    },
+    "step2": {
+      "question": "What will you mainly use AI for?",
+      "coding": "Coding & Debugging",
+      "copywriting": "Copywriting & Writing",
+      "image": "Image Generation",
+      "dataAnalysis": "Data Analysis",
+      "translation": "Translation & Multilingual",
+      "summarization": "Summarization",
+      "unavailableTooltip": "Limited recommendation data for this combination. Try a full search →"
+    },
+    "step3": {
+      "question": "What's your monthly budget?",
+      "free": "Free tier only",
+      "low": "Under $10 / month",
+      "mid": "Under $50 / month",
+      "unlimited": "No limit"
+    },
+    "result": {
+      "title": "Top Picks for {job} × {task} × {budget}",
+      "viewDetail": "View details →",
+      "addCompare": "Add to compare",
+      "shareResult": "Share these results",
+      "restart": "Start over",
+      "weightDisclosure": "Recommendation weights: Benchmark score 40% · Price efficiency 40% · Context window 10% · Multilingual support 10%",
+      "empty": "No models match your criteria. Try adjusting your budget.",
+      "adjustBudget": "Adjust budget",
+      "fullSearch": "Full model search"
+    },
+    "back": "Back",
+    "next": "Next →",
+    "calculating": "Finding the best models for you..."
+  },
+  "leaderboard": {
+    "pageTitle": "{metric} Leaderboard",
+    "tabs": {
+      "overall": "Overall",
+      "coding": "Coding",
+      "reasoning": "Reasoning",
+      "writing": "Writing",
+      "price": "Price Efficiency"
+    },
+    "table": {
+      "caption": "{metric} leaderboard",
+      "rank": "Rank",
+      "model": "Model",
+      "score": "Score",
+      "change": "Change",
+      "compare": "Compare"
+    },
+    "updatedAt": "Updated {date}",
+    "source": "Source",
+    "reliabilityNote": "Rankings are based on public benchmarks, not direct measurements.",
+    "addToCompare": "Add to compare",
+    "compareSelected": "Compare selected ({count})",
+    "empty": "No data available for this category yet.",
+    "emptyAction": "View overall leaderboard"
+  },
+  "admin": {
+    "title": "Tier.gg Admin",
+    "logout": "Log out",
+    "login": {
+      "title": "Admin Login",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "error": "Invalid credentials. Please try again."
+    },
+    "nav": {
+      "models": "Model List",
+      "addModel": "Add New Model",
+      "benchmarks": "Manual Benchmark Entry",
+      "changelog": "Write Changelog",
+      "sources": "Source Management"
+    },
+    "form": {
+      "modelName": "Official Model Name",
+      "slug": "Slug (auto-generated)",
+      "provider": "Provider",
+      "category": "Category",
+      "releaseDate": "Release Date",
+      "inputPrice": "Input Price ($/1M tokens)",
+      "outputPrice": "Output Price ($/1M tokens)",
+      "contextWindow": "Context Window (K tokens)",
+      "sourceUrl": "Source URL",
+      "sourceType": "Source Type",
+      "sourceTypes": {
+        "t1": "T1 — Official",
+        "t2": "T2 — External Benchmark",
+        "t3": "T3 — Community"
+      },
+      "reliability": "Reliability",
+      "reliabilityOptions": {
+        "high": "High",
+        "mid": "Medium",
+        "low": "Low"
+      },
+      "lastVerified": "Last Verified (default: today)",
+      "save": "Save & Auto-generate Changelog",
+      "cancel": "Cancel",
+      "required": "Required",
+      "saveError": "Failed to save. Please try again.",
+      "saveSuccess": "Model saved successfully."
+    },
+    "recentChanges": "Recent Changes (last 10)",
+    "revert": "Revert"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong.",
+    "notFound": "Page not found.",
+    "backHome": "Back to home"
+  }
+}

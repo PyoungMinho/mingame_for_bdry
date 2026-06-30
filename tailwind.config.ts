@@ -108,6 +108,43 @@ const config: Config = {
           "sparta-accent": "#FF4D00",
           "friend-accent": "#3DBE9C", // C1: 민트 그린
         },
+        // ─── 모이라(Moira) 토큰 — design-system/moira/MASTER.md §3 (가산적, 문제팩토리 무손상) ───
+        moira: {
+          brand: "#4F46E5",
+          "brand-dark": "#4338CA",
+          "brand-tint": "#EEF2FF",
+          "fair-good": "#10B981", // 격차 ≤10분 = 공평
+          "fair-mid": "#F59E0B", // 11~20분
+          "fair-bad": "#F43F5E", // 21분+
+          track: "#E2E8F0",
+          kakao: "#FEE500",
+          "kakao-ink": "#191600",
+          bg: "#F8FAFC",
+          surface: "#FFFFFF",
+          border: "#E2E8F0",
+          ink: "#0F172A",
+          body: "#475569",
+          muted: "#94A3B8",
+          // ── RouteMap 신규 토큰 — moira-routemap-design-final.md §3 ──
+          // 교통수단 색 (공평성 색과 hue 분리, 항상 아이콘 동반)
+          "transport-subway": "#0052A4",
+          "transport-bus": "#F97316",
+          "transport-walk": "#64748B",
+          "transport-car": "#6366F1",
+          "transport-bus-tint": "#FFF7ED",
+          "transport-walk-tint": "#F1F5F9",
+          "transport-car-tint": "#EEF2FF",
+          // 지도 오버레이
+          "map-overlay-bg": "rgba(248,250,252,0.92)",
+          "map-overlay-dark": "rgba(15,23,42,0.88)",
+          "map-marker-ring": "#FFFFFF",
+          // 점수 변동 배지 (항상 ArrowUp/Down 동반, FairnessBars와 별 네임스페이스)
+          "score-up": "#059669",
+          "score-up-tint": "#D1FAE5",
+          "score-down": "#DC2626",
+          "score-down-tint": "#FEE2E2",
+          "score-neutral": "#475569",
+        },
       },
       fontFamily: {
         sans: ["Pretendard Variable", "Pretendard", "system-ui", "sans-serif"],

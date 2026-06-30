@@ -1,0 +1,244 @@
+{
+  "nav": {
+    "models": "모델 목록",
+    "compare": "비교하기",
+    "find": "AI 찾기",
+    "leaderboard": "리더보드",
+    "searchPlaceholder": "모델 검색... (예: GPT-4o, Claude)",
+    "toggleTheme": "테마 전환",
+    "switchLanguage": "View in English"
+  },
+  "footer": {
+    "about": "소개",
+    "dataSources": "데이터 출처",
+    "changelog": "변경 이력",
+    "admin": "관리자",
+    "adPolicy": "광고 정책",
+    "copyright": "© 2026 Tier.gg — AI 모델 랭킹",
+    "disclaimer": "점수는 공개 벤치마크를 출처로 합니다. 직접 측정이 아닙니다.",
+    "githubPR": "GitHub으로 데이터 기여하기"
+  },
+  "home": {
+    "heroTitle": "지금 바로 맞는 AI 모델을 찾으세요.",
+    "heroSubtitle": "주요 AI 제공사의 성능·가격·벤치마크를 한눈에 비교하세요. 회원가입 불필요.",
+    "searchLabel": "AI 모델 검색",
+    "compareButton": "비교",
+    "wizardCTA": "어떤 AI가 맞을지 모르겠다면? 3가지 질문으로 찾기 →",
+    "popularPairs": "인기 비교",
+    "topModels": "카테고리별 인기 모델",
+    "categoryLabels": {
+      "coding": "코딩",
+      "reasoning": "추론",
+      "writing": "창작"
+    },
+    "viewAll": "전체 보기 →",
+    "recentChangelog": "최근 업데이트",
+    "seeSource": "출처 ↗",
+    "emptyPairs": "아직 비교 데이터가 없습니다.",
+    "emptyPairsAction": "전체 모델 보기",
+    "errorData": "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+    "retry": "다시 시도"
+  },
+  "models": {
+    "pageTitle": "전체 AI 모델",
+    "pageDescription": "제공사, 유형별로 AI 모델을 검색하고 필터하세요.",
+    "filterProvider": "제공사",
+    "filterModality": "유형",
+    "filterAll": "전체",
+    "sortBy": "정렬",
+    "emptyResults": "필터 조건에 맞는 모델이 없습니다.",
+    "emptyResultsAction": "필터 초기화"
+  },
+  "modelDetail": {
+    "by": "제공",
+    "released": "출시",
+    "lastVerified": "최종 확인",
+    "daysAgo": "{days}일 전",
+    "contextWindow": "컨텍스트",
+    "inputPrice": "입력",
+    "outputPrice": "출력",
+    "perMillion": "/ 100만 토큰",
+    "addToCompare": "이 모델 비교하기",
+    "shareModel": "공유",
+    "officialPage": "공식 페이지 ↗",
+    "benchmarks": "벤치마크",
+    "benchmarkTable": {
+      "metric": "지표",
+      "score": "점수",
+      "rank": "순위",
+      "source": "출처",
+      "freshness": "최종 갱신"
+    },
+    "frequentlyCompared": "자주 비교되는 모델",
+    "disclaimer": "이 페이지의 수치는 공개 출처를 인용한 것으로, 직접 측정이 아닙니다. 최신 정보는 각 출처 링크를 통해 확인하세요.",
+    "sourcesMeta": "출처 및 신뢰도",
+    "reliability": {
+      "high": "높음",
+      "mid": "중간",
+      "low": "낮음"
+    },
+    "emptyBenchmark": "이 항목은 아직 수집 전입니다.",
+    "reportSource": "출처 제보하기 →",
+    "notFound": "찾을 수 없는 모델입니다.",
+    "notFoundAction": "전체 모델 목록 보기 →",
+    "jsonLdDescription": "{model}의 성능, 가격, 벤치마크를 비교하세요."
+  },
+  "compare": {
+    "pageTitle": "{a} vs {b}",
+    "addModel": "모델 추가 (최대 4개)",
+    "share": "공유하기",
+    "copyLink": "링크 복사",
+    "maxModels": "최대 4개까지 비교할 수 있습니다.",
+    "matrix": {
+      "caption": "AI 모델 사이드바이사이드 비교",
+      "provider": "제공사",
+      "contextWindow": "컨텍스트 창",
+      "inputPrice": "입력 가격",
+      "outputPrice": "출력 가격",
+      "multimodal": "멀티모달",
+      "officialApi": "공식 API",
+      "winner": "카테고리 우위"
+    },
+    "tabs": {
+      "coding": "코딩",
+      "reasoning": "추론",
+      "writing": "창작",
+      "pricing": "가격"
+    },
+    "shareCTA": "이 비교 결과를 공유하세요",
+    "shareTwitter": "X(트위터)로 공유",
+    "invalidSlug": "'{slug}' 모델을 찾을 수 없습니다. 다른 모델을 선택해주세요.",
+    "invalidPair": "유효하지 않은 비교 URL입니다.",
+    "backHome": "홈으로 →",
+    "browseModels": "모델 목록 보기"
+  },
+  "find": {
+    "pageTitle": "내게 맞는 AI 찾기",
+    "pageDescription": "3가지 질문에 답하면 맞춤 AI 모델을 추천해드립니다.",
+    "progress": {
+      "job": "직무",
+      "task": "작업",
+      "budget": "예산",
+      "result": "결과"
+    },
+    "step1": {
+      "question": "본인의 역할에 가장 가까운 것은?",
+      "developer": "개발자",
+      "marketer": "마케터",
+      "designer": "디자이너",
+      "student": "학생 / 연구자",
+      "other": "기타"
+    },
+    "step2": {
+      "question": "AI를 주로 어떤 작업에 사용할 예정인가요?",
+      "coding": "코딩·디버깅",
+      "copywriting": "카피·글쓰기",
+      "image": "이미지 생성",
+      "dataAnalysis": "데이터 분석",
+      "translation": "번역·다국어",
+      "summarization": "요약·정리",
+      "unavailableTooltip": "이 조합은 추천 데이터가 부족합니다. 전체 검색으로 찾기 →"
+    },
+    "step3": {
+      "question": "월 예산은 어느 정도인가요?",
+      "free": "무료 우선",
+      "low": "$10 이하/월",
+      "mid": "$50 이하/월",
+      "unlimited": "제한 없음"
+    },
+    "result": {
+      "title": "{job} × {task} × {budget} 추천 결과",
+      "viewDetail": "상세 보기 →",
+      "addCompare": "비교에 추가",
+      "shareResult": "이 결과 공유하기",
+      "restart": "처음부터 다시",
+      "weightDisclosure": "추천 알고리즘 가중치: 벤치마크 점수 40% · 가격효율 40% · 컨텍스트 창 10% · 다국어 지원 10%",
+      "empty": "조건에 맞는 모델이 없습니다. 예산 범위를 조정해보세요.",
+      "adjustBudget": "예산 조정",
+      "fullSearch": "전체 모델 검색"
+    },
+    "back": "이전",
+    "next": "다음 →",
+    "calculating": "맞춤 모델을 찾고 있습니다..."
+  },
+  "leaderboard": {
+    "pageTitle": "{metric} 리더보드",
+    "tabs": {
+      "overall": "종합",
+      "coding": "코딩",
+      "reasoning": "추론",
+      "writing": "창작",
+      "price": "가격효율"
+    },
+    "table": {
+      "caption": "{metric} 리더보드",
+      "rank": "순위",
+      "model": "모델명",
+      "score": "점수",
+      "change": "변동",
+      "compare": "비교"
+    },
+    "updatedAt": "{date} 갱신",
+    "source": "출처",
+    "reliabilityNote": "순위는 공개 벤치마크 기반이며, 직접 측정이 아닙니다.",
+    "addToCompare": "비교에 추가",
+    "compareSelected": "선택 모델 비교 ({count}개)",
+    "empty": "이 카테고리의 데이터를 준비 중입니다.",
+    "emptyAction": "종합 리더보드 보기"
+  },
+  "admin": {
+    "title": "Tier.gg 관리자",
+    "logout": "로그아웃",
+    "login": {
+      "title": "관리자 로그인",
+      "email": "이메일",
+      "password": "비밀번호",
+      "submit": "로그인",
+      "error": "이메일 또는 비밀번호가 올바르지 않습니다."
+    },
+    "nav": {
+      "models": "모델 목록",
+      "addModel": "신규 모델 등록",
+      "benchmarks": "벤치마크 수동 입력",
+      "changelog": "Changelog 작성",
+      "sources": "출처 관리"
+    },
+    "form": {
+      "modelName": "모델명(공식명)",
+      "slug": "슬러그 (자동 생성)",
+      "provider": "제공사",
+      "category": "카테고리",
+      "releaseDate": "출시일",
+      "inputPrice": "입력 가격 ($/100만 토큰)",
+      "outputPrice": "출력 가격 ($/100만 토큰)",
+      "contextWindow": "컨텍스트 창 (K 토큰)",
+      "sourceUrl": "출처 URL",
+      "sourceType": "출처 유형",
+      "sourceTypes": {
+        "t1": "T1 — 공식",
+        "t2": "T2 — 외부 벤치마크",
+        "t3": "T3 — 커뮤니티"
+      },
+      "reliability": "신뢰도",
+      "reliabilityOptions": {
+        "high": "높음",
+        "mid": "중간",
+        "low": "낮음"
+      },
+      "lastVerified": "최종 확인일 (기본값: 오늘)",
+      "save": "저장 후 Changelog 자동 생성",
+      "cancel": "취소",
+      "required": "필수",
+      "saveError": "저장에 실패했습니다. 다시 시도해주세요.",
+      "saveSuccess": "모델이 성공적으로 저장되었습니다."
+    },
+    "recentChanges": "최근 변경 이력 (최근 10건)",
+    "revert": "되돌리기"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다.",
+    "notFound": "페이지를 찾을 수 없습니다.",
+    "backHome": "홈으로 돌아가기"
+  }
+}
