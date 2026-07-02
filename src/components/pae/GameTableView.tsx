@@ -1,7 +1,6 @@
 "use client";
 
-// 오후의 패 — 게임 테이블 프레젠테이션 (봇 데모 / 실시간 공유).
-// 상태 소스(로컬 엔진 or 서버)와 무관하게 props만으로 렌더한다.
+// 오후의 패 — 게임 테이블 프레젠테이션 (봇 데모 / 실시간 공유). props만으로 렌더.
 import { useState } from "react";
 import type { Tile } from "@/lib/pae/tiles";
 import RulesModal from "@/components/pae/RulesModal";
@@ -18,14 +17,18 @@ export interface TableViewProps {
   leadLabel: string | null;
   myHand: Tile[];
   selectedIds: string[];
-  playableIds: string[] | null; // null = 내 차례 아님(딤 처리 안 함)
-  selLabel: string | null; // 선택한 조합명 (없으면 null)
+  playableIds: string[] | null;
+  selLabel: string | null;
   canPlay: boolean;
   myTurn: boolean;
   noPlayable: boolean;
-  scores?: number[];
+  // 세트/누적 (종료 시)
+  roundScores?: number[]; // 이번 라운드 벌점
+  cumScores?: number[]; // 이번 라운드 포함 누적 벌점
+  setRound?: number; // 현재 라운드(1~3)
+  isFinal?: boolean; // 세트 마지막 라운드 종료 여부
   shake?: boolean;
-  statusNote?: string; // 상대 차례 등 안내(실시간용)
+  statusNote?: string;
   onToggle: (t: Tile) => void;
   onPlay: () => void;
   onPass: () => void;
@@ -34,7 +37,7 @@ export interface TableViewProps {
   onExit?: () => void;
 }
 
-const RING = ["", "c1", "c2", "c3", "c1", "c2"]; // seat별 아바타 링 색
+const RING = ["", "c1", "c2", "c3", "c1", "c2"];
 
 function tid(t: Tile) {
   return `${t.suit}-${t.n}`;
@@ -55,9 +58,9 @@ export default function GameTableView(p: TableViewProps) {
       <div className="top">
         <div className="brand">오후의 패 <b>牌</b></div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {typeof p.setRound === "number" && <span className="cnt">라운드 {p.setRound}/3</span>}
           {p.roomLabel && <span className="cnt">{p.roomLabel}</span>}
           <button className="ghost" onClick={() => setShowRules(true)}>족보</button>
-          {p.onRestart && <button className="ghost" onClick={p.onRestart}>새 게임</button>}
           {p.onExit && <button className="ghost" onClick={p.onExit}>나가기</button>}
         </div>
       </div>
@@ -115,7 +118,10 @@ export default function GameTableView(p: TableViewProps) {
           handCounts={p.handCounts}
           winner={p.winner}
           mySeat={p.mySeat}
-          scores={p.scores}
+          roundScores={p.roundScores}
+          cumScores={p.cumScores}
+          setRound={p.setRound}
+          isFinal={p.isFinal}
           onRestart={p.onRestart}
           onExit={p.onExit}
         />
@@ -145,7 +151,10 @@ function ResultOverlay({
   handCounts,
   winner,
   mySeat,
-  scores,
+  roundScores,
+  cumScores,
+  setRound,
+  isFinal,
   onRestart,
   onExit,
 }: {
@@ -153,33 +162,46 @@ function ResultOverlay({
   handCounts: number[];
   winner: number;
   mySeat: number;
-  scores?: number[];
+  roundScores?: number[];
+  cumScores?: number[];
+  setRound?: number;
+  isFinal?: boolean;
   onRestart?: () => void;
   onExit?: () => void;
 }) {
+  // 최종 등수는 누적 벌점(cumScores) 낮은 순, 없으면 이번 라운드 남은 패 기준.
+  const rank = cumScores ?? handCounts;
   const rows = playerNames
-    .map((name, i) => ({ name, left: handCounts[i], score: scores?.[i] ?? 0, i }))
-    .sort((a, b) => a.left - b.left || b.score - a.score);
+    .map((name, i) => ({ name, left: handCounts[i], round: roundScores?.[i] ?? 0, cum: rank[i], i }))
+    .sort((a, b) => a.cum - b.cum);
+
+  const title = isFinal ? "🏆 세트 최종 등수" : `🏆 ${playerNames[winner]} 승리`;
+  const sub = isFinal ? "3라운드 누적 · 낮을수록 1등" : setRound ? `라운드 ${setRound}/3 · 누적 벌점` : undefined;
+  const restartLabel = isFinal ? "새 세트 시작" : "다음 라운드";
+
   return (
     <div className="overlay">
       <div className="card">
-        <h3>🏆 {playerNames[winner]} 승리</h3>
+        <h3>{title}</h3>
+        {sub && <div className="ov-sub">{sub}</div>}
         <table>
-          <thead><tr><th>순위</th><th>플레이어</th><th>남은 패</th><th>점수</th></tr></thead>
+          <thead>
+            <tr><th>순위</th><th>플레이어</th><th>이번</th><th>누적</th></tr>
+          </thead>
           <tbody>
             {rows.map((r, idx) => (
               <tr key={r.i} className={r.i === mySeat ? "me" : ""}>
-                <td>{idx + 1}</td>
+                <td>{isFinal && idx === 0 ? "🥇" : idx + 1}</td>
                 <td>{r.name}</td>
-                <td>{r.left}장</td>
-                <td className={r.score >= 0 ? "pos" : "neg"}>{r.score > 0 ? `+${r.score}` : r.score}</td>
+                <td className="ov-round">+{r.round}</td>
+                <td className="ov-cum">{r.cum}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className="ovbtns">
           {onExit && <button className="pass" onClick={onExit}>나가기</button>}
-          {onRestart && <button className="play" onClick={onRestart}>한 판 더</button>}
+          {onRestart && <button className="play" onClick={onRestart}>{restartLabel}</button>}
         </div>
       </div>
     </div>

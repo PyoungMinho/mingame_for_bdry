@@ -4,9 +4,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pae/supabase-admin";
 import { uidFromReq } from "@/lib/pae/auth";
-import { startGame, type Player } from "@/lib/pae/engine";
+import { startGame, nextRound, type Player } from "@/lib/pae/engine";
 import { makeRng, MIN_PLAYERS } from "@/lib/pae/tiles";
-import { saveGame } from "@/lib/pae/room-state";
+import { loadGame, saveGame } from "@/lib/pae/room-state";
 
 export async function POST(req: NextRequest, ctx: { params: { code: string } }) {
   const admin = getSupabaseAdmin();
@@ -32,12 +32,13 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
     return NextResponse.json({ error: `${MIN_PLAYERS}인 이상부터 시작할 수 있습니다` }, { status: 400 });
   }
 
-  // 이전 손패 정리 → 떠난 참가자의 stale 손패 행이 남지 않게.
-  await admin.from("hands").delete().eq("room_code", code);
-
   const gamePlayers: Player[] = list.map((p) => ({ id: p.uid as string, name: p.name as string }));
   const seed = Math.floor(Math.random() * 2 ** 31);
-  const state = startGame(gamePlayers, makeRng(seed));
+  // 세트 진행: 직전 라운드가 끝났으면 nextRound로 누적을 이어간다(3라운드 후 새 세트). 아니면 새 세트 1라운드.
+  const prev = await loadGame(code);
+  const state = prev && prev.phase === "ended" ? nextRound(prev, makeRng(seed)) : startGame(gamePlayers, makeRng(seed));
+  // 새 딜 저장 전 이전 손패 정리(떠난 참가자 stale 행 방지).
+  await admin.from("hands").delete().eq("room_code", code);
   await saveGame(code, state);
 
   return NextResponse.json({ ok: true });

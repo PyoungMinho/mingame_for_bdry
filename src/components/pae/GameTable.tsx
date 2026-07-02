@@ -1,9 +1,20 @@
 "use client";
 
 // 오후의 패 — 봇 데모 모드. 로컬 엔진을 구동해 봇 상대로 플레이하고 GameTableView로 렌더한다.
-// 실시간(Supabase) 미설정 시 폴백. 실시간 모드는 RealtimeGame이 같은 View를 쓴다.
+// 3라운드 세트 + 누적 벌점. 실시간(Supabase) 미설정 시 폴백.
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { startGame, play, pass, playableAgainst, scoreRound, type GameState, type Player } from "@/lib/pae/engine";
+import {
+  startGame,
+  nextRound,
+  play,
+  pass,
+  playableAgainst,
+  roundPenalty,
+  cumulativeWithRound,
+  isSetOver,
+  type GameState,
+  type Player,
+} from "@/lib/pae/engine";
 import { classify, canBeat, COMBO_KO } from "@/lib/pae/combos";
 import { tileId, makeRng, type Tile } from "@/lib/pae/tiles";
 import GameTableView from "@/components/pae/GameTableView";
@@ -31,12 +42,13 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
   const [selected, setSelected] = useState<Tile[]>([]);
   const [shake, setShake] = useState(false);
 
+  // "다음 라운드" / "새 세트" — nextRound가 세트 진행을 관리.
   const restart = useCallback(() => {
     const s = seed + 101;
     setSeed(s);
-    setState(startGame(players, makeRng(s)));
+    setState((prev) => nextRound(prev, makeRng(s)));
     setSelected([]);
-  }, [seed, players]);
+  }, [seed]);
 
   useEffect(() => {
     if (state.phase !== "playing" || state.turn === ME) return;
@@ -103,7 +115,10 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
       canPlay={canPlaySel}
       myTurn={myTurn}
       noPlayable={!!playableIds && playableIds.length === 0 && !!state.lead}
-      scores={state.phase === "ended" ? scoreRound(state) : undefined}
+      roundScores={state.phase === "ended" ? roundPenalty(state) : undefined}
+      cumScores={state.phase === "ended" ? cumulativeWithRound(state) : undefined}
+      setRound={state.setRound}
+      isFinal={isSetOver(state)}
       shake={shake}
       onToggle={toggle}
       onPlay={doPlay}

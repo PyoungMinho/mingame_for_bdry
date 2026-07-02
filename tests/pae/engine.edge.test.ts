@@ -2,15 +2,15 @@
  * engine.ts — 엣지 케이스 심화 테스트 (기존 engine.test.ts 보강).
  *
  * 트릭 종료 확장(멀티 패스·중간 컷·리드 복귀), 5장 족보로 라운드 종료,
- * play/pass 액션 거부 경로 전수, 점수 정산 정밀값([11,4,-15]·×4·동수0·승자≥0),
- * property(항상 합 0).
+ * play/pass 액션 거부 경로 전수, 라운드 벌점 정밀값(2 없음 그대로/2 있음 ×2/승자 0),
+ * property(모든 벌점 ≥0 & 승자=0).
  */
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import {
   play,
   pass,
-  scoreRound,
+  roundPenalty,
   type GameState,
   type Player,
   type Lead,
@@ -22,7 +22,7 @@ const t = (n: number, s: Suit): Tile => ({ n, suit: s });
 const players = (n: number): Player[] => Array.from({ length: n }, (_, i) => ({ id: `p${i}`, name: `P${i}` }));
 const leadOf = (tiles: Tile[], by: number): Lead => ({ combo: classify(tiles)!, by });
 function mk(hands: Tile[][], turn = 0, lead: Lead | null = null): GameState {
-  return { config: { maxNumber: 15, perPlayer: 0 }, players: players(hands.length), hands, turn, lead, winner: null, phase: "playing" };
+  return { config: { maxNumber: 15, perPlayer: 0 }, players: players(hands.length), hands, turn, lead, winner: null, phase: "playing", setRound: 1, cumulative: new Array(hands.length).fill(0) };
 }
 function ok(r: ReturnType<typeof play>): GameState {
   if (!r.ok) throw new Error(`예상치 못한 실패: ${r.error}`);
@@ -151,31 +151,44 @@ describe("engine.edge — 액션 거부 경로 전수", () => {
   });
 });
 
-describe("engine.edge — 점수 정산 정밀", () => {
-  it("ENG-E16: 실측값 [11,4,-15] · ×4 배수 · 동수 전원 0 · 승자 index≥0", () => {
-    // [11,4,-15]: P0 승(0장), P1 1장(2 한 장→×2), P2 3장(2 두 장→×3)
-    const a = mk([[], [t(2, "cloud")], [t(2, "sun"), t(2, "moon"), t(5, "star")]], 0, null);
-    expect(scoreRound(a)).toEqual([11, 4, -15]);
+describe("engine.edge — 라운드 벌점 정밀", () => {
+  it("ENG-E16: 2 없으면 그대로 · 2 있으면 ×2 · 승자(빈손)=0", () => {
+    // 승자 P0=0장 → 0. P1=3장 2 없음 → 3. P2=5장 2 보유(장수 무관) → ×2=10.
+    const a = mk(
+      [
+        [],
+        [t(6, "cloud"), t(7, "star"), t(8, "moon")],
+        [t(2, "sun"), t(6, "cloud"), t(7, "cloud"), t(8, "cloud"), t(9, "cloud")],
+      ],
+      0,
+      null,
+    );
+    expect(roundPenalty(a)).toEqual([0, 3, 10]);
 
-    // ×4 배수: P2가 2를 세 장 보유(1+3=×4)
-    const b = mk([[], [t(5, "cloud")], [t(2, "sun"), t(2, "moon"), t(2, "star"), t(6, "sun")]], 0, null);
-    expect(scoreRound(b)).toEqual([17, 11, -28]);
+    // 2를 여러 장 가져도 배수는 ×2로 동일(장수 무관): P2 4장 × 2 = 8
+    const b = mk(
+      [[], [t(5, "cloud")], [t(2, "sun"), t(2, "moon"), t(2, "star"), t(6, "sun")]],
+      0,
+      null,
+    );
+    expect(roundPenalty(b)).toEqual([0, 1, 8]);
 
-    // 동수(전원 같은 장수) → 아무도 주고받지 않음, 전원 0
+    // 2가 하나도 없으면 전원 남은 장수 그대로가 벌점
     const c = mk(
       [[t(3, "cloud"), t(4, "cloud")], [t(5, "cloud"), t(6, "cloud")], [t(7, "cloud"), t(8, "cloud")]],
       0,
       null,
     );
-    expect(scoreRound(c)).toEqual([0, 0, 0]);
+    expect(roundPenalty(c)).toEqual([2, 2, 2]);
 
-    // 승자 index는 라운드 종료 시 항상 ≥0 (마지막 패를 낸 사람)
+    // 라운드 종료 시 승자(마지막 패를 낸 사람)의 벌점은 0
     const finish = ok(play(mk([[t(2, "sun")], [t(6, "cloud"), t(7, "star")]], 0, null), 0, [t(2, "sun")]));
     expect(finish.phase).toBe("ended");
     expect(finish.winner).toBeGreaterThanOrEqual(0);
+    expect(roundPenalty(finish)[finish.winner!]).toBe(0);
   });
 
-  it("ENG-E17: property — ∀ (인원, 손패장수, 2 개수) : 점수 합은 항상 0", () => {
+  it("ENG-E17: property — ∀ (인원, 손패장수, 2 보유) : 모든 벌점 ≥0 & 빈손=0", () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 3, max: 5 }),
@@ -190,8 +203,9 @@ describe("engine.edge — 점수 정산 정밀", () => {
             for (let k = twos; k < total; k++) h.push(t(5, "cloud")); // 2가 아닌 채움
             return h;
           });
-          const sc = scoreRound(mk(hands));
-          return sc.reduce((a, b) => a + b, 0) === 0;
+          const pen = roundPenalty(mk(hands));
+          // 모든 벌점은 음수가 아니고, 빈손(0장)은 정확히 0이어야 한다.
+          return pen.every((p, i) => p >= 0 && (hands[i].length === 0 ? p === 0 : true));
         },
       ),
     );

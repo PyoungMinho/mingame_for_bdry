@@ -2,14 +2,14 @@
  * engine.ts — 게임 진행 엔진 단위 테스트.
  *
  * 턴 순환 · 패스(비영구) · 트릭 종료(리드 복귀) · 라운드 즉시 종료 ·
- * pairwise 점수 정산(2 배수) · 낼 수 있는 조합 탐색.
+ * 라운드 벌점(남은 타일 수 × 2 보유 시 2배, 낮을수록 좋음) · 낼 수 있는 조합 탐색.
  */
 import { describe, it, expect } from "vitest";
 import {
   startGame,
   play,
   pass,
-  scoreRound,
+  roundPenalty,
   playableAgainst,
   hasPlayable,
   type GameState,
@@ -34,6 +34,8 @@ function mkState(hands: Tile[][], turn = 0, lead: Lead | null = null): GameState
     lead,
     winner: null,
     phase: "playing",
+    setRound: 1,
+    cumulative: new Array(hands.length).fill(0),
   };
 }
 
@@ -105,7 +107,7 @@ describe("engine — pass·트릭 종료", () => {
   });
 });
 
-describe("engine — 라운드 종료·점수", () => {
+describe("engine — 라운드 종료·벌점", () => {
   it("ENG-09: 마지막 타일을 내면 라운드 즉시 종료·승자 확정", () => {
     const s = mkState([[t(2, "sun")], [t(6, "cloud"), t(7, "star")]], 0, null);
     const r = okState(play(s, 0, [t(2, "sun")]));
@@ -113,8 +115,8 @@ describe("engine — 라운드 종료·점수", () => {
     expect(r.winner).toBe(0);
     expect(r.hands[0]).toHaveLength(0);
   });
-  it("ENG-10: 점수는 pairwise 차이 정산 + 2 배수, 합은 0", () => {
-    // 남은: P0=0, P1=3장(2 없음), P2=5장(2 한 장)
+  it("ENG-10: 벌점은 남은 타일 수 × (2 보유 시 2배), 승자=0 (낮을수록 좋음)", () => {
+    // 남은: P0=0(승자), P1=3장(2 없음→그대로), P2=5장(2 한 장→×2)
     const s = mkState(
       [
         [],
@@ -124,9 +126,7 @@ describe("engine — 라운드 종료·점수", () => {
       0,
       null,
     );
-    const sc = scoreRound(s);
-    expect(sc).toEqual([13, 1, -14]);
-    expect(sc.reduce((a, b) => a + b, 0)).toBe(0); // zero-sum
+    expect(roundPenalty(s)).toEqual([0, 3, 10]);
   });
 });
 

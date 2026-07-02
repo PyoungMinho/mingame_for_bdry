@@ -7,13 +7,19 @@
  */
 import { describe, it, expect } from "vitest";
 import { toPublic } from "@/lib/pae/room-state";
-import { scoreRound, type GameState, type Player } from "@/lib/pae/engine";
+import { roundPenalty, type GameState, type Player } from "@/lib/pae/engine";
 import type { Tile, Suit } from "@/lib/pae/tiles";
 
 const t = (n: number, s: Suit): Tile => ({ n, suit: s });
 const players = (n: number): Player[] => Array.from({ length: n }, (_, i) => ({ id: `p${i}`, name: `P${i}` }));
-function mk(hands: Tile[][], phase: "playing" | "ended", winner: number | null = null): GameState {
-  return { config: { maxNumber: 15, perPlayer: 12 }, players: players(hands.length), hands, turn: 0, lead: null, winner, phase };
+function mk(
+  hands: Tile[][],
+  phase: "playing" | "ended",
+  winner: number | null = null,
+  setRound = 1,
+  cumulative: number[] = new Array(hands.length).fill(0),
+): GameState {
+  return { config: { maxNumber: 15, perPlayer: 12 }, players: players(hands.length), hands, turn: 0, lead: null, winner, phase, setRound, cumulative };
 }
 
 describe("room-state — toPublic (치팅 방지)", () => {
@@ -30,8 +36,9 @@ describe("room-state — toPublic (치팅 방지)", () => {
     const json = JSON.stringify(pub);
     expect(json).not.toContain('"hands"');
     // 손패에만 있는 타일 정보(예: 상대 손의 특정 타일)가 노출되지 않음 — key 목록 화이트리스트
+    // (scores 키는 playing 중에도 존재하되 값은 undefined — RS-03에서 별도 검증)
     expect(Object.keys(pub).sort()).toEqual(
-      ["config", "handCounts", "lead", "phase", "players", "scores", "turn", "winner"].sort(),
+      ["config", "cumulative", "handCounts", "lead", "phase", "players", "scores", "setRound", "turn", "winner"].sort(),
     );
   });
 
@@ -46,11 +53,27 @@ describe("room-state — toPublic (치팅 방지)", () => {
     expect(pub.scores).toBeUndefined();
   });
 
-  it("RS-04: ended 시에만 scores 포함, scoreRound와 동일", () => {
+  it("RS-04: ended 시에만 scores 포함, roundPenalty와 동일", () => {
+    // P0 승(0장)=0, P1 1장(2 없음)=1, P2 2장(2 없음)=2 → 벌점 [0,1,2]
     const ended = mk([[], [t(6, "cloud")], [t(7, "star"), t(8, "moon")]], "ended", 0);
     const pub = toPublic(ended);
     expect(pub.scores).toBeDefined();
-    expect(pub.scores).toEqual(scoreRound(ended));
-    expect(pub.scores!.reduce((a, b) => a + b, 0)).toBe(0); // zero-sum
+    expect(pub.scores).toEqual(roundPenalty(ended));
+    expect(pub.scores).toEqual([0, 1, 2]);
+    // 벌점은 승자 0 + 나머지 ≥0 (더 이상 zero-sum 아님)
+    expect(pub.scores!.every((s) => s >= 0)).toBe(true);
+    expect(pub.scores![ended.winner!]).toBe(0);
+  });
+
+  it("RS-05: setRound·cumulative가 공개 상태에 그대로 실린다", () => {
+    // 세트 2라운드, 직전까지 누적 벌점 [3,0,5]인 진행 중 상태
+    const s = mk(hands, "playing", null, 2, [3, 0, 5]);
+    const pub = toPublic(s);
+    expect(pub.setRound).toBe(2);
+    expect(pub.cumulative).toEqual([3, 0, 5]);
+    // 직렬화(DB 저장 형태)에도 살아남는다
+    const round = JSON.parse(JSON.stringify(pub));
+    expect(round.setRound).toBe(2);
+    expect(round.cumulative).toEqual([3, 0, 5]);
   });
 });

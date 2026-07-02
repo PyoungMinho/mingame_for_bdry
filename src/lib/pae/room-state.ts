@@ -1,8 +1,8 @@
 // 오후의 패 — 게임 상태 ↔ DB 변환 (서버 권위).
-//   · 공개 상태(rooms.public_state): 손패 제외 — turn·lead·winner·phase·players·handCounts·(종료 시)scores
+//   · 공개 상태(rooms.public_state): 손패 제외 — turn·lead·winner·phase·handCounts·setRound·cumulative·(종료 시)scores
 //   · 손패(hands 테이블): uid별, RLS로 본인만 열람
 import { getSupabaseAdmin } from "@/lib/pae/supabase-admin";
-import { scoreRound, type GameState, type Player, type Lead } from "@/lib/pae/engine";
+import { roundPenalty, type GameState, type Player, type Lead } from "@/lib/pae/engine";
 import type { Tile } from "@/lib/pae/tiles";
 
 export interface PublicState {
@@ -13,10 +13,12 @@ export interface PublicState {
   winner: number | null;
   phase: GameState["phase"];
   handCounts: number[];
-  scores?: number[]; // 라운드 종료 시에만
+  setRound: number;
+  cumulative: number[];
+  scores?: number[]; // 이번 라운드 벌점 (종료 시에만)
 }
 
-/** 손패를 뺀 공개 상태로 변환. 종료 시 점수 정산을 포함한다. */
+/** 손패를 뺀 공개 상태로 변환. 종료 시 이번 라운드 벌점을 포함한다. */
 export function toPublic(s: GameState): PublicState {
   return {
     config: s.config,
@@ -26,7 +28,9 @@ export function toPublic(s: GameState): PublicState {
     winner: s.winner,
     phase: s.phase,
     handCounts: s.hands.map((h) => h.length),
-    scores: s.phase === "ended" ? scoreRound(s) : undefined,
+    setRound: s.setRound,
+    cumulative: s.cumulative,
+    scores: s.phase === "ended" ? roundPenalty(s) : undefined,
   };
 }
 
@@ -48,6 +52,8 @@ export async function loadGame(code: string): Promise<GameState | null> {
     winner: pub.winner,
     phase: pub.phase,
     hands,
+    setRound: pub.setRound ?? 1,
+    cumulative: pub.cumulative ?? pub.players.map(() => 0),
   };
 }
 
