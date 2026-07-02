@@ -117,6 +117,40 @@
 .pae-shell .overlay .ovbtns { display: flex; gap: 10px; }
 .pae-shell .overlay .ovbtns .play { flex: 1; }
 
+/* ── 규칙/족보 모달 ── */
+.rules-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(4,4,9,.82); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 18px; font-family: 'Sora', system-ui, sans-serif; }
+.rules-card { width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto; color: #e9e9f2;
+  background: linear-gradient(#15151f,#0c0c15); border: 1px solid rgba(255,255,255,.1); border-radius: 18px;
+  padding: 22px 24px; box-shadow: 0 24px 70px rgba(0,0,0,.62); }
+.rules-top { display: flex; justify-content: space-between; align-items: center; }
+.rules-top h3 { font-size: 19px; font-weight: 800; }
+.rules-x { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); color: #cfcfde;
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+.rules-sec { margin-top: 16px; }
+.rules-sec h4 { font-size: 14px; font-weight: 700; color: #ffce8a; margin-bottom: 6px; }
+.rules-sec p { font-size: 13px; line-height: 1.65; color: #c9c9d8; margin: 3px 0; }
+.rules-sec b { color: #f0f0f8; }
+.rules-card .ck { font-weight: 800; }
+.rules-card .ck.sun { color: #ff5b60; } .rules-card .ck.moon { color: #33dcae; } .rules-card .ck.star { color: #ffd23f; } .rules-card .ck.cloud { color: #4f9dff; }
+.rules-card .muted { color: #8a8a9a; font-weight: 600; } .rules-card .small { font-size: 11.5px; line-height: 1.6; }
+.combo-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.combo-row { background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.07); border-radius: 11px; padding: 9px 11px; }
+.combo-head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+.combo-name { font-size: 13.5px; font-weight: 800; }
+.combo-rank { font-size: 10px; font-weight: 700; color: #ffce8a; background: rgba(255,184,77,.12); border: 1px solid rgba(255,184,77,.4); padding: 1px 7px; border-radius: 999px; }
+.combo-tiles { display: flex; gap: 4px; margin-bottom: 5px; }
+.combo-desc { font-size: 12px; color: #a8a8bc; }
+.mini-tile { position: relative; width: 30px; height: 42px; border-radius: 6px; display: inline-flex; flex-direction: column;
+  align-items: center; justify-content: space-between; padding: 3px 0 4px;
+  background: linear-gradient(160deg,#21212f,#13131e); border: 1px solid rgba(255,255,255,.1); }
+.mini-tile b { font-size: 14px; font-weight: 700; line-height: 1; text-shadow: 0 0 8px currentColor; }
+.mini-tile svg { width: 13px; height: 13px; filter: drop-shadow(0 0 4px currentColor); }
+.mini-tile.sun { color: #ff5b60; } .mini-tile.moon { color: #33dcae; } .mini-tile.star { color: #ffd23f; } .mini-tile.cloud { color: #4f9dff; }
+.rules-done { width: 100%; margin-top: 18px; }
+.pae-shell .link-btn { background: none; border: 0; color: #9a9aae; font-size: 12.5px; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-top: 14px; font-family: 'Sora', sans-serif; }
+.pae-shell .link-btn:hover { color: #ffce8a; }
+
 @media (prefers-reduced-motion: reduce) {
   .pae-shell .felt.shake { animation: none; }
   .pae-shell .tile, .pae-shell .deco-tile { transition: none; animation: none; }

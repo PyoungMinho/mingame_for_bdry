@@ -12,6 +12,11 @@ export default function RealtimeRoom({ code, myName }: { code: string; myName: s
   const exit = () => {
     if (typeof window !== "undefined") window.location.href = "/pae";
   };
+  // 대기방에서 나가기 — 자리를 비우고(waiting이면) 로비로 복귀.
+  const leaveLobby = async () => {
+    await room.leave();
+    exit();
+  };
 
   if ((room.status === "playing" || room.status === "ended") && room.publicState) {
     return <RealtimeGame room={room} code={code} onExit={exit} />;
@@ -55,6 +60,7 @@ export default function RealtimeRoom({ code, myName }: { code: string; myName: s
         <div className="hint">방장이 시작하길 기다리는 중…</div>
       )}
       <div className="hint">{room.members.length}명 입장 · 3인 이상이면 시작할 수 있어요</div>
+      <button className="ghost" onClick={leaveLobby}>나가기</button>
     </div>
   );
 }

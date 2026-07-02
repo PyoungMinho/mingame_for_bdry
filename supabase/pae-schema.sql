@@ -26,6 +26,9 @@ create table public.room_players (
   primary key (room_code, uid)
 );
 
+-- 같은 방에서 seat 중복 금지 (B-5). 재정렬/딜 시 seat 충돌 방지.
+alter table public.room_players add constraint uq_seat unique (room_code, seat);
+
 -- ── 손패 (RLS로 본인만 열람) ──
 create table public.hands (
   room_code text not null references public.rooms(code) on delete cascade,

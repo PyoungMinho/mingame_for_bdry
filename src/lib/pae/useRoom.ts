@@ -22,6 +22,8 @@ export interface UseRoom {
   myUid: string | null;
   error: string | null;
   start: () => Promise<void>;
+  restart: () => Promise<void>;
+  leave: () => Promise<void>;
   play: (tiles: Tile[]) => Promise<string | null>;
   pass: () => Promise<string | null>;
 }
@@ -35,6 +37,7 @@ export function useRoom(code: string, myName: string): UseRoom {
   const [myUid, setMyUid] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const uidRef = useRef<string | null>(null);
+  const statusRef = useRef<string>("waiting"); // cleanup 시점에 최신 상태 참조용
 
   const api = useCallback(async (path: string, body: unknown): Promise<string | null> => {
     const sb = getSupabase();
@@ -64,6 +67,7 @@ export function useRoom(code: string, myName: string): UseRoom {
     ]);
     if (room) {
       setStatus(room.status as string);
+      statusRef.current = room.status as string;
       setHostUid((room.host_uid as string) ?? null);
       setPublicState((room.public_state as PublicState | null) ?? null);
     }
@@ -94,6 +98,8 @@ export function useRoom(code: string, myName: string): UseRoom {
     return () => {
       alive = false;
       if (channel) sb.removeChannel(channel);
+      // 대기 중 언마운트면 best-effort로 자리 비우기(playing/ended면 서버가 무시).
+      if (statusRef.current === "waiting") void api(`/api/pae/rooms/${code}/leave`, {});
     };
   }, [code, myName, api, refresh]);
 
@@ -101,8 +107,16 @@ export function useRoom(code: string, myName: string): UseRoom {
     const e = await api(`/api/pae/rooms/${code}/start`, {});
     if (e) setError(e);
   }, [api, code]);
+  const restart = useCallback(async () => {
+    const e = await api(`/api/pae/rooms/${code}/restart`, {});
+    if (e) setError(e);
+  }, [api, code]);
+  const leave = useCallback(async () => {
+    const e = await api(`/api/pae/rooms/${code}/leave`, {});
+    if (e) setError(e);
+  }, [api, code]);
   const play = useCallback((tiles: Tile[]) => api(`/api/pae/rooms/${code}/action`, { action: "play", tiles }), [api, code]);
   const pass = useCallback(() => api(`/api/pae/rooms/${code}/action`, { action: "pass" }), [api, code]);
 
-  return { status, hostUid, publicState, members, myHand, myUid, error, start, play, pass };
+  return { status, hostUid, publicState, members, myHand, myUid, error, start, restart, leave, play, pass };
 }

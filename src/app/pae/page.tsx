@@ -1,10 +1,10 @@
 "use client";
 
-// 오후의 패 — 랜딩. 방 만들기 / 코드로 입장.
-// 키가 있으면 서버 API로 방 생성, 없으면 로컬 코드로 봇 데모.
+// 오후의 패 — 랜딩. 방 만들기 / 코드로 입장 + 게임 방법·족보 모달.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SUPABASE_READY, getSupabase, ensureAnonUid } from "@/lib/pae/supabase";
+import RulesModal from "@/components/pae/RulesModal";
 
 function randomCode(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 헷갈리는 0·O·1·I 제외
@@ -25,6 +25,7 @@ export default function Landing() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showRules, setShowRules] = useState(false);
 
   const create = async () => {
     const nm = name || "나";
@@ -96,7 +97,10 @@ export default function Landing() {
         </div>
       </div>
 
+      <button className="link-btn" onClick={() => setShowRules(true)}>📖 게임 방법 &amp; 족보 보기</button>
       <div className="rules">3~5인 · 색 <b>해 › 달 › 별 › 구름</b> · 숫자 <b>3 ‹ … ‹ 15 ‹ 1 ‹ 2</b></div>
+
+      <RulesModal open={showRules} onClose={() => setShowRules(false)} />
     </div>
   );
 }

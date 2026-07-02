@@ -2,7 +2,9 @@
 
 // 오후의 패 — 게임 테이블 프레젠테이션 (봇 데모 / 실시간 공유).
 // 상태 소스(로컬 엔진 or 서버)와 무관하게 props만으로 렌더한다.
+import { useState } from "react";
 import type { Tile } from "@/lib/pae/tiles";
+import RulesModal from "@/components/pae/RulesModal";
 
 export interface TableViewProps {
   roomLabel?: string;
@@ -39,6 +41,8 @@ function tid(t: Tile) {
 }
 
 export default function GameTableView(p: TableViewProps) {
+  const [showRules, setShowRules] = useState(false);
+
   const turnLabel =
     p.phase === "ended"
       ? "라운드 종료"
@@ -52,6 +56,7 @@ export default function GameTableView(p: TableViewProps) {
         <div className="brand">오후의 패 <b>牌</b></div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {p.roomLabel && <span className="cnt">{p.roomLabel}</span>}
+          <button className="ghost" onClick={() => setShowRules(true)}>족보</button>
           {p.onRestart && <button className="ghost" onClick={p.onRestart}>새 게임</button>}
           {p.onExit && <button className="ghost" onClick={p.onExit}>나가기</button>}
         </div>
@@ -115,6 +120,8 @@ export default function GameTableView(p: TableViewProps) {
           onExit={p.onExit}
         />
       )}
+
+      <RulesModal open={showRules} onClose={() => setShowRules(false)} />
     </div>
   );
 }

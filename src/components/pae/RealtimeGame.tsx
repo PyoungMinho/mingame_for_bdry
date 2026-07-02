@@ -18,6 +18,7 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
   const myTurn = pub.phase === "playing" && pub.turn === mySeat;
   const lead = pub.lead;
   const myHand = room.myHand;
+  const isHost = !!room.hostUid && !!room.myUid && room.hostUid === room.myUid;
 
   const playableIds = myTurn
     ? (() => {
@@ -71,6 +72,7 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       noPlayable={!!playableIds && playableIds.length === 0 && !!lead}
       scores={pub.scores}
       shake={shake}
+      onRestart={isHost ? room.restart : undefined}
       onExit={onExit}
       onToggle={toggle}
       onPlay={doPlay}
