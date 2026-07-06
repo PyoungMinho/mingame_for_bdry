@@ -172,7 +172,7 @@
 .pae-shell .opp, .pae-shell .mine { position: relative; }
 .pae-shell .bubble { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
   background: #FBF7EE; color: #241017; border: 2.5px solid #140a0e; border-radius: 12px; padding: 6px 11px;
-  font-family: "Black Han Sans", sans-serif; font-size: 13px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: "Black Han Sans", sans-serif; font-size: 13px; max-width: 240px; white-space: normal; word-break: break-word; line-height: 1.35;
   box-shadow: 3px 3px 0 #140a0e; z-index: 8; animation: bubblein .18s ease; }
 .pae-shell .bubble::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: #140a0e; }
 .pae-shell .bubble::before { content: ""; position: absolute; top: calc(100% - 3px); left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #FBF7EE; z-index: 1; }

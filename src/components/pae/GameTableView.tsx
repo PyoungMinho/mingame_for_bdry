@@ -134,7 +134,9 @@ export default function GameTableView(p: TableViewProps) {
               maxLength={40}
               placeholder="채팅 (엔터로 전송)"
               onChange={(e) => setChatText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.nativeEvent.isComposing) send();
+              }}
             />
             <button className="ghost" onClick={send}>보내기</button>
           </div>

@@ -4,7 +4,7 @@
 // ⚠️ 실제 대중교통 시간(ODsay)은 P1. 여기는 직선거리 기반 '근사치'다(공평 '순서'는 신뢰 가능).
 // 안전장치: 기본값(gangnam)은 기존 검증된 을지로3가 큐레이트 데모를 그대로 반환 → G2 기본 무손상.
 
-import type { MemberTime } from "./fairness";
+import { fairLevel, type MemberTime } from "./fairness";
 import type { LatLng, MemberRoute, RoutePlace } from "./route";
 import {
   MEMBERS,
@@ -164,7 +164,7 @@ function haversineKm(a: LatLng, b: LatLng): number {
 /** 직선거리(km) → 대중교통 근사 이동시간(분)+환승수. 경로 우회 계수 1.3 반영. */
 function proxyTime(km: number): { minutes: number; transfers: number } {
   const routeKm = km * 1.3; // 도로/노선 우회
-  const minutes = Math.round(6 + routeKm * 2.3); // 승하차·도보 base 6분 + 약 26km/h
+  const minutes = Math.round(5 + routeKm * 1.9); // 승하차·도보 base + 약 32km/h
   const transfers = km < 6 ? 0 : km < 13 ? 1 : 2;
   return { minutes: minutes + transfers * 2, transfers };
 }
@@ -298,14 +298,20 @@ export function buildScenario(originId: string): Scenario {
     return { ...place, destinationLatLng: dest, fairScore, memberRoutes };
   });
 
+  // 추천 카피 — 격차가 크면 정직하게(멀면 완벽 공평은 불가, 그중 최선)
+  const bestGap = gapOfLocal(rankedPlaces[0].times);
+  const level = fairLevel(bestGap);
+  const reason =
+    level === "good"
+      ? `${members.length}명 모두에게 가장 공평한 중간 지점`
+      : level === "mid"
+        ? `${members.length}명에게 비교적 균형 잡힌 중간 지점`
+        : `출발지가 멀어 완벽히 공평하긴 어려운 조합 — 그중 가장 균형에 가까운 곳`;
+
   return {
     originId,
     members,
-    station: {
-      name: hub.name,
-      lines: hub.lines,
-      reason: `${members.length}명 모두에게 가장 공평한 중간 지점`,
-    },
+    station: { name: hub.name, lines: hub.lines, reason },
     places,
     routePlaces,
   };
