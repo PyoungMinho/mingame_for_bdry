@@ -38,10 +38,13 @@ export function toPublic(s: GameState): PublicState {
 export async function loadGame(code: string): Promise<GameState | null> {
   const admin = getSupabaseAdmin();
   if (!admin) return null;
-  const { data: room } = await admin.from("rooms").select("public_state").eq("code", code).single();
+  // rooms(공개상태)·hands(손패)는 서로 독립 조회 → 병렬로 왕복을 절반으로.
+  const [{ data: room }, { data: rows }] = await Promise.all([
+    admin.from("rooms").select("public_state").eq("code", code).single(),
+    admin.from("hands").select("uid,tiles").eq("room_code", code),
+  ]);
   const pub = (room?.public_state ?? null) as PublicState | null;
   if (!pub) return null;
-  const { data: rows } = await admin.from("hands").select("uid,tiles").eq("room_code", code);
   const byUid = new Map<string, Tile[]>((rows ?? []).map((r) => [r.uid as string, r.tiles as Tile[]]));
   const hands = pub.players.map((p) => byUid.get(p.id) ?? []);
   return {
@@ -61,10 +64,13 @@ export async function loadGame(code: string): Promise<GameState | null> {
 export async function saveGame(code: string, s: GameState): Promise<void> {
   const admin = getSupabaseAdmin();
   if (!admin) return;
-  await admin
-    .from("rooms")
-    .update({ public_state: toPublic(s), status: s.phase, updated_at: new Date().toISOString() })
-    .eq("code", code);
   const rows = s.players.map((p, i) => ({ room_code: code, uid: p.id, tiles: s.hands[i] }));
-  await admin.from("hands").upsert(rows);
+  // rooms 업데이트·hands upsert도 독립 → 병렬로 왕복 절반.
+  await Promise.all([
+    admin
+      .from("rooms")
+      .update({ public_state: toPublic(s), status: s.phase, updated_at: new Date().toISOString() })
+      .eq("code", code),
+    admin.from("hands").upsert(rows),
+  ]);
 }

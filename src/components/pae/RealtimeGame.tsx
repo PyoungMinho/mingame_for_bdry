@@ -12,6 +12,15 @@ import type { UseRoom } from "@/lib/pae/useRoom";
 export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; code: string; onExit?: () => void }) {
   const [selected, setSelected] = useState<Tile[]>([]);
   const [shake, setShake] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const fail = (err: string) => {
+    setShake(true);
+    setMsg(err);
+    setTimeout(() => setShake(false), 400);
+    setTimeout(() => setMsg(null), 2500);
+  };
 
   const pub = room.publicState!;
   const mySeat = pub.players.findIndex((p) => p.id === room.myUid);
@@ -36,16 +45,22 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
     setSelected((p) => (p.some((x) => tileId(x) === tileId(t)) ? p.filter((x) => tileId(x) !== tileId(t)) : [...p, t]));
   };
   const doPlay = async () => {
+    if (submitting) return; // 더블클릭·중복 제출 차단
+    setSubmitting(true);
     const err = await room.play(selected);
-    if (err) {
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
-    } else {
+    setSubmitting(false);
+    if (err) fail(err);
+    else {
+      setMsg(null);
       setSelected([]);
     }
   };
-  const doPass = () => {
-    room.pass();
+  const doPass = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    const err = await room.pass();
+    setSubmitting(false);
+    if (err) fail(err);
   };
   const doHint = () => {
     const opts = playableAgainst(myHand, lead);
@@ -67,8 +82,9 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       selectedIds={selected.map(tileId)}
       playableIds={playableIds}
       selLabel={selCombo ? COMBO_KO[selCombo.type] : null}
-      canPlay={canPlay}
+      canPlay={canPlay && !submitting}
       myTurn={myTurn}
+      statusNote={msg ?? undefined}
       noPlayable={!!playableIds && playableIds.length === 0 && !!lead}
       roundScores={pub.scores}
       cumScores={pub.scores ? pub.cumulative.map((c, i) => c + (pub.scores as number[])[i]) : undefined}

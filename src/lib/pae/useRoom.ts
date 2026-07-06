@@ -207,14 +207,19 @@ export function useRoom(code: string, myName: string): UseRoom {
         body: JSON.stringify(body),
       });
       const j = (await res.json().catch(() => ({}))) as { error?: string; publicState?: PublicState; myHand?: Tile[] };
-      if (!res.ok) return j.error ?? "요청 실패";
+      if (!res.ok) {
+        // 내 화면이 stale이라 거부됐을 수 있음(이미 턴이 넘어갔는데 아직 내 차례로 보임 등)
+        // → 서버 최신 상태로 즉시 재동기화해 턴/버튼을 교정한다.
+        void refresh();
+        return j.error ?? "요청 실패";
+      }
       // 낙관적 반영 — 이후 이 시점 이전에 시작된 stale 폴링이 되돌리지 못하게 시퀀스 증가.
       actionSeqRef.current++;
       if (j.publicState) applyPublic(j.publicState, uidRef.current);
       if (j.myHand) setMyHand(j.myHand);
       return null;
     },
-    [code, applyPublic],
+    [code, applyPublic, refresh],
   );
   const play = useCallback((tiles: Tile[]) => actionCall({ action: "play", tiles }), [actionCall]);
   const pass = useCallback(() => actionCall({ action: "pass" }), [actionCall]);
