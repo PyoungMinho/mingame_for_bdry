@@ -81,6 +81,8 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       onPlay={doPlay}
       onPass={doPass}
       onHint={doHint}
+      bubbles={room.bubbles}
+      onSendChat={room.sendChat}
     />
   );
 }

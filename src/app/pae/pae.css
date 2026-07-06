@@ -164,7 +164,24 @@
 .mini-tile.sun { color: #FF3D5F; } .mini-tile.moon { color: #00A98F; } .mini-tile.star { color: #E6A200; } .mini-tile.cloud { color: #3D6EFF; }
 .rules-done { width: 100%; margin-top: 18px; }
 
+/* ── 채팅 말풍선 (저장 안 함, 잠깐 떴다 사라짐) ── */
+.pae-shell .opp, .pae-shell .mine { position: relative; }
+.pae-shell .bubble { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: #FBF7EE; color: #241017; border: 2.5px solid #140a0e; border-radius: 12px; padding: 6px 11px;
+  font-family: "Black Han Sans", sans-serif; font-size: 13px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 3px 3px 0 #140a0e; z-index: 8; animation: bubblein .18s ease; }
+.pae-shell .bubble::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: #140a0e; }
+.pae-shell .bubble::before { content: ""; position: absolute; top: calc(100% - 3px); left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #FBF7EE; z-index: 1; }
+.pae-shell .my-bubble { background: #FFC531; }
+.pae-shell .my-bubble::before { border-top-color: #FFC531; }
+@keyframes bubblein { from { opacity: 0; transform: translateX(-50%) translateY(6px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+.pae-shell .chat-bar { display: flex; gap: 6px; margin-top: 4px; }
+.pae-shell .chat-input { background: #2c1219; border: 2px solid #140a0e; border-radius: 6px; padding: 7px 11px; color: #F3E9DA; font-size: 13px; font-family: system-ui, sans-serif; outline: none; width: 200px; }
+.pae-shell .chat-input:focus { border-color: #C9A24B; box-shadow: 2px 2px 0 #C9A24B; }
+.pae-shell .chat-bar .ghost { padding: 7px 12px; }
+
 @media (prefers-reduced-motion: reduce) {
   .pae-shell .felt.shake { animation: none; }
   .pae-shell .tile, .pae-shell .deco-tile { transition: none; animation: none; }
+  .pae-shell .bubble { animation: none; }
 }

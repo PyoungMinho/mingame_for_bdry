@@ -22,19 +22,20 @@ export interface TableViewProps {
   canPlay: boolean;
   myTurn: boolean;
   noPlayable: boolean;
-  // 세트/누적 (종료 시)
-  roundScores?: number[]; // 이번 라운드 벌점
-  cumScores?: number[]; // 이번 라운드 포함 누적 벌점
-  setRound?: number; // 현재 라운드(1~3)
-  isFinal?: boolean; // 세트 마지막 라운드 종료 여부
+  roundScores?: number[];
+  cumScores?: number[];
+  setRound?: number;
+  isFinal?: boolean;
   shake?: boolean;
   statusNote?: string;
+  bubbles?: { seat: number; text: string; key: number }[];
   onToggle: (t: Tile) => void;
   onPlay: () => void;
   onPass: () => void;
   onHint: () => void;
   onRestart?: () => void;
   onExit?: () => void;
+  onSendChat?: (text: string) => void;
 }
 
 const RING = ["", "c1", "c2", "c3", "c1", "c2"];
@@ -45,6 +46,16 @@ function tid(t: Tile) {
 
 export default function GameTableView(p: TableViewProps) {
   const [showRules, setShowRules] = useState(false);
+  const [chatText, setChatText] = useState("");
+
+  const bubbleOf = (seat: number) => p.bubbles?.find((b) => b.seat === seat)?.text ?? null;
+  const send = () => {
+    const t = chatText.trim();
+    if (t && p.onSendChat) {
+      p.onSendChat(t);
+      setChatText("");
+    }
+  };
 
   const turnLabel =
     p.phase === "ended"
@@ -69,6 +80,7 @@ export default function GameTableView(p: TableViewProps) {
         {p.playerNames.map((name, i) =>
           i === p.mySeat ? null : (
             <div key={i} className={`opp ${p.turn === i && p.phase === "playing" ? "now" : ""}`}>
+              {bubbleOf(i) && <div className="bubble">{bubbleOf(i)}</div>}
               <div className={`ava ${RING[i] ?? ""}`}>{name[0]}</div>
               <div className="nm">{name}</div>
               <div className="cnt">{p.handCounts[i]}장</div>
@@ -91,6 +103,7 @@ export default function GameTableView(p: TableViewProps) {
       </div>
 
       <div className="mine">
+        {bubbleOf(p.mySeat) && <div className="bubble my-bubble">{bubbleOf(p.mySeat)}</div>}
         <div className="mlbl">
           내 패 {p.myHand.length}장
           {p.myTurn && p.noPlayable ? " · 낼 수 있는 패가 없어요 (패스)" : ""}
@@ -110,6 +123,19 @@ export default function GameTableView(p: TableViewProps) {
             {p.selLabel ? `${p.selLabel} 내기` : "내기"}
           </button>
         </div>
+        {p.onSendChat && (
+          <div className="chat-bar">
+            <input
+              className="chat-input"
+              value={chatText}
+              maxLength={40}
+              placeholder="채팅 (엔터로 전송)"
+              onChange={(e) => setChatText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+            />
+            <button className="ghost" onClick={send}>보내기</button>
+          </div>
+        )}
       </div>
 
       {p.phase === "ended" && p.winner !== null && (
@@ -169,7 +195,6 @@ function ResultOverlay({
   onRestart?: () => void;
   onExit?: () => void;
 }) {
-  // 최종 등수는 누적 벌점(cumScores) 낮은 순, 없으면 이번 라운드 남은 패 기준.
   const rank = cumScores ?? handCounts;
   const rows = playerNames
     .map((name, i) => ({ name, left: handCounts[i], round: roundScores?.[i] ?? 0, cum: rank[i], i }))

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uidFromReq } from "@/lib/pae/auth";
 import { play, pass } from "@/lib/pae/engine";
-import { loadGame, saveGame } from "@/lib/pae/room-state";
+import { loadGame, saveGame, toPublic } from "@/lib/pae/room-state";
 import type { Tile } from "@/lib/pae/tiles";
 
 export async function POST(req: NextRequest, ctx: { params: { code: string } }) {
@@ -22,5 +22,6 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
 
   await saveGame(code, result.state);
-  return NextResponse.json({ ok: true });
+  // 낸 사람이 refresh 왕복 없이 즉시 반영하도록, 최신 공개상태 + 본인 손패를 함께 돌려준다.
+  return NextResponse.json({ ok: true, publicState: toPublic(result.state), myHand: result.state.hands[seat] ?? [] });
 }
