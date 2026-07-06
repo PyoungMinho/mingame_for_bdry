@@ -103,6 +103,14 @@ export function useRoom(code: string, myName: string): UseRoom {
     };
   }, [code, myName, api, refresh]);
 
+  // Realtime 이벤트를 놓치는 경우 대비 — 2초마다 폴링해 턴/손패/상태 갱신을 보장.
+  useEffect(() => {
+    const id = setInterval(() => {
+      void refresh();
+    }, 2000);
+    return () => clearInterval(id);
+  }, [refresh]);
+
   const start = useCallback(async () => {
     const e = await api(`/api/pae/rooms/${code}/start`, {});
     if (e) setError(e);
@@ -115,8 +123,22 @@ export function useRoom(code: string, myName: string): UseRoom {
     const e = await api(`/api/pae/rooms/${code}/leave`, {});
     if (e) setError(e);
   }, [api, code]);
-  const play = useCallback((tiles: Tile[]) => api(`/api/pae/rooms/${code}/action`, { action: "play", tiles }), [api, code]);
-  const pass = useCallback(() => api(`/api/pae/rooms/${code}/action`, { action: "pass" }), [api, code]);
+  const play = useCallback(
+    async (tiles: Tile[]) => {
+      const e = await api(`/api/pae/rooms/${code}/action`, { action: "play", tiles });
+      if (!e) await refresh(); // 낸 직후 내 화면 즉시 갱신(다음 사람 턴도 곧 폴링/Realtime로 따라옴)
+      return e;
+    },
+    [api, code, refresh],
+  );
+  const pass = useCallback(
+    async () => {
+      const e = await api(`/api/pae/rooms/${code}/action`, { action: "pass" });
+      if (!e) await refresh();
+      return e;
+    },
+    [api, code, refresh],
+  );
 
   return { status, hostUid, publicState, members, myHand, myUid, error, start, restart, leave, play, pass };
 }
