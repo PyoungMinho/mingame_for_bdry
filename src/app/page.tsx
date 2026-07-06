@@ -572,9 +572,12 @@ function Footer() {
           <span className="font-serif text-xl leading-none text-indigo-600">∑</span>
           <span className="font-bold text-slate-900">문제팩토리</span>
         </Link>
-        <div className="flex items-center gap-6 text-sm">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
           <Link href="/study" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">학생 자습</Link>
           <Link href="/exam" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">강사용</Link>
+          <Link href="/about" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">소개</Link>
+          <Link href="/guide" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">가이드</Link>
+          <Link href="/faq" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">FAQ</Link>
           <Link href="/terms" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">이용약관</Link>
           <Link href="/privacy" className="text-slate-500 hover:text-slate-900 transition-colors duration-200 cursor-pointer">개인정보처리방침</Link>
         </div>
