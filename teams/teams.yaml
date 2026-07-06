@@ -229,6 +229,31 @@ teams:
       - 테스트코드
       - 버그리포트
 
+  devops:
+    name: "배포팀"
+    description: "1인 — 완성물을 모노레포 라우트로 Vercel 자동배포 + 라이브 검증"
+    color: "#2D3436"
+    structure: "single_owner"
+    members:
+      - agent: "배포엔지니어"
+        file: ".claude/agents/devops/deploy-engineer.md"
+        model: opus
+        role: "DevOps / 배포 담당"
+        skills: [빌드게이트, Vercel배포, 라이브검증, 롤백, 시크릿가드]
+
+    meeting_flow:
+      round1_gate:
+        agents: ["배포엔지니어"]
+        description: "사전확인 → 로컬 게이트(type-check/클린 build/test) → env 드리프트 체크"
+      round2_deploy:
+        agents: ["배포엔지니어"]
+        description: "프리뷰 승인 → 시크릿 스캔 → push → 내용 기반 라이브 검증 → 보고"
+
+    mcps: []
+    outputs:
+      - 라이브URL
+      - 배포검증리포트
+
 # 팀 간 워크플로우 의존성
 workflows:
   default_pipeline:
@@ -249,3 +274,6 @@ workflows:
         next: qa
       - team: qa
         action: "테스트 설계 + 실행 + 버그 리포트"
+        next: devops
+      - team: devops
+        action: "모노레포 라우트 Vercel 자동배포 + 라이브 검증"

@@ -179,7 +179,10 @@
 .pae-shell .my-bubble { background: #FFC531; }
 .pae-shell .my-bubble::before { border-top-color: #FFC531; }
 @keyframes bubblein { from { opacity: 0; transform: translateX(-50%) translateY(6px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-.pae-shell .chat-bar { display: flex; gap: 6px; margin-top: 4px; }
+.pae-shell .chat-bar { display: flex; gap: 6px; margin-top: 4px; position: relative; }
+/* 내 채팅 말풍선은 입력바 바로 위 왼쪽에 뜬다 (패·바닥패를 가리지 않도록) */
+.pae-shell .chat-bar .my-bubble { left: 14px; transform: none; bottom: calc(100% + 10px); max-width: 70%; pointer-events: none; }
+.pae-shell .chat-bar .my-bubble::after, .pae-shell .chat-bar .my-bubble::before { left: 22px; transform: none; }
 .pae-shell .chat-input { background: #2c1219; border: 2px solid #140a0e; border-radius: 6px; padding: 7px 11px; color: #F3E9DA; font-size: 13px; font-family: system-ui, sans-serif; outline: none; width: 200px; }
 .pae-shell .chat-input:focus { border-color: #C9A24B; box-shadow: 2px 2px 0 #C9A24B; }
 .pae-shell .chat-bar .ghost { padding: 7px 12px; }

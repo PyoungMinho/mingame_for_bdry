@@ -7,6 +7,13 @@ node_modules/
 .env*.local
 .env.*.local
 
+# 임의명 시크릿 파일 (service-account.json 등 JSON/키 유출 차단)
+*.key
+*.pem
+*credentials*.json
+service-account*.json
+gha-creds-*.json
+
 # Next.js 빌드 산출물
 .next/
 out/

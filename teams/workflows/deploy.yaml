@@ -1,0 +1,61 @@
+# STEP 7 배포 워크플로우
+# 완성된 아이디어를 모노레포 라우트로 Vercel에 자동배포하고 라이브 URL을 검증
+# 배포 모델: src/app/<slug> → git push origin main → Vercel Git 연동 자동배포 → project-orsrw.vercel.app/<slug>
+
+name: "배포"
+trigger: "/배포 · 배포해줘 · 배포 시작 · 라이브로 올려줘"
+전제: "개발 코드 존재(STEP 4). 권장: QA(STEP 5) + 최종 리뷰(STEP 6) 통과"
+담당: "배포엔지니어 (.claude/agents/devops/deploy-engineer.md)"
+
+# 이 레포의 배포 사실 (감사로 실측 확인)
+facts:
+  build_gate_real: true           # next build 통과 = 실재하는 게이트
+  env_is_runtime_optional: true   # 빌드는 env 없이도 통과 → 로컬 빌드 통과 ≠ 배포 안전
+  token: none                     # Vercel 토큰 없음 → 원격 빌드 로그 조회 불가, 내용 기반 검증
+  branch: main                    # main = 프로덕션, 다수 라이브 앱 공유
+  base_url: "https://project-orsrw.vercel.app"
+  reserved_slugs: [about, api, exam, faq, guide, moira, onboarding, pae, pets, privacy, study, terms]
+  monorepo_note: "apps/*(jinjjajip·tier-gg·toonlog)와 hwp2pdf/는 루트 빌드 제외 → 이 방식으로 배포 안 됨(독립 프로젝트 승격 경로)"
+
+flow:
+  step1_preflight:
+    agent: "배포엔지니어"
+    action: "git status --porcelain 공백 확인 · git fetch 후 origin/main 앞서지 않는지 확인 · 직전 정상 SHA 기록(롤백 기준선) · 슬러그 예약어 충돌 확인"
+
+  step2_gate:
+    agent: "배포엔지니어"
+    action: "node -v==.nvmrc · npm ci · npm run type-check · rm -rf .next && npm run build(클린) · npm run test + test:redline — 하나라도 실패 시 배포 중단"
+
+  step3_env_drift:
+    agent: "배포엔지니어"
+    action: "신규 라우트의 process.env.* 추출 → 새 키가 Vercel Production 스코프에 등록됐는지 사람이 확인. 미등록이면 push 금지"
+
+  step4_preview_approval:
+    agent: "배포엔지니어"
+    action: "로컬 dev 신규 라우트 스크린샷 → PM에게 보고 → 명시적 배포 승인 획득"
+
+  step5_stage_push:
+    agent: "배포엔지니어"
+    action: "신규 파일만 명시 add(git add -A 금지) · git diff --cached 시크릿 스캔 · 공유파일 혼입 검토 · commit · git push origin main. 배포는 직렬화(6단계 확인 전 다음 push 금지)"
+
+  step6_verify:
+    agent: "배포엔지니어"
+    action: "최대 8~10분 폴링 · WebFetch <base>/<slug>?v=<SHA> 캐시버스터 · 200이 아니라 신규 고유 콘텐츠로 판정 · 신규 API 200 확인 · 기존 대표 라우트(/pae /moira /exam) 회귀 확인. 실패 시 롤백"
+
+  step7_report:
+    agent: "배포엔지니어"
+    action: "라이브 URL + 상태 + 배포 SHA를 PM에게 보고"
+
+rollback:
+  primary: "Vercel 대시보드 → Deployments → 직전 정상 배포 Promote to Production(무재빌드 instant, 사용자가 UI로)"
+  secondary: "git revert --no-edit <나쁜커밋SHA> && git push origin main (revert로 히스토리·타앱 보존)"
+  after: "신규 URL + 대표 라우트 캐시버스터 재확인 · env/시크릿 원인이면 등록 또는 키 rotate까지"
+
+guardrails:
+  - "git add -A / git add . 금지 — 명시 경로만"
+  - "push 전 시크릿 스캔 필수, 이미 push된 시크릿은 즉시 rotate(공개 레포)"
+  - "공유 파일(layout.tsx/providers.tsx/globals.css/공유 lib) 수정 기본 금지"
+  - "신규 env는 Vercel 등록 확인 전 push 금지"
+  - "force push 절대 금지 · 배포 직렬화 · 각 단계 PM 승인"
+
+output: "라이브 URL(project-orsrw.vercel.app/<slug>) + 배포 검증 리포트"

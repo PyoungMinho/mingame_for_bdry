@@ -2,7 +2,7 @@
 
 // 오후의 패 — 봇 데모 모드. 로컬 엔진을 구동해 봇 상대로 플레이하고 GameTableView로 렌더한다.
 // 3라운드 세트 + 누적 벌점. 실시간(Supabase) 미설정 시 폴백.
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   startGame,
   nextRound,
@@ -21,6 +21,8 @@ import GameTableView from "@/components/pae/GameTableView";
 
 const BOTS = ["준봇", "민봇", "수봇"];
 const ME = 0;
+// 봇 데모용 랜덤 멘트 — 채팅 말풍선이 살아있는 느낌을 준다.
+const BOT_LINES = ["받아라!", "음…", "이거 어때?", "좋았어", "아 아까비", "가보자고", "패스~", "오~"];
 
 function botAction(state: GameState): { type: "play"; tiles: Tile[] } | { type: "pass" } {
   const hand = state.hands[state.turn];
@@ -42,6 +44,22 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
   const [selected, setSelected] = useState<Tile[]>([]);
   const [shake, setShake] = useState(false);
 
+  // 사라지는 채팅 말풍선 (봇 데모: 로컬 표시만, 저장·전송 없음)
+  const [bubbles, setBubbles] = useState<{ seat: number; text: string; key: number }[]>([]);
+  const bubbleKey = useRef(0);
+  const addBubble = useCallback((seat: number, text: string) => {
+    const key = ++bubbleKey.current;
+    setBubbles((prev) => [...prev.filter((b) => b.seat !== seat), { seat, text, key }]);
+    setTimeout(() => setBubbles((prev) => prev.filter((b) => b.key !== key)), 4000);
+  }, []);
+  const sendChat = useCallback(
+    (text: string) => {
+      const t = text.trim().slice(0, 40);
+      if (t) addBubble(ME, t);
+    },
+    [addBubble],
+  );
+
   // "다음 라운드" / "새 세트" — nextRound가 세트 진행을 관리.
   const restart = useCallback(() => {
     const s = seed + 101;
@@ -52,13 +70,17 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
 
   useEffect(() => {
     if (state.phase !== "playing" || state.turn === ME) return;
+    const botSeat = state.turn;
     const id = setTimeout(() => {
       const a = botAction(state);
       const r = a.type === "play" ? play(state, state.turn, a.tiles) : pass(state, state.turn);
-      if (r.ok) setState(r.state);
+      if (r.ok) {
+        setState(r.state);
+        if (Math.random() < 0.28) addBubble(botSeat, BOT_LINES[Math.floor(Math.random() * BOT_LINES.length)]);
+      }
     }, 780);
     return () => clearTimeout(id);
-  }, [state]);
+  }, [state, addBubble]);
 
   const myHand = state.hands[ME];
   const myTurn = state.phase === "playing" && state.turn === ME;
@@ -126,6 +148,8 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
       onHint={doHint}
       onRestart={restart}
       onExit={onExit}
+      bubbles={bubbles}
+      onSendChat={sendChat}
     />
   );
 }

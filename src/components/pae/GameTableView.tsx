@@ -106,7 +106,6 @@ export default function GameTableView(p: TableViewProps) {
       </div>
 
       <div className="mine">
-        {bubbleOf(p.mySeat) && <div className="bubble my-bubble">{bubbleOf(p.mySeat)}</div>}
         <div className="mlbl">
           내 패 {p.myHand.length}장
           {p.myTurn && p.noPlayable ? " · 낼 수 있는 패가 없어요 (패스)" : ""}
@@ -128,6 +127,7 @@ export default function GameTableView(p: TableViewProps) {
         </div>
         {p.onSendChat && (
           <div className="chat-bar">
+            {bubbleOf(p.mySeat) && <div className="bubble my-bubble">{bubbleOf(p.mySeat)}</div>}
             <input
               className="chat-input"
               value={chatText}
