@@ -29,6 +29,7 @@ export interface TableViewProps {
   shake?: boolean;
   statusNote?: string;
   bubbles?: { seat: number; text: string; key: number }[];
+  awaySeats?: number[];
   onToggle: (t: Tile) => void;
   onPlay: () => void;
   onPass: () => void;
@@ -77,16 +78,18 @@ export default function GameTableView(p: TableViewProps) {
       </div>
 
       <div className="opps">
-        {p.playerNames.map((name, i) =>
-          i === p.mySeat ? null : (
-            <div key={i} className={`opp ${p.turn === i && p.phase === "playing" ? "now" : ""}`}>
+        {p.playerNames.map((name, i) => {
+          if (i === p.mySeat) return null;
+          const away = p.awaySeats?.includes(i);
+          return (
+            <div key={i} className={`opp ${p.turn === i && p.phase === "playing" ? "now" : ""} ${away ? "away" : ""}`}>
               {bubbleOf(i) && <div className="bubble">{bubbleOf(i)}</div>}
               <div className={`ava ${RING[i] ?? ""}`}>{name[0]}</div>
               <div className="nm">{name}</div>
-              <div className="cnt">{p.handCounts[i]}장</div>
+              <div className="cnt">{away ? "자리비움 · 자동진행" : `${p.handCounts[i]}장`}</div>
             </div>
-          ),
-        )}
+          );
+        })}
       </div>
 
       <div className="center">

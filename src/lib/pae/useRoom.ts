@@ -37,7 +37,11 @@ export interface UseRoom {
   play: (tiles: Tile[]) => Promise<string | null>;
   pass: () => Promise<string | null>;
   sendChat: (text: string) => void;
+  awaySeats: number[];
 }
+
+/** 이 시간(ms) 이상 heartbeat 없으면 자리비움으로 표시 (서버 tick과 동일 기준). */
+const AWAY_MS = 12000;
 
 export function useRoom(code: string, myName: string): UseRoom {
   const [status, setStatus] = useState("waiting");
@@ -48,6 +52,7 @@ export function useRoom(code: string, myName: string): UseRoom {
   const [myUid, setMyUid] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
+  const [awaySeats, setAwaySeats] = useState<number[]>([]);
   const uidRef = useRef<string | null>(null);
   const statusRef = useRef<string>("waiting");
   const mySeatRef = useRef<number>(-1); // sendChat이 내 seat를 알기 위해
@@ -112,7 +117,7 @@ export function useRoom(code: string, myName: string): UseRoom {
     const seqAtStart = actionSeqRef.current;
     const [{ data: room }, { data: mem }, { data: hand }] = await Promise.all([
       sb.from("rooms").select("status,host_uid,public_state").eq("code", code).single(),
-      sb.from("room_players").select("uid,name,seat").eq("room_code", code).order("seat"),
+      sb.from("room_players").select("uid,name,seat,last_seen").eq("room_code", code).order("seat"),
       sb.from("hands").select("tiles").eq("room_code", code).eq("uid", uid).maybeSingle(),
     ]);
     // 읽는 동안 내 액션이 났으면(낙관 반영이 더 최신) 이 폴링 결과는 폐기 — 되돌림 방지.
@@ -130,6 +135,12 @@ export function useRoom(code: string, myName: string): UseRoom {
     }
     setMembers((mem ?? []).map((m) => ({ uid: m.uid as string, name: m.name as string, seat: m.seat as number })));
     setMyHand((hand?.tiles as Tile[]) ?? []);
+    const now = Date.now();
+    setAwaySeats(
+      (mem ?? [])
+        .filter((m) => now - new Date(m.last_seen as string).getTime() > AWAY_MS)
+        .map((m) => m.seat as number),
+    );
   }, [code]);
 
   useEffect(() => {
@@ -180,6 +191,30 @@ export function useRoom(code: string, myName: string): UseRoom {
     const id = setInterval(() => void refresh(), 1000);
     return () => clearInterval(id);
   }, [refresh]);
+
+  // 게임 중 heartbeat + 자리비움 좌석 자동진행 트리거(3초). 응답의 최신 공개상태를 즉시 반영.
+  const tick = useCallback(async () => {
+    const sb = getSupabase();
+    if (!sb) return;
+    const { data } = await sb.auth.getSession();
+    const token = data.session?.access_token;
+    const res = await fetch(`/api/pae/rooms/${code}/tick`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    const j = (await res.json().catch(() => ({}))) as { publicState?: PublicState | null };
+    if (j.publicState) {
+      actionSeqRef.current++; // 자동진행 결과가 stale 폴링에 덮이지 않게
+      applyPublic(j.publicState, uidRef.current);
+    }
+  }, [code, applyPublic]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (statusRef.current === "playing") void tick();
+    }, 3000);
+    return () => clearInterval(id);
+  }, [tick]);
 
   const start = useCallback(async () => {
     const e = await api(`/api/pae/rooms/${code}/start`, {});
@@ -239,5 +274,5 @@ export function useRoom(code: string, myName: string): UseRoom {
     [addBubble],
   );
 
-  return { status, hostUid, publicState, members, myHand, myUid, error, bubbles, start, restart, leave, play, pass, sendChat };
+  return { status, hostUid, publicState, members, myHand, myUid, error, bubbles, start, restart, leave, play, pass, sendChat, awaySeats };
 }

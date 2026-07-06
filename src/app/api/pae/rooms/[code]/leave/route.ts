@@ -1,6 +1,7 @@
-// POST /api/pae/rooms/[code]/leave — 대기방 이탈 (waiting 상태에서만 제거).
-// playing/ended 중에는 삭제하지 않는다 → 재접속(join)으로 자리를 되찾을 수 있어야 하므로.
-// TODO(B-3 후속): 게임 중 이탈 자동패스는 이번 범위 밖. 현재는 재접속(B-2)으로 커버된다.
+// POST /api/pae/rooms/[code]/leave — 이탈.
+// · waiting: 자리 제거 후 seat 재정렬(로비에서 빠짐).
+// · playing/ended: 명시적 나가기이므로 last_seen을 과거로 밀어 "즉시 자리비움" 처리
+//   → 다음 tick에서 그 좌석이 자동 스킵된다. (자리는 유지 → 마음 바뀌면 재접속 가능)
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pae/supabase-admin";
 import { uidFromReq } from "@/lib/pae/auth";
@@ -15,8 +16,11 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   const { data: room } = await admin.from("rooms").select("status").eq("code", code).single();
   if (!room) return NextResponse.json({ error: "방을 찾을 수 없습니다" }, { status: 404 });
 
-  // 게임 진행/종료 중이면 자리를 유지(재접속 대비) — 이탈 무시.
-  if (room.status !== "waiting") return NextResponse.json({ ok: true });
+  // 게임 진행/종료 중: 자리는 유지하되 last_seen을 과거로 밀어 즉시 자리비움 → tick이 자동 스킵.
+  if (room.status !== "waiting") {
+    await admin.from("room_players").update({ last_seen: new Date(0).toISOString() }).eq("room_code", code).eq("uid", uid);
+    return NextResponse.json({ ok: true });
+  }
 
   // 대기 중이면 제거 후 남은 seat을 0..n-1로 재정렬.
   await admin.from("room_players").delete().eq("room_code", code).eq("uid", uid);

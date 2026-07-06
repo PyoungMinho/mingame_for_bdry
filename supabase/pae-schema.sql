@@ -23,6 +23,7 @@ create table public.room_players (
   name      text not null,
   seat      int,
   joined_at timestamptz default now(),
+  last_seen timestamptz not null default now(),         -- heartbeat: 이 시각이 오래되면 자리비움(이탈) 판정
   primary key (room_code, uid)
 );
 

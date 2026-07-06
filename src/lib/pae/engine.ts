@@ -6,7 +6,7 @@
 //   · 누군가 마지막 타일을 내면 라운드 즉시 종료
 // 점수(누적제): 라운드 종료 시 각자 "남은 타일 수 × (2 보유 시 2배)"가 벌점. 승자=0.
 //   3라운드(SET_ROUNDS)를 한 세트로, 누적 벌점이 가장 낮은 사람이 최종 1등.
-import { Tile, DealConfig, deal, startingPlayer, tileEquals, tileId } from "@/lib/pae/tiles";
+import { Tile, DealConfig, deal, startingPlayer, tileEquals, tileId, byStrength } from "@/lib/pae/tiles";
 import { Combo, classify, canBeat } from "@/lib/pae/combos";
 
 export interface Player {
@@ -151,6 +151,42 @@ export function pass(state: GameState, pi: number): ActionResult {
     return { ok: true, state: { ...state, lead: null, turn: state.lead.by } };
   }
   return { ok: true, state: { ...state, turn: next } };
+}
+
+/**
+ * 자리비움(이탈) 좌석을 서버가 대신 진행시킨다. 턴 소유자 검증 없음(서버 대리 실행 전용).
+ * · 응수 차례(lead 존재): 자동 패스 — 손패 그대로, 턴만 넘김. 트릭 종료 시 리드권 이양.
+ * · 리드 차례(lead 없음): 규칙상 패스 불가 → 가장 약한 싱글을 자동 제출해 진행을 뚫는다.
+ * 자리비움자는 응수를 늘 패스하므로 트릭을 거의 못 이겨 리드 차례가 드물게 오고,
+ * 결과적으로 매 라운드 최대 벌점에 근접해 자연스러운 이탈 불이익이 된다.
+ */
+export function forceAdvance(state: GameState): ActionResult {
+  if (state.phase !== "playing") return { ok: false, error: "게임이 끝났습니다" };
+  const pi = state.turn;
+
+  // 응수 차례 → 패스와 동일
+  if (state.lead) {
+    const next = nextAlive(state.hands, pi);
+    if (next === state.lead.by) {
+      return { ok: true, state: { ...state, lead: null, turn: state.lead.by } };
+    }
+    return { ok: true, state: { ...state, turn: next } };
+  }
+
+  // 리드 차례 → 가장 약한 싱글 자동 제출
+  const hand = state.hands[pi];
+  if (hand.length === 0) {
+    // 방어: 빈손이면 이미 ended였어야 하나, 안전하게 턴만 넘긴다.
+    return { ok: true, state: { ...state, turn: nextAlive(state.hands, pi) } };
+  }
+  const weakest = [...hand].sort(byStrength)[0];
+  const combo = classify([weakest])!;
+  const hands = state.hands.map((h, i) => (i === pi ? removeTiles(h, [weakest]) : h));
+  const lead: Lead = { combo, by: pi };
+  if (hands[pi].length === 0) {
+    return { ok: true, state: { ...state, hands, lead, winner: pi, phase: "ended" } };
+  }
+  return { ok: true, state: { ...state, hands, lead, turn: nextAlive(hands, pi) } };
 }
 
 // ─────────────────────────────────────────────────────────────
