@@ -67,10 +67,6 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
     setSubmitting(false);
     if (err) fail(err);
   };
-  const doHint = () => {
-    const opts = playableAgainst(myHand, lead);
-    if (opts.length) setSelected([...opts].sort((a, b) => a.size - b.size || a.key - b.key)[0].tiles);
-  };
 
   return (
     <GameTableView
@@ -101,7 +97,6 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       onToggle={toggle}
       onPlay={doPlay}
       onPass={doPass}
-      onHint={doHint}
       bubbles={room.bubbles}
       awaySeats={room.awaySeats}
       onSendChat={room.sendChat}

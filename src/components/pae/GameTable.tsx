@@ -115,10 +115,6 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
     const r = pass(state, ME);
     if (r.ok) setState(r.state);
   };
-  const doHint = () => {
-    const opts = playableAgainst(myHand, state.lead);
-    if (opts.length) setSelected([...opts].sort((a, b) => a.size - b.size || a.key - b.key)[0].tiles);
-  };
 
   return (
     <GameTableView
@@ -145,7 +141,6 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
       onToggle={toggle}
       onPlay={doPlay}
       onPass={doPass}
-      onHint={doHint}
       onRestart={restart}
       onExit={onExit}
       bubbles={bubbles}

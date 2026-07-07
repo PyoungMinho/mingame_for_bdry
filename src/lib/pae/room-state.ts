@@ -36,17 +36,9 @@ export function toPublic(s: GameState): PublicState {
 }
 
 /** DB(공개 상태 + 손패 행)에서 완전한 GameState를 재구성. 진행 중 게임이 없으면 null. */
-export async function loadGame(code: string): Promise<GameState | null> {
-  const admin = getSupabaseAdmin();
-  if (!admin) return null;
-  // rooms(공개상태)·hands(손패)는 서로 독립 조회 → 병렬로 왕복을 절반으로.
-  const [{ data: room }, { data: rows }] = await Promise.all([
-    admin.from("rooms").select("public_state").eq("code", code).single(),
-    admin.from("hands").select("uid,tiles").eq("room_code", code),
-  ]);
-  const pub = (room?.public_state ?? null) as PublicState | null;
-  if (!pub) return null;
-  const byUid = new Map<string, Tile[]>((rows ?? []).map((r) => [r.uid as string, r.tiles as Tile[]]));
+/** 공개상태(pub) + 손패 행에서 GameState를 구성. turn/lead 등은 넘겨받은 pub 스냅샷과 정합한다. */
+export function buildState(pub: PublicState, handRows: { uid: string; tiles: Tile[] }[]): GameState {
+  const byUid = new Map<string, Tile[]>(handRows.map((r) => [r.uid, r.tiles]));
   const hands = pub.players.map((p) => byUid.get(p.id) ?? []);
   return {
     config: pub.config,
@@ -59,6 +51,19 @@ export async function loadGame(code: string): Promise<GameState | null> {
     setRound: pub.setRound ?? 1,
     cumulative: pub.cumulative ?? pub.players.map(() => 0),
   };
+}
+
+export async function loadGame(code: string): Promise<GameState | null> {
+  const admin = getSupabaseAdmin();
+  if (!admin) return null;
+  // rooms(공개상태)·hands(손패)는 서로 독립 조회 → 병렬로 왕복을 절반으로.
+  const [{ data: room }, { data: rows }] = await Promise.all([
+    admin.from("rooms").select("public_state").eq("code", code).single(),
+    admin.from("hands").select("uid,tiles").eq("room_code", code),
+  ]);
+  const pub = (room?.public_state ?? null) as PublicState | null;
+  if (!pub) return null;
+  return buildState(pub, (rows ?? []) as { uid: string; tiles: Tile[] }[]);
 }
 
 /** GameState를 공개 상태 + 손패로 분리 저장. */

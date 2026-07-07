@@ -33,7 +33,6 @@ export interface TableViewProps {
   onToggle: (t: Tile) => void;
   onPlay: () => void;
   onPass: () => void;
-  onHint: () => void;
   onRestart?: () => void;
   onExit?: () => void;
   onSendChat?: (text: string) => void;
@@ -119,7 +118,6 @@ export default function GameTableView(p: TableViewProps) {
           })}
         </div>
         <div className="acts">
-          <button className="ghost" onClick={p.onHint} disabled={!p.myTurn}>힌트</button>
           <button className="pass" onClick={p.onPass} disabled={!p.myTurn || !p.leadTiles}>패스</button>
           <button className="play" onClick={p.onPlay} disabled={!p.myTurn || !p.canPlay}>
             {p.selLabel ? `${p.selLabel} 내기` : "내기"}

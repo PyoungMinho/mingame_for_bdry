@@ -7,7 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pae/supabase-admin";
 import { uidFromReq } from "@/lib/pae/auth";
 import { forceAdvance, hasPlayable } from "@/lib/pae/engine";
-import { loadGame, saveGame, toPublic, type PublicState } from "@/lib/pae/room-state";
+import { buildState, saveGame, toPublic, type PublicState } from "@/lib/pae/room-state";
+import type { Tile } from "@/lib/pae/tiles";
 
 const AWAY_MS = 20000; // 자리비움 "표시"(배지) 기준. 게임 진행은 아래 턴 타임아웃이 담당.
 const TURN_MS = 10000; // 현재 턴이 이 시간 넘으면 자동 진행(응수=패스, 리드=최소패)
@@ -29,10 +30,16 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   ]);
   if (!room) return NextResponse.json({ error: "방을 찾을 수 없습니다" }, { status: 404 });
 
-  let state = await loadGame(code);
-  if (!state || state.phase !== "playing") {
-    return NextResponse.json({ ok: true, publicState: state ? toPublic(state) : null, awaySeats: [] });
+  // turn과 turnAt(턴 시작 시각)을 반드시 같은 public_state 스냅샷에서 뽑는다.
+  // (예전엔 room 쿼리에서 turnAt, loadGame의 별도 쿼리에서 turn을 읽어 세대가 어긋나면
+  //  방금 넘어온 응수자를 오타임아웃으로 강제 패스시켰다 — BUG-1)
+  const pub = (room.public_state ?? null) as PublicState | null;
+  if (!pub || pub.phase !== "playing") {
+    return NextResponse.json({ ok: true, publicState: pub, awaySeats: [] });
   }
+  const { data: handRows } = await admin.from("hands").select("uid,tiles").eq("room_code", code);
+  let state = buildState(pub, (handRows ?? []) as { uid: string; tiles: Tile[] }[]);
+  const turnAt = pub.turnAt ?? Date.now();
 
   const now = Date.now();
   const lastByUid = new Map((players ?? []).map((p) => [p.uid as string, new Date(p.last_seen as string).getTime()]));
@@ -42,7 +49,6 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
 
   const mySeat = state.players.findIndex((p) => p.id === uid);
   const refereeSeat = activeSeats.length ? Math.min(...activeSeats) : -1;
-  const turnAt = (room.public_state as PublicState | null)?.turnAt ?? now;
 
   // 자동 진행은 심판(연결된 좌석 중 최소 seat) 1명만 → 중복 forceAdvance 방지
   if (mySeat === refereeSeat && refereeSeat >= 0) {
