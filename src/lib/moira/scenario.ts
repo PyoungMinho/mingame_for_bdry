@@ -53,14 +53,14 @@ export function getOriginPreset(originId: string): OriginPreset {
 // ──────────────────────────────────────────────────────────
 // 2. 후보 만남 허브 (서울·경기 서남 축 포함)
 // ──────────────────────────────────────────────────────────
-interface HubPlace {
+export interface HubPlace {
   id: string;
   name: string;
   category: Category;
   walkMin: number;
   blurb: string;
 }
-interface Hub {
+export interface Hub {
   id: string;
   name: string;
   lines: string[];
@@ -68,7 +68,7 @@ interface Hub {
   places: HubPlace[]; // 3개 (경로지도는 상위 3개 사용)
 }
 
-const HUBS: Hub[] = [
+export const HUBS: Hub[] = [
   {
     id: "euljiro3",
     name: "을지로3가",
@@ -151,7 +151,7 @@ const HUBS: Hub[] = [
 // ──────────────────────────────────────────────────────────
 // 3. 거리·시간 근사 (0원, 직선거리 기반)
 // ──────────────────────────────────────────────────────────
-function haversineKm(a: LatLng, b: LatLng): number {
+export function haversineKm(a: LatLng, b: LatLng): number {
   const R = 6371;
   const dLat = ((b.lat - a.lat) * Math.PI) / 180;
   const dLng = ((b.lng - a.lng) * Math.PI) / 180;
@@ -176,7 +176,7 @@ function stddev(xs: number[]): number {
 }
 
 /** 공평 목적함수 — 낮을수록 공평 (기획 확정: α·평균 + β·최대 + γ·표준편차) */
-function objective(minutes: number[]): number {
+export function objective(minutes: number[]): number {
   const avg = minutes.reduce((s, x) => s + x, 0) / minutes.length;
   const max = Math.max(...minutes);
   return 0.5 * avg + 0.3 * max + 0.2 * stddev(minutes);
@@ -199,7 +199,7 @@ function bezier2(p0: LatLng, p1: LatLng, p2: LatLng, steps = 10): LatLng[] {
 }
 
 /** 출발지→목적지 자연스러운 곡선(수직 방향으로 살짝 부풀림). idx로 좌우 교차. */
-function curveBetween(o: LatLng, d: LatLng, idx: number): LatLng[] {
+export function curveBetween(o: LatLng, d: LatLng, idx: number): LatLng[] {
   const mid = { lat: (o.lat + d.lat) / 2, lng: (o.lng + d.lng) / 2 };
   const dLat = d.lat - o.lat;
   const dLng = d.lng - o.lng;

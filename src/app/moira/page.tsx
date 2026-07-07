@@ -8,14 +8,18 @@ import { Button } from "@/components/moira/Button";
 import { MemberChip } from "@/components/moira/MemberChip";
 import { StickyBottomBar } from "@/components/moira/StickyBottomBar";
 import { EmptyState } from "@/components/moira/States";
+import { cn } from "@/lib/utils";
 import { MEMBERS, type Member } from "@/lib/moira/mock";
+import { ORIGIN_PRESETS, resolveOriginId } from "@/lib/moira/scenario";
 
 export default function MoiraCreatePage() {
   const router = useRouter();
-  const [origin, setOrigin] = useState("강남구 역삼동");
+  const [origin, setOrigin] = useState("강남역");
   const [copied, setCopied] = useState(false);
   const [members, setMembers] = useState<Member[]>(MEMBERS);
 
+  // 호스트 칩 출발지는 위 입력값과 동기화(프리셋 선택 반영)
+  const displayMembers = members.map((m) => (m.status === "host" ? { ...m, origin } : m));
   const friends = members.filter((m) => m.status !== "host");
   const friendsDone = friends.filter((m) => m.status === "done").length;
   const ready = members.filter((m) => m.status !== "waiting").length;
@@ -44,7 +48,12 @@ export default function MoiraCreatePage() {
       step={1}
       bottomBar={
         <StickyBottomBar hint={canStart ? `${ready}명의 출발지가 모였어요` : "친구 2명 이상의 주소가 모이면 시작해요"}>
-          <Button disabled={!canStart} onClick={() => router.push("/moira/result")}>
+          <Button
+            disabled={!canStart}
+            onClick={() =>
+              router.push(`/moira/result?from=${resolveOriginId(origin)}&addr=${encodeURIComponent(origin)}`)
+            }
+          >
             중간지점 찾기
           </Button>
         </StickyBottomBar>
@@ -80,12 +89,35 @@ export default function MoiraCreatePage() {
           </div>
           <button
             type="button"
-            onClick={() => setOrigin("현재 위치 (GPS)")}
+            onClick={() => setOrigin("강남역")}
             className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-moira-brand-tint text-moira-brand transition-colors hover:bg-indigo-100"
             aria-label="현재 위치로 설정"
           >
             <Crosshair size={20} strokeWidth={2.5} />
           </button>
+        </div>
+
+        {/* 빠른 선택 프리셋 — 데모: 이 역들은 실제로 추천이 다시 계산됨 */}
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {ORIGIN_PRESETS.map((p) => {
+            const active = resolveOriginId(origin) === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setOrigin(p.label)}
+                aria-pressed={active}
+                className={cn(
+                  "cursor-pointer rounded-full px-3 py-1.5 text-[13px] font-semibold ring-1 transition-colors",
+                  active
+                    ? "bg-moira-brand text-white ring-moira-brand"
+                    : "bg-moira-surface text-moira-body ring-moira-border hover:bg-moira-brand-tint",
+                )}
+              >
+                {p.label}
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -99,7 +131,7 @@ export default function MoiraCreatePage() {
         </div>
 
         <ul className="space-y-2">
-          {members.map((m) => (
+          {displayMembers.map((m) => (
             <MemberChip key={m.id} member={m} onRemove={() => removeMember(m.id)} />
           ))}
         </ul>

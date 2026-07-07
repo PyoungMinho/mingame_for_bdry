@@ -41,7 +41,7 @@ export interface UseRoom {
 }
 
 /** 이 시간(ms) 이상 heartbeat 없으면 자리비움으로 표시 (서버 tick과 동일 기준). */
-const AWAY_MS = 12000;
+const AWAY_MS = 20000;
 
 export function useRoom(code: string, myName: string): UseRoom {
   const [status, setStatus] = useState("waiting");

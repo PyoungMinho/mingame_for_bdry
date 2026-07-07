@@ -1,0 +1,1026 @@
+{
+  "meta": {
+    "concept": "심야의 스튜디오 (After-Hours Studio)",
+    "version": 1,
+    "sourceOfTruth": true,
+    "note": "docs/design/office-design-final.md와 충돌 시 이 파일이 우선. 외부 이미지 에셋 0개, 전부 프로시저럴 Canvas 렌더."
+  },
+  "iso": {
+    "tileW": 64,
+    "tileH": 32,
+    "originX": 720,
+    "originY": 160,
+    "wallHeight": 48,
+    "deskHeight": 28,
+    "projection": {
+      "cartToIso": "x = originX + (gx - gy) * (tileW/2); y = originY + (gx + gy) * (tileH/2)",
+      "isoToCart": "a=(sx-originX)/(tileW/2); b=(sy-originY)/(tileH/2); gx=(a+b)/2; gy=(b-a)/2"
+    },
+    "zSort": "renderOrder = gx + gy; 동률이면 layer 우선순위(floor<wall<desk<npc) 후 삽입순"
+  },
+  "stage": {
+    "w": 1440,
+    "h": 900,
+    "gridCols": 22,
+    "gridRows": 16,
+    "minViewport": 1024
+  },
+  "palette": {
+    "inkBg": "#15161d",
+    "wallPlum1": "#3a2f3a",
+    "wallPlum2": "#4a3b46",
+    "floorClay1": "#b98a63",
+    "floorClay2": "#a97b56",
+    "floorClayDim1": "#ad8462",
+    "floorClayDim2": "#9d7451",
+    "corridorFloor": "#8f7256",
+    "accentMarigold": "#f4b942",
+    "accentVerdigris": "#4ec9b0",
+    "textWarm": "#f2ede3",
+    "textMuted": "#9a9488",
+    "borderHairline": "rgba(242,237,227,0.10)",
+    "shadowSoft": "rgba(0,0,0,0.45)",
+    "npcSkin": "#e8b48a",
+    "npcOutline": "rgba(21,22,29,0.55)",
+    "npcShadow": "rgba(15,15,20,0.35)",
+    "leadPin": "#d9a441",
+    "bannerBg": "#101018",
+    "deckBg": "#1b1c24",
+    "cardBg": "#1e1e27"
+  },
+  "statusColors": {
+    "idle": "#9a9488",
+    "walking": "#4ec9b0",
+    "working": "#f4b942",
+    "meeting": "#b58ce0"
+  },
+  "teamHues": {
+    "planning": "#f4b942",
+    "design": "#ef8e7a",
+    "frontend": "#6db8e8",
+    "backend": "#4ec9b0",
+    "qa": "#b58ce0",
+    "deploy": "#b7c26a"
+  },
+  "fonts": {
+    "display": "Gugi",
+    "mono": "IBM Plex Mono",
+    "korean": "IBM Plex Sans KR",
+    "nextFont": {
+      "display": {
+        "loader": "Gugi",
+        "weights": [
+          "400"
+        ],
+        "cssVar": "--font-display",
+        "fallback": "\"Nanum Pen Script\", sans-serif"
+      },
+      "mono": {
+        "loader": "IBM_Plex_Mono",
+        "weights": [
+          "400",
+          "500",
+          "600"
+        ],
+        "cssVar": "--font-mono",
+        "fallback": "ui-monospace, monospace"
+      },
+      "korean": {
+        "loader": "IBM_Plex_Sans_KR",
+        "weights": [
+          "400",
+          "500",
+          "700"
+        ],
+        "cssVar": "--font-kr",
+        "fallback": "\"Malgun Gothic\", sans-serif"
+      }
+    }
+  },
+  "lighting": [
+    {
+      "name": "morning",
+      "tint": "rgba(139,160,196,0.14)",
+      "lampAlpha": 0.15,
+      "durationSec": 15
+    },
+    {
+      "name": "midday",
+      "tint": "rgba(255,255,255,0.03)",
+      "lampAlpha": 0.05,
+      "durationSec": 15
+    },
+    {
+      "name": "evening",
+      "tint": "rgba(244,150,66,0.16)",
+      "lampAlpha": 0.55,
+      "durationSec": 15
+    },
+    {
+      "name": "night",
+      "tint": "rgba(15,18,32,0.62)",
+      "lampAlpha": 0.85,
+      "durationSec": 15
+    }
+  ],
+  "lightingConfig": {
+    "loopSec": 60,
+    "crossfadeSec": 2,
+    "startStage": "midday",
+    "lampGlow": {
+      "radiusFactor": 1.4,
+      "composite": "lighter",
+      "color": "#f4b942"
+    },
+    "screenGlow": {
+      "radiusFactor": 1.0,
+      "composite": "lighter",
+      "color": "#4ec9b0",
+      "activeStages": [
+        "evening",
+        "night"
+      ]
+    },
+    "nightDimRooms": [
+      "server-room",
+      "deploy-room",
+      "qa-lab"
+    ],
+    "nightDimFactor": 0.88
+  },
+  "corridor": {
+    "verticalCol": 7,
+    "horizontalRows": [
+      6,
+      15
+    ],
+    "floorColor": "#8f7256"
+  },
+  "rooms": [
+    {
+      "roomId": "planning-room",
+      "name": "기획실",
+      "team": "planning",
+      "grid": {
+        "x": 1,
+        "y": 1,
+        "w": 6,
+        "h": 5
+      },
+      "floorColor": [
+        "#b98a63",
+        "#a97b56"
+      ],
+      "wallColor": "#3a2f3a",
+      "door": {
+        "x": 6,
+        "y": 3
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 2,
+          "y": 2,
+          "lead": true
+        },
+        {
+          "type": "desk",
+          "x": 4,
+          "y": 2
+        },
+        {
+          "type": "desk",
+          "x": 2,
+          "y": 4
+        },
+        {
+          "type": "desk",
+          "x": 4,
+          "y": 4
+        },
+        {
+          "type": "desk",
+          "x": 5,
+          "y": 3
+        },
+        {
+          "type": "shelf",
+          "x": 1,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "roomId": "design-studio",
+      "name": "디자인 스튜디오",
+      "team": "design",
+      "grid": {
+        "x": 8,
+        "y": 1,
+        "w": 5,
+        "h": 5
+      },
+      "floorColor": [
+        "#b98a63",
+        "#a97b56"
+      ],
+      "wallColor": "#4a3b46",
+      "door": {
+        "x": 8,
+        "y": 3
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 9,
+          "y": 2,
+          "lead": true
+        },
+        {
+          "type": "desk",
+          "x": 11,
+          "y": 2
+        },
+        {
+          "type": "desk",
+          "x": 10,
+          "y": 4
+        },
+        {
+          "type": "board",
+          "x": 8,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "roomId": "dev-room",
+      "name": "개발실",
+      "team": "frontend",
+      "grid": {
+        "x": 14,
+        "y": 1,
+        "w": 6,
+        "h": 5
+      },
+      "floorColor": [
+        "#b98a63",
+        "#a97b56"
+      ],
+      "wallColor": "#3a2f3a",
+      "door": {
+        "x": 14,
+        "y": 3
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 15,
+          "y": 2,
+          "lead": true
+        },
+        {
+          "type": "desk",
+          "x": 17,
+          "y": 2
+        },
+        {
+          "type": "desk",
+          "x": 16,
+          "y": 4
+        },
+        {
+          "type": "monitorRack",
+          "x": 19,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "roomId": "meeting-room",
+      "name": "회의실",
+      "team": "shared",
+      "grid": {
+        "x": 8,
+        "y": 7,
+        "w": 6,
+        "h": 4
+      },
+      "floorColor": [
+        "#b98a63",
+        "#a97b56"
+      ],
+      "wallColor": "#3a2f3a",
+      "doors": [
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 13,
+          "y": 8
+        },
+        {
+          "x": 10,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 7
+        }
+      ],
+      "objects": [
+        {
+          "type": "table",
+          "x": 10,
+          "y": 8,
+          "w": 2,
+          "h": 2
+        }
+      ]
+    },
+    {
+      "roomId": "server-room",
+      "name": "서버실",
+      "team": "backend",
+      "grid": {
+        "x": 1,
+        "y": 11,
+        "w": 6,
+        "h": 4
+      },
+      "floorColor": [
+        "#ad8462",
+        "#9d7451"
+      ],
+      "wallColor": "#4a3b46",
+      "door": {
+        "x": 6,
+        "y": 12
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 2,
+          "y": 12,
+          "lead": true
+        },
+        {
+          "type": "desk",
+          "x": 4,
+          "y": 12
+        },
+        {
+          "type": "desk",
+          "x": 3,
+          "y": 13
+        },
+        {
+          "type": "serverRack",
+          "x": 1,
+          "y": 14,
+          "glow": "#4ec9b0"
+        }
+      ]
+    },
+    {
+      "roomId": "qa-lab",
+      "name": "QA랩",
+      "team": "qa",
+      "grid": {
+        "x": 8,
+        "y": 12,
+        "w": 5,
+        "h": 3
+      },
+      "floorColor": [
+        "#b98a63",
+        "#a97b56"
+      ],
+      "wallColor": "#3a2f3a",
+      "door": {
+        "x": 8,
+        "y": 13
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 9,
+          "y": 13,
+          "lead": true
+        },
+        {
+          "type": "desk",
+          "x": 11,
+          "y": 13
+        },
+        {
+          "type": "board",
+          "x": 8,
+          "y": 14
+        }
+      ]
+    },
+    {
+      "roomId": "deploy-room",
+      "name": "배포실/옥상 서버",
+      "team": "deploy",
+      "grid": {
+        "x": 15,
+        "y": 11,
+        "w": 5,
+        "h": 4
+      },
+      "floorColor": [
+        "#ad8462",
+        "#9d7451"
+      ],
+      "wallColor": "#4a3b46",
+      "door": {
+        "x": 15,
+        "y": 12
+      },
+      "objects": [
+        {
+          "type": "desk",
+          "x": 17,
+          "y": 12,
+          "lead": true
+        },
+        {
+          "type": "antenna",
+          "x": 19,
+          "y": 14,
+          "glow": "#b7c26a"
+        }
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "agentId": "planner-lead",
+      "name": "기획팀장",
+      "team": "planning",
+      "role": "최종 결정권자",
+      "roomId": "planning-room",
+      "teamHue": "#f4b942",
+      "isLead": true,
+      "home": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "creative-lead",
+      "name": "창의기획자",
+      "team": "planning",
+      "role": "창의 파트 리더",
+      "roomId": "planning-room",
+      "teamHue": "#f4b942",
+      "isLead": false,
+      "home": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "creative-member",
+      "name": "창의팀원",
+      "team": "planning",
+      "role": "아이디어 발산",
+      "roomId": "planning-room",
+      "teamHue": "#f4b942",
+      "isLead": false,
+      "home": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "agentId": "critic-lead",
+      "name": "비평기획자",
+      "team": "planning",
+      "role": "비평 파트 리더",
+      "roomId": "planning-room",
+      "teamHue": "#f4b942",
+      "isLead": false,
+      "home": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "agentId": "critic-member",
+      "name": "비평팀원",
+      "team": "planning",
+      "role": "리스크 지적",
+      "roomId": "planning-room",
+      "teamHue": "#f4b942",
+      "isLead": false,
+      "home": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "agentId": "design-lead",
+      "name": "디자인팀장",
+      "team": "design",
+      "role": "디자인 최종 종합",
+      "roomId": "design-studio",
+      "teamHue": "#ef8e7a",
+      "isLead": true,
+      "home": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "ux-designer",
+      "name": "UX디자이너",
+      "team": "design",
+      "role": "플로우/와이어프레임",
+      "roomId": "design-studio",
+      "teamHue": "#ef8e7a",
+      "isLead": false,
+      "home": {
+        "x": 11,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "ui-designer",
+      "name": "UI디자이너",
+      "team": "design",
+      "role": "비주얼/디자인 시스템",
+      "roomId": "design-studio",
+      "teamHue": "#ef8e7a",
+      "isLead": false,
+      "home": {
+        "x": 10,
+        "y": 4
+      }
+    },
+    {
+      "agentId": "fe-lead",
+      "name": "프론트팀장",
+      "team": "frontend",
+      "role": "코드리뷰/아키텍처",
+      "roomId": "dev-room",
+      "teamHue": "#6db8e8",
+      "isLead": true,
+      "home": {
+        "x": 15,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "fe-component",
+      "name": "컴포넌트개발자",
+      "team": "frontend",
+      "role": "UI 컴포넌트 구현",
+      "roomId": "dev-room",
+      "teamHue": "#6db8e8",
+      "isLead": false,
+      "home": {
+        "x": 17,
+        "y": 2
+      }
+    },
+    {
+      "agentId": "fe-page",
+      "name": "페이지개발자",
+      "team": "frontend",
+      "role": "페이지 조립/API 연동",
+      "roomId": "dev-room",
+      "teamHue": "#6db8e8",
+      "isLead": false,
+      "home": {
+        "x": 16,
+        "y": 4
+      }
+    },
+    {
+      "agentId": "be-lead",
+      "name": "백엔드팀장",
+      "team": "backend",
+      "role": "시스템 아키텍처 종합",
+      "roomId": "server-room",
+      "teamHue": "#4ec9b0",
+      "isLead": true,
+      "home": {
+        "x": 2,
+        "y": 12
+      }
+    },
+    {
+      "agentId": "be-api",
+      "name": "API설계자",
+      "team": "backend",
+      "role": "엔드포인트/인증",
+      "roomId": "server-room",
+      "teamHue": "#4ec9b0",
+      "isLead": false,
+      "home": {
+        "x": 4,
+        "y": 12
+      }
+    },
+    {
+      "agentId": "be-db",
+      "name": "DB설계자",
+      "team": "backend",
+      "role": "데이터 모델링",
+      "roomId": "server-room",
+      "teamHue": "#4ec9b0",
+      "isLead": false,
+      "home": {
+        "x": 3,
+        "y": 13
+      }
+    },
+    {
+      "agentId": "qa-designer",
+      "name": "QA설계자",
+      "team": "qa",
+      "role": "테스트 전략/설계",
+      "roomId": "qa-lab",
+      "teamHue": "#b58ce0",
+      "isLead": true,
+      "home": {
+        "x": 9,
+        "y": 13
+      }
+    },
+    {
+      "agentId": "qa-runner",
+      "name": "QA실행자",
+      "team": "qa",
+      "role": "테스트 실행/버그헌팅",
+      "roomId": "qa-lab",
+      "teamHue": "#b58ce0",
+      "isLead": false,
+      "home": {
+        "x": 11,
+        "y": 13
+      }
+    },
+    {
+      "agentId": "deploy-eng",
+      "name": "배포엔지니어",
+      "team": "deploy",
+      "role": "빌드게이트/Vercel배포",
+      "roomId": "deploy-room",
+      "teamHue": "#b7c26a",
+      "isLead": true,
+      "home": {
+        "x": 17,
+        "y": 12
+      }
+    }
+  ],
+  "meetingSeats": [
+    {
+      "seatId": 0,
+      "x": 9,
+      "y": 7,
+      "facing": "south"
+    },
+    {
+      "seatId": 1,
+      "x": 10,
+      "y": 7,
+      "facing": "south"
+    },
+    {
+      "seatId": 2,
+      "x": 11,
+      "y": 7,
+      "facing": "south"
+    },
+    {
+      "seatId": 3,
+      "x": 9,
+      "y": 10,
+      "facing": "north"
+    },
+    {
+      "seatId": 4,
+      "x": 10,
+      "y": 10,
+      "facing": "north"
+    },
+    {
+      "seatId": 5,
+      "x": 11,
+      "y": 10,
+      "facing": "north"
+    }
+  ],
+  "meetingTable": {
+    "x": 10,
+    "y": 8,
+    "w": 2,
+    "h": 2
+  },
+  "seatAssignPolicy": "소집 팀 인원수만큼 seatId 0부터 순번 배정. isLead 우선 seatId 0.",
+  "meetingChoreography": {
+    "staggerSec": 0.3,
+    "tilePerSec": 0.35,
+    "holdSec": 12,
+    "totalSecApprox": 28,
+    "labelText": "{team} 회의 중",
+    "routes": {
+      "planning": {
+        "roomDoor": {
+          "x": 6,
+          "y": 3
+        },
+        "corridor": [
+          {
+            "x": 7,
+            "y": 3
+          },
+          {
+            "x": 7,
+            "y": 6
+          }
+        ],
+        "meetingDoor": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "design": {
+        "roomDoor": {
+          "x": 8,
+          "y": 3
+        },
+        "corridor": [
+          {
+            "x": 8,
+            "y": 4
+          },
+          {
+            "x": 8,
+            "y": 6
+          }
+        ],
+        "meetingDoor": {
+          "x": 10,
+          "y": 7
+        }
+      },
+      "frontend": {
+        "roomDoor": {
+          "x": 14,
+          "y": 3
+        },
+        "corridor": [
+          {
+            "x": 13,
+            "y": 3
+          },
+          {
+            "x": 13,
+            "y": 6
+          }
+        ],
+        "meetingDoor": {
+          "x": 13,
+          "y": 8
+        }
+      },
+      "backend": {
+        "roomDoor": {
+          "x": 6,
+          "y": 12
+        },
+        "corridor": [
+          {
+            "x": 7,
+            "y": 12
+          },
+          {
+            "x": 7,
+            "y": 11
+          }
+        ],
+        "meetingDoor": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "qa": {
+        "roomDoor": {
+          "x": 8,
+          "y": 13
+        },
+        "corridor": [
+          {
+            "x": 8,
+            "y": 12
+          },
+          {
+            "x": 8,
+            "y": 11
+          }
+        ],
+        "meetingDoor": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "deploy": {
+        "roomDoor": {
+          "x": 15,
+          "y": 12
+        },
+        "corridor": [
+          {
+            "x": 14,
+            "y": 12
+          },
+          {
+            "x": 13,
+            "y": 11
+          }
+        ],
+        "meetingDoor": {
+          "x": 13,
+          "y": 8
+        }
+      }
+    }
+  },
+  "npcDraw": {
+    "bodyW": 18,
+    "bodyH": 22,
+    "headD": 16,
+    "headOverlap": 0.6,
+    "legStub": {
+      "w": 4,
+      "h": 4
+    },
+    "outline": "rgba(21,22,29,0.55)",
+    "skin": "#e8b48a",
+    "leadMarker": {
+      "type": "pin",
+      "color": "#d9a441",
+      "dotD": 3
+    },
+    "shadow": {
+      "color": "rgba(15,15,20,0.35)",
+      "radiusXFactor": 0.55,
+      "radiusYFactor": 0.2,
+      "walkWiden": 0.08
+    },
+    "idle": {
+      "frames": 2,
+      "frameMs": 600,
+      "bobPx": 1,
+      "gestureByRoom": {
+        "planning": "pen",
+        "design": "pen",
+        "dev-room": "type",
+        "server-room": "type",
+        "deploy-room": "type",
+        "qa-lab": "think"
+      }
+    },
+    "walk": {
+      "frameSeq": [
+        0,
+        1,
+        2,
+        1
+      ],
+      "frameMs": 90,
+      "squashScaleY": 0.94,
+      "riseF2Px": 2,
+      "skewDeg": 3,
+      "dirHighlight": 0.06,
+      "dirs": {
+        "SE": "col+row+",
+        "NW": "col-row-",
+        "NE": "col+row-",
+        "SW": "col-row+"
+      },
+      "tileMoveMsRange": [
+        500,
+        700
+      ]
+    },
+    "hitbox": {
+      "w": 28,
+      "h": 40,
+      "anchor": "bottom-center"
+    }
+  },
+  "chrome": {
+    "banner": {
+      "height": 28,
+      "bg": "#101018",
+      "text": "● SIMULATION — 실제 에이전트는 로컬에서 동작",
+      "dotColor": "#f4b942",
+      "blinkSec": 1.6,
+      "z": 50
+    },
+    "titleLockup": {
+      "kr": "팀메이크 오피스",
+      "en": "TEAM MAKES · OFFICE",
+      "pos": {
+        "top": 40,
+        "left": 20
+      },
+      "z": 20
+    },
+    "controlDeck": {
+      "pos": {
+        "left": 20,
+        "bottom": 20
+      },
+      "bg": "#1b1c24",
+      "radius": 10,
+      "z": 40,
+      "meetingTrigger": {
+        "label": "회의 소집 ▸",
+        "teamPopover": true,
+        "busyLabel": "소집 중...({team})"
+      },
+      "scrubber": {
+        "w": 180,
+        "h": 4,
+        "stages": 4,
+        "clockFormat": "HH:MM"
+      },
+      "speedToggle": {
+        "options": [
+          "1x",
+          "0.6x"
+        ],
+        "activeColor": "#f4b942"
+      }
+    },
+    "idCard": {
+      "w": 220,
+      "bg": "#1e1e27",
+      "radius": 12,
+      "rotateDeg": -2,
+      "z": 60,
+      "enterMs": 180,
+      "enterEasing": "cubic-bezier(0.2,0.8,0.3,1.1)",
+      "offset": {
+        "x": 16,
+        "y": -140
+      },
+      "flipRightAtX": 320,
+      "flipBottomAtY": 0,
+      "headerH": 44,
+      "avatarD": 28
+    },
+    "grain": {
+      "opacity": 0.05,
+      "blend": "overlay",
+      "z": 45,
+      "svg": "feTurbulence fractalNoise baseFrequency=0.9 numOctaves=2"
+    },
+    "vignette": {
+      "z": 30,
+      "gradient": "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)"
+    },
+    "zOrder": [
+      "pageBg",
+      "stageCanvas",
+      "controlDeck(40)",
+      "grain(45)",
+      "banner(50)",
+      "idCard(60)"
+    ]
+  },
+  "responsive": {
+    "minViewport": 1024,
+    "designW": 1440,
+    "designH": 900,
+    "scaleRange": {
+      "1024to1439": "transform:scale(0.72..1)",
+      "1440plus": "1x center"
+    },
+    "mobileGuard": {
+      "below": 1024,
+      "text": "이 시뮬레이션은 데스크톱(1024px 이상)에서 최적화되어 있습니다.",
+      "mountStage": false
+    }
+  },
+  "a11y": {
+    "srOnlyCanvasDesc": "팀메이크 오피스: 17명의 AI 에이전트가 기획/디자인/프론트엔드/백엔드/QA/배포 6개 팀에서 근무 중인 아이소메트릭 시뮬레이션 화면입니다.",
+    "focusOutline": "2px #f4b942",
+    "reducedMotion": {
+      "walk": "teleport",
+      "tint": "instant",
+      "popup": "opacity-only",
+      "bannerDot": "steady"
+    },
+    "dialogRole": "dialog"
+  }
+}

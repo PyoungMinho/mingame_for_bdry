@@ -9,7 +9,7 @@ import { uidFromReq } from "@/lib/pae/auth";
 import { forceAdvance } from "@/lib/pae/engine";
 import { loadGame, saveGame, toPublic } from "@/lib/pae/room-state";
 
-const AWAY_MS = 12000; // 이 시간 이상 heartbeat 없으면 자리비움
+const AWAY_MS = 20000; // 이 시간 이상 heartbeat 없으면 자리비움 (tick 3초 → 6회 이상 놓쳐야 판정)
 
 export async function POST(req: NextRequest, ctx: { params: { code: string } }) {
   const admin = getSupabaseAdmin();

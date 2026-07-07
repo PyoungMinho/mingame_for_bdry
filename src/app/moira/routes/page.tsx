@@ -23,19 +23,14 @@ import { FairnessScoreBadge } from "@/components/moira/FairnessScoreBadge";
 import { PlaceEditSheet } from "@/components/moira/PlaceEditSheet";
 // ── 단일 타입 정의점 — §4 ──────────────────────────────────────────────────────
 import type { PlaceCandidate, RoutePlace } from "@/lib/moira/route";
-// ── 데이터 단일 소스 — ROUTE_PLACES(nogari/gwangjang/ddp) ──────────────────────
-import { MEMBERS, ROUTE_PLACES } from "@/lib/moira/mock";
+// ── 데이터 — 출발지 시나리오(?from=<preset>)로 0원 재계산 ──────────────────────
 import { fairLevel, gapOf, FAIR_STYLE } from "@/lib/moira/fairness";
+import { buildScenario, DEFAULT_ORIGIN_ID, type Scenario } from "@/lib/moira/scenario";
+import { MEMBERS } from "@/lib/moira/mock";
+import { fetchLiveScenario } from "@/lib/moira/liveClient";
 
-// ── 장소 후보 A/B/C — ROUTE_PLACES 3곳을 PlaceEditSheet 계약(rank)으로 매핑 ──
+// ── 장소 후보 A/B/C rank 매핑 ──
 const RANKS = ["A", "B", "C"] as const;
-const PLACE_CANDIDATES: PlaceCandidate[] = ROUTE_PLACES.map((p, i) => ({
-  id: p.id,
-  name: p.name,
-  destinationLatLng: p.destinationLatLng,
-  fairScore: p.fairScore,
-  rank: RANKS[i] ?? "C",
-}));
 
 // ── 드래그업 패널 ─────────────────────────────────────────────────────────────
 type PanelSnap = "peek" | "default" | "full";
@@ -51,6 +46,40 @@ export default function MoiraRoutesPage() {
   const router = useRouter();
   const reduced = useReducedMotion();
 
+  // 출발지 시나리오 (?from=<preset> 시드 · ?addr=<주소> 라이브 실계산, 키 있으면)
+  const [originId, setOriginId] = useState(DEFAULT_ORIGIN_ID);
+  const [live, setLive] = useState<Scenario | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+    if (from) setOriginId(from);
+    const addr = params.get("addr");
+    if (addr) {
+      const members = [
+        { id: MEMBERS[0].id, name: MEMBERS[0].name, avatar: MEMBERS[0].avatar, address: addr },
+        ...MEMBERS.slice(1).map((m) => ({
+          id: m.id, name: m.name, avatar: m.avatar,
+          lat: m.originLatLng?.lat, lng: m.originLatLng?.lng,
+        })),
+      ];
+      fetchLiveScenario(members).then((s) => { if (s) setLive(s); });
+    }
+  }, []);
+  const seed = useMemo(() => buildScenario(originId), [originId]);
+  const scenario = live ?? seed;
+  const routePlaces = scenario.routePlaces;
+  const PLACE_CANDIDATES = useMemo<PlaceCandidate[]>(
+    () =>
+      routePlaces.map((p, i) => ({
+        id: p.id,
+        name: p.name,
+        destinationLatLng: p.destinationLatLng,
+        fairScore: p.fairScore,
+        rank: RANKS[i] ?? "C",
+      })),
+    [routePlaces],
+  );
+
   // 진입 로딩 (≤1초, 데이터 즉시 준비 — §6-D)
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -59,12 +88,20 @@ export default function MoiraRoutesPage() {
   }, []);
 
   // 선택된 장소 (RoutePlace 전체 — memberRoutes/곡선 polyline 포함)
-  const [selectedPlace, setSelectedPlace] = useState<RoutePlace>(ROUTE_PLACES[0]);
-  const [prevScore, setPrevScore] = useState(ROUTE_PLACES[0].fairScore);
+  const [selectedPlace, setSelectedPlace] = useState<RoutePlace>(routePlaces[0]);
+  const [prevScore, setPrevScore] = useState(routePlaces[0].fairScore);
 
   // 활성 멤버 (5명↓ → 전체 ON = 빈배열, §1-2 스파게티 방지)
   const allMemberCount = selectedPlace.memberRoutes.length;
   const [activeMembers, setActiveMembers] = useState<string[]>([]);
+
+  // 출발지 바뀌면 선택 장소·점수·활성멤버 초기화
+  useEffect(() => {
+    setSelectedPlace(routePlaces[0]);
+    setPrevScore(routePlaces[0].fairScore);
+    setActiveMembers([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenario]);
 
   // 6인 캡 토스트
   const [capToast, setCapToast] = useState(false);
@@ -126,12 +163,12 @@ export default function MoiraRoutesPage() {
   // 장소 선택 → 점수 실시간 갱신 (PlaceEditSheet · 상단 칩 공용)
   const handlePlaceSelect = useCallback(
     (c: PlaceCandidate) => {
-      const place = ROUTE_PLACES.find((p) => p.id === c.id);
+      const place = routePlaces.find((p) => p.id === c.id);
       if (!place) return;
       setPrevScore(selectedPlace.fairScore);
       setSelectedPlace(place);
     },
-    [selectedPlace],
+    [selectedPlace, routePlaces],
   );
 
   // 핀 드래그 → 장소 수정 시트 열기(§1-3 핀 드래그 → 점수 재계산 진입점)
@@ -158,7 +195,7 @@ export default function MoiraRoutesPage() {
     }
   };
 
-  if (!ready) return <FairnessComputing members={MEMBERS} />;
+  if (!ready) return <FairnessComputing members={scenario.members} />;
 
   return (
     <MoiraShell

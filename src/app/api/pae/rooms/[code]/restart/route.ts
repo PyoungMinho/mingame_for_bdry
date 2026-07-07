@@ -40,6 +40,8 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   // 새 딜 저장 전 이전 손패 정리(떠난 참가자 stale 행 방지).
   await admin.from("hands").delete().eq("room_code", code);
   await saveGame(code, state);
+  // 재시작 시에도 전원 heartbeat 리셋 (결과 화면 대기 동안 쌓인 stale로 오판되는 것 방지).
+  await admin.from("room_players").update({ last_seen: new Date().toISOString() }).eq("room_code", code);
 
   return NextResponse.json({ ok: true });
 }

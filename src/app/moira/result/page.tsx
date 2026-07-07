@@ -9,24 +9,39 @@ import { StationHero } from "@/components/moira/StationHero";
 import { PlaceCard } from "@/components/moira/PlaceCard";
 import { StickyBottomBar } from "@/components/moira/StickyBottomBar";
 import { FairnessComputing, ErrorState } from "@/components/moira/States";
-import { MEMBERS, PLACES, RECOMMENDED_STATION } from "@/lib/moira/mock";
 import { avgOf, gapOf } from "@/lib/moira/fairness";
+import { buildScenario, DEFAULT_ORIGIN_ID, type Scenario } from "@/lib/moira/scenario";
+import { MEMBERS } from "@/lib/moira/mock";
+import { fetchLiveScenario } from "@/lib/moira/liveClient";
 
 type View = "loading" | "ready" | "error";
 
 export default function MoiraResultPage() {
   const router = useRouter();
 
-  // 공평한 순(격차 오름차순) 정렬
-  const ranked = useMemo(() => [...PLACES].sort((a, b) => gapOf(a.times) - gapOf(b.times)), []);
-  const fairest = ranked[0];
-  const [selectedId, setSelectedId] = useState(fairest.id);
+  const [originId, setOriginId] = useState(DEFAULT_ORIGIN_ID);
+  const [live, setLive] = useState<Scenario | null>(null);
   const [view, setView] = useState<View>("loading");
 
   // 진입 시 공평성 계산 연출 → 결과 공개.
-  // ?view=loading|ready|error 로 상태를 고정(데모/검증/스크린샷).
+  // ?from=<preset> 시드 시나리오 · ?addr=<주소> 라이브 실계산(키 있으면) · ?view= 상태 고정.
   useEffect(() => {
-    const forced = new URLSearchParams(window.location.search).get("view");
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+    if (from) setOriginId(from);
+    // 라이브 실계산 시도 — 키 없으면 null 반환 → 시드로 폴백(현 동작 유지)
+    const addr = params.get("addr");
+    if (addr) {
+      const members = [
+        { id: MEMBERS[0].id, name: MEMBERS[0].name, avatar: MEMBERS[0].avatar, address: addr },
+        ...MEMBERS.slice(1).map((m) => ({
+          id: m.id, name: m.name, avatar: m.avatar,
+          lat: m.originLatLng?.lat, lng: m.originLatLng?.lng,
+        })),
+      ];
+      fetchLiveScenario(members).then((s) => { if (s) setLive(s); });
+    }
+    const forced = params.get("view");
     if (forced === "ready" || forced === "error" || forced === "loading") {
       setView(forced as View);
       return;
@@ -35,12 +50,28 @@ export default function MoiraResultPage() {
     return () => window.clearTimeout(t);
   }, []);
 
+  // 라이브(실계산) 있으면 우선, 없으면 시드 엔진(0원 근사)
+  const seed = useMemo(() => buildScenario(originId), [originId]);
+  const scenario = live ?? seed;
+  const members = scenario.members;
+  const station = scenario.station;
+
+  // 공평한 순(격차 오름차순) 정렬
+  const ranked = useMemo(
+    () => [...scenario.places].sort((a, b) => gapOf(a.times) - gapOf(b.times)),
+    [scenario],
+  );
+  const fairest = ranked[0];
+  const [selectedId, setSelectedId] = useState(fairest.id);
+  // 출발지 바뀌면 선택을 가장 공평한 곳으로 초기화
+  useEffect(() => setSelectedId(fairest.id), [fairest.id]);
+
   const recompute = () => {
     setView("loading");
     window.setTimeout(() => setView("ready"), 1600);
   };
 
-  if (view === "loading") return <FairnessComputing members={MEMBERS} />;
+  if (view === "loading") return <FairnessComputing members={members} />;
 
   if (view === "error") {
     return (
@@ -68,7 +99,10 @@ export default function MoiraResultPage() {
             size="lg"
             className="shrink-0 whitespace-nowrap"
             leftIcon={<Route size={18} strokeWidth={2.25} />}
-            onClick={() => router.push("/moira/routes")}
+            onClick={() => {
+              const addr = new URLSearchParams(window.location.search).get("addr");
+              router.push(`/moira/routes?from=${originId}${addr ? `&addr=${encodeURIComponent(addr)}` : ""}`);
+            }}
           >
             경로 보기
           </Button>
@@ -84,12 +118,12 @@ export default function MoiraResultPage() {
       }
     >
       <StationHero
-        station={RECOMMENDED_STATION.name}
-        lines={RECOMMENDED_STATION.lines}
-        reason={RECOMMENDED_STATION.reason}
+        station={station.name}
+        lines={station.lines}
+        reason={station.reason}
         gap={gapOf(fairest.times)}
         avg={avgOf(fairest.times)}
-        members={MEMBERS}
+        members={members}
       />
 
       <div className="mb-2.5 mt-6 flex items-center justify-between">
