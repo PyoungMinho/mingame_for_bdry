@@ -136,6 +136,7 @@ export default function GameTable({ myName = "나", onExit }: { myName?: string;
       roundScores={state.phase === "ended" ? roundPenalty(state) : undefined}
       cumScores={state.phase === "ended" ? cumulativeWithRound(state) : undefined}
       setRound={state.setRound}
+      totalRounds={state.totalRounds}
       isFinal={isSetOver(state)}
       shake={shake}
       onToggle={toggle}

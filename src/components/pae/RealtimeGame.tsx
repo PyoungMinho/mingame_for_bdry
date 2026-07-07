@@ -90,7 +90,8 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       roundScores={pub.scores}
       cumScores={pub.scores ? pub.cumulative.map((c, i) => c + (pub.scores as number[])[i]) : undefined}
       setRound={pub.setRound}
-      isFinal={pub.phase === "ended" && pub.setRound >= 3}
+      totalRounds={pub.totalRounds}
+      isFinal={pub.phase === "ended" && pub.setRound >= pub.totalRounds}
       shake={shake}
       onRestart={isHost ? room.restart : undefined}
       onExit={onExit}

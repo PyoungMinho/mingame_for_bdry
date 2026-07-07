@@ -25,6 +25,7 @@ export interface TableViewProps {
   roundScores?: number[];
   cumScores?: number[];
   setRound?: number;
+  totalRounds?: number;
   isFinal?: boolean;
   shake?: boolean;
   statusNote?: string;
@@ -69,7 +70,7 @@ export default function GameTableView(p: TableViewProps) {
       <div className="top">
         <div className="brand">오후의 패 <b>牌</b></div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          {typeof p.setRound === "number" && <span className="cnt">라운드 {p.setRound}/3</span>}
+          {typeof p.setRound === "number" && <span className="cnt">라운드 {p.setRound}/{p.totalRounds ?? 3}</span>}
           {p.roomLabel && <span className="cnt">{p.roomLabel}</span>}
           <button className="ghost" onClick={() => setShowRules(true)}>족보</button>
           {p.onExit && <button className="ghost" onClick={p.onExit}>나가기</button>}
@@ -150,6 +151,7 @@ export default function GameTableView(p: TableViewProps) {
           roundScores={p.roundScores}
           cumScores={p.cumScores}
           setRound={p.setRound}
+          totalRounds={p.totalRounds}
           isFinal={p.isFinal}
           onRestart={p.onRestart}
           onExit={p.onExit}
@@ -183,6 +185,7 @@ function ResultOverlay({
   roundScores,
   cumScores,
   setRound,
+  totalRounds,
   isFinal,
   onRestart,
   onExit,
@@ -194,6 +197,7 @@ function ResultOverlay({
   roundScores?: number[];
   cumScores?: number[];
   setRound?: number;
+  totalRounds?: number;
   isFinal?: boolean;
   onRestart?: () => void;
   onExit?: () => void;
@@ -204,7 +208,11 @@ function ResultOverlay({
     .sort((a, b) => a.cum - b.cum);
 
   const title = isFinal ? "🏆 세트 최종 등수" : `🏆 ${playerNames[winner]} 승리`;
-  const sub = isFinal ? "3라운드 누적 · 낮을수록 1등" : setRound ? `라운드 ${setRound}/3 · 누적 벌점` : undefined;
+  const sub = isFinal
+    ? `${totalRounds ?? 3}라운드 누적 · 낮을수록 1등`
+    : setRound
+      ? `라운드 ${setRound}/${totalRounds ?? 3} · 누적 벌점`
+      : undefined;
   const restartLabel = isFinal ? "새 세트 시작" : "다음 라운드";
 
   return (

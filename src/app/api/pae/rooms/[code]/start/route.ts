@@ -28,9 +28,11 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
     return NextResponse.json({ error: `${MIN_PLAYERS}인 이상부터 시작할 수 있습니다` }, { status: 400 });
   }
 
+  const { rounds } = (await req.json().catch(() => ({}))) as { rounds?: number };
+  const totalRounds = Math.min(9, Math.max(1, Math.floor(Number(rounds) || 3)));
   const gamePlayers: Player[] = list.map((p) => ({ id: p.uid as string, name: p.name as string }));
   const seed = Math.floor(Math.random() * 2 ** 31);
-  const state = startGame(gamePlayers, makeRng(seed));
+  const state = startGame(gamePlayers, makeRng(seed), { totalRounds });
   await saveGame(code, state);
   // 게임 시작 시 전원 heartbeat 리셋 — 대기 시간 동안 오래된 last_seen으로 즉시 자리비움 오판되는 것 방지.
   await admin.from("room_players").update({ last_seen: new Date().toISOString() }).eq("room_code", code);

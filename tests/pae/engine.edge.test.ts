@@ -22,7 +22,7 @@ const t = (n: number, s: Suit): Tile => ({ n, suit: s });
 const players = (n: number): Player[] => Array.from({ length: n }, (_, i) => ({ id: `p${i}`, name: `P${i}` }));
 const leadOf = (tiles: Tile[], by: number): Lead => ({ combo: classify(tiles)!, by });
 function mk(hands: Tile[][], turn = 0, lead: Lead | null = null): GameState {
-  return { config: { maxNumber: 15, perPlayer: 0 }, players: players(hands.length), hands, turn, lead, winner: null, phase: "playing", setRound: 1, cumulative: new Array(hands.length).fill(0) };
+  return { config: { maxNumber: 15, perPlayer: 0 }, players: players(hands.length), hands, turn, lead, winner: null, phase: "playing", setRound: 1, totalRounds: 3, cumulative: new Array(hands.length).fill(0) };
 }
 function ok(r: ReturnType<typeof play>): GameState {
   if (!r.ok) throw new Error(`예상치 못한 실패: ${r.error}`);

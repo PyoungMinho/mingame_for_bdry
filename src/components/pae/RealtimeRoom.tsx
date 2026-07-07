@@ -8,6 +8,7 @@ import RealtimeGame from "@/components/pae/RealtimeGame";
 export default function RealtimeRoom({ code, myName }: { code: string; myName: string }) {
   const room = useRoom(code, myName);
   const [copied, setCopied] = useState(false);
+  const [rounds, setRounds] = useState(3);
   const isHost = !!room.hostUid && !!room.myUid && room.hostUid === room.myUid;
   const exit = () => {
     if (typeof window !== "undefined") window.location.href = "/pae";
@@ -53,9 +54,23 @@ export default function RealtimeRoom({ code, myName }: { code: string; myName: s
       </div>
 
       {isHost ? (
-        <button className="play start" onClick={() => room.start()} disabled={room.members.length < 3}>
-          게임 시작
-        </button>
+        <>
+          <div className="round-set">
+            <span>라운드 수</span>
+            <input
+              className="round-input"
+              type="number"
+              min={1}
+              max={9}
+              value={rounds}
+              onChange={(e) => setRounds(Math.min(9, Math.max(1, Number(e.target.value) || 1)))}
+            />
+            <span>판</span>
+          </div>
+          <button className="play start" onClick={() => room.start(rounds)} disabled={room.members.length < 3}>
+            게임 시작
+          </button>
+        </>
       ) : (
         <div className="hint">방장이 시작하길 기다리는 중…</div>
       )}

@@ -80,6 +80,8 @@
 .pae-shell .seat .nm { font-size: 15px; flex: 1; text-align: left; color: #F3E9DA; }
 .pae-shell .seat .role { font-size: 11px; color: #b58a72; font-family: system-ui, sans-serif; font-weight: 600; }
 .pae-shell .lobby .start { width: 100%; font-size: 17px; padding: 14px; margin-top: 4px; }
+.pae-shell .lobby .round-set { display: flex; align-items: center; justify-content: center; gap: 8px; color: #F3E9DA; font-size: 14px; font-family: system-ui, sans-serif; font-weight: 600; margin: 12px 0 6px; }
+.pae-shell .lobby .round-input { width: 62px; text-align: center; background: #2c1219; border: 2.5px solid #140a0e; border-radius: 8px; padding: 7px; color: #FFC531; font-family: "Archivo Black"; font-size: 18px; }
 .pae-shell .lobby .hint { margin-top: 12px; font-size: 12px; color: #b58a72; font-family: system-ui, sans-serif; font-weight: 600; }
 .pae-shell .lobby .ghost { margin-top: 10px; }
 

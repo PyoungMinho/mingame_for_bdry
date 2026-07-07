@@ -19,7 +19,7 @@ function mk(
   setRound = 1,
   cumulative: number[] = new Array(hands.length).fill(0),
 ): GameState {
-  return { config: { maxNumber: 15, perPlayer: 12 }, players: players(hands.length), hands, turn: 0, lead: null, winner, phase, setRound, cumulative };
+  return { config: { maxNumber: 15, perPlayer: 12 }, players: players(hands.length), hands, turn: 0, lead: null, winner, phase, setRound, totalRounds: 3, cumulative };
 }
 
 describe("room-state — toPublic (치팅 방지)", () => {
@@ -38,7 +38,7 @@ describe("room-state — toPublic (치팅 방지)", () => {
     // 손패에만 있는 타일 정보(예: 상대 손의 특정 타일)가 노출되지 않음 — key 목록 화이트리스트
     // (scores 키는 playing 중에도 존재하되 값은 undefined — RS-03에서 별도 검증)
     expect(Object.keys(pub).sort()).toEqual(
-      ["config", "cumulative", "handCounts", "lead", "phase", "players", "scores", "setRound", "turn", "winner"].sort(),
+      ["config", "cumulative", "handCounts", "lead", "phase", "players", "scores", "setRound", "totalRounds", "turn", "winner"].sort(),
     );
   });
 

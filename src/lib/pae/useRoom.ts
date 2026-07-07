@@ -31,7 +31,7 @@ export interface UseRoom {
   myUid: string | null;
   error: string | null;
   bubbles: Bubble[];
-  start: () => Promise<void>;
+  start: (rounds?: number) => Promise<void>;
   restart: () => Promise<void>;
   leave: () => Promise<void>;
   play: (tiles: Tile[]) => Promise<string | null>;
@@ -216,10 +216,13 @@ export function useRoom(code: string, myName: string): UseRoom {
     return () => clearInterval(id);
   }, [tick]);
 
-  const start = useCallback(async () => {
-    const e = await api(`/api/pae/rooms/${code}/start`, {});
-    if (e) setError(e);
-  }, [api, code]);
+  const start = useCallback(
+    async (rounds?: number) => {
+      const e = await api(`/api/pae/rooms/${code}/start`, { rounds });
+      if (e) setError(e);
+    },
+    [api, code],
+  );
   const restart = useCallback(async () => {
     const e = await api(`/api/pae/rooms/${code}/restart`, {});
     if (e) setError(e);

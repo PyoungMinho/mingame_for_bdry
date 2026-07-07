@@ -62,6 +62,7 @@ function loadGame(db: Db): GameState | null {
     phase: pub.phase,
     hands: pub.players.map((p) => db.hands.get(p.id) ?? []),
     setRound: pub.setRound ?? 1,
+    totalRounds: 3,
     cumulative: pub.cumulative ?? pub.players.map(() => 0),
   };
 }
@@ -166,6 +167,7 @@ function mkState(over: Partial<GameState>): GameState {
     winner: null,
     phase: "playing",
     setRound: 1,
+    totalRounds: 3,
     cumulative: [0, 0, 0, 0],
     ...over,
   };

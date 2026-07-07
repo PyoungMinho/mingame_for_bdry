@@ -14,6 +14,7 @@ export interface PublicState {
   phase: GameState["phase"];
   handCounts: number[];
   setRound: number;
+  totalRounds: number;
   cumulative: number[];
   scores?: number[]; // 이번 라운드 벌점 (종료 시에만)
   turnAt?: number; // 현재 턴 시작 시각(ms) — 서버가 saveGame 시 기록, 턴 타임아웃(10초) 판정용
@@ -30,6 +31,7 @@ export function toPublic(s: GameState): PublicState {
     phase: s.phase,
     handCounts: s.hands.map((h) => h.length),
     setRound: s.setRound,
+    totalRounds: s.totalRounds,
     cumulative: s.cumulative,
     scores: s.phase === "ended" ? roundPenalty(s) : undefined,
   };
@@ -49,6 +51,7 @@ export function buildState(pub: PublicState, handRows: { uid: string; tiles: Til
     phase: pub.phase,
     hands,
     setRound: pub.setRound ?? 1,
+    totalRounds: pub.totalRounds ?? 3,
     cumulative: pub.cumulative ?? pub.players.map(() => 0),
   };
 }

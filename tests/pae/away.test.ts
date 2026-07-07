@@ -21,6 +21,7 @@ function mkState(over: Partial<GameState>): GameState {
     winner: null,
     phase: "playing",
     setRound: 1,
+    totalRounds: 3,
     cumulative: [0, 0, 0, 0],
     ...over,
   };

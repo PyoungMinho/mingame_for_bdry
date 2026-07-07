@@ -42,6 +42,7 @@ function mk(hands: Tile[][], turn = 0, lead: Lead | null = null): GameState {
     winner: null,
     phase: "playing",
     setRound: 1,
+    totalRounds: 3,
     cumulative: new Array(hands.length).fill(0),
   };
 }

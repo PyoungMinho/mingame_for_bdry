@@ -27,8 +27,10 @@ export interface GameState {
   lead: Lead | null;
   winner: number | null;
   phase: "playing" | "ended";
-  /** 현재 세트에서 몇 번째 라운드인지 (1..SET_ROUNDS) */
+  /** 현재 세트에서 몇 번째 라운드인지 (1..totalRounds) */
   setRound: number;
+  /** 한 세트의 총 라운드 수 (방 만들 때 방장이 1~9로 설정) */
+  totalRounds: number;
   /** 이전 라운드까지 누적 벌점 (seat별). 이번 라운드 벌점은 아직 미포함 */
   cumulative: number[];
 }
@@ -37,14 +39,14 @@ export type ActionResult =
   | { ok: true; state: GameState }
   | { ok: false; error: string };
 
-/** 한 세트 = 3라운드 */
+/** 기본 세트 라운드 수 (방장이 따로 설정하지 않으면 이 값) */
 export const SET_ROUNDS = 3;
 
-/** 새 라운드 시작. set을 넘기면 세트 진행 상태를 이어받는다(없으면 새 세트 1라운드). */
+/** 새 라운드 시작. set을 넘기면 세트 진행 상태(라운드/누적/총라운드)를 이어받는다. */
 export function startGame(
   players: Player[],
   rng: () => number,
-  set?: { setRound: number; cumulative: number[] },
+  set?: { setRound?: number; cumulative?: number[]; totalRounds?: number },
 ): GameState {
   const { hands, config } = deal(players.length, rng);
   return {
@@ -56,6 +58,7 @@ export function startGame(
     winner: null,
     phase: "playing",
     setRound: set?.setRound ?? 1,
+    totalRounds: set?.totalRounds ?? SET_ROUNDS,
     cumulative: set?.cumulative ?? players.map(() => 0),
   };
 }
@@ -76,7 +79,7 @@ export function cumulativeWithRound(state: GameState): number[] {
 
 /** 세트가 끝났는가 (마지막 라운드 종료). */
 export function isSetOver(state: GameState): boolean {
-  return state.phase === "ended" && state.setRound >= SET_ROUNDS;
+  return state.phase === "ended" && state.setRound >= state.totalRounds;
 }
 
 /**
@@ -85,10 +88,10 @@ export function isSetOver(state: GameState): boolean {
  */
 export function nextRound(prev: GameState, rng: () => number): GameState {
   const cumulative = cumulativeWithRound(prev);
-  if (prev.setRound >= SET_ROUNDS) {
-    return startGame(prev.players, rng, { setRound: 1, cumulative: prev.players.map(() => 0) });
+  if (prev.setRound >= prev.totalRounds) {
+    return startGame(prev.players, rng, { setRound: 1, cumulative: prev.players.map(() => 0), totalRounds: prev.totalRounds });
   }
-  return startGame(prev.players, rng, { setRound: prev.setRound + 1, cumulative });
+  return startGame(prev.players, rng, { setRound: prev.setRound + 1, cumulative, totalRounds: prev.totalRounds });
 }
 
 function handHasAll(hand: Tile[], tiles: Tile[]): boolean {

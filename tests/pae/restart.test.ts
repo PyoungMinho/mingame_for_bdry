@@ -51,7 +51,7 @@ describe("restart — startGame 재초기화 (B-1)", () => {
   it("RESTART-03: 종료된 판 위에서 다시 시작하면 손패가 새 딜로 대체된다", () => {
     // 1판: P0가 마지막 한 장을 내며 종료 → hands[0] 비어 있음, phase ended
     const ended = play(
-      { config: { maxNumber: 15, perPlayer: 0 }, players: players(3), hands: [[{ n: 5, suit: "sun" }], [{ n: 6, suit: "cloud" }], [{ n: 7, suit: "star" }]], turn: 0, lead: null, winner: null, phase: "playing", setRound: 1, cumulative: [0, 0, 0] },
+      { config: { maxNumber: 15, perPlayer: 0 }, players: players(3), hands: [[{ n: 5, suit: "sun" }], [{ n: 6, suit: "cloud" }], [{ n: 7, suit: "star" }]], turn: 0, lead: null, winner: null, phase: "playing", setRound: 1, totalRounds: 3, cumulative: [0, 0, 0] },
       0,
       [{ n: 5, suit: "sun" }],
     );
@@ -88,6 +88,7 @@ describe("nextRound — 세트 진행(누적)·세트 종료 후 리셋", () => 
     winner,
     phase: "ended",
     setRound,
+    totalRounds: 3,
     cumulative,
   });
 
