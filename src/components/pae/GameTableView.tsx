@@ -37,6 +37,10 @@ export interface TableViewProps {
   onRestart?: () => void;
   onExit?: () => void;
   onSendChat?: (text: string) => void;
+  onReady?: (ready: boolean) => void;
+  myReady?: boolean;
+  readyCount?: number;
+  activeCount?: number;
 }
 
 const RING = ["", "c1", "c2", "c3", "c1", "c2"];
@@ -155,6 +159,10 @@ export default function GameTableView(p: TableViewProps) {
           isFinal={p.isFinal}
           onRestart={p.onRestart}
           onExit={p.onExit}
+          onReady={p.onReady}
+          myReady={p.myReady}
+          readyCount={p.readyCount}
+          activeCount={p.activeCount}
         />
       )}
 
@@ -189,6 +197,10 @@ function ResultOverlay({
   isFinal,
   onRestart,
   onExit,
+  onReady,
+  myReady,
+  readyCount,
+  activeCount,
 }: {
   playerNames: string[];
   handCounts: number[];
@@ -201,6 +213,10 @@ function ResultOverlay({
   isFinal?: boolean;
   onRestart?: () => void;
   onExit?: () => void;
+  onReady?: (ready: boolean) => void;
+  myReady?: boolean;
+  readyCount?: number;
+  activeCount?: number;
 }) {
   const rank = cumScores ?? handCounts;
   const rows = playerNames
@@ -237,7 +253,17 @@ function ResultOverlay({
         </table>
         <div className="ovbtns">
           {onExit && <button className="pass" onClick={onExit}>나가기</button>}
-          {onRestart && <button className="play" onClick={onRestart}>{restartLabel}</button>}
+          {onReady ? (
+            <button className={`play ${myReady ? "readied" : ""}`} onClick={() => onReady(!myReady)}>
+              {myReady
+                ? `대기중 ${readyCount ?? 0}/${activeCount ?? 0}`
+                : isFinal
+                  ? "새 세트 준비 ✓"
+                  : "다음 라운드 준비 ✓"}
+            </button>
+          ) : (
+            onRestart && <button className="play" onClick={onRestart}>{restartLabel}</button>
+          )}
         </div>
       </div>
     </div>

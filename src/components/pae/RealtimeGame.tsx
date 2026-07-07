@@ -30,6 +30,12 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
   const myHand = room.myHand;
   const isHost = !!room.hostUid && !!room.myUid && room.hostUid === room.myUid;
 
+  // 레디: 접속(자리비움 제외) 참가자 중 준비 완료 수
+  const myReady = room.members.find((m) => m.uid === room.myUid)?.ready ?? false;
+  const activeMembers = room.members.filter((m) => !room.awaySeats.includes(m.seat));
+  const readyCount = activeMembers.filter((m) => m.ready).length;
+  const activeCount = activeMembers.length;
+
   const playableIds = myTurn
     ? (() => {
         const ids: string[] = [];
@@ -101,6 +107,10 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
       bubbles={room.bubbles}
       awaySeats={room.awaySeats}
       onSendChat={room.sendChat}
+      onReady={room.sendReady}
+      myReady={myReady}
+      readyCount={readyCount}
+      activeCount={activeCount}
     />
   );
 }

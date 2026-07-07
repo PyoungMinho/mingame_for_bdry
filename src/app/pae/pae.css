@@ -141,6 +141,7 @@
 .pae-shell .overlay .ov-round { color: #a97d6a; } .pae-shell .overlay .ov-cum { font-family: "Archivo Black"; }
 .pae-shell .overlay .ovbtns { display: flex; gap: 10px; }
 .pae-shell .overlay .ovbtns .play { flex: 1; }
+.pae-shell .overlay .ovbtns .play.readied { background: #00C2A8; color: #06231e; }
 
 /* ── 규칙/족보 모달 ── */
 .rules-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(15,6,10,.85); display: flex; align-items: center; justify-content: center; padding: 18px; font-family: "Black Han Sans", system-ui, sans-serif; }

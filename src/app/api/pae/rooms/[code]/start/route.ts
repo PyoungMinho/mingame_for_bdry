@@ -34,8 +34,8 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   const seed = Math.floor(Math.random() * 2 ** 31);
   const state = startGame(gamePlayers, makeRng(seed), { totalRounds });
   await saveGame(code, state);
-  // 게임 시작 시 전원 heartbeat 리셋 — 대기 시간 동안 오래된 last_seen으로 즉시 자리비움 오판되는 것 방지.
-  await admin.from("room_players").update({ last_seen: new Date().toISOString() }).eq("room_code", code);
+  // 게임 시작 시 전원 heartbeat 리셋(자리비움 오판 방지) + ready 초기화.
+  await admin.from("room_players").update({ last_seen: new Date().toISOString(), ready: false }).eq("room_code", code);
 
   return NextResponse.json({ ok: true });
 }

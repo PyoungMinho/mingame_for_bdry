@@ -13,6 +13,7 @@ export interface Member {
   uid: string;
   name: string;
   seat: number;
+  ready: boolean;
 }
 
 /** 잠깐 떴다 사라지는 채팅 말풍선 (저장 안 함) */
@@ -37,6 +38,7 @@ export interface UseRoom {
   play: (tiles: Tile[]) => Promise<string | null>;
   pass: () => Promise<string | null>;
   sendChat: (text: string) => void;
+  sendReady: (ready: boolean) => Promise<void>;
   awaySeats: number[];
 }
 
@@ -117,7 +119,7 @@ export function useRoom(code: string, myName: string): UseRoom {
     const seqAtStart = actionSeqRef.current;
     const [{ data: room }, { data: mem }, { data: hand }] = await Promise.all([
       sb.from("rooms").select("status,host_uid,public_state").eq("code", code).single(),
-      sb.from("room_players").select("uid,name,seat,last_seen").eq("room_code", code).order("seat"),
+      sb.from("room_players").select("uid,name,seat,last_seen,ready").eq("room_code", code).order("seat"),
       sb.from("hands").select("tiles").eq("room_code", code).eq("uid", uid).maybeSingle(),
     ]);
     // 읽는 동안 내 액션이 났으면(낙관 반영이 더 최신) 이 폴링 결과는 폐기 — 되돌림 방지.
@@ -133,7 +135,7 @@ export function useRoom(code: string, myName: string): UseRoom {
         if (uid) mySeatRef.current = pub.players.findIndex((p) => p.id === uid);
       }
     }
-    setMembers((mem ?? []).map((m) => ({ uid: m.uid as string, name: m.name as string, seat: m.seat as number })));
+    setMembers((mem ?? []).map((m) => ({ uid: m.uid as string, name: m.name as string, seat: m.seat as number, ready: (m.ready as boolean) ?? false })));
     setMyHand((hand?.tiles as Tile[]) ?? []);
     const now = Date.now();
     setAwaySeats(
@@ -231,6 +233,13 @@ export function useRoom(code: string, myName: string): UseRoom {
     const e = await api(`/api/pae/rooms/${code}/leave`, {});
     if (e) setError(e);
   }, [api, code]);
+  const sendReady = useCallback(
+    async (ready: boolean) => {
+      const e = await api(`/api/pae/rooms/${code}/ready`, { ready });
+      if (e) setError(e);
+    },
+    [api, code],
+  );
 
   // 액션: 서버 응답의 최신 공개상태 + 본인 손패를 즉시 반영(조회 왕복 제거 → 빠름).
   const actionCall = useCallback(
@@ -277,5 +286,5 @@ export function useRoom(code: string, myName: string): UseRoom {
     [addBubble],
   );
 
-  return { status, hostUid, publicState, members, myHand, myUid, error, bubbles, start, restart, leave, play, pass, sendChat, awaySeats };
+  return { status, hostUid, publicState, members, myHand, myUid, error, bubbles, start, restart, leave, play, pass, sendChat, sendReady, awaySeats };
 }
