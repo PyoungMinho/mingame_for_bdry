@@ -66,17 +66,35 @@ export async function loadGame(code: string): Promise<GameState | null> {
   return buildState(pub, (rows ?? []) as { uid: string; tiles: Tile[] }[]);
 }
 
-/** GameState를 공개 상태 + 손패로 분리 저장. */
-export async function saveGame(code: string, s: GameState): Promise<void> {
+/**
+ * GameState를 공개 상태 + 손패로 분리 저장. 커밋 여부를 반환.
+ * expectedTurnAt을 주면 CAS(낙관적 락) — DB의 현재 turnAt이 그 값일 때만 커밋한다.
+ * (tick 자동진행이, 그 사이 착지한 정상 play/pass 액션을 덮어써 되돌리는 lost-update 방지)
+ */
+export async function saveGame(code: string, s: GameState, expectedTurnAt?: number): Promise<boolean> {
   const admin = getSupabaseAdmin();
-  if (!admin) return;
+  if (!admin) return false;
   const rows = s.players.map((p, i) => ({ room_code: code, uid: p.id, tiles: s.hands[i] }));
-  // rooms 업데이트·hands upsert도 독립 → 병렬로 왕복 절반.
-  await Promise.all([
-    admin
-      .from("rooms")
-      .update({ public_state: { ...toPublic(s), turnAt: Date.now() }, status: s.phase, updated_at: new Date().toISOString() })
-      .eq("code", code),
-    admin.from("hands").upsert(rows),
-  ]);
+  const patch = {
+    public_state: { ...toPublic(s), turnAt: Date.now() },
+    status: s.phase,
+    updated_at: new Date().toISOString(),
+  };
+
+  // 정상 경로(액션/시작): 무조건 저장 — rooms·hands 병렬로 왕복 절반.
+  if (expectedTurnAt === undefined) {
+    await Promise.all([admin.from("rooms").update(patch).eq("code", code), admin.from("hands").upsert(rows)]);
+    return true;
+  }
+
+  // CAS: 읽은 이후 turnAt이 안 바뀌었을 때만 rooms 커밋 → 성공 시에만 hands 반영.
+  const { data } = await admin
+    .from("rooms")
+    .update(patch)
+    .eq("code", code)
+    .eq("public_state->>turnAt", String(expectedTurnAt))
+    .select("code");
+  const committed = !!data && data.length > 0;
+  if (committed) await admin.from("hands").upsert(rows);
+  return committed;
 }

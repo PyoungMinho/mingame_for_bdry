@@ -79,7 +79,8 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
       state = r.state;
       advanced = true;
     }
-    if (advanced) await saveGame(code, state);
+    // CAS: 읽은 turnAt이 그대로일 때만 커밋. 그 사이 정상 액션이 착지했으면 tick 진행을 폐기(액션 보존).
+    if (advanced) await saveGame(code, state, turnAt);
   }
 
   return NextResponse.json({ ok: true, publicState: toPublic(state), awaySeats });
