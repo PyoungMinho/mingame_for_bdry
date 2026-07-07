@@ -62,6 +62,17 @@ export default function GameTableView(p: TableViewProps) {
     }
   };
 
+  // 상대를 내(하단) 기준 반원(테이블 둘레)에 seat 순서로 배치 — 턴 순서를 직관적으로.
+  // 내 다음 좌석 = 왼쪽, 내 이전 좌석 = 오른쪽 (턴이 나→왼→위→오→나로 시계 방향).
+  const N = p.playerNames.length;
+  const others: number[] = [];
+  for (let k = 1; k < N; k++) others.push((p.mySeat + k) % N);
+  const oppPos = others.map((seat, idx) => {
+    const t = others.length === 1 ? 0.5 : idx / (others.length - 1);
+    const rad = ((180 - 180 * t) * Math.PI) / 180;
+    return { seat, x: 50 + 46 * Math.cos(rad), y: 82 - 74 * Math.sin(rad) };
+  });
+
   const turnLabel =
     p.phase === "ended"
       ? "라운드 종료"
@@ -82,15 +93,19 @@ export default function GameTableView(p: TableViewProps) {
       </div>
 
       <div className="opps">
-        {p.playerNames.map((name, i) => {
-          if (i === p.mySeat) return null;
-          const away = p.awaySeats?.includes(i);
+        {oppPos.map(({ seat, x, y }) => {
+          const name = p.playerNames[seat];
+          const away = p.awaySeats?.includes(seat);
           return (
-            <div key={i} className={`opp ${p.turn === i && p.phase === "playing" ? "now" : ""} ${away ? "away" : ""}`}>
-              {bubbleOf(i) && <div className="bubble">{bubbleOf(i)}</div>}
-              <div className={`ava ${RING[i] ?? ""}`}>{name[0]}</div>
+            <div
+              key={seat}
+              className={`opp ${p.turn === seat && p.phase === "playing" ? "now" : ""} ${away ? "away" : ""}`}
+              style={{ left: `${x}%`, top: `${y}%` }}
+            >
+              {bubbleOf(seat) && <div className="bubble">{bubbleOf(seat)}</div>}
+              <div className={`ava ${RING[seat] ?? ""}`}>{name[0]}</div>
               <div className="nm">{name}</div>
-              <div className="cnt">{away ? "자리비움 · 자동진행" : `${p.handCounts[i]}장`}</div>
+              <div className="cnt">{away ? "자리비움" : `${p.handCounts[seat]}장`}</div>
             </div>
           );
         })}
