@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "status": "v1-draft-pre-beta-gate",
+    "warning": "이 파일은 베타 공감률 게이트(방향서 §5, 디자인 최종안 §6-3: 직장인 30~50명 평균 4.0/5.0) 통과 전 v1 초안이다. 정식 공개 전 문구/축 정의가 재조정될 수 있다. 코드에서 하드코딩 금지 — 반드시 이 JSON을 통해서만 참조할 것.",
+    "owner": "창의기획자(Sonnet) 초안 · @기획팀장 최종 승인 대기",
+    "createdAt": "2026-07-07",
+    "sourceOfTruth": "docs/design/office-archetype-design-final.md §4"
+  },
+  "slug": "office-archetype",
+  "title": "당신의 직장 유형은?",
+  "subtitle": "MBTI 말고, 진짜 회사에서의 내 모습",
+  "questionCount": 10,
+  "axes": [
+    { "id": "x", "pos": "work", "neg": "relation", "label": "일 중심 ↔ 관계 중심" },
+    { "id": "y", "pos": "lead", "neg": "follow", "label": "주도형 ↔ 순응형" }
+  ],
+  "labels": {
+    "start": "시작하기",
+    "restart": "다시 테스트하기",
+    "strengths": "강점",
+    "shadows": "이럴 때 주의하면 더 좋아요",
+    "match": "이런 동료와 찰떡궁합",
+    "shareKakao": "카톡 공유",
+    "shareStory": "이미지 저장",
+    "analyzing": "당신의 유형을 분석하는 중…",
+    "heroLanding": "당신의 직장 유형은?",
+    "subLanding1": "10문항 · 1분 · 100% 무료",
+    "subLanding2": "MBTI 말고,",
+    "subLanding3": "진짜 회사에서의 내 모습",
+    "socialProofTemplate": "지금까지 {count}명 참여",
+    "friendPreviewBadge": "누군가 공유한 결과예요",
+    "friendPreviewCta": "나는 무슨 유형일까? 1분 테스트 →",
+    "matchCtaButton": "이 유형 보기 →",
+    "toastCopied": "링크가 복사되었어요",
+    "toastNoResult": "결과가 없어요. 테스트부터 시작해볼까요?"
+  },
+  "resultBasePath": "/office-archetype/result",
+  "socialProof": {
+    "baseCount": 12483,
+    "mode": "static-plus-local-increment",
+    "storageKey": "oa-count"
+  },
+  "resolveEngineNote": "판정 규칙(lib/score.ts가 소유, 이 주석은 참고용): 1) 전 10문항 x·y 점수 합산 2) sign(x), sign(y)로 4상한 결정, 0은 pos로 귀속 (x>=0&y>=0→work×lead, x>=0&y<0→work×follow, x<0&y>=0→relation×lead, x<0&y<0→relation×follow) 3) 상한 내 2유형 중 |x|>=|y|면 '직진/액션' 서브유형(먼저 등록), |y|>|x|면 '구조/조율' 서브유형(나중 등록) 4) tie-break: |x|===|y|(완전 동점 x=0&y=0 포함)이면 |x|>=|y| 조건이 참이 되어 액션형(먼저 등록된 유형)을 결정론적으로 채택한다. (구주석의 '마지막 문항 y부호 우선'은 미구현·코드와 불일치였어 삭제함 — 코드가 SoT.)"
+}

@@ -1,0 +1,203 @@
+{
+  "_meta": {
+    "status": "v1-draft-pre-beta-gate",
+    "warning": "이 8유형 네이밍/정의/카피는 디자인 최종안(office-archetype-design-final.md) §3-2의 확정 초안이며, 방향서 §5 + 디자인 최종안 §6-3의 베타 공감률 게이트(직장인 30~50명, 평균 4.0/5.0) 통과 전까지는 정식 콘텐츠가 아니다. 게이트 통과 전 절대 정식 공개 금지, 블라인드 등 외부 시딩 금지. 컬러/아이콘/이름 컴포넌트 하드코딩 금지 — 반드시 이 JSON에서 주입.",
+    "sourceOfTruth": "docs/design/office-archetype-design-final.md §3-2, §4-3",
+    "axisMappingNote": "판정 시 상한 결정 후 서브유형은 |x|>=|y|(일/관계 축 강도 우위) → 액션·직진형(bulldozer/finisher/sparker/listener), |y|>|x|(주도/순응 축 강도 우위) → 구조·조율형(architect/steady/mediator/tuner)로 매핑됨. lib/score.ts 구현 시 이 대응 유지할 것."
+  },
+  "version": 1,
+  "types": [
+    {
+      "id": "bulldozer",
+      "slug": "bulldozer",
+      "name": "불도저형",
+      "alias": "돌파형 실행가",
+      "axis": { "x": "work", "y": "lead" },
+      "tagline": "회의보다 실행, 일단 치고 나간다",
+      "color": { "tint": "#FCE7E1", "solid": "#E0522E", "deep": "#A83D22" },
+      "icon": "hard-hat",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "정체된 회의도 \"일단 해보죠\" 한마디로 굴러가게 만든다",
+        "마감이 코앞일 때 가장 먼저 손을 드는 사람",
+        "\"이론은 됐고 일단 붙여보고 얘기하자\"가 입버릇"
+      ],
+      "shadows": [
+        "합의를 건너뛰어 나중에 \"왜 마음대로 했냐\" 소리를 듣기도",
+        "속도에 밀려 문서화·디테일을 놓칠 때가 있다",
+        "옆에서 천천히 가는 사람을 보면 답답함이 얼굴에 드러난다"
+      ],
+      "matchBestId": "mediator",
+      "matchBestReason": "당신이 치고 나갈 때 뒤탈 없이 조율해 주는 사람",
+      "matchWorstId": "listener"
+    },
+    {
+      "id": "architect",
+      "slug": "architect",
+      "name": "설계자형",
+      "alias": "판짜기 전략가",
+      "axis": { "x": "work", "y": "lead" },
+      "tagline": "판을 먼저 짜고 그린 대로 간다",
+      "color": { "tint": "#E6E9F2", "solid": "#2B3556", "deep": "#1A2038" },
+      "icon": "ruler",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "일감 받으면 제일 먼저 전체 일정표부터 그려서 공유한다",
+        "누가 뭘 놓쳤는지 회의 전에 이미 다 체크되어 있다",
+        "\"일단 계획부터 봅시다\"로 우왕좌왕하는 팀을 정리한다"
+      ],
+      "shadows": [
+        "계획에 없던 돌발 상황이 생기면 유독 스트레스를 받는다",
+        "완벽한 계획 짜느라 실제 착수가 늦어질 때가 있다",
+        "즉흥적으로 움직이는 동료를 보면 불안해진다"
+      ],
+      "matchBestId": "sparker",
+      "matchBestReason": "촘촘한 계획에 숨통을 틔워주는 텐션 담당",
+      "matchWorstId": "tuner"
+    },
+    {
+      "id": "finisher",
+      "slug": "finisher",
+      "name": "해결사형",
+      "alias": "깔끔한 마무리요원",
+      "axis": { "x": "work", "y": "follow" },
+      "tagline": "시키면 제일 깔끔하게 끝낸다",
+      "color": { "tint": "#E1F1EE", "solid": "#3D8B7A", "deep": "#2C6659" },
+      "icon": "check-check",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "업무 지시가 떨어지면 토 달지 않고 결과물로 증명한다",
+        "퇴근 전 오늘 할 일 리스트에 체크가 다 되어 있는 사람",
+        "완성도로 조용히 신뢰를 쌓는 타입"
+      ],
+      "shadows": [
+        "일이 몰려도 힘들다는 티를 잘 안 내서 주변이 뒤늦게 안다",
+        "지시받은 범위 밖의 일에는 먼저 나서지 않는 편",
+        "\"저 사람은 시키면 다 한다\"는 인식에 일이 쏠리기 쉽다"
+      ],
+      "matchBestId": "architect",
+      "matchBestReason": "판을 짜주면 그대로 완벽하게 완성해 주는 조합",
+      "matchWorstId": "sparker"
+    },
+    {
+      "id": "steady",
+      "slug": "steady",
+      "name": "묵묵러형",
+      "alias": "제자리지킴이",
+      "axis": { "x": "work", "y": "follow" },
+      "tagline": "티는 안 나도 늘 제자리를 지킨다",
+      "color": { "tint": "#ECEEF1", "solid": "#6B7280", "deep": "#4B515C" },
+      "icon": "sprout",
+      "gauge": { "strength": 3, "shadow": 2 },
+      "strengths": [
+        "3년 전 업무 방식도 그대로, 팀에서 제일 흔들리지 않는 축",
+        "누가 뭐래도 자기 페이스로 꾸준히 결과를 낸다",
+        "돌발 이슈 터져도 평소 루틴이 있어 크게 흔들리지 않는다"
+      ],
+      "shadows": [
+        "존재감이 약해서 평가 시즌에 저평가되기 쉽다",
+        "변화가 필요한 순간에도 기존 방식을 고수하려는 경향",
+        "먼저 나서서 티 내는 걸 어색해한다"
+      ],
+      "matchBestId": "sparker",
+      "matchBestReason": "묵묵한 당신의 존재감을 밖으로 끌어내 주는 사람",
+      "matchWorstId": "bulldozer"
+    },
+    {
+      "id": "sparker",
+      "slug": "sparker",
+      "name": "분위기메이커형",
+      "alias": "텐션 담당",
+      "axis": { "x": "relation", "y": "lead" },
+      "tagline": "텐션과 리액션으로 무드를 올린다",
+      "color": { "tint": "#FFF3D6", "solid": "#E0972B", "deep": "#A86D18" },
+      "icon": "party-popper",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "회식 자리 건배사, 무거운 회의 첫마디는 늘 이 사람 몫",
+        "팀 단체 카톡방에 리액션이 제일 먼저 달린다",
+        "가라앉은 팀 분위기를 한 마디로 살려낸다"
+      ],
+      "shadows": [
+        "텐션 관리에 에너지를 쓰다 보니 정작 본인 컨디션은 뒷전",
+        "진지한 얘기를 할 타이밍을 놓치고 넘길 때가 있다",
+        "혼자 있는 시간이 부족하면 급격히 지친다"
+      ],
+      "matchBestId": "architect",
+      "matchBestReason": "당신의 흥을 실제 결과로 착실히 연결해 주는 사람",
+      "matchWorstId": "steady"
+    },
+    {
+      "id": "mediator",
+      "slug": "mediator",
+      "name": "중재자형",
+      "alias": "조율 담당",
+      "axis": { "x": "relation", "y": "lead" },
+      "tagline": "갈등 전에 먼저 나서 조율한다",
+      "color": { "tint": "#F4E8F6", "solid": "#C77DD1", "deep": "#94509E" },
+      "icon": "scale",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "두 사람 의견이 부딪히기 직전, 먼저 끼어들어 정리한다",
+        "\"각자 입장도 있으니까요\" 한마디로 회의실 온도를 낮춘다",
+        "누구 편도 안 들면서 결국 합의점을 만들어낸다"
+      ],
+      "shadows": [
+        "정작 자기 의견은 마지막까지 아껴두다 묻힌다",
+        "모두를 만족시키려다 결정이 늦어질 때가 있다",
+        "갈등 중재에 감정 소모가 커도 티 내지 않는다"
+      ],
+      "matchBestId": "bulldozer",
+      "matchBestReason": "저돌적으로 치고 나갈 때 뒷정리를 맡길 수 있는 사람",
+      "matchWorstId": "finisher"
+    },
+    {
+      "id": "listener",
+      "slug": "listener",
+      "name": "경청러형",
+      "alias": "조용한 해결사",
+      "axis": { "x": "relation", "y": "follow" },
+      "tagline": "말수는 적지만 다 듣고 다 챙긴다",
+      "color": { "tint": "#E4F0FB", "solid": "#4E9FE0", "deep": "#2F73AC" },
+      "icon": "headphones",
+      "gauge": { "strength": 4, "shadow": 2 },
+      "strengths": [
+        "회의 끝나고 나서야 할 말이 떠오르지만, 그 한마디가 핵심을 찌른다",
+        "누가 힘들어 보이면 말없이 커피 한 잔 놓고 간다",
+        "말은 적어도 팀 상황을 제일 세세하게 파악하고 있다"
+      ],
+      "shadows": [
+        "의견을 아껴두다 오해를 살 때가 있다",
+        "회의에서 먼저 손 드는 일이 거의 없다",
+        "챙겨주는 걸 표현하지 않아 무심해 보일 수 있다"
+      ],
+      "matchBestId": "sparker",
+      "matchBestReason": "침묵을 행동으로 바꿔주는 텐션 담당과의 조합",
+      "matchWorstId": "bulldozer"
+    },
+    {
+      "id": "tuner",
+      "slug": "tuner",
+      "name": "텐션조절러형",
+      "alias": "만능 조연",
+      "axis": { "x": "relation", "y": "follow" },
+      "tagline": "눈치 빠르게 분위기 맞추는 만능 조연",
+      "color": { "tint": "#FCE7EF", "solid": "#E0729A", "deep": "#AC4F72" },
+      "icon": "sliders-horizontal",
+      "gauge": { "strength": 3, "shadow": 3 },
+      "strengths": [
+        "단체 카톡방 애매한 지시도 눈치껏 알아서 정리해 처리한다",
+        "누가 예민한 상태인지 제일 먼저 알아채는 사람",
+        "어떤 팀에 가도 분위기에 자연스럽게 스며든다"
+      ],
+      "shadows": [
+        "맞춰주다 보면 정작 자기 의견은 흐지부지된다",
+        "너무 잘 맞춰줘서 존재감이 옅어질 때가 있다",
+        "혼자 있을 땐 오히려 뭘 원하는지 헷갈려 한다"
+      ],
+      "matchBestId": "architect",
+      "matchBestReason": "명확한 방향을 잡아줘야 진가가 발휘되는 조합",
+      "matchWorstId": "steady"
+    }
+  ]
+}

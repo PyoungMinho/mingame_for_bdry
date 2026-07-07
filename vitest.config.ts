@@ -10,6 +10,7 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: [
       "tests/**/*.test.{ts,tsx}",
+      "tests/**/*.spec.{ts,tsx}",
       "src/**/*.test.{ts,tsx}",
     ],
     // jsdom는 RTL 컴포넌트 파일별 환경 디렉티브로 전환
