@@ -16,6 +16,7 @@ export interface PublicState {
   setRound: number;
   cumulative: number[];
   scores?: number[]; // 이번 라운드 벌점 (종료 시에만)
+  turnAt?: number; // 현재 턴 시작 시각(ms) — 서버가 saveGame 시 기록, 턴 타임아웃(10초) 판정용
 }
 
 /** 손패를 뺀 공개 상태로 변환. 종료 시 이번 라운드 벌점을 포함한다. */
@@ -69,7 +70,7 @@ export async function saveGame(code: string, s: GameState): Promise<void> {
   await Promise.all([
     admin
       .from("rooms")
-      .update({ public_state: toPublic(s), status: s.phase, updated_at: new Date().toISOString() })
+      .update({ public_state: { ...toPublic(s), turnAt: Date.now() }, status: s.phase, updated_at: new Date().toISOString() })
       .eq("code", code),
     admin.from("hands").upsert(rows),
   ]);

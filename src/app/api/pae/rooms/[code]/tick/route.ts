@@ -1,15 +1,16 @@
 // POST /api/pae/rooms/[code]/tick — 게임 중 주기 호출.
-//  1) heartbeat: 내 last_seen 갱신(살아있음 표시)
-//  2) 자리비움(12초 이상 끊긴) 좌석 차례면 자동 진행 — 단, 중복 방지를 위해
-//     "심판(active 중 가장 낮은 seat) 1명만" 수행한다.
-//  3) 방장이 자리비움이면 승계. active 인원이 2명 이하면 게임 중단 → 대기방 복귀.
+//  1) heartbeat: 내 last_seen 갱신(살아있음 표시 — awaySeats 배지용)
+//  2) 자동 진행: 현재 턴이 10초(TURN_MS) 넘거나, "낼 게 없는 응수 차례"면 자동 패스/최소패.
+//     중복 방지로 심판(active=연결된 좌석 중 최소 seat) 1명만 수행.
+//  3) 방장이 자리비움이면 승계. 게임은 종료시키지 않고 자동패스로 계속 진행한다(방 안 터짐).
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pae/supabase-admin";
 import { uidFromReq } from "@/lib/pae/auth";
-import { forceAdvance } from "@/lib/pae/engine";
-import { loadGame, saveGame, toPublic } from "@/lib/pae/room-state";
+import { forceAdvance, hasPlayable } from "@/lib/pae/engine";
+import { loadGame, saveGame, toPublic, type PublicState } from "@/lib/pae/room-state";
 
-const AWAY_MS = 20000; // 이 시간 이상 heartbeat 없으면 자리비움 (tick 3초 → 6회 이상 놓쳐야 판정)
+const AWAY_MS = 20000; // 자리비움 "표시"(배지) 기준. 게임 진행은 아래 턴 타임아웃이 담당.
+const TURN_MS = 10000; // 현재 턴이 이 시간 넘으면 자동 진행(응수=패스, 리드=최소패)
 
 export async function POST(req: NextRequest, ctx: { params: { code: string } }) {
   const admin = getSupabaseAdmin();
@@ -21,9 +22,9 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
   // 1) heartbeat — 나 살아있음
   await admin.from("room_players").update({ last_seen: new Date().toISOString() }).eq("room_code", code).eq("uid", uid);
 
-  // 2) 현재 방 정보 + 참가자 last_seen
+  // 2) 현재 방 정보(+공개상태의 turnAt) + 참가자 last_seen
   const [{ data: room }, { data: players }] = await Promise.all([
-    admin.from("rooms").select("host_uid,status").eq("code", code).single(),
+    admin.from("rooms").select("host_uid,status,public_state").eq("code", code).single(),
     admin.from("room_players").select("uid,seat,last_seen").eq("room_code", code).order("seat"),
   ]);
   if (!room) return NextResponse.json({ error: "방을 찾을 수 없습니다" }, { status: 404 });
@@ -41,27 +42,32 @@ export async function POST(req: NextRequest, ctx: { params: { code: string } }) 
 
   const mySeat = state.players.findIndex((p) => p.id === uid);
   const refereeSeat = activeSeats.length ? Math.min(...activeSeats) : -1;
+  const turnAt = (room.public_state as PublicState | null)?.turnAt ?? now;
 
-  // 자동 진행/정리는 심판(active 최소 seat) 1명만 → 중복 forceAdvance 방지
+  // 자동 진행은 심판(연결된 좌석 중 최소 seat) 1명만 → 중복 forceAdvance 방지
   if (mySeat === refereeSeat && refereeSeat >= 0) {
-    // 2인 이하 → 게임 계속 불가. 대기방 복귀(세트 무효), 방장 자리비움이면 나에게 승계.
-    if (activeSeats.length <= 2) {
-      await admin.from("hands").delete().eq("room_code", code);
-      const patch: Record<string, unknown> = { status: "waiting", public_state: null, updated_at: new Date().toISOString() };
-      if (room.host_uid && isAway(room.host_uid as string)) patch.host_uid = state.players[refereeSeat].id;
-      await admin.from("rooms").update(patch).eq("code", code);
-      return NextResponse.json({ ok: true, publicState: null, awaySeats, aborted: true });
-    }
-
-    // 방장 승계 (host가 자리비움)
+    // 방장이 자리비움이면 심판에게 승계 (게임 진행엔 방장 권한 불필요)
     if (room.host_uid && isAway(room.host_uid as string)) {
       await admin.from("rooms").update({ host_uid: state.players[refereeSeat].id }).eq("code", code);
     }
 
-    // 현재 턴이 자리비움인 동안 자동 진행 (정상 좌석 만나면 멈춤, guard로 무한 방지)
     let advanced = false;
+    // (a) 현재 턴이 10초 초과 → 자동 진행 1회 (응수=패스, 리드=최소패)
+    if (now - turnAt > TURN_MS) {
+      const r = forceAdvance(state);
+      if (r.ok) {
+        state = r.state;
+        advanced = true;
+      }
+    }
+    // (b) 낼 게 없는 응수 차례는 기다릴 것 없이 즉시 연쇄 자동패스
     let guard = 0;
-    while (state.phase === "playing" && awaySeats.includes(state.turn) && guard++ < state.players.length) {
+    while (
+      state.phase === "playing" &&
+      state.lead &&
+      !hasPlayable(state.hands[state.turn], state.lead) &&
+      guard++ < state.players.length
+    ) {
       const r = forceAdvance(state);
       if (!r.ok) break;
       state = r.state;

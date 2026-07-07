@@ -209,10 +209,10 @@ export function useRoom(code: string, myName: string): UseRoom {
     }
   }, [code, applyPublic]);
 
+  // heartbeat tick — 대기방·결과화면 포함 항상 돌려 last_seen을 최신 유지(라운드 전환 시 stale 방지).
+  // tick 라우트가 playing이 아니면 heartbeat만 하고 자동진행은 건너뛴다.
   useEffect(() => {
-    const id = setInterval(() => {
-      if (statusRef.current === "playing") void tick();
-    }, 3000);
+    const id = setInterval(() => void tick(), 3000);
     return () => clearInterval(id);
   }, [tick]);
 

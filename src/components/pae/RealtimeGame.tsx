@@ -2,7 +2,7 @@
 
 // 오후의 패 — 실시간 게임. useRoom의 서버 상태 + 본인 손패로 GameTableView를 렌더하고,
 // 액션은 서버 권위 API로 보낸다. (상태는 부모 RealtimeRoom의 useRoom을 props로 공유)
-import { useState } from "react";
+import { useState, useRef } from "react";
 import GameTableView from "@/components/pae/GameTableView";
 import { playableAgainst } from "@/lib/pae/engine";
 import { classify, canBeat, COMBO_KO } from "@/lib/pae/combos";
@@ -14,6 +14,7 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
   const [shake, setShake] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const submittingRef = useRef(false); // 광클(리렌더 전 연타) 동기 차단
 
   const fail = (err: string) => {
     setShake(true);
@@ -45,9 +46,11 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
     setSelected((p) => (p.some((x) => tileId(x) === tileId(t)) ? p.filter((x) => tileId(x) !== tileId(t)) : [...p, t]));
   };
   const doPlay = async () => {
-    if (submitting) return; // 더블클릭·중복 제출 차단
+    if (submittingRef.current) return; // 광클·중복 제출 차단(동기)
+    submittingRef.current = true;
     setSubmitting(true);
     const err = await room.play(selected);
+    submittingRef.current = false;
     setSubmitting(false);
     if (err) fail(err);
     else {
@@ -56,9 +59,11 @@ export default function RealtimeGame({ room, code, onExit }: { room: UseRoom; co
     }
   };
   const doPass = async () => {
-    if (submitting) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     const err = await room.pass();
+    submittingRef.current = false;
     setSubmitting(false);
     if (err) fail(err);
   };
