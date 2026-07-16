@@ -1,0 +1,4 @@
+# 원본 GeoJSON (18MB) — 빌드타임 1회 입력, 커밋 제외
+# 재현: curl -sL -o raw/skorea-municipalities-2018-geo.json \
+#   https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-municipalities-2018-geo.json
+raw/
