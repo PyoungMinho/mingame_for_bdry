@@ -11,7 +11,7 @@ export function Dedication() {
         <span className="zb-tape" aria-hidden />
         <Image src="/zombie/dedication.jpg" alt="김성준" width={360} height={480} sizes="(max-width: 520px) 62vw, 280px" />
       </figure>
-      <p className="zb-dedication-text">우리의 친구 김성준에게 바칩니다</p>
+      <p className="zb-dedication-text">대한민국 첫번째 좀비 김성준에게 바칩니다</p>
     </section>
   );
 }

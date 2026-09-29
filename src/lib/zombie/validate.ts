@@ -7,6 +7,7 @@
 import {
   COMPANION_IDS,
   ENDING_IDS,
+  MIN_CHOICES_BEFORE_END,
   ENTRY,
   FORCED_ENDINGS,
   ITEM_IDS,
@@ -222,6 +223,28 @@ export function validateStory(
   }
   for (const id of ENDING_IDS) {
     if (!endingsHit.has(id)) out.push({ level: 'error', where: `ending ${id}`, msg: '어떤 경로로도 도달 불가' });
+  }
+
+  // 최소 깊이 — 어떤 스토리 엔딩도 MIN_CHOICES_BEFORE_END 번 선택 전에는 나올 수 없다 (조건 무시 최단 경로)
+  const depth: Record<string, number> = { [START_NODE]: 0 };
+  const bfs: string[] = [START_NODE];
+  while (bfs.length) {
+    const id = bfs.shift()!;
+    const n = all[id];
+    if (!n) continue;
+    for (const c of n.choices) {
+      for (const o of c.outcomes) {
+        const d = depth[id] + 1;
+        if (o.next.startsWith('end:')) {
+          if (d < MIN_CHOICES_BEFORE_END) {
+            out.push({ level: 'error', where: `node ${id}.${c.id}`, msg: `${d}번째 선택에 "${o.next}" — 엔딩은 최소 ${MIN_CHOICES_BEFORE_END}번 선택 뒤에만` });
+          }
+        } else if (depth[o.next] === undefined) {
+          depth[o.next] = d;
+          bfs.push(o.next);
+        }
+      }
+    }
   }
 
   // 플래그 / 아이템 / 동료 — 읽히는 것은 어딘가에서 생산돼야 한다

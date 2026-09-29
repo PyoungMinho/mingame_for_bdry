@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_SCENE_HOURS,
   INFECTION_SCENES,
+  MIN_CHOICES_BEFORE_END,
   START_STATS,
   STARVING_HP,
   SUPPLY_DRAIN_BASE,
@@ -104,6 +105,7 @@ const NODES: Record<string, StoryNode> = {
     choices: [
       { id: 'wait', label: '기다린다', outcomes: [{ effects: { hours: 1 }, result: ['시간이 흐른다'], next: 'loop' }] },
       { id: 'starve', label: '굶는다', outcomes: [{ effects: { supply: -100 }, result: ['배고프다'], next: 'loop' }] },
+      { id: 'fall', label: '떨어진다', outcomes: [{ effects: { hp: -200 }, result: ['쿵'], next: 'loop' }] },
     ],
   }),
 };
@@ -129,6 +131,20 @@ const ENDINGS = {
 } as unknown as Record<EndingId, Ending>;
 
 const start = (seed = 42) => newRun(seed, NODES.c1_start);
+
+/** 선택 기록을 n 개 채운 상태 — 최소 선택 수 가드 이후의 규칙을 시험할 때 */
+const veteran = (s: RunState, n = MIN_CHOICES_BEFORE_END) => ({
+  ...s,
+  history: Array.from({ length: n }, (_, i) => ({
+    nodeId: 'loop',
+    title: 'loop',
+    chapter: 3 as const,
+    location: 'station' as const,
+    clock: 14 + i,
+    choiceId: 'wait',
+    choiceLabel: '기다린다',
+  })),
+});
 
 describe('newRun', () => {
   it('시작 상태', () => {
@@ -192,9 +208,9 @@ describe('applyChoice', () => {
     expect(formatSurvived(later.state)).toBe('1시간');
   });
 
-  it('장면 경과 보급 소모 = 기본 + 동행 수', () => {
+  it('장면 경과 보급 소모 = 기본 + ⌊동행 수 × 계수⌋', () => {
     const r = applyChoice(start(), NODES, 'bat');
-    const drain = SUPPLY_DRAIN_BASE + SUPPLY_DRAIN_PER_COMPANION * 1;
+    const drain = SUPPLY_DRAIN_BASE + Math.floor(SUPPLY_DRAIN_PER_COMPANION * 1);
     expect(r.delta.upkeep.supply).toBe(-drain);
     expect(r.state.stats.supply).toBe(START_STATS.supply - drain);
   });
@@ -250,21 +266,55 @@ describe('applyChoice', () => {
     expect(r.forced).toBeNull();
   });
 
-  it('정신력 0 → breakdown', () => {
-    const s = applyChoice(start(), NODES, 'bat').state;
+  it('정신력 0 → breakdown (최소 선택 수 이후)', () => {
+    const s = veteran(applyChoice(start(), NODES, 'bat').state);
     const r = applyChoice(s, NODES, 'break');
     expect(r.state.ending).toBe('breakdown');
     expect(r.state.endingCause).toBe('mental');
   });
 
-  it('감염 카운트다운 → turned', () => {
+  it('감염 카운트다운 → turned (최소 선택 수 전이면 그때까지 미뤄진다)', () => {
     let r = applyChoice(start(), NODES, 'bitten');
     expect(r.delta.infected).toBe(true);
-    expect(infectionLeft(r.state)).toBe(INFECTION_SCENES - 1);
+    expect(infectionLeft(r.state)).toBe(Math.max(INFECTION_SCENES, MIN_CHOICES_BEFORE_END) - 1);
     let guard = 0;
-    while (!r.state.ending && guard++ < 20) r = applyChoice(r.state, NODES, 'wait');
+    while (!r.state.ending && guard++ < 30) r = applyChoice(r.state, NODES, 'wait');
     expect(r.state.ending).toBe('turned');
-    expect(r.state.scenes).toBe(INFECTION_SCENES);
+    expect(r.state.scenes).toBe(Math.max(INFECTION_SCENES, MIN_CHOICES_BEFORE_END));
+  });
+
+  it('HUD 감염 카운트다운은 실제 변이 직전에 0 이 된다', () => {
+    let r = applyChoice(start(), NODES, 'bitten');
+    const seen: number[] = [];
+    let guard = 0;
+    while (!r.state.ending && guard++ < 30) {
+      seen.push(infectionLeft(r.state)!);
+      r = applyChoice(r.state, NODES, 'wait');
+    }
+    expect(r.state.ending).toBe('turned');
+    // 매 장면 1씩 줄고, 변이 직전 장면에서 1 → 변이
+    expect(seen).toEqual(Array.from({ length: seen.length }, (_, i) => seen.length - i));
+  });
+
+  it('최소 선택 수 전에는 체력·정신력 0 이어도 1 로 버틴다 (구사일생)', () => {
+    const a = applyChoice(start(), NODES, 'bitten');
+    const r = applyChoice(a.state, NODES, 'fall');
+    expect(r.state.ending).toBeNull();
+    expect(r.state.stats.hp).toBe(1);
+    expect(r.delta.clutch).toBe(true);
+    // 결과 칩의 손실 = 실제 변화 (효과 + 굶주림)
+    expect(r.delta.hp + r.delta.upkeep.hp).toBe(r.state.stats.hp - a.state.stats.hp);
+    const m = applyChoice(applyChoice(start(), NODES, 'bat').state, NODES, 'break'); // fight 노드의 정신력 −100
+    expect(m.state.ending).toBeNull();
+    expect(m.state.stats.mental).toBe(1);
+  });
+
+  it('최소 선택 수째 선택부터는 강제 엔딩이 난다', () => {
+    const s = veteran(applyChoice(start(), NODES, 'bitten').state, MIN_CHOICES_BEFORE_END - 1);
+    const r = applyChoice(s, NODES, 'fall'); // 이 선택이 MIN 번째
+    expect(r.state.history.length).toBe(MIN_CHOICES_BEFORE_END);
+    expect(r.state.ending).toBe('dead');
+    expect(r.delta.clutch).toBe(false);
   });
 
   it('보급을 못 채우면 굶주림으로 체력이 깎인다', () => {

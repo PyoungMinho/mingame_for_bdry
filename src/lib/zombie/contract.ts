@@ -26,9 +26,13 @@ export const STAT_META: Record<StatKey, { label: string; short: string }> = {
 
 export const START_STATS: Record<StatKey, number> = { hp: 100, supply: 60, mental: 80 };
 
-/** 장면을 넘길 때마다 소모되는 보급 = 기본 + 동행 1명(마리)당 추가 */
+/**
+ * 장면을 넘길 때마다 소모되는 보급 = 기본 + ⌊동행 수 × 계수⌋ (동행 1명 +0, 2명 +1, 3명 +2, 4명 +3).
+ * 계수 1 → 0.75: 확장(약 40장면)으로 누적 소모가 커져 동행 4명이면 3장부터 11장면 연속 굶는 판이
+ * 반숙련 플레이의 8.3%였다(무작위 3000판). 0.75 에서 0.4% — 대충 하면 여전히 굶는다.
+ */
 export const SUPPLY_DRAIN_BASE = 2;
-export const SUPPLY_DRAIN_PER_COMPANION = 1;
+export const SUPPLY_DRAIN_PER_COMPANION = 0.75;
 /** 보급 0 상태로 장면을 넘기면 */
 export const STARVING_HP = 8;
 export const STARVING_MENTAL = 3;
@@ -38,6 +42,12 @@ export const STARVING_MENTAL = 3;
  * 4~5장의 "물린 걸 숨긴다" 콘텐츠가 사실상 도달 불가였다(무작위 3000판 시뮬레이션).
  */
 export const INFECTION_SCENES = 6;
+/**
+ * 어떤 엔딩이든 최소 이만큼 선택한 뒤에만 나온다 (PM 요구: "못해도 10개 선택은 해야 재미지지").
+ * - 스토리 엔딩: 콘텐츠 무결성 테스트가 최단 경로 ≥ 이 값을 강제한다.
+ * - 강제 엔딩: 이 전에 체력/정신력이 0 이 되면 1 로 버틴다(구사일생), 감염 변이는 이 시점까지 미뤄진다.
+ */
+export const MIN_CHOICES_BEFORE_END = 10;
 /** 게임 시작 시각 (D+0 14:00) */
 export const START_CLOCK = 14;
 /** 결과에 hours 가 없을 때 흐르는 기본 시간(15분) — 시계가 장면마다 조금씩은 움직이게 */

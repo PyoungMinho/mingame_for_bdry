@@ -12,6 +12,7 @@ import {
   ENDINGS_META,
   FORCED_ENDINGS,
   INFECTION_SCENES,
+  MIN_CHOICES_BEFORE_END,
   START_CLOCK,
   START_COMPANIONS,
   START_NODE,
@@ -92,6 +93,8 @@ export interface Delta {
   /** 장면 경과로 인한 소모 (효과와 별도 표시) */
   upkeep: { supply: number; hp: number; mental: number };
   starving: boolean;
+  /** 최소 선택 수 전이라 체력/정신력 0 을 1 로 버텼다 */
+  clutch: boolean;
 }
 
 export interface Resolution {
@@ -287,7 +290,7 @@ function applyEffect(s: RunState, e: Effect | undefined, delta: Delta): RunState
 
 /** 장면 경과 — 보급 소모, 못 채우면 굶주림 */
 function upkeep(s: RunState, delta: Delta): RunState {
-  const need = SUPPLY_DRAIN_BASE + SUPPLY_DRAIN_PER_COMPANION * s.companions.length;
+  const need = SUPPLY_DRAIN_BASE + Math.floor(SUPPLY_DRAIN_PER_COMPANION * s.companions.length);
   const stats = { ...s.stats };
   if (stats.supply >= need) {
     stats.supply -= need;
@@ -336,6 +339,7 @@ export function applyChoice(s: RunState, nodes: Record<string, StoryNode>, choic
     hours: 0,
     upkeep: { supply: 0, hp: 0, mental: 0 },
     starving: false,
+    clutch: false,
   };
 
   let next: RunState = { ...s, rng };
@@ -369,9 +373,21 @@ export function applyChoice(s: RunState, nodes: Record<string, StoryNode>, choic
   let forced: Resolution['forced'] = null;
   const storyKind = storyEnding ? ENDINGS_META[storyEnding].kind : null;
   const overridable = !storyEnding || storyKind === 'survived';
+  // 최소 선택 수 전에는 강제 엔딩을 내지 않는다 — 0 이 된 스탯은 1 로 버티고, 변이는 미뤄진다
+  const early = next.history.length < MIN_CHOICES_BEFORE_END;
+  if (early && !storyEnding && (next.stats.hp <= 0 || next.stats.mental <= 0)) {
+    // 되돌린 1 만큼 결과 칩의 손실도 보정한다 — 굶주림(장면 경과)이 마지막으로 깎았다면 그쪽에서
+    for (const k of ['hp', 'mental'] as const) {
+      if (next.stats[k] > 0) continue;
+      if (delta.upkeep[k] < 0) delta.upkeep[k] += 1;
+      else delta[k] += 1;
+    }
+    next = { ...next, stats: { ...next.stats, hp: Math.max(1, next.stats.hp), mental: Math.max(1, next.stats.mental) } };
+    delta.clutch = true;
+  }
   if (overridable && next.stats.hp <= 0) forced = 'hp';
   else if (overridable && next.stats.mental <= 0) forced = 'mental';
-  else if (!storyEnding && next.infectedAt !== null && next.scenes - next.infectedAt >= INFECTION_SCENES) forced = 'infection';
+  else if (!storyEnding && !early && next.infectedAt !== null && next.scenes - next.infectedAt >= INFECTION_SCENES) forced = 'infection';
 
   if (forced) {
     next = { ...next, ending: FORCED_ENDINGS[forced], endingCause: forced };
@@ -393,7 +409,8 @@ export function applyChoice(s: RunState, nodes: Record<string, StoryNode>, choic
 /** 감염 후 남은 장면 수 (감염 아니면 null) */
 export function infectionLeft(s: RunState): number | null {
   if (s.infectedAt === null) return null;
-  return Math.max(0, INFECTION_SCENES - (s.scenes - s.infectedAt));
+  // 엔진의 강제 변이 판정과 같은 규칙 — 6장면 경과와 최소 선택 수를 둘 다 채워야 변이한다
+  return Math.max(0, INFECTION_SCENES - (s.scenes - s.infectedAt), MIN_CHOICES_BEFORE_END - s.history.length);
 }
 
 export function formatClock(hours: number): string {

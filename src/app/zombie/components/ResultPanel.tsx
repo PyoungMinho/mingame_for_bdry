@@ -24,6 +24,7 @@ function chips(res: Resolution): Chip[] {
   d.left.forEach((m) => out.push({ tone: 'bad', text: `${COMPANIONS[m].name} 이탈` }));
   if (d.infected) out.push({ tone: 'infect', text: '감염됨' });
   if (d.cured) out.push({ tone: 'good', text: '감염 치료' });
+  if (d.clutch) out.push({ tone: 'bad', text: '구사일생 — 1로 버텼다' });
   return out;
 }
 

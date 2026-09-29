@@ -97,7 +97,7 @@ export function TitleScreen({
         <ul className="zb-title-meta" aria-label="게임 정보">
           <li>5장 · {sceneCount}개 장면</li>
           <li>{ENDING_IDS.length}개 엔딩</li>
-          <li>한 판 10~15분</li>
+          <li>한 판 25~30분</li>
         </ul>
         <p className="zb-fine">
           선택은 되돌릴 수 없어요.{' '}
