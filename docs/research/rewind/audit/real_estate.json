@@ -1,0 +1,1739 @@
+{
+  "batch": "real_estate",
+  "audited_at": "2026-09-30",
+  "items": [
+    {
+      "id": "seoul_apt_kb_index.2000-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2000-12-15",
+      "value": 22.941,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "22.94",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200012/200012/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +4.2%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2001-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2001-12-15",
+      "value": 27.374,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "27.37",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200112/200112/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +19.3%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2002-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2002-12-15",
+      "value": 35.801,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "35.80",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200212/200212/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +30.8%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2003-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2003-12-15",
+      "value": 39.447,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "39.45",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200312/200312/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +10.2%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2004-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2004-12-15",
+      "value": 39.045,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "39.05",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200412/200412/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -1.0%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -1.0% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2005-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2005-12-15",
+      "value": 42.59,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "42.59",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200512/200512/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +9.1%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +8.5% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2006-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2006-12-15",
+      "value": 52.86,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "52.86",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200612/200612/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +24.1%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +23.4% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2007-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2007-12-15",
+      "value": 54.745,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "54.74",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200712/200712/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +3.6%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +7.1% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2008-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2008-12-15",
+      "value": 56.506,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "56.51",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200812/200812/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +3.2%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +7.0% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2009-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2009-12-15",
+      "value": 57.961,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "57.96",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200912/200912/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +2.6%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +2.5% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2010-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2010-12-15",
+      "value": 56.69,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "56.69",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201012/201012/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -2.2%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -2.1% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2011-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2011-12-15",
+      "value": 56.44,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "56.44",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201112/201112/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -0.4%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -0.4% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2012-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2012-12-15",
+      "value": 53.912,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "53.91",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201212/201212/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -4.5%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -6.7% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2013-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2013-12-15",
+      "value": 52.922,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "52.92",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201312/201312/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -1.8%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -1.2% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2014-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2014-12-15",
+      "value": 53.499,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "53.50",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201412/201412/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +1.1%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +2.1% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2015-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2015-12-15",
+      "value": 56.474,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "56.47",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201512/201512/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +5.6%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +6.6% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2016-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2016-12-15",
+      "value": 58.858,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "58.86",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201612/201612/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +4.2%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +3.3% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2017-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2017-12-15",
+      "value": 61.965,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "61.97",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201712/201712/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +5.3%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +4.8% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2018-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2018-12-15",
+      "value": 70.367,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "70.37",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201812/201812/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +13.6%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +8.0% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2019-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2019-12-15",
+      "value": 72.399,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "72.40",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/201912/201912/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +2.9%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +1.1% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2020-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2020-12-15",
+      "value": 81.857,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "81.86",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202012/202012/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +13.1%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +3.0% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2021-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2021-12-15",
+      "value": 95.279,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "95.28",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202112/202112/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +16.4%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +8.1% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2022-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2022-12-15",
+      "value": 92.454,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "92.45",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202212/202212/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -3.0%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -7.8% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2023-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2023-12-15",
+      "value": 86.644,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "86.64",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202312/202312/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 -6.3%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 -2.2% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2024-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2024-12-15",
+      "value": 89.107,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "89.11",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202412/202412/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +2.8%. 독립기관 교차: 한국부동산원 서울 아파트 매매가격지수(ECOS 901Y093) 같은 기간 +4.7% (방향 일치 여부로만 참고, 수준 비교 불가). 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2025-12",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2025-12-15",
+      "value": 99.138,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "99.14",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202512/202512/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +11.3%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개)."
+    },
+    {
+      "id": "seoul_apt_kb_index.2026-09",
+      "asset": "서울 아파트 매매가격지수(KB)",
+      "date": "2026-09-14",
+      "value": 109.352,
+      "unit": "지수(2026.01=100)",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 매매가격지수, 서울, 각 연도 12월(2026은 9월). 기준 2026.01=100.",
+      "status": "verified",
+      "previous": "109.35",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/202609/202609/P63ACA"
+      ],
+      "note": "KB 원천(데이터허브 월간 아파트 매매가격지수 전체 시계열, 업데이트 2026-09-14)과 한국은행 ECOS 901Y062가 1986-01~2026-09 321개월 전부 소수 셋째 자리까지 일치. 전년 12월 대비 +10.3%. 주의: ECOS는 KB 자료를 재게시한 것이라 원천은 KB 1곳(공식 발행 채널 2개). 2026-09는 조사기준일 2026-09-14 값(최신)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2000-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2000-12-15",
+      "value": 21326,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 21,326)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200012/200012/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2001-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2001-12-15",
+      "value": 25448,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 25,448)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200112/200112/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2002-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2002-12-15",
+      "value": 33282,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 33,282)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200212/200212/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2003-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2003-12-15",
+      "value": 36671,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 36,671)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200312/200312/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2004-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2004-12-15",
+      "value": 36297,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 36,297)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200412/200412/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2005-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2005-12-15",
+      "value": 39592,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 39,592)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200512/200512/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2006-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2006-12-15",
+      "value": 49140,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 49,140)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200612/200612/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2007-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2007-12-15",
+      "value": 50892,
+      "unit": "만원/호",
+      "basis": "게임 대체값 = KB 2008-12 평균매매가(52,530만원) × KB 서울 아파트 지수(해당 연 12월 ÷ 2008-12). 실측 통계 아님(파생 추정치).",
+      "status": "unverifiable",
+      "previous": "(추정 50,892)",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/priceIndexOnlyMonthAptExcel?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=&조회시작일자=198601&조회종료일자=202609",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y062/M/200712/200712/P63ACA"
+      ],
+      "note": "KB 아파트 평균매매가 통계는 2008-12부터만 존재(KB API 날짜리스트 첫 값 200812, 서울신문 2017-04-04 '국민은행이 조사를 시작한 2008년 12월 이후'). 2000~2007 실측 평균가는 어느 출처에도 없음 → 확인 불가. 역산 공식·지수는 재계산으로 1차 값과 일치 확인. 게임에서는 '(추정)' 표기 유지하거나 가격 대신 지수만 쓸 것. 한국부동산원 평균가격 통계와 섞지 말 것(기준·표본 다름)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2008-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2008-12-15",
+      "value": 52530,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "52,530",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 서울신문 2017-04-04가 '2008~2010년 5억원대 초·중반'이라고만 서술(정성 일치). 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2009-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2009-12-15",
+      "value": 53930,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "53,930",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 서울신문 2017-04-04 '2008~2010년 5억원대 초·중반'(정성 일치). 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2010-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2010-12-15",
+      "value": 52697,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "52,697",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 서울신문 2017-04-04 '2008~2010년 5억원대 초·중반'(정성 일치). 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2011-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2011-12-15",
+      "value": 53900,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "53,900",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 한국일보 2013-01-08 '2011년 5월 이후 14개월 연속 하락'(방향만 일치). 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2012-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2012-12-15",
+      "value": 50780,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "50,780",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.hankookilbo.com/news/article/201301080621087652"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 한국일보 2013-01-08: '평균 5억780만원'(KB) 일치. 한국일보 2017-09-17도 2012년 5억780만원 재인용."
+    },
+    {
+      "id": "seoul_apt_avg_price.2013-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2013-12-15",
+      "value": 48375,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "48,375",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.etoday.co.kr/news/view/1122713"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 이투데이(KB 주택가격동향 인용): 2013년 12월 4억8375만원 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2014-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2014-12-15",
+      "value": 49177,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "49,177",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.etoday.co.kr/news/view/1122713"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 이투데이(KB 인용): 2014년 12월 말 4억9177만원 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2015-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2015-12-15",
+      "value": 52475,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "52,475",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 이투데이(2015-06) 2015-04 4억9999만원 → 12월 5억대 진입과 방향 일치. 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2016-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2016-12-15",
+      "value": 59670,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "59,670",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.hankookilbo.com/news/article/201709171647818199"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 한국일보 2017-09-17: '지난해 12월 기준 서울 아파트 평균 가격 5억9,670만원' 일치. 참고: 2017-03 60,017만원으로 첫 6억 돌파(서울신문 2017-04-04 보도와 일치) → 2016-12가 6억 미만인 것과 정합."
+    },
+    {
+      "id": "seoul_apt_avg_price.2017-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2017-12-15",
+      "value": 66147,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "66,147",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.khan.co.kr/article/202212231019001"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 경향신문 2022-12-23(KB 인용): 2017년 12월 6억6147만원 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2018-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2018-12-15",
+      "value": 81595,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "81,595",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 원천값은 KB 공식 API이나 해당 월 수치를 인용한 독립 보도 미발견. 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2019-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2019-12-15",
+      "value": 85951,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "85,951",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 해당 월 수치를 인용한 독립 보도 미발견. 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2020-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2020-12-15",
+      "value": 104299,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "104,299",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://realestate.daum.net/news/detail/region/nation/20201228163005093"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 다음부동산 2020-12-28 '서울 아파트값 평균 10.4억'(KB 12월 10억4299만원) 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2021-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2021-12-15",
+      "value": 124978,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "124,978",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.asiae.co.kr/article/2022010509082822176"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 아시아경제 2022-01-05(경제만랩, KB 인용) 12억4978만원 일치. 경향 2022-12-23도 동일."
+    },
+    {
+      "id": "seoul_apt_avg_price.2022-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2022-12-15",
+      "value": 126421,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "126,421",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.khan.co.kr/article/202212231019001"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 경향신문 2022-12-23(KB 인용): 2022년 12월 12억6421만원 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2023-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2023-12-15",
+      "value": 119966,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "unverifiable",
+      "previous": "119,966",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드="
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 같은 달 값을 인용한 독립 2차 출처를 찾지 못함(규칙상 unverifiable). 해당 월 수치를 인용한 독립 보도 미발견. 참고: 2023 저점은 2023-07 118,182만원(KB API). 게임 대체안: KB 원천 API 값 그대로 사용(원천 직접 조회값이라 전사 오류 위험 낮음)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2024-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2024-12-15",
+      "value": 127274,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "127,274",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.segye.com/newsView/20250114509659"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 세계일보 2025-01-14: 2024년 12월 12억7274만원 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2025-12",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2025-12-15",
+      "value": 150810,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "150,810",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://m.news.nate.com/view/20251228n06327"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: KB 2025-12-28 발표(12-15 조사) 15억810만원, 네이트/서울신문 등 다수 보도와 일치(통계 작성 이후 첫 15억)."
+    },
+    {
+      "id": "seoul_apt_avg_price.2026-09",
+      "asset": "서울 아파트 평균 매매가격",
+      "date": "2026-09-14",
+      "value": 162469,
+      "unit": "만원/호",
+      "basis": "KB국민은행 월간 주택가격동향 아파트 평균매매가격, 서울, 각 연도 12월(2026은 9월), 명목 원화. 표본 개편 시 불연속 있음(등락률은 지수 사용 권장).",
+      "status": "verified",
+      "previous": "162,469",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.segye.com/newsView/20260928505212"
+      ],
+      "note": "KB 데이터허브 avgPrc API(서울, 아파트, 월간) 2026-09-30 직접 재조회값. 1차 값과 일치. 교차: 세계일보 2026-09-28: 조사기준일 2026-09-14, 평균 16억2,469만원·중위 13억1,333만원 일치. 2026-09는 조사기준일 2026-09-14. 참고 2026-08 160,739만원(헤럴드경제·다음 2026-08-23 '첫 16억 돌파'로 교차 확인)."
+    },
+    {
+      "id": "seoul_apt_avg_price.peak.2022-11",
+      "asset": "서울 아파트 평균 매매가격(2022 고점)",
+      "date": "2022-11-15",
+      "value": 128220,
+      "unit": "만원/호",
+      "basis": "KB 월간 아파트 평균매매가격 서울, 2021~2024 구간 최대값",
+      "status": "verified",
+      "previous": "128,220",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.ajunews.com/view/20221207082536615",
+        "https://www.khan.co.kr/article/202212231019001"
+      ],
+      "note": "KB API 2022-11 128,219.7만원. 아주경제 2022-12-07·경향 2022-12-23 모두 '12억8220만원' 인용 일치."
+    },
+    {
+      "id": "seoul_apt_avg_price.2021-10",
+      "asset": "서울 아파트 평균 매매가격(첫 12억 돌파)",
+      "date": "2021-10-15",
+      "value": 121639,
+      "unit": "만원/호",
+      "basis": "KB 월간 아파트 평균매매가격 서울",
+      "status": "verified",
+      "previous": "121,639",
+      "sources": [
+        "https://data-api.kbland.kr/bfmstat/weekMnthlyHuseTrnd/avgPrc?월간주간구분코드=01&매매전세코드=01&매물종별구분=01&지역코드=",
+        "https://www.fnnews.com/news/202110251829187030",
+        "https://www.khan.co.kr/article/202110251001001"
+      ],
+      "note": "KB API 121,638.6만원. 파이낸셜뉴스·경향 2021-10-25 '12억1639만원' 일치."
+    },
+    {
+      "id": "eunma.area_spec",
+      "asset": "대치 은마아파트 평형 정의",
+      "date": "2026-09-30",
+      "value": 76.79,
+      "unit": "㎡(전용)",
+      "basis": "게임 '은마 76㎡(31평)' = 전용 76.79㎡ / 공급 101.52㎡(30.70평) / 계약 112.12㎡, 2,674세대. 큰 평형은 전용 84.43㎡ / 공급 115.54㎡(34.95평), 1,750세대. 합계 4,424세대.",
+      "status": "verified",
+      "previous": "76㎡ (공급 101.52㎡, 30.7평)",
+      "sources": [
+        "https://api.kbland.kr/land-complex/complex/typInfo?단지기본일련번호=186",
+        "https://gangnam.grandculture.net/gangnam/toc/GC04801793",
+        "https://www.sedaily.com/article/12678728"
+      ],
+      "note": "KB typInfo(면적일련번호 182 = 전용 76.79㎡, 2,674세대 / 49530 = 84.43㎡, 1,750세대). 디지털강남문화대전: '101㎡ 2,674가구, 115㎡ 1,750가구, 총 4,424가구' 일치. 서울경제 기사 제목에 '전용 76.79㎡' 표기. 참고: 준공은 디지털강남문화대전 1979-09-03(1차 자료의 '1979-08'은 입주/사용승인 기준 차이 가능, 게임 비사용)."
+    },
+    {
+      "id": "eunma76.kb.2004-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2004-12-15",
+      "value": 57500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "57,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2004",
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 57500 (하위 55500~상위 60000), 1차 값과 일치. 국토부 실거래 공개(2006~) 이전이라 실거래 교차 불가. 이데일리 2010-03-04 '2004년말 5억7000만원' 일치. KB 시세 제공 시작은 2004-01(6억500만원)."
+    },
+    {
+      "id": "eunma76.kb.2005-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2005-12-15",
+      "value": 78000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "78,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2005",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 78000 (하위 76500~상위 80000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 6건 가중평균 3.3㎡당가×30.70평 ≈ 79636만원 → KB 대비 +2.1%. (단지 전체 평형 합산 평당가라 근사치) 실거래 공개 전. 이데일리 2010-03-04 '2005년 7월 7억9500만원' vs KB 2005-07 78,000(−1.9%)로 부합, KB는 2005-07~12 78,000 보합."
+    },
+    {
+      "id": "eunma76.kb.2006-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2006-12-15",
+      "value": 112500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "112,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2006",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 112500 (하위 109000~상위 115000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 29건 가중평균 3.3㎡당가×30.70평 ≈ 112989만원 → KB 대비 +0.4%. (단지 전체 평형 합산 평당가라 근사치) 이데일리 2010-03-04 '2006년말 10억 돌파'와도 부합."
+    },
+    {
+      "id": "eunma76.kb.2007-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2007-12-15",
+      "value": 100000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "100,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2007",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 100000 (하위 97500~상위 105000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 18건 가중평균 3.3㎡당가×30.70평 ≈ 100542만원 → KB 대비 +0.5%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2008-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2008-12-15",
+      "value": 80500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "80,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2008",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.etoday.co.kr/news/view/554336"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 80500 (하위 74250~상위 86500), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 55건 가중평균 3.3㎡당가×30.70평 ≈ 81750만원 → KB 대비 +1.6%. (단지 전체 평형 합산 평당가라 근사치) 이투데이(2012): 2008-12 최저 실거래 7억500만원(개별 급매). 이데일리 2010 '2008년 말 8억원대'."
+    },
+    {
+      "id": "eunma76.kb.2009-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2009-12-15",
+      "value": 100000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "100,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2009",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 100000 (하위 98000~상위 102000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 35건 가중평균 3.3㎡당가×30.70평 ≈ 101123만원 → KB 대비 +1.1%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2010-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2010-12-15",
+      "value": 92500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "92,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2010",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 92500 (하위 90000~상위 95000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 70건 가중평균 3.3㎡당가×30.70평 ≈ 94479만원 → KB 대비 +2.1%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2011-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2011-12-15",
+      "value": 88500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "88,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2011",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 88500 (하위 85500~상위 91500), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 18건 가중평균 3.3㎡당가×30.70평 ≈ 87478만원 → KB 대비 -1.2%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2012-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2012-12-15",
+      "value": 74000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "74,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2012",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.etoday.co.kr/news/view/683752"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 74000 (하위 70750~상위 77000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 47건 가중평균 3.3㎡당가×30.70평 ≈ 73054만원 → KB 대비 -1.3%. (단지 전체 평형 합산 평당가라 근사치) 이투데이 2013-01-29: 101㎡(31평) 2013-01-07 6억9500만, 01-19 6억9400만, 01-22 6억9000만 체결 → 실거래 바닥은 KB 시세(7.4억)보다 약 0.45억 낮음."
+    },
+    {
+      "id": "eunma76.kb.2013-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2013-12-15",
+      "value": 78250,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "78,250",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2013",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 78250 (하위 75500~상위 81000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 80건 가중평균 3.3㎡당가×30.70평 ≈ 78568만원 → KB 대비 +0.4%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2014-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2014-12-15",
+      "value": 87750,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "87,750",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2014",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 87750 (하위 85000~상위 90000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 28건 가중평균 3.3㎡당가×30.70평 ≈ 86498만원 → KB 대비 -1.4%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2015-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2015-12-15",
+      "value": 97750,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "97,750",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2015",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 97750 (하위 94500~상위 100000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 30건 가중평균 3.3㎡당가×30.70평 ≈ 98295만원 → KB 대비 +0.6%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2016-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2016-12-15",
+      "value": 113750,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "113,750",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2016",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 113750 (하위 110500~상위 116500), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 22건 가중평균 3.3㎡당가×30.70평 ≈ 109842만원 → KB 대비 -3.4%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2017-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2017-12-15",
+      "value": 146500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "146,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2017",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 146500 (하위 143000~상위 149500), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 77건 가중평균 3.3㎡당가×30.70평 ≈ 146206만원 → KB 대비 -0.2%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2018-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2018-12-15",
+      "value": 163500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "163,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2018",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 163500 (하위 159000~상위 168000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 9건 가중평균 3.3㎡당가×30.70평 ≈ 153179만원 → KB 대비 -6.3%. (단지 전체 평형 합산 평당가라 근사치) [불일치 5% 초과: 거래 건수 적음. 원천 정의상 KB 시세를 채택] [2차 재검증 2026-09-30] KB 재조회 일치(2018-11 167,500 → 12 163,500). 감사자 판단 유지."
+    },
+    {
+      "id": "eunma76.kb.2019-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2019-12-15",
+      "value": 200500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "200,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2019",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 200500 (하위 193500~상위 205000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 36건 가중평균 3.3㎡당가×30.70평 ≈ 199444만원 → KB 대비 -0.5%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2020-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2020-12-15",
+      "value": 208500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "208,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2020",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 208500 (하위 201000~상위 215000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 16건 가중평균 3.3㎡당가×30.70평 ≈ 201104만원 → KB 대비 -3.5%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2021-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2021-12-15",
+      "value": 233500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "233,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2021",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://n.news.naver.com/mnews/article/015/0004644694",
+        "https://n.news.naver.com/mnews/article/018/0005394561"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 233500 (하위 226000~상위 241000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 3건 가중평균 3.3㎡당가×30.70평 ≈ 253336만원 → KB 대비 +8.5%. (단지 전체 평형 합산 평당가라 근사치) [불일치 5% 초과: 거래 건수 적음. 원천 정의상 KB 시세를 채택] 실거래 최고가는 2021-11 26억3500만원(경향 2022-12-08·머니투데이 2022-09-29 보도). KB 시세가 실거래 급등을 늦게 반영. [2차 재검증 2026-09-30] KB WholQuotList 재조회 일치(2021-11·12 모두 233,500). 실거래 최고 2021-11 26.35억은 한국경제 2021-12-25·중앙 2022-01-27·이데일리 2022-12-27로 재확인. 감사자 판단 유지."
+    },
+    {
+      "id": "eunma76.kb.2022-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2022-12-15",
+      "value": 190667,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "190,667",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2022",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://news.mt.co.kr/mtview.php?no=2022092914523347976"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 190667 (하위 181667~상위 196333), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 21건 가중평균 3.3㎡당가×30.70평 ≈ 188739만원 → KB 대비 -1.0%. (단지 전체 평형 합산 평당가라 근사치) 경향 2022-12-08: 2022-12-03 18억5000만원 체결(직전 최고 26억3500만원 대비 약 −8억). 서울경제: 전용 76.79㎡ 18억4000만원 체결."
+    },
+    {
+      "id": "eunma76.kb.2023-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2023-12-15",
+      "value": 234333,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "234,333",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2023",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 234333 (하위 229333~상위 244667), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 5건 가중평균 3.3㎡당가×30.70평 ≈ 239264만원 → KB 대비 +2.1%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2024-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2024-12-15",
+      "value": 268333,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "268,333",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2024",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 268333 (하위 260000~상위 275000), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 15건 가중평균 3.3㎡당가×30.70평 ≈ 267808만원 → KB 대비 -0.2%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.kb.2025-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세",
+      "date": "2025-12-15",
+      "value": 365000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 연 12월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "365,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2025",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB WholQuotList 2026-09-30 재조회: 일반 365000 (하위 360000~상위 371667), 1차 값과 일치. 독립 교차(국토부 실거래 신고 집계, KB aptDanjiRealTransPriceChart): 해당월±1개월 6건 가중평균 3.3㎡당가×30.70평 ≈ 373885만원 → KB 대비 +2.4%. (단지 전체 평형 합산 평당가라 근사치)"
+    },
+    {
+      "id": "eunma76.2000-12",
+      "asset": "대치 은마 101㎡(31평, 전용 76.79㎡) 매매가",
+      "date": "2000-12-31",
+      "value": 22000,
+      "unit": "만원/호",
+      "basis": "언론 보도 '2000년 말 101㎡ 평균 2억2000만원대'(시세·호가 평균 성격, KB 시세 이전 시기)",
+      "status": "verified",
+      "previous": "2.2억 (low, 원문 미확인)",
+      "sources": [
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257",
+        "http://news.bizwatch.co.kr/article/real_estate/2018/04/16/0020"
+      ],
+      "note": "이데일리 2010-03-04 '2000년 말 101㎡ 평균 2억2000만원대', 비즈워치 2018-04-16 '2000년 2억2000만원' 일치. 단 두 기사 모두 원데이터(부동산114 등)를 명시하지 않아 공통 원천일 가능성 있음. 1차의 '원문 미확인'은 해소."
+    },
+    {
+      "id": "eunma76.2001-12",
+      "asset": "대치 은마 101㎡(31평) 매매가",
+      "date": "2001-12-31",
+      "value": 37000,
+      "unit": "만원/호",
+      "basis": "2001년 말~2002년 1월 첫째 주 시세(31평형=공급 101㎡=전용 76.79㎡). 비즈워치 2018 '2001년 3억7000만원' + 한국경제 2002-02-04 당시 보도가 독립 교차.",
+      "status": "corrected",
+      "previous": "2.5억 (\"2억원대\" 중간값 가정)",
+      "sources": [
+        "http://news.bizwatch.co.kr/article/real_estate/2018/04/16/0020",
+        "https://n.news.naver.com/mnews/article/015/0000475515",
+        "https://n.news.naver.com/mnews/article/001/0000263342",
+        "https://www.hankookilbo.com/news/article/201003090894438644"
+      ],
+      "note": "1차 값 2.5억은 출처 없는 가정값이라 폐기. [2차 재검증 2026-09-30] 감사자의 unverifiable 판정을 뒤집음. 당시 보도로 독립 2차 출처 확보: 한국경제 2002-02-04 \"은마 31평형, 1월 첫째주(1월1~5일)보다 1천만원 정도 낮은 3억6천만원 매물\" → 2002-01 초 약 3.7억. 연합뉴스 2002-10-29 \"31평형은 연초 3억5천만~4억2천만원\"도 정합. 비즈워치 2018 '2001년 3억7000만원'과 일치하므로 2001 연말값 3.7억(37,000만원)을 사용. 한국일보 2010 '2001년 2억원대에서 출발'은 연초 수준."
+    },
+    {
+      "id": "eunma76.2002-09",
+      "asset": "대치 은마 101㎡(31평) 매매가",
+      "date": "2002-12-31",
+      "value": 48000,
+      "unit": "만원/호",
+      "basis": "2002년 연말(12월 중순~2003년 1월 중순) 31평형 시세 중간값. 호가 기반 보도치(실거래 공개 전 시기).",
+      "status": "corrected",
+      "previous": "4.0억 (2002, 32평 3.8~4.15억 M)",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/014/0000045076",
+        "https://n.news.naver.com/mnews/article/015/0000578410",
+        "https://n.news.naver.com/mnews/article/008/0000242647",
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257",
+        "https://www.metroseoul.co.kr/article/20220530500025"
+      ],
+      "note": "1차: 4.0억(2002, 32평 3.8~4.15억). 감사자: 2002-09 4.8억(이데일리 2010 1곳), unverifiable. [2차 재검증 2026-09-30] 감사자 판단 일부 뒤집음. 당시 보도와 대조하면 '2002-09 = 4.8억'은 맞지 않음: 9월 초 31평이 5억원을 넘었고(연합 2002-10-29), 9월 사상최고가 5.2억(한국경제 2002-12-19), 재경부 조사 5억→4.5억(2002-10-20 보도)으로 9월은 5.0~5.2억 고점 구간. 10월 29일 안전진단 탈락 후 4.6~4.8억(파이낸셜 2002-10-29). 연말값은 독립 보도 3건으로 확인: 파이낸셜뉴스 2002-12-20 \"31평형 4억7000만~5억원, 보름 넘게 변동 없음\", 한국경제 2002-12-19 \"5억원선\", 머니투데이 2003-01-17 \"4억5000만~4억8000만원, 지난주 초보다 1250만원 하락\". 게임용 2002 연말값 = 4.8억(48,000만원). 9월 고점을 쓰려면 '2002-09 약 5.0억(최고 5.2억)'으로 별도 표기. 메트로 '2002 상반기 3.8~4.15억'은 연합 '연초 3.5~4.2억'과 정합."
+    },
+    {
+      "id": "eunma76.2003-12",
+      "asset": "대치 은마 101㎡(31평) 매매가",
+      "date": "2004-01-15",
+      "value": 60500,
+      "unit": "만원/호",
+      "basis": "2003-12 직접값 없음 → 가장 가까운 확인값 KB 시세 2004-01(시세 제공 첫 달) 일반거래가로 대용",
+      "status": "verified",
+      "previous": "6.0억 (2004-01 KB 대용)",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2004",
+        "https://www.hankookilbo.com/news/article/200311080022732042"
+      ],
+      "note": "KB 2004-01 60,500(하위 58,500~상위 63,500). 한국일보 2003-11-08 '31평형 9월초 7억2,000만원 → 최근 6억3,000만원'과 부합(2003-11 6.3억 → 2004-01 6.05억). 1차 6.0억은 반올림, 6.05억 권장."
+    },
+    {
+      "id": "eunma76.peak.2003-09",
+      "asset": "대치 은마 31평 2003 고점(10.29 대책 전)",
+      "date": "2003-09-05",
+      "value": 72000,
+      "unit": "만원/호",
+      "basis": "언론 보도 호가·거래 수준(월 단위)",
+      "status": "verified",
+      "previous": "(1차 없음)",
+      "sources": [
+        "https://www.hankookilbo.com/news/article/200311080022732042",
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257"
+      ],
+      "note": "한국일보 2003-11-08(당시 기사): 9월초 7억2,000만원 → 11월 6억3,000만원(−12.5%). 이데일리 2010-03-04: 2003년 8월 7억5000만원. 두 값 4% 차이(시점 8월 vs 9월초). 당시 기사인 7.2억 채택. 게임 이벤트 '2003 가을 고점 → 10.29 대책 후 −12%' 재료로 사용 가능."
+    },
+    {
+      "id": "eunma76.peak1.2006-11",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 1차 고점",
+      "date": "2006-11-15",
+      "value": 112500,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "112,500",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2006",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.edaily.co.kr/news/read?newsId=02105766592900040&mediaCodeNo=257",
+        "https://n.news.naver.com/mnews/article/028/0000184889"
+      ],
+      "note": "KB 재조회 일치. KB 112,500은 2006-11·12·2007-01 3개월 보합(고원). 국토부 실거래(단지 평당가×30.7): 2006-11 112,454(8건), 2006-12 112,608(16건), 2007-01 115,064(5건) → 실거래 기준 고점은 2007-01. '2006-11 고점 매도'는 KB·실거래 모두 11.25억 도달로 성립. 이데일리 2010 '2006년말 10억 돌파'. [2차 재검증 2026-09-30] KB 재조회: 2006-10 96,000 → 11·12·2007-01 112,500 → 02 112,000 → 03 108,500. 당시 보도: 2006년 말 31평 호가 최고 12.5억(한겨레 2007-01-19), 2007-01 10.5~11억(헤럴드·파이낸셜). KB 11.25억은 시세로 정합. 감사자 판단 유지."
+    },
+    {
+      "id": "eunma76.trough.2012-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 바닥",
+      "date": "2012-12-15",
+      "value": 74000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "74,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2012",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.etoday.co.kr/news/view/683752",
+        "https://n.news.naver.com/mnews/article/277/0002916591"
+      ],
+      "note": "KB 재조회 일치. KB 74,000은 2012-12·2013-01 동일(2008-07~2015 구간 최저). 실거래: 2012-12 73,005(9건), 2013-01 72,329(26건). 이투데이 2013-01-29: 2013-01 6억9000만~6억9500만원 체결 → 개별 체결 바닥은 약 6.9억(2013-01). 2006-11 고점 대비 KB −34.2%. [2차 재검증 2026-09-30] KB 재조회: 2012-11 77,000 → 12 74,000 → 2013-01 74,000 → 02 75,000. 당시 보도: 2013-01 급매물 6.8~6.9억(아시아경제 2013-01-16), 경매 낙찰 6.67억(2013-01-15), \"2006년 실거래 공개 이후 처음 6억원대 매매\"(서울경제 2013-02-05). 감사자 판단 유지."
+    },
+    {
+      "id": "eunma76.peak2.2022-06",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 2차 고점(KB 시세)",
+      "date": "2022-06-15",
+      "value": 240000,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "240,000",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2022",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://m.khan.co.kr/article/202212081522001"
+      ],
+      "note": "KB 재조회 일치. KB 240,000은 2022-06·07 동일(2021~2023 KB 최고). 실거래: 2022-05 24.8억(4건), 2022-07 24.4억(2건). 단, 개별 실거래 최고가는 2021-11 26억3500만원(경향 2022-12-08) → '실거래 고점'은 2021-11. 게임에선 'KB 시세 고점 2022-06 24억 / 실거래 최고 2021-11 26.35억' 구분 표기 권장. [2차 재검증 2026-09-30] KB 재조회: 2022-05 238,500, 06·07 240,000, 08 233,333. 실거래 2022-01-11 24.9억(직전 최고 2021-11 26.35억) 보도(뉴스1·중앙 2022-01)와 정합. 감사자 판단 유지."
+    },
+    {
+      "id": "eunma76.2022-12",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 급락 후",
+      "date": "2022-12-15",
+      "value": 190667,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "190,667",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2022",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://m.khan.co.kr/article/202212081522001",
+        "https://www.sedaily.com/article/12678728"
+      ],
+      "note": "KB 재조회 일치. KB 190,667(2022 저점, 고점 대비 −20.6%). 실거래 2022-12 188,099(11건). 경향 2022-12-08: 12-03 18억5000만원 체결. 서울경제: 전용 76.79㎡ 18억4000만원."
+    },
+    {
+      "id": "eunma76.peak3.2026-01",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 역대 최고(KB 시세)",
+      "date": "2026-01-15",
+      "value": 366667,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "366,667",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2026",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186"
+      ],
+      "note": "KB 재조회 일치. KB 366,667 = 2004-01~2026-09 전체 최고. 실거래 2026-01 36.9억(1건), 2025-12 37.6억(2건). 검색 보도: 2025-12-12 전용 76.79㎡ 37억5000만원 체결(출처 불명확, 참고). 실거래 평당가 최고월은 2025-12로 KB(2026-01)와 1개월 차이."
+    },
+    {
+      "id": "eunma76.2026-09",
+      "asset": "대치 은마 전용 76.79㎡ 매매 시세 — 엔딩 기준월",
+      "date": "2026-09-15",
+      "value": 323333,
+      "unit": "만원/호",
+      "basis": "KB부동산 단지 시세 '매매 일반거래가'(월간, 해당 월), 대치 은마 전용 76.79㎡(공급 101.52㎡) 1호 가격, 명목 원화. 실거래가 아님(시세).",
+      "status": "verified",
+      "previous": "323,333",
+      "sources": [
+        "https://api.kbland.kr/land-price/price/WholQuotList?단지기본일련번호=186&면적일련번호=182&기준년=2026",
+        "https://api.kbland.kr/land-extra/price/v1/api/aptDanjiRealTransPriceChart?단지기본일련번호=186",
+        "https://www.fnnews.com/news/202609270955573488",
+        "https://m.news.nate.com/view/20260821n23947"
+      ],
+      "note": "KB 재조회 일치. KB 323,333(하위 315,000~상위 330,000), KB 2026-01 고점 대비 −11.8%. 실거래 2026-09 32.0억(5건), 2026-08 33.5억(6건). 파이낸셜뉴스 2026-09-27: 76㎡ 3층 매물 호가 8-25 33억 → 9-11 30억4000만원(호가, 체결 아님). 네이트 2026-08-21 '31억원대 매물 쌓이는 은마'."
+    },
+    {
+      "id": "seoul_apt_real_tx_index.2008.annual_change",
+      "asset": "서울 아파트 실거래가격지수 2008 연간 변동",
+      "date": "2008-12-31",
+      "value": -10.21,
+      "unit": "% (전년 12월 대비)",
+      "basis": "한국부동산원 아파트 매매 실거래가격지수(국토부 신고 기반), 서울, 2007-12 → 2008-12",
+      "status": "verified",
+      "previous": "-10.2%",
+      "sources": [
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y089/M/200712/200812/200",
+        "https://www.segye.com/newsView/20230216503919"
+      ],
+      "note": "ECOS 901Y089 현행 시계열: 2007-12 37.4 → 2008-12 33.6 = -10.16%. 부동산원 공표치 −10.21%(세계일보 2023-02-16, '2008년 글로벌 경제위기 −10.21%'). 같은 해 KB 지수는 +3.2%."
+    },
+    {
+      "id": "seoul_apt_real_tx_index.2008.peak_to_trough",
+      "asset": "서울 아파트 실거래가격지수 2008 고점→저점",
+      "date": "2008-12-31",
+      "value": -18.4,
+      "unit": "% (월 고점 대비)",
+      "basis": "한국부동산원 실거래가격지수 서울, 2008-06 고점 → 2008-12 저점(ECOS 현행 2017.11=100 시계열)",
+      "status": "unverifiable",
+      "previous": "(1차는 연간 −10.2%만 '낙폭'으로 사용)",
+      "sources": [
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y089/M/200805/200812/200",
+        "https://www.seoul.co.kr/news/economy/estate/2011/10/05/20111005019015"
+      ],
+      "note": "ECOS 현행: 2008-06 41.2 → 2008-12 33.6 = −18.4%. 서울신문 2011-10-05(구 기준 지수): 2008-07 148.8 → 12월 126.3 = −15.1%. 지수 개편·소급 수정으로 고점 월과 낙폭이 다름 → 단일값 확정 불가. 게임 대체안: 연간 −10.2%(검증됨)를 쓰거나 '고점 대비 약 −15~18%'로 범위 표기. [2차 재검증 2026-09-30] ECOS 901Y089 재조회 일치: 2007-12 37.4, 2008-06 41.2(고점), 2008-12 33.6(저점, 2009-01 35.0으로 반등) → 고점→저점 -18.4%, 연간 -10.2%. 구 기준(-15.1%)과의 차이는 지수 개편 탓이라는 감사자 판단 유지."
+    },
+    {
+      "id": "seoul_apt_real_tx_index.2022.annual_change",
+      "asset": "서울 아파트 실거래가격지수 2022 연간 변동",
+      "date": "2022-12-31",
+      "value": -22.09,
+      "unit": "% (연간 누적, 부동산원 공표)",
+      "basis": "한국부동산원 아파트 매매 실거래가격지수, 서울, 2022년 연간(2023-02 공표치)",
+      "status": "verified",
+      "previous": "(1차는 고점 대비 −24.3%만 사용)",
+      "sources": [
+        "https://www.segye.com/newsView/20230216503919",
+        "https://news.sbs.co.kr/news/endPage.do?news_id=N1007082203",
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y089/M/202112/202212/200",
+        "https://www.donga.com/news/Economy/article/all/20230216/117924106/1",
+        "https://www.munhwa.com/news/view.html?no=2023021601071807176001"
+      ],
+      "note": "세계일보 2023-02-16·SBS: 2022년 서울 −22.09%, 2006년 통계 이래 최대. ECOS 현행(소급 수정 반영) 2021-12 90.9 → 2022-12 71.2 = -21.7%(공표 후 지연신고 반영 수정 차이). [2차 재검증 2026-09-30] 동아일보·문화일보 2023-02-16 \"연간 22.09% 하락, 2008년 -10.21%\"로 재확인. ECOS 재조회: 2021-10 94.0(고점) → 2022-12 71.2(저점, 2023-01 71.9 반등) = -24.3%, 2021-12 90.9 → 2022-12 71.2 = -21.7%. 감사자 판단 유지."
+    },
+    {
+      "id": "seoul_apt_real_tx_index.2022.peak_to_trough",
+      "asset": "서울 아파트 실거래가격지수 2021-10 고점→2022-12 저점",
+      "date": "2022-12-31",
+      "value": -24.3,
+      "unit": "% (월 고점 대비)",
+      "basis": "한국부동산원 실거래가격지수 서울(ECOS 901Y089 현행), 2021-10 94.0 → 2022-12 71.2",
+      "status": "unverifiable",
+      "previous": "-24.3%",
+      "sources": [
+        "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/10/901Y089/M/202110/202212/200"
+      ],
+      "note": "계산은 1차와 일치(−24.3%)하나 이 고점→저점 수치를 제시한 독립 2차 출처를 찾지 못함(검색된 보도는 연간 −22.09%만 인용). 원천(부동산원 공식지수)에서 직접 계산한 값이라 오류 가능성은 낮음. 게임 대체안: 연간 −22.09%(검증됨) 사용, 또는 −24.3%를 '고점 대비(부동산원 지수 계산)'로 명시."
+    },
+    {
+      "id": "ltv.2002-09.intro",
+      "asset": "LTV 최초 도입(투기과열지구 은행권)",
+      "date": "2002-09-04",
+      "value": 60,
+      "unit": "% (LTV 상한)",
+      "basis": "2002-09-04 주택시장안정대책 발표로 투기과열지구 은행 주담대 LTV 60% 도입, 이후 전 지역 확대",
+      "status": "verified",
+      "previous": "2002 LTV 60% 도입",
+      "sources": [
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://namu.wiki/w/%EB%8B%B4%EB%B3%B4%EC%9D%B8%EC%A0%95%EB%B9%84%EC%9C%A8",
+        "https://www.archives.go.kr/next/newsearch/listSubjectDescription.do?id=009737&sitePage="
+      ],
+      "note": "경향 2017-06-06·나무위키 담보인정비율 모두 '2002년 LTV 60%'. 전 지역 확대 시점은 출처 간 불일치(2002-10 vs 2002-11) → 게임엔 '2002년 가을'로만 표기."
+    },
+    {
+      "id": "ltv.2003-10.speculative40",
+      "asset": "투기지역 LTV 40%(10.29 대책)",
+      "date": "2003-10-29",
+      "value": 40,
+      "unit": "% (LTV 상한, 투기지역 아파트·만기 10년 이하)",
+      "basis": "10.29 주택시장안정대책",
+      "status": "verified",
+      "previous": "2003-10 투기지역 40%",
+      "sources": [
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://namu.wiki/w/%EB%8B%B4%EB%B3%B4%EC%9D%B8%EC%A0%95%EB%B9%84%EC%9C%A8",
+        "https://eiec.kdi.re.kr/publish/naraView.do?fcode=00002000040000100005&cidx=4399&sel_year=2003&sel_month=11"
+      ],
+      "note": "경향: 2003년 10월 만기 10년 이하 LTV 40%. 나무위키: 2003년 10월 투기지역 아파트 LTV 40%. 일치. (2003-05 투기지역 만기 3년 이하 50% 선행 조치 있음)"
+    },
+    {
+      "id": "dti.2005-08.intro",
+      "asset": "DTI 도입(8.31 대책)",
+      "date": "2005-08-31",
+      "value": 40,
+      "unit": "% (DTI 상한)",
+      "basis": "투기지역 아파트 담보대출, 30세 미만 미혼자 등 한정 DTI 40%",
+      "status": "verified",
+      "previous": "2005-08 DTI 도입",
+      "sources": [
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://namu.wiki/w/%EC%B4%9D%EB%B6%80%EC%B1%84%EC%83%81%ED%99%98%EB%B9%84%EC%9C%A8",
+        "https://eiec.kdi.re.kr/publish/naraView.do?nara_yymm=200602&fcode=00002000040000100005&cidx=5154&sel_year=2006&sel_month=02"
+      ],
+      "note": "경향: 2005년 8월 DTI 40% 부분 도입(30세 미만 미혼). 검색 요약(금융위 계열 자료): 실제 적용 2005-09-05. 발표일 8-31, 시행 9월 초."
+    },
+    {
+      "id": "dti.2006-03.expand",
+      "asset": "DTI 확대(3.30 대책): 투기지역 6억 초과 아파트",
+      "date": "2006-03-30",
+      "value": 40,
+      "unit": "% (DTI 상한)",
+      "basis": "투기지역 6억원 초과 아파트 신규 구입 시 DTI 40%",
+      "status": "verified",
+      "previous": "2006-03 투기지역 6억 초과 DTI 40%",
+      "sources": [
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://namu.wiki/w/%EC%B4%9D%EB%B6%80%EC%B1%84%EC%83%81%ED%99%98%EB%B9%84%EC%9C%A8"
+      ],
+      "note": "경향·검색 요약 일치. 금융위 계열 요약은 적용일 2006-04-05로 기재."
+    },
+    {
+      "id": "dti.2006-11.expand",
+      "asset": "DTI 확대(11.15 대책): 투기지역 전체 아파트",
+      "date": "2006-11-15",
+      "value": 40,
+      "unit": "% (DTI 상한)",
+      "basis": "투기지역 모든 아파트 담보대출로 DTI 확대",
+      "status": "verified",
+      "previous": "2006-11 투기지역 전체",
+      "sources": [
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://namu.wiki/w/%EC%B4%9D%EB%B6%80%EC%B1%84%EC%83%81%ED%99%98%EB%B9%84%EC%9C%A8"
+      ],
+      "note": "경향: 2006년 11월 투기지역 모든 아파트 DTI. 검색 요약: 11-20 투기과열지구 6억 초과 DTI 40% 적용. 월 단위 일치."
+    },
+    {
+      "id": "ltv.2008-06.relax",
+      "asset": "LTV 60→70% 완화(6.11 대책) — 적용 범위 정정",
+      "date": "2008-06-11",
+      "value": 70,
+      "unit": "% (LTV 상한, 지방 비투기지역 미분양 주택 한정)",
+      "basis": "6.11 지방 미분양 대책",
+      "status": "corrected",
+      "previous": "2008-06 LTV 70%로 완화 (서울 포함처럼 기재)",
+      "sources": [
+        "https://www.seoul.co.kr/news/economy/estate/2010/08/29/20100829800014",
+        "https://www.khan.co.kr/article/201706060600001",
+        "https://n.news.naver.com/mnews/article/003/0002136854",
+        "https://n.news.naver.com/mnews/article/014/0001986442"
+      ],
+      "note": "서울신문 2010-08-29(이명박정부 부동산대책사): '지방 비투기지역의 미분양 주택'에 LTV 60→70% 상향. 경향 2017은 '2008년 6월 LTV 70% 완화'로만 적어 전국 완화처럼 읽힘. 서울 아파트엔 해당 없음 → 게임에서 서울 대출 한도를 2008-06에 올리면 오류. [2차 재검증 2026-09-30] 당시 보도(뉴시스·서울경제·파이낸셜 2008-06-12)로 재확인: 6-11 당정 지방 미분양 대책, 분양가 10% 이상 인하한 지방 미분양(6-11 이전 발생분)에 한해 LTV 60→70%, 2009-06말까지 한시. 수도권 제외. 감사자 판단 유지."
+    },
+    {
+      "id": "ltv.2009-07-07.capital50",
+      "asset": "수도권 LTV 60→50% 강화(신규 보강)",
+      "date": "2009-07-07",
+      "value": 50,
+      "unit": "% (LTV 상한, 수도권 비투기지역 은행 아파트대출)",
+      "basis": "금감원 행정지도. 강남3구(투기지역, 이미 40%) 제외 서울·인천·경기",
+      "status": "verified",
+      "previous": "(1차 없음)",
+      "sources": [
+        "https://www.hankookilbo.com/news/article/200907062388649251",
+        "https://www.etoday.co.kr/news/view/239629"
+      ],
+      "note": "한국일보 2009-07-06·이투데이 일치. 1차 LTV 연혁에서 누락된 서울 규제 강화 → 게임 연혁 보강 권장."
+    },
+    {
+      "id": "dti.2009-09-07.capital",
+      "asset": "DTI 수도권 전역 확대(신규 보강)",
+      "date": "2009-09-07",
+      "value": 50,
+      "unit": "% (DTI 상한, 서울 비투기지역)",
+      "basis": "서울 50%, 인천·경기 60%",
+      "status": "verified",
+      "previous": "(1차 없음)",
+      "sources": [
+        "https://www.hankookilbo.com/news/article/200909062312331670",
+        "https://www.archives.go.kr/next/newsearch/listSubjectDescription.do?id=009737&sitePage="
+      ],
+      "note": "한국일보 2009-09-06 'DTI규제, 7일부터 수도권 전역 확대' + 검색 요약(서울 50%, 수도권 60%) 일치."
+    },
+    {
+      "id": "ltv_dti.2014-08-01",
+      "asset": "LTV 70%·DTI 60% 단일화(완화)",
+      "date": "2014-08-01",
+      "value": 70,
+      "unit": "% (LTV; DTI는 60%)",
+      "basis": "전 금융권·전 지역 LTV 70%, DTI 60%(수도권)로 단일화",
+      "status": "verified",
+      "previous": "2014-08-01 (1차 정정값)",
+      "sources": [
+        "https://www.seoul.co.kr/news/economy/estate/2014/07/27/20140727800116",
+        "https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=01922086606158784",
+        "https://www.etoday.co.kr/news/view/957376"
+      ],
+      "note": "서울신문 2014-07-27·이데일리·이투데이 모두 '8월 1일부터 시행'. 경향 2017의 '2014년 9월'은 오기."
+    },
+    {
+      "id": "ltv_dti.2017-08.82",
+      "asset": "8.2 대책 LTV·DTI 40%",
+      "date": "2017-08-03",
+      "value": 40,
+      "unit": "% (LTV·DTI)",
+      "basis": "투기지역(서울 11개구 등) 8-03부터 즉시(6억 초과 아파트 우선), 투기과열지구 전 주택은 감독규정 개정 후 2017-08-23부터",
+      "status": "verified",
+      "previous": "2017-08 LTV·DTI 40%",
+      "sources": [
+        "https://www.seoul.co.kr/news/economy/2017/08/22/20170822800149",
+        "https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=02784726616023384"
+      ],
+      "note": "서울신문 2017-08-22: '3일부터 투기지역 6억 초과 아파트에만 40%, 23일부터 서울·과천·세종 모든 주택 LTV·DTI 40%'. 이데일리: 발표 8-2, 투기지역·투기과열 지정 8-3 효력. 게임엔 발표 8-2, 서울 전 주택 적용 8-23."
+    },
+    {
+      "id": "mortgage_ban.2019-12-16",
+      "asset": "12.16 대책: 투기·투기과열지구 시가 15억 초과 아파트 주택구입용 주담대 금지",
+      "date": "2019-12-17",
+      "value": 1500000000,
+      "unit": "원 (금지 기준 시가)",
+      "basis": "발표 2019-12-16, 금융위 행정지도 시행 2019-12-17. 9억 초과분 LTV 20%(9억 이하 40%)",
+      "status": "corrected",
+      "previous": "2019-12-16 (15억 초과 주담대 금지)",
+      "sources": [
+        "https://www.lawtimes.co.kr/news/179564",
+        "https://www.hankookilbo.com/news/article/201912161245037086",
+        "https://imnews.imbc.com/news/2023/econo/article/6469947_36140.html",
+        "http://news1.kr/articles/?3799235",
+        "https://www.hani.co.kr/arti/economy/finance/921840.html",
+        "http://www.newsis.com/view/?id=NISX20191223_0000869112"
+      ],
+      "note": "발표일 12-16은 맞음. 효력은 다음날 12-17(법률신문·헌재 관련 보도: '12월 17일부터 적용'). 9억 초과분 LTV 20% 시행일(12-23로 알려짐)은 독립 확인 못 함. 헌재 5:4 합헌(2023-03 선고, 04-02 보도). [2차 재검증 2026-09-30] 15억 초과 금지 17일 적용은 뉴스1 2019-12-22(금융위 참고자료)·한겨레 2019-12-23 문답으로 재확인. 감사자가 미확인으로 남긴 9억 초과분 LTV 20%(40→20%) 시행일은 2019-12-23로 확인됨(뉴시스 2019-12-23 \"23일부터 전 금융권 시가 9억원 초과 LTV 40%→20%\", 한겨레 2019-12-23 \"규제 시행일인 12월 23일\")."
+    },
+    {
+      "id": "mortgage_ban_lift.2022-12-01",
+      "asset": "15억 초과 아파트 주담대 허용 + 무주택·1주택 LTV 50% 일원화",
+      "date": "2022-12-01",
+      "value": 50,
+      "unit": "% (규제지역 무주택·처분조건부 1주택 LTV)",
+      "basis": "2022-10-27 발표, 2022-12-01 시행",
+      "status": "corrected",
+      "previous": "2023 15억 초과 금지 해제(LTV 50%)",
+      "sources": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148908439",
+        "https://www.hankyung.com/article/2022112771047",
+        "https://www.ajunews.com/view/20221110140445575",
+        "https://www.nocutnews.co.kr/news/5855759",
+        "https://www.busan.com/view/busan/view.php?code=2022112715523971870"
+      ],
+      "note": "정책브리핑 '12월부터 15억 초과 아파트 주담대 허용…LTV 50% 단일화', 한국경제 2022-11-27 '12월부터 15억 초과도 대출'. 1차의 '2023'은 오류 → 2022-12-01. (다주택자 규제지역 LTV 30% 허용은 2023-03-02 별도) [2차 재검증 2026-09-30] 노컷뉴스·헤럴드경제·부산일보 2022-11-27로 재확인: 12-01부터 15억 초과 허용 + 규제지역 무주택·1주택 LTV 50% 일원화, 10-27 제11차 비상경제민생회의 발표. 원래 2023년 초 시행 예정이었다가 11-10 부동산관계장관회의에서 12-01로 앞당김 → 1차의 '2023' 혼동 원인."
+    },
+    {
+      "id": "mortgage_cap.2025-06-28",
+      "asset": "6.27 대책: 수도권·규제지역 주담대 최대 6억",
+      "date": "2025-06-28",
+      "value": 600000000,
+      "unit": "원 (주담대 한도)",
+      "basis": "발표 2025-06-27, 시행 06-28. 만기 30년 이내, 주택구입 시 6개월 내 전입 의무",
+      "status": "verified",
+      "previous": "2025-06-27 발표 / 06-28 시행",
+      "sources": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148945077",
+        "https://biz.heraldcorp.com/article/10519119",
+        "https://www.molit.go.kr/USR/NEWS/m_71/dtl.jsp?lcmspage=1&id=95091036"
+      ],
+      "note": "정책브리핑·헤럴드경제·국토부 보도자료 일치."
+    },
+    {
+      "id": "ltv.2025-10-16.1015",
+      "asset": "10.15 대책: 규제지역 LTV 40% + 가격별 주담대 한도",
+      "date": "2025-10-16",
+      "value": 40,
+      "unit": "% (규제지역 무주택 LTV)",
+      "basis": "수도권·규제지역 주담대 한도: 시가 15억 이하 6억 / 15억 초과~25억 4억 / 25억 초과 2억. 스트레스 금리 하한 1.5→3.0%. 10-16 전면 시행(10-15까지 계약·계약금 납부분은 종전)",
+      "status": "verified",
+      "previous": "2025-10 서울 LTV 40%, 가격대별 6/4/2억(숫자 미검증)",
+      "sources": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148950959",
+        "https://kbthink.com/realestate/basics/10-15-measures.html",
+        "https://v.daum.net/v/20251015100945728"
+      ],
+      "note": "정책브리핑·KB생각·다음(내일부터 15억 넘으면 최대 4억) 일치. 1차의 '6/4/2억 숫자 미검증'은 해소. 규제지역 지정은 10-16 효력."
+    },
+    {
+      "id": "land_permit.2025-02-13.lift",
+      "asset": "잠실·삼성·대치·청담 토지거래허가구역 해제(재건축 14개 단지 제외)",
+      "date": "2025-02-13",
+      "value": 291,
+      "unit": "개 단지 해제(305개 중)",
+      "basis": "2025-02-12 서울시 도시계획위 의결·발표, 02-13 공고 즉시 효력. 은마·잠실주공5 등 재건축 14개 단지는 지정 유지",
+      "status": "verified",
+      "previous": "02-13 효력, 재건축 14개 제외(은마·잠실주공5 포함 여부 원문 미확인)",
+      "sources": [
+        "https://www.mt.co.kr/estate/2025/02/13/2025021222443339733",
+        "https://biz.heraldcorp.com/article/10418566",
+        "https://www.khan.co.kr/article/202502122055035",
+        "https://www.hankyung.com/article/2025021214011",
+        "http://news.bizwatch.co.kr/article/real_estate/2025/02/12/0040",
+        "https://view.asiae.co.kr/article/2025021309022308685"
+      ],
+      "note": "머니투데이·헤럴드: 305개 중 291개 해제, 13일 공고 즉시 효력. 경향 2025-02-12 유지 단지 목록: 대치 개포우성1·2차, 선경, 미도, 쌍용1·2차, 우성1차, 은마 / 삼성 진흥 / 청담 현대1차 / 잠실 주공5단지, 우성1·2·3차, 우성4차, 아시아선수촌. 한국경제 '투기과열 우려로 잠실주공5·은마 빠졌다'. → 은마·잠실주공5는 해제 창 적용 불가 확정. [2차 재검증 2026-09-30] 비즈워치 2025-02-12·아시아경제 2025-02-13으로 재확인: 305개 중 291개 해제, 유지 14개에 대치 은마·잠실 주공5단지 포함. 감사자 판단 유지."
+    },
+    {
+      "id": "land_permit.2025-03-24.gangnam3_yongsan",
+      "asset": "강남·서초·송파·용산 아파트 토지거래허가구역 지정",
+      "date": "2025-03-24",
+      "value": 4,
+      "unit": "개 구(아파트 약 2,200단지·40만 가구)",
+      "basis": "2025-03-19 발표, 03-24 효력, 기간 2025-09-30까지(6개월). 대상은 '아파트'만(구 전역의 모든 토지가 아님)",
+      "status": "verified",
+      "previous": "3-19 발표, 3-24 효력, 강남·서초·송파·용산 '전역'",
+      "sources": [
+        "https://www.khan.co.kr/article/202503240726001",
+        "https://www.ajunews.com/view/20250324064239711",
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148940714",
+        "http://www.inews24.com/view/1826227",
+        "http://news.bizwatch.co.kr/article/real_estate/2025/03/24/0045"
+      ],
+      "note": "경향·아주 2025-03-24: 24일부터 강남3구·용산 아파트, 9-30까지. 발표 3-19(서울시장·국토부장관 합동 브리핑, 검색 요약). 1차의 '전역'은 '4개 구 전체 아파트'로 표현 정정 권장(값 자체는 유지). [2차 재검증 2026-09-30] 아이뉴스24·비즈워치 2025-03-24로 재확인: 강남3구·용산 아파트 2,200단지·약 40만 가구, 24일부터 9-30까지. 감사자 판단 유지."
+    },
+    {
+      "id": "land_permit.2025-09-17.extend",
+      "asset": "강남3구·용산 토허제 연장 → 2026-12-31",
+      "date": "2025-09-17",
+      "value": 20261231,
+      "unit": "만료일(YYYYMMDD)",
+      "basis": "2025-09-17 서울시 재지정 발표, 기존 만료 2025-09-30 → 2026-12-31(1년 3개월)",
+      "status": "corrected",
+      "previous": "'2026-09-17 연장' [의심]",
+      "sources": [
+        "https://www.hankyung.com/article/202509179925i",
+        "https://www.mt.co.kr/estate/2025/09/17/2025091716040920475",
+        "https://www.news1.kr/realestate/general/5915625",
+        "https://vop.co.kr/A00001679392.html"
+      ],
+      "note": "한국경제·머니투데이 2025-09-17 일치. 1차 원 기재 '2026-09-17'은 연도 오기로 확정 → 2025-09-17. 2026년 연장 이벤트는 없음(만료일 2026-12-31은 게임 종료 2026-09-29 이후). [2차 재검증 2026-09-30] 뉴스1 2025-09-17(\"10월 1일부터 2026년 12월 31일까지\")·민중의소리 2025-09-17로 재확인. 감사자 판단 유지."
+    },
+    {
+      "id": "land_permit.2025-10-20.seoul_all",
+      "asset": "10.15 대책: 서울 전역(+경기 12곳) 토지거래허가구역 효력",
+      "date": "2025-10-20",
+      "value": 25,
+      "unit": "개 구(서울 전역)",
+      "basis": "2025-10-15 발표. 조정대상·투기과열은 10-16 효력, 토지거래허가는 공고 5일 후 10-20 계약분부터(아파트 및 아파트 1동 이상 포함 연립·다세대). 2년 실거주 의무. 지정기간 2025-10-20~2026-12-31(국토부 공고 제2025-1219호)",
+      "status": "verified",
+      "previous": "10-20 계약분부터(1차 정정값)",
+      "sources": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148950973",
+        "https://kbthink.com/realestate/basics/10-15-measures.html",
+        "https://www.khan.co.kr/article/202510151656001",
+        "http://www.fnnews.com/news/202510200846485506",
+        "http://www.seouland.com/arti/society/society_general/22492.html",
+        "https://www.job-post.co.kr/news/articleView.html?idxno=183807"
+      ],
+      "note": "정책브리핑: '지정 공고일부터 5일 후인 10월 20일부터 발생, 20일 전 계약자는 허가 의무 없음'. KB생각·경향 Q&A 일치. [2차 재검증 2026-09-30] 감사자 판단 뒤집음: 서울 전역(25개 구)분 지정기간 만료일은 2026-12-31로 확인됨. 파이낸셜뉴스 2025-10-20(국토부 인용 \"지정 기간은 2026년 12월 31일까지\"), 서울앤·잡포스트(국토부 공고 제2025-1219호: \"지정기간 2025년 10월20일부터 2026년 12월31일까지\"), 데일리팝(\"10월 20일부터 2026년 12월 31일까지 적용, 필요시 연장 검토\"). 1차의 '2026-12-31까지'는 맞는 값. 게임 종료일(2026-09-29) 기준 서울 전역 토허제는 계속 유효."
+    }
+  ]
+}

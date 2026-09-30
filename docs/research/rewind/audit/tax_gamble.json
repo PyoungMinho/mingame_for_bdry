@@ -1,0 +1,1096 @@
+{
+  "batch": "tax_gamble",
+  "audited_at": "2026-09-30",
+  "method": "국가법령정보센터 DRF 연혁 원문(상증법·국세기본법·소득세법·조특법·지방세법·증권거래세법·농특세법·금융실명법·복권법·청소년보호법·국민체육진흥법 판본별 조문 대조) + 동행복권 공식 회차 API + 네이버 뉴스 기간검색(당시 기사 원문/스니펫). 같은 데이터를 재가공한 사이트(lottohell 등)는 독립 출처로 세지 않음. law.go.kr 링크의 lsiSeq는 해당 시점 판본.",
+  "items": [
+    {
+      "id": "gift.rate.2000_2026",
+      "asset": "증여세 세율(상증법 제26조·제56조)",
+      "date": "2000-01-01",
+      "value": 50,
+      "unit": "% (최고 한계세율)",
+      "basis": "과세표준 1억 이하 10% / 1억~5억 20%(누진공제 1천만) / 5억~10억 30%(6천만) / 10억~30억 40%(1억6천만) / 30억 초과 50%(4억6천만). 2000-01-01 시행분부터 2026-09 현재까지 동일",
+      "status": "verified",
+      "previous": "1억 이하 10% ~ 30억 초과 50% (적용 기간 미표기, M)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=280353",
+        "https://n.news.naver.com/mnews/article/009/0005411469",
+        "https://n.news.naver.com/mnews/article/088/0000918200"
+      ],
+      "note": "법령 연혁 원문: 1999년판(시행 1999-01-01)은 5구간 최고 45%(50억 초과), 1999-12-28 개정(시행 2000-01-01)부터 30억 초과 50%로 바뀌고 2026-01-01 판까지 표가 같다. 매일경제 2024-12-10: 최고세율 40% 인하안이 국회에서 부결됐고 2000년 이후 25년간 세율·과표가 유지됐다고 보도했다. 매일신문 2024-12-02: 1997년 45%에서 2000년 50%로 올렸다. 게임 기간 전체에 이 한 표를 쓰면 된다."
+    },
+    {
+      "id": "gift.deduction.minor.2000_2013",
+      "asset": "증여재산공제: 직계존속→미성년 자녀",
+      "date": "2000-01-01",
+      "value": 15000000,
+      "unit": "KRW (10년 합산 한도)",
+      "basis": "상증법 제53조, 직계존속(부모·조부모 합산)이 미성년자에게 증여, 수증자 기준 10년 합산. 2000-01-01~2013-12-31 증여분",
+      "status": "verified",
+      "previous": "2000~2004 미확인 / 2005~2013 1,500만",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=3242",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=131368",
+        "https://n.news.naver.com/mnews/article/008/0003096509",
+        "https://n.news.naver.com/mnews/article/014/0002949617"
+      ],
+      "note": "1999·2000·2003·2004·2005·2007·2009·2013년 판 원문에서 모두 '미성년자 1천5백만원'으로 같다(10년 합산은 1998-12-28 개정부터). 머니투데이·파이낸셜뉴스 2013-08-08: 성년 3,000만/미성년 1,500만을 20년 만에 올린다고 보도했다. 1차에서 미확인이던 2000~2004도 같은 값으로 확정됐다. 미성년 판정은 민법 기준이며, 2013-06-30까지 만 20세 미만, 2013-07-01부터 만 19세 미만이다."
+    },
+    {
+      "id": "gift.deduction.adult.2000_2013",
+      "asset": "증여재산공제: 직계존속→성년 자녀",
+      "date": "2000-01-01",
+      "value": 30000000,
+      "unit": "KRW (10년 합산 한도)",
+      "basis": "상증법 제53조, 2000-01-01~2013-12-31 증여분",
+      "status": "verified",
+      "previous": "2000~2004 미확인 / 2005~2013 3,000만",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=131368",
+        "https://n.news.naver.com/mnews/article/008/0003096509",
+        "https://n.news.naver.com/mnews/article/014/0002949617"
+      ],
+      "note": "위와 같은 연혁 원문과 언론 보도로 확인했다. 1993년생은 2013-07-01(민법 개정 시행)에 늦어도 성년이 된다."
+    },
+    {
+      "id": "gift.deduction.minor.2014",
+      "asset": "증여재산공제: 직계존속→미성년 자녀",
+      "date": "2014-01-01",
+      "value": 20000000,
+      "unit": "KRW (10년 합산 한도)",
+      "basis": "상증법 제53조 2014-01-01 개정·시행분부터 2026 현행까지",
+      "status": "verified",
+      "previous": "2,000만 (2014-01-01~)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=149360",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=280353",
+        "https://n.news.naver.com/mnews/article/008/0003096509"
+      ],
+      "note": "머니투데이 2013-08-08: 2014년 1월 이후 증여분부터 적용한다. 2024-01-01부터는 혼인·출산 증여공제 1억원이 별도로 생겼다(제53조의2, 법률 19932). 게임 속 결혼 이벤트에 쓸 수 있다."
+    },
+    {
+      "id": "gift.deduction.adult.2014",
+      "asset": "증여재산공제: 직계존속→성년 자녀",
+      "date": "2014-01-01",
+      "value": 50000000,
+      "unit": "KRW (10년 합산 한도)",
+      "basis": "상증법 제53조 2014-01-01~2026 현행",
+      "status": "verified",
+      "previous": "5,000만 (2014-01-01~)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=149360",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=280353",
+        "https://n.news.naver.com/mnews/article/008/0003096509",
+        "https://n.news.naver.com/mnews/article/014/0002949617"
+      ],
+      "note": ""
+    },
+    {
+      "id": "gift.report_credit.2000_2016",
+      "asset": "증여세 신고세액공제(기한 내 자진신고)",
+      "date": "2000-01-01",
+      "value": 10,
+      "unit": "% of 산출세액",
+      "basis": "상증법 제69조②. 증여세는 증여받은 날부터 3개월 안에 신고하면 공제. 2000-01-01~2016-12-31",
+      "status": "corrected",
+      "previous": "자진신고 3% 공제(M, 기간 미표기 → 게임 전 기간 3%로 오독될 위험)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=177183",
+        "https://n.news.naver.com/mnews/article/014/0000074186",
+        "https://n.news.naver.com/mnews/article/079/0002856617",
+        "https://n.news.naver.com/mnews/article/009/0000255767",
+        "https://n.news.naver.com/mnews/article/003/0007631097",
+        "https://n.news.naver.com/mnews/article/009/0004280095"
+      ],
+      "note": "1차 값 3%는 2019년 이후에만 맞다. 2000~2016년은 10%다. 파이낸셜뉴스 2003-06-27: 3개월 안에 신고하면 세금의 10%를 공제한다. 노컷뉴스 2016-08-02: 현행 10%를 3%로 줄이자는 야당 안을 보도했다. [2차 재검증] 다른 출처로 다시 확인했다. law.go.kr 2000-01-01판 제69조②는 원문이 '100분의 10'이다. 매일경제 2002-11-05도 자진신고하면 10%를 공제한다고 썼다. 뉴시스 2016-12-05는 내년 1월 1일 이후 증여분부터 10%가 7%로 준다고 보도했고, 매일경제 2018-12-30은 2016년까지 10%, 2017년 7%, 2018년 5%, 2019년 이후 3%라고 보도했다."
+    },
+    {
+      "id": "gift.report_credit.2017",
+      "asset": "증여세 신고세액공제",
+      "date": "2017-01-01",
+      "value": 7,
+      "unit": "% of 산출세액",
+      "basis": "상증법 제69조② (법률 14388, 2017-01-01 시행)",
+      "status": "verified",
+      "previous": "",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=188353",
+        "https://n.news.naver.com/mnews/article/001/0009450322",
+        "https://n.news.naver.com/mnews/article/008/0003913943"
+      ],
+      "note": "연합뉴스 2017-08-02: 작년 세법개정에서 10%를 7%로 내린 데 이어 다시 줄인다고 보도했다."
+    },
+    {
+      "id": "gift.report_credit.2018",
+      "asset": "증여세 신고세액공제",
+      "date": "2018-01-01",
+      "value": 5,
+      "unit": "% of 산출세액",
+      "basis": "상증법 법률 15224 부칙 제8조 특례: 2018-01-01~2018-12-31 증여분은 5%",
+      "status": "verified",
+      "previous": "",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=199741",
+        "https://n.news.naver.com/mnews/article/001/0009450322",
+        "https://n.news.naver.com/mnews/article/008/0003913943"
+      ],
+      "note": "본문 개정 규정은 3%지만, 부칙 제8조가 2018년 한 해 동안 5%를 적용하게 한다. 언론(연합·머니투데이 2017-08-02)도 2018년 5%, 2019년 3%로 보도했다."
+    },
+    {
+      "id": "gift.report_credit.2019",
+      "asset": "증여세 신고세액공제",
+      "date": "2019-01-01",
+      "value": 3,
+      "unit": "% of 산출세액",
+      "basis": "상증법 제69조② 2019-01-01~2026 현행",
+      "status": "verified",
+      "previous": "3%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=206310",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=280353",
+        "https://n.news.naver.com/mnews/article/001/0009450322",
+        "https://n.news.naver.com/mnews/article/008/0003913943"
+      ],
+      "note": ""
+    },
+    {
+      "id": "penalty.report.2000_2003",
+      "asset": "증여세 신고불성실가산세(무신고·과소신고 공통)",
+      "date": "2000-01-01",
+      "value": 20,
+      "unit": "% of 미신고 비율 상당 산출세액",
+      "basis": "상증법 제78조① (2000~2003년 판). 무신고와 과소신고 모두 20%. 단 공제 착오나 평가차이로 과소신고한 부분은 제외",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=51829",
+        "https://n.news.naver.com/mnews/article/020/0000161387",
+        "https://n.news.naver.com/mnews/article/001/0000399837",
+        "https://n.news.naver.com/mnews/article/014/0000074186"
+      ],
+      "note": "동아일보 2002-11-12: 신고불성실가산세는 세액의 20%다. 연합·파이낸셜 2003-06-27(국세청 설명): 신고기한을 넘기면 20% 신고불성실가산세를 문다. 2003년판에는 사전증여 합산 누락분에 10%라는 예외가 있다."
+    },
+    {
+      "id": "penalty.payment.2000_2003",
+      "asset": "증여세 납부불성실가산세",
+      "date": "2000-01-01",
+      "value": 20,
+      "unit": "% of 미납세액 (한도)",
+      "basis": "상증법 제78조② (2000~2003년 판): 신고기한 다음 날부터 1년 안이면 미납세액×10%, 그 뒤로는 미납세액×일수×0.03%/일(시행령 제80조). 합계는 미납세액의 20%가 한도",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=52170",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=60437",
+        "https://n.news.naver.com/mnews/article/020/0000183252",
+        "https://n.news.naver.com/mnews/article/001/0000399837",
+        "https://n.news.naver.com/mnews/article/018/0000069742",
+        "https://n.news.naver.com/mnews/article/015/0000643172",
+        "https://n.news.naver.com/mnews/article/001/0000450746"
+      ],
+      "note": "동아일보 2003-04-17: 기간에 따라 세금의 10~20%를 불성실 납부가산세로 낸다. 연합 2003-06-27: 세금을 안 내면 20%가 붙는다. 동아일보 2002-11-12는 '연 18.25%'라고 보도했는데, 이는 당시 소득·법인세 방식(일 0.05%)으로 보이며 상증법 원문과 맞지 않는다. 원문을 채택했다. [2차 재검증] law.go.kr 원문을 다시 읽었다. 상증법 2000-01-01판 제78조②는 1년 안이면 10%, 그 뒤로는 시행령이 정하는 율을 적용하고 한도는 미납세액의 20%다. 시행령 2000-01-01판 제80조②는 '매 1일당 1만분의 3'이다. 이데일리·한국경제·연합 2003-09-03은 현재 기본가산세 10%에 1년이 지나면 추가가산세가 붙고 한도는 20%이며, 2004년부터 기본 10%를 없애고 하루 0.03%만 매긴다고 보도했다. 따라서 2000~2003년 규칙이 확인된다."
+    },
+    {
+      "id": "penalty.report.2004_2006",
+      "asset": "증여세 신고불성실가산세",
+      "date": "2004-01-01",
+      "value": 10,
+      "unit": "% (일반 과소신고) / 무신고·부정과소는 20%",
+      "basis": "상증법 제78조① (법률 7010, 2004-01-01 시행): 과소신고 10%, 무신고나 가공채무·명의신탁 등 부정 과소신고는 20%. 2006-12-31 증여분까지",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=3242",
+        "https://n.news.naver.com/mnews/article/018/0000069742",
+        "https://n.news.naver.com/mnews/article/001/0001388946"
+      ],
+      "note": "이데일리 2003-09-03(2003 세제개편): 고의로 빠뜨려 신고하거나 가공채무를 공제하는 경우는 종전처럼 20%다. 연합 2006-08-21 <표>의 현행란: 무신고 상속세 20%. 납부불성실은 2004년부터 1년 10% 구간과 20% 한도가 없어지고 일 0.03%만 남았다(시행령 제80조④)."
+    },
+    {
+      "id": "penalty.report.2007",
+      "asset": "무신고·과소신고 가산세(국세기본법 통합, 증여세 포함)",
+      "date": "2007-01-01",
+      "value": 40,
+      "unit": "% (부정 무신고·부정 과소신고) / 일반 무신고 20%, 일반 과소신고 10%",
+      "basis": "국세기본법 제47조의2·제47조의3 신설(법률 8139, 2007-01-01 시행). 부칙 제7조⑤: 2007-01-01 이후 증여분부터 적용",
+      "status": "verified",
+      "previous": "(1차 미조사) PM 가정: 일반 무신고 20%, 부정 40%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=76549",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=288571",
+        "https://n.news.naver.com/mnews/article/001/0001388937",
+        "https://n.news.naver.com/mnews/article/001/0001388946"
+      ],
+      "note": "연합 2006-08-21 <세제개편안 요약> ③: 부당한 신고위반은 40%, 단순 과소신고는 10%. 2012년부터 조문 표현이 '부당한 방법'에서 '부정행위'로 바뀌었다. 2015-01-01부터 국제거래(역외) 부정 무신고는 60%다(법률 12848 판에서 확인). 2026-08 현행판도 20%/40%(역외 60%)/10%로 같다."
+    },
+    {
+      "id": "penalty.payment_daily.2007",
+      "asset": "납부불성실가산세 일 이율",
+      "date": "2007-01-01",
+      "value": 0.03,
+      "unit": "%/일 (1일 1만분의 3, 연 10.95%)",
+      "basis": "국세기본법 제47조의5 + 시행령 제27조의4 (대통령령 19893, 2007-02-28 신설). 상증법상 같은 율은 2000년부터(1년 경과 후 구간) 쓰였다",
+      "status": "verified",
+      "previous": "0.03%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=77431",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=58826",
+        "https://n.news.naver.com/mnews/article/001/0000228345",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EB%82%A9%EB%B6%80%EB%B6%88%EC%84%B1%EC%8B%A4%EA%B0%80%EC%82%B0%EC%84%B8%200.025%25&ds=2019.01.01&de=2019.03.31"
+      ],
+      "note": "연합 2002-08-28: 법인세 등의 납부불성실가산세율을 연 18.25%에서 10.95%(일 0.03%)로 내렸다. 2019년 개정 보도(한국무역신문·아주경제 2019-01)도 '1일 0.03%(연 10.95%)에서 0.025%로 인하'라고 해 직전 값이 확인된다."
+    },
+    {
+      "id": "penalty.payment_daily.2019",
+      "asset": "납부불성실(→납부지연)가산세 일 이율",
+      "date": "2019-02-12",
+      "value": 0.025,
+      "unit": "%/일 (1일 10만분의 25, 연 9.125%)",
+      "basis": "국세기본법 시행령 제27조의4 (대통령령 29534, 2019-02-12 공포·시행). 시행일 이후 기간분부터. 명칭은 2020-01-01부터 '납부지연가산세'",
+      "status": "verified",
+      "previous": "0.025%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=207816",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EB%82%A9%EB%B6%80%EB%B6%88%EC%84%B1%EC%8B%A4%EA%B0%80%EC%82%B0%EC%84%B8%200.025%25&ds=2019.01.01&de=2019.03.31"
+      ],
+      "note": "아주경제·연합 2019-01-07(세법시행령 개정안): 0.03%에서 0.025%로 내린다. 원문과 일치한다."
+    },
+    {
+      "id": "penalty.payment_daily.2022",
+      "asset": "납부지연가산세 일 이율",
+      "date": "2022-02-15",
+      "value": 0.022,
+      "unit": "%/일 (1일 10만분의 22, 연 8.03%)",
+      "basis": "국세기본법 시행령 제27조의4 (대통령령 32424, 2022-02-15 시행). 부칙: 시행일 전 기간분은 종전 율, 이후 기간분부터 새 율. 2026-02-27 현행판도 10만분의 22",
+      "status": "verified",
+      "previous": "0.022%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=240315",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=283623",
+        "https://n.news.naver.com/mnews/article/001/0012902166",
+        "https://n.news.naver.com/mnews/article/014/0004768052"
+      ],
+      "note": "연합·파이낸셜뉴스 2022-01-06: 하루 0.025%에서 0.022%로, 연 9.125%에서 8.030%로 내린다."
+    },
+    {
+      "id": "finrealname.nominee_ban",
+      "asset": "금융실명법 불법 차명거래 금지(형사처벌)",
+      "date": "2014-11-29",
+      "value": 5,
+      "unit": "년 이하 징역 (또는 5천만원 이하 벌금)",
+      "basis": "금융실명법 제3조③ 신설, 제6조 벌칙 (법률 12711, 2014-05-28 공포, 2014-11-29 시행). 탈법 목적 차명거래를 명의자·실소유자 모두 처벌하고, 실명계좌 자산은 명의자 소유로 추정(제3조⑤)",
+      "status": "verified",
+      "previous": "2014-11-29 전후 확인 요청",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=154291",
+        "https://n.news.naver.com/mnews/article/003/0006207304",
+        "https://n.news.naver.com/mnews/article/016/0000579478"
+      ],
+      "note": "뉴시스·헤럴드경제 2014-11-20: 29일부터 차명거래금지법을 시행한다. 게임 해석: 2014-11-29 이후 부모 명의 차명계좌로 굴린 자산은 세무조사 때 '명의자 소유 추정 → 증여세' 리스크가 커진다. 그 전에는 탈세 목적 차명도 형사처벌 조항이 없었다(1993 긴급명령은 가명·허명만 금지)."
+    },
+    {
+      "id": "overseas_stock.cgt.rate",
+      "asset": "해외(국외)주식 양도소득세",
+      "date": "1999-01-01",
+      "value": 22,
+      "unit": "% (소득세 20% + 주민세/지방소득세 2%)",
+      "basis": "소득세법 제118조의2·제118조의5 (1998-12-28 신설, 1999-01-01 시행): 국외주식 양도소득 20%. 2000년판에서 확인. 2026 현행 제104조①12호(비중소기업 20%, 중소기업 10%). 게임 시작(2000)부터 끝까지 22%",
+      "status": "verified",
+      "previous": "22%, 최초 도입 연도 미확인(2007년 '20%' 존재까지만)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=55440",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285523",
+        "https://n.news.naver.com/mnews/article/009/0000543221",
+        "https://n.news.naver.com/mnews/article/009/0000575009"
+      ],
+      "note": "매일경제 2006-11-10: 해외 주식에 직접 투자하면 국내에서 20% 양도소득세를 낸다. 매일경제 2007-03-26: 250만원을 넘으면 22%다. 2000~2009년 부가세는 주민세(소득세의 10%), 2010년부터는 지방소득세로 이름만 바뀌고 합계 22%는 같다. 2000년 당시 조건은 국내 5년 이상 거주자."
+    },
+    {
+      "id": "overseas_stock.cgt.deduction",
+      "asset": "해외주식 양도소득 기본공제",
+      "date": "2000-01-01",
+      "value": 2500000,
+      "unit": "KRW / 연",
+      "basis": "소득세법 제103조(제118조의7로 국외자산에 준용). 2000년에는 모든 양도소득 합산 연 250만원. 2001년부터 자산 종류(부동산 등/주식)별로 각각 250만원. 2026 현행 제103조①2호(주식) 250만원",
+      "status": "verified",
+      "previous": "250만원",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=55440",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285523",
+        "https://n.news.naver.com/mnews/article/009/0000045684",
+        "https://n.news.naver.com/mnews/article/032/0000221669"
+      ],
+      "note": "매일경제 2000-09-04(2000 세제개편안): 자산종류(부동산·유가증권)별로 각각 250만원 공제로 바꾼다. 경향 2007-04-22: 수익 250만원 미만은 면제하고 초과분은 22%다. 게임 규칙 '연간 실현이익 − 250만 × 22%'는 2000~2026 전체에 맞다(2000년 한 해는 부동산 양도익과 공제를 나눠 쓴다는 점만 다르다)."
+    },
+    {
+      "id": "sectax.kospi.2000_2019",
+      "asset": "증권거래세+농특세: 유가증권시장(코스피)",
+      "date": "2000-01-01",
+      "value": 0.3,
+      "unit": "% of 매도금액 (거래세 0.15 + 농특세 0.15)",
+      "basis": "증권거래세법 시행령 제5조 탄력세율 1,000분의 1.5 + 농어촌특별세법 제5조 1만분의 15. 2000-01-01~2019-05-29 체결분",
+      "status": "verified",
+      "previous": "0.30% (역산, M)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=29935",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=191570",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=22033",
+        "https://n.news.naver.com/mnews/article/014/0004234596",
+        "https://n.news.naver.com/mnews/article/016/0001539447"
+      ],
+      "note": "1999·2001·2017년 시행령 판이 모두 1.5/1000이다. 파이낸셜·이투데이 2019-05-27: 유가증권 0.15%에서 0.10%로 내리고 농특세 0.15%는 그대로다. 1차의 '역산'은 원문으로 확정됐다."
+    },
+    {
+      "id": "sectax.kosdaq.2000_2019",
+      "asset": "증권거래세: 코스닥(협회중개시장)",
+      "date": "2000-01-01",
+      "value": 0.3,
+      "unit": "% of 매도금액 (농특세 없음)",
+      "basis": "증권거래세법 시행령 제5조: 협회중개시장(코스닥) 1,000분의 3. 2000-01-01~2019-05-29 체결분",
+      "status": "verified",
+      "previous": "0.30%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=53099",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=191570",
+        "https://n.news.naver.com/mnews/article/014/0004234596"
+      ],
+      "note": ""
+    },
+    {
+      "id": "sectax.2019",
+      "asset": "증권거래세(코스피 0.10+농특 0.15 / 코스닥 0.25)",
+      "date": "2019-05-30",
+      "value": 0.25,
+      "unit": "% of 매도금액 (코스피·코스닥 동일 총부담)",
+      "basis": "증권거래세법 시행령 (대통령령 29788, 2019-06-03 시행). 양도일은 결제일(T+2) 기준이라 2019-05-30 매매체결분부터 적용",
+      "status": "corrected",
+      "previous": "2019-06 0.25%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=208731",
+        "https://n.news.naver.com/mnews/article/014/0004234596",
+        "https://n.news.naver.com/mnews/article/016/0001539447",
+        "https://n.news.naver.com/mnews/article/021/0002392868",
+        "https://n.news.naver.com/mnews/article/015/0004152464"
+      ],
+      "note": "값 0.25%는 맞다. 시점을 '2019-06'에서 '2019-05-30 체결분'으로 바로잡았다(한국예탁결제원 안내, 파이낸셜·헤럴드 2019-05-27). [2차 재검증] 문화일보 2019-06-03: 개정 시행령은 지난달 30일 매매체결분부터 적용됐다. 한국경제 2019-06-03: 코스피 0.15%→0.10%, 코스닥 0.30%→0.25%. 코스피는 농특세 0.15%를 더해 총 0.25%다."
+    },
+    {
+      "id": "sectax.2021",
+      "asset": "증권거래세(코스피 0.08+0.15 / 코스닥 0.23)",
+      "date": "2021-01-01",
+      "value": 0.23,
+      "unit": "% of 매도금액",
+      "basis": "시행령 제5조 (대통령령 31290, 2021-01-01 시행). 2020-12-29 매도 체결분부터",
+      "status": "verified",
+      "previous": "0.23%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=225167",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EC%A6%9D%EA%B6%8C%EA%B1%B0%EB%9E%98%EC%84%B8%200.23%25&ds=2020.12.20&de=2021.01.05"
+      ],
+      "note": "데일리한국·연합인포맥스 2020-12-23: 내년 1월 1일(올해 12월 29일 매도 체결분)부터 0.25%를 0.23%로 내린다."
+    },
+    {
+      "id": "sectax.2023",
+      "asset": "증권거래세(코스피 0.05+0.15 / 코스닥 0.20)",
+      "date": "2023-01-01",
+      "value": 0.2,
+      "unit": "% of 매도금액",
+      "basis": "시행령 제5조 (대통령령 33209)",
+      "status": "verified",
+      "previous": "0.20%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247529",
+        "https://n.news.naver.com/mnews/article/015/0004790600"
+      ],
+      "note": "한국경제 2022-12-22: 2023년 0.2%, 2024년 0.18%, 2025년 0.15%로 단계적으로 내린다."
+    },
+    {
+      "id": "sectax.2024",
+      "asset": "증권거래세(코스피 0.03+0.15 / 코스닥 0.18)",
+      "date": "2024-01-01",
+      "value": 0.18,
+      "unit": "% of 매도금액",
+      "basis": "시행령 제5조 단서(2023년판에 연도별로 규정)",
+      "status": "verified",
+      "previous": "0.18%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247529",
+        "https://n.news.naver.com/mnews/article/015/0004790600"
+      ],
+      "note": ""
+    },
+    {
+      "id": "sectax.2025",
+      "asset": "증권거래세(코스피 0+0.15 / 코스닥 0.15)",
+      "date": "2025-01-01",
+      "value": 0.15,
+      "unit": "% of 매도금액",
+      "basis": "시행령 제5조 본문(코스피 零, 코스닥 1만분의 15)",
+      "status": "verified",
+      "previous": "0.15%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=269487",
+        "https://n.news.naver.com/mnews/article/015/0004790600",
+        "https://n.news.naver.com/mnews/article/003/0013397035"
+      ],
+      "note": ""
+    },
+    {
+      "id": "sectax.2026",
+      "asset": "증권거래세(코스피 0.05+0.15 / 코스닥 0.20)",
+      "date": "2026-01-01",
+      "value": 0.2,
+      "unit": "% of 매도금액",
+      "basis": "증권거래세법 시행령 (대통령령 36001, 2025-12-31 공포, 2026-01-01 시행): 코스피 1만분의 5, 코스닥 1만분의 20",
+      "status": "verified",
+      "previous": "0.20% (미검증)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=282431",
+        "https://n.news.naver.com/mnews/article/003/0013397035",
+        "https://n.news.naver.com/mnews/article/056/0012000254"
+      ],
+      "note": "뉴시스·KBS 2025-07-31(2025 세제개편안): 2023년 수준(코스피 0.05%+농특세 0.15%, 코스닥 0.20%)으로 되돌린다. 시행령 원문으로 실제 시행을 확인했다."
+    },
+    {
+      "id": "re.acq_tax.2000_2004",
+      "asset": "주택 유상취득 거래세(취득세+등록세+부가세)",
+      "date": "2000-01-01",
+      "value": 5.8,
+      "unit": "% of 취득가액 (취득세 2 + 농특세 0.2 + 등록세 3 + 교육세 0.6)",
+      "basis": "지방세법 제112조(취득세 표준 2%), 제131조①3호(유상 소유권이전 등록세 3%). 2000-01-01~2005-01-04. 감면은 반영 안 함",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=48445",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=437",
+        "https://n.news.naver.com/mnews/article/020/0000038088",
+        "https://n.news.naver.com/mnews/article/009/0000028790"
+      ],
+      "note": "동아일보 2000-12-07: 취득세 2%, 유상취득 등록세 3%, 농특세(취득세의 10%)와 교육세(등록세의 20%)를 더하면 실질 2.2%+3.6%다. 매일경제 2000-07-11: 세금 합계 5.8%다."
+    },
+    {
+      "id": "re.acq_tax.2005",
+      "asset": "주택 유상취득 거래세",
+      "date": "2005-01-05",
+      "value": 4.6,
+      "unit": "% of 취득가액 (취득 2 + 농특 0.2 + 등록 2 + 교육 0.4, 감면 전)",
+      "basis": "지방세법 법률 7332 (2005-01-05 공포·시행): 등록세 3%→2%. 개인 간 거래 등록세는 추가로 25% 경감(제273조의2)",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=66482",
+        "https://n.news.naver.com/mnews/article/018/0000239759",
+        "https://n.news.naver.com/mnews/article/014/0000156250"
+      ],
+      "note": "이데일리 2005-01-04: 5일 이후 신규 분양 아파트는 4.6%, 기존 아파트는 5.8%에서 4.0%가 된다. 2006년부터는 주택거래 취득·등록세 감면이 여러 번 시행돼 실부담이 더 낮다. 게임에선 4.6%를 상한으로 단순화할 것을 권장한다."
+    },
+    {
+      "id": "re.acq_tax.2011",
+      "asset": "취득세(취득세·등록세 통합)",
+      "date": "2011-01-01",
+      "value": 4.0,
+      "unit": "% 표준세율 (지방교육세·농특세 포함 약 4.6%)",
+      "basis": "지방세법 전부개정 (법률 10221·10416, 2011-01-01 시행) 제11조①7호 나목 1천분의 40",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=109463",
+        "https://n.news.naver.com/mnews/article/008/0002442897",
+        "https://n.news.naver.com/mnews/article/003/0003579920"
+      ],
+      "note": "머니투데이·뉴시스 2010-12-09: 내년부터 취득세(2%)와 등록세(2%)를 취득세(4%)로 합친다. 2011~2013년에는 9억 이하 1주택 감면(50% 등)이 이어져 실부담은 1~2%대였다(한국경제 2013-12-10: 9억 이하 1주택 2%, 9억 초과·다주택 4%)."
+    },
+    {
+      "id": "re.acq_tax.2013_08_28",
+      "asset": "주택 유상취득 취득세율",
+      "date": "2013-08-28",
+      "value": 1.0,
+      "unit": "% (6억 이하) / 6억~9억 2% / 9억 초과 3%",
+      "basis": "지방세법 제11조①8호 신설 (법률 12118, 2013-12-26 공포). 부칙 제2조: 2013-08-28 이후 취득분부터 소급 적용",
+      "status": "verified",
+      "previous": "주택 6억 이하 1%, 6억~9억 1~3%, 9억 초과 3% (현행만)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=148302",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=149343",
+        "https://n.news.naver.com/mnews/article/015/0002995680",
+        "https://n.news.naver.com/mnews/article/020/0002504155"
+      ],
+      "note": "한국경제·동아 2013-12-10: 8·28 대책 발표일부터 소급해 6억 이하 1%, 9억 초과 3%로 영구 인하한다. 지방교육세 등 부가세는 별도다."
+    },
+    {
+      "id": "re.acq_tax.2020",
+      "asset": "주택 취득세율 6억~9억 구간",
+      "date": "2020-01-01",
+      "value": 2.0,
+      "unit": "% (7.5억 기준; 구간 산식 = 취득가액×2/3억 − 3, 1.01~2.99%)",
+      "basis": "지방세법 제11조①8호 나목 (법률 16855, 2020-01-01 시행)",
+      "status": "verified",
+      "previous": "6억~9억 1~3%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=213055",
+        "https://n.news.naver.com/mnews/article/001/0011016967"
+      ],
+      "note": "연합 2019-08-13: 6억~9억원 주택 취득세율을 백만원 단위로 세분화하고, 7억5천만원 주택은 2%로 변동이 없다."
+    },
+    {
+      "id": "re.acq_tax.multi.2020_08_12",
+      "asset": "다주택·법인 주택 취득세 중과",
+      "date": "2020-08-12",
+      "value": 12,
+      "unit": "% (조정 3주택+·비조정 4주택+·법인) / 조정 2주택·비조정 3주택 8%",
+      "basis": "지방세법 제13조의2 (법률 17473, 2020-08-12 공포·시행): 4%+중과기준세율 2%×4 = 12%, ×2 = 8%",
+      "status": "verified",
+      "previous": "8%/12% (2020-08-12)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=220927",
+        "https://n.news.naver.com/mnews/article/002/0002145612",
+        "https://n.news.naver.com/mnews/article/015/0004396174"
+      ],
+      "note": "프레시안·한국경제 2020-08-10~11: 12일부터 비조정지역 3주택 8%, 4주택 이상 12%를 적용한다."
+    },
+    {
+      "id": "re.cgt.1house.threshold.2000_2002",
+      "asset": "1세대1주택 양도세 비과세 배제 기준(고급주택)",
+      "date": "2000-01-01",
+      "value": 600000000,
+      "unit": "KRW 실거래가 (면적 기준과 동시 충족 시에만 과세)",
+      "basis": "소득세법 시행령 제156조(고급주택): 공동주택은 전용면적 기준과 양도 실거래가 6억원 초과를 동시에 충족해야 과세. 면적 기준은 2000-01-01~2002-09-30 전용 165㎡(50평) 이상이고, 2002-10-01~2002-12-31 전용 149㎡(45평) 이상(9·4 대책, 새로 편입된 주택은 2개월 경과조치). 단독주택은 연면적 264㎡(80평)·대지 495㎡(150평) 기준",
+      "status": "verified",
+      "previous": "(1차: ~2021-12-07 9억만 기재)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=22610",
+        "https://n.news.naver.com/mnews/article/008/0000213324",
+        "https://n.news.naver.com/mnews/article/001/0000253834",
+        "https://n.news.naver.com/mnews/article/008/0000213335",
+        "https://n.news.naver.com/mnews/article/020/0000158947",
+        "https://n.news.naver.com/mnews/article/009/0000249491",
+        "https://n.news.naver.com/mnews/article/008/0000206950"
+      ],
+      "note": "머니투데이·연합 2002-10-11: 현재 고급주택은 아파트 전용 45평 이상이면서 6억원 초과여야 해서, 45평 미만 6억 초과 주택은 비과세다. 즉 2002년까지 강남 30평대는 1주택 3년 보유면 가격과 관계없이 비과세였다. [2차 재검증: basis 정정] 기존 basis의 '전용 165㎡(약 45평)'은 환산이 틀렸다. 165㎡는 50평이고 45평은 약 149㎡다. 머니투데이 2002-10-11 재경부 문답 전문은 9.4 대책으로 아파트 고급주택 면적 기준을 50평 이상에서 45평 이상으로 내려 금년 10.1부터 시행 중이라고 밝혔다. 동아일보 2002-10-30도 '9·4 대책 이전에는 50평 이상'이라고 보도했고, 매일경제 2002-10-11도 같은 내용이다. 머니투데이 2002-09-19는 새로 편입된 주택이 시행일부터 2개월 안에 양도하면 종전 규정을 적용한다고 보도했다. 6억원 금액 기준과 2002년 말까지 적용되는 기간은 그대로다."
+    },
+    {
+      "id": "re.cgt.1house.threshold.2003",
+      "asset": "1세대1주택 비과세 고가주택 기준",
+      "date": "2003-01-01",
+      "value": 600000000,
+      "unit": "KRW 양도 실거래가 (초과분만 과세)",
+      "basis": "소득세법 시행령 제156조 '고가주택'(대통령령 17825, 2003-01-01 시행): 면적 기준을 없애고 실거래가 6억원 초과만으로 판정",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=60151",
+        "https://n.news.naver.com/mnews/article/008/0000213324",
+        "https://n.news.naver.com/mnews/article/001/0000253834"
+      ],
+      "note": "2002-10-11 부동산 대책에서 발표하고 2003-01-01 시행령에 반영했다. 2002-10-01 판에는 아직 면적 기준이 있다."
+    },
+    {
+      "id": "re.cgt.1house.threshold.2008",
+      "asset": "1세대1주택 비과세 고가주택 기준",
+      "date": "2008-10-07",
+      "value": 900000000,
+      "unit": "KRW 양도 실거래가",
+      "basis": "소득세법 시행령 제156조 (대통령령 21062, 2008-10-07 공포·시행). 부칙: 시행 후 최초 양도분부터",
+      "status": "corrected",
+      "previous": "~2021-12-07 9억 (9억 시작 시점 미표기)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=89130",
+        "https://n.news.naver.com/mnews/article/001/0002286656",
+        "https://n.news.naver.com/mnews/article/008/0002038943",
+        "https://n.news.naver.com/mnews/article/015/0002007831",
+        "https://n.news.naver.com/mnews/article/081/0001976098",
+        "https://n.news.naver.com/mnews/article/020/0001994508"
+      ],
+      "note": "1차는 9억 적용 시작을 적지 않았다. 9억은 2008-10-07부터이고, 그 전(2003~2008-10-06)은 6억이다. 연합·머니투데이 2008-09-28: 6억원을 9억원으로 올리고 10월 초 공포일 이후 양도분부터 적용한다. [2차 재검증] 한국경제·서울신문·동아일보 2008-10-07은 시행령을 7일 공포와 함께 시행하고, 잔금청산일 기준으로 7일 양도분부터 9억을 적용한다고 보도했다. 9억과 2008-10-07은 확인했다. 다만 감사자가 적은 '2000~2002 전용 165㎡ 이상이면서 6억 초과'는 2002-09-30까지만 맞다. 9·4 대책으로 2002-10-01부터 아파트 면적 기준이 45평(≈149㎡)으로 내려갔다. re.cgt.1house.threshold.2000_2002 항목의 note를 보라."
+    },
+    {
+      "id": "re.cgt.1house.threshold.2021",
+      "asset": "1세대1주택 비과세 고가주택 기준",
+      "date": "2021-12-08",
+      "value": 1200000000,
+      "unit": "KRW 양도 실거래가",
+      "basis": "소득세법 제89조①3호 (법률 18578, 2021-12-08 공포). 부칙 제1조3호: 공포일 시행",
+      "status": "verified",
+      "previous": "2021-12-08 12억",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=237497",
+        "https://n.news.naver.com/mnews/article/001/0012830268",
+        "https://n.news.naver.com/mnews/article/020/0003397860"
+      ],
+      "note": ""
+    },
+    {
+      "id": "re.cgt.1house.holding",
+      "asset": "1세대1주택 비과세 보유요건",
+      "date": "2012-06-29",
+      "value": 2,
+      "unit": "년 이상 보유 (2012-06-28까지는 3년)",
+      "basis": "소득세법 시행령 제154조① (대통령령 23887, 2012-06-29 시행): 3년→2년. 2000년판은 3년(서울·과천·5대 신도시는 2003년부터 거주요건 추가)",
+      "status": "verified",
+      "previous": "(1차 미조사)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=22610",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=126479",
+        "https://n.news.naver.com/mnews/article/001/0005661836",
+        "https://n.news.naver.com/mnews/article/011/0002248648"
+      ],
+      "note": "연합·서울경제 2012-06-26: 29일부터 보유기간을 3년에서 2년으로 완화한다. 2017-08-03 이후 조정대상지역에서 취득한 주택은 2년 거주 요건이 추가된다(이번 배치에서는 원문 대조를 하지 않았다)."
+    },
+    {
+      "id": "lottery.tax.to2003",
+      "asset": "복권(로또·체육복표 포함) 당첨금 세율",
+      "date": "2000-01-01",
+      "value": 22,
+      "unit": "% (소득세 원천 20% + 주민세 2%), 분리과세",
+      "basis": "조세특례제한법 제92조 (2003-12-31 지급분까지): 복권당첨소득 원천징수 20%, 종합소득 합산 안 함. 주민세는 소득세의 10%",
+      "status": "verified",
+      "previous": "~2003 22% 단일",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=58079",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=1138",
+        "https://n.news.naver.com/mnews/article/001/0000445777",
+        "https://n.news.naver.com/mnews/article/018/0000068035"
+      ],
+      "note": "연합 2003-08-28: 현재 모든 복권 당첨액에 20% 소득세율과 2% 주민세가 붙는다. 19회 407.2억에 22%를 적용하면 317.64억이 되고, 실제 보도된 수령액과 일치한다(아래 lotto.r19.after_tax)."
+    },
+    {
+      "id": "lottery.tax.2004",
+      "asset": "복권 당첨금 세율(고액분)",
+      "date": "2004-01-01",
+      "value": 33,
+      "unit": "% (5억 초과분: 소득세 30% + 주민세 3%), 5억 이하 22%",
+      "basis": "조특법 제92조 (법률 7003, 2004-01-01 시행): 5억원 초과분 100분의 30. 2006-12-31 지급분까지",
+      "status": "verified",
+      "previous": "2004-01-01 5억 초과분 33%",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=1140",
+        "https://n.news.naver.com/mnews/article/001/0000445777",
+        "https://n.news.naver.com/mnews/article/018/0000068035"
+      ],
+      "note": "연합·머니투데이·이데일리 2003-08-28: 내년부터 5억원 초과분은 30%, 주민세 3%다."
+    },
+    {
+      "id": "lottery.tax.2007",
+      "asset": "복권 당첨금 세율(고액분)",
+      "date": "2007-01-01",
+      "value": 33,
+      "unit": "% (3억 초과분), 3억 이하 22%",
+      "basis": "조특법 제92조 (법률 8146, 2007-01-01 시행): 3억원 초과분 100분의 30. 2007-01-01 이후 지급분(추첨일 기준 아님). 2026 현행은 소득세법 제129조①6호 가목(복권 당첨금 3억 초과분 30%, 그 밖 20%)에 같은 구조로 규정",
+      "status": "verified",
+      "previous": "2007년 초~ 3억 초과분 33% ('1-06 추첨분' 기준일 미확인)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=76552",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285523",
+        "https://n.news.naver.com/mnews/article/123/0000010194",
+        "https://n.news.naver.com/mnews/article/032/0000207811",
+        "https://n.news.naver.com/mnews/article/009/0000558105"
+      ],
+      "note": "조세일보 2006-12-22, 경향 2007-01-14, 매경 2007-01-15. 법률 기준 시점은 2007-01-01 이후 지급분이다. 1차가 말한 '1-06 추첨분'은 첫 적용 추첨 회차를 가리킨 것으로 보인다."
+    },
+    {
+      "id": "lottery.tax_free.2023",
+      "asset": "복권 당첨금 비과세(과세최저한)",
+      "date": "2023-01-01",
+      "value": 2000000,
+      "unit": "KRW 건별 이하 비과세 (직전: 기타소득금액 건별 5만원 이하)",
+      "basis": "소득세법 제84조2호 (법률 19196, 2023-01-01 시행): 복권 당첨금 건별 200만원 이하",
+      "status": "verified",
+      "previous": "2023~ 200만원 이하 비과세 (M)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247467",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=237497",
+        "https://n.news.naver.com/mnews/article/003/0011319024",
+        "https://n.news.naver.com/mnews/article/025/0003211333"
+      ],
+      "note": "뉴시스·중앙 2022-07-21: 비과세 기준을 5만원에서 200만원으로 올려, 내년 1월 1일 이후 지급분부터 로또 3등까지 비과세다. 2002년판 제84조는 '기타소득금액 매건 1만원 이하'였다."
+    },
+    {
+      "id": "toto.tax.2002",
+      "asset": "스포츠토토(체육복표) 환급금 세금 — 2002 월드컵 당시",
+      "date": "2002-06-01",
+      "value": 22,
+      "unit": "% (20% 원천분리과세 + 주민세 2%), 기타소득금액(당첨금−적중 투표권 구입액)이 건별 1만원 초과일 때",
+      "basis": "조특법 제92조 1호 + 조특법 시행령 제93조 2호('국민체육진흥공단이 발행하는 체육복표 당첨소득', 2002-04·07판) + 소득세법 제84조3호(2002년판, 1만원 이하 과세최저한)",
+      "status": "verified",
+      "previous": "2002 당시 확인 실패",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=56063",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=58079",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=55566",
+        "https://n.news.naver.com/mnews/article/015/0000515342"
+      ],
+      "note": "법령 원문 3개로 확정했다. 한국경제 2002-06-04 칼럼은 체육복표 고액 당첨에 22% 세금이 붙는다고 썼다. 게임 계산 예: 스페인전 10만원 × 45.07 = 450.7만원이면 과세분 440.7만 × 22% ≈ 97만원, 세후 약 354만원."
+    },
+    {
+      "id": "lotto.r19.after_tax",
+      "asset": "로또 19회 1등 세후 수령액",
+      "date": "2003-04-15",
+      "value": 31763908332,
+      "unit": "KRW (≈317억6,390만)",
+      "basis": "40,722,959,400 × (1 − 22%). 국민은행 발표 수령액 317억6,390만원",
+      "status": "verified",
+      "previous": "317억6,390만",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000357239",
+        "https://n.news.naver.com/mnews/article/020/0000183118",
+        "https://n.news.naver.com/mnews/article/009/0000286988",
+        "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=19",
+        "https://n.news.naver.com/mnews/article/005/0000144999",
+        "https://n.news.naver.com/mnews/article/055/0000001848"
+      ],
+      "note": "연합·동아·매경 2003-04-16: 세금을 빼고 317억6,390만원을 받았다. 다만 연합·문화 2003-04-14는 '317억6,039만8,780원', 이데일리 2003-04-13은 '313억5,667만원'으로 서로 다르게 보도했다. 22% 계산값과 04-16 수령 보도가 일치해 이를 채택했다. [2차 재검증] 동행복권 API의 19회 1등 금액은 40,722,959,400원이다. 국민일보 2003-04-16은 수령액을 317억6390만원, SBS 2003-04-13은 소득세 22%를 떼면 317억원이라고 보도했다. 필요경비(구입비)를 빼고 계산하면 원 단위가 수백 원 달라지지만 317억6,390만원은 같다. 연합 04-14의 '317억6,039만'은 자릿수 오기로 보인다."
+    },
+    {
+      "id": "toto.first_sale",
+      "asset": "스포츠토토(체육복표) 전국 정식 첫 발매",
+      "date": "2001-10-06",
+      "value": null,
+      "value_text": "2001-10-06 (제1회차 전국 확대발매, 전국 약 3,000개 판매점, 10-13 마감). 9월 22일 등 두 차례 시범발매",
+      "unit": "날짜",
+      "basis": "KST",
+      "status": "verified",
+      "previous": "2001-10-06",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/015/0000427730",
+        "https://n.news.naver.com/mnews/article/009/0000153967",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EC%B2%B4%EC%9C%A1%EB%B3%B5%ED%91%9C%206%EC%9D%BC%20%EB%B0%9C%EB%A7%A4&ds=2001.09.25&de=2001.10.08"
+      ],
+      "note": "한국경제 2001-09-26, 국민일보·매일경제 2001-10-05, 동아 2001-10-04. 시범발매는 2001-09-22(동아 2001-09-27)."
+    },
+    {
+      "id": "toto.age_rule.2001",
+      "asset": "토토 구매 연령 제한(2001~2002)",
+      "date": "2001-10-06",
+      "value": 20,
+      "unit": "세 미만(민법상 미성년자) 판매·환급 금지",
+      "basis": "국민체육진흥법 제22조의8① (2000-01-12판): 수탁사업자는 미성년자에게 체육진흥투표권을 판매하거나 환급금을 내줘서는 안 된다",
+      "status": "verified",
+      "previous": "2001년 당시 조문 확인 실패",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=5074",
+        "https://m.sports.naver.com/general/article/015/0000421524",
+        "https://m.sports.naver.com/general/article/005/0000075023"
+      ],
+      "note": "원천 법령 1곳(law.go.kr 연혁 원문)으로만 확인했고, 독립 2차 출처는 찾지 못했다. 그래도 법령 원문이라 게임에 그대로 써도 된다(8~9세 주인공은 어른 명의로만 구매 가능). 2011년판부터는 '청소년보호법상 청소년'으로 바뀌었다. [2차 재검증: unverifiable을 verified로 바꿈] 독립된 2차 출처 두 곳을 찾았다. 한국경제 2001-09-12(스포츠토토 출범 기사)는 미성년자는 투표권을 살 수 없다고 썼고, 국민일보 2001-10-24(농구토토 발매 기사)는 '미성년자(만20세 미만)는 구매할 수 없으며'라고 썼다. 법령 원문과 함께 출처가 세 곳이다."
+    },
+    {
+      "id": "toto.limit.2002",
+      "asset": "축구토토 스페셜 1인 최대 베팅(2002 월드컵)",
+      "date": "2002-06-10",
+      "value": 100000,
+      "unit": "KRW / 1인 1회차",
+      "basis": "2002 월드컵 기간 축구토토 스페셜 최대 베팅금액",
+      "status": "verified",
+      "previous": "1인당 10만원",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/015/0000517570",
+        "https://n.news.naver.com/mnews/article/008/0000179098",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=17.85%EB%B0%B0&ds=2002.06.10&de=2002.06.20"
+      ],
+      "note": "한국경제 2002-06-11, 연합 2002-06-11('최대 베팅 금액인 10만원'), 머니투데이 2002-06-17('최대 참여금액인 10만원')으로 확인했다."
+    },
+    {
+      "id": "toto.wc2002.poland",
+      "asset": "축구토토 스페셜 11회: 한국-폴란드(2002-06-04)",
+      "date": "2002-06-04",
+      "value": 12.36,
+      "unit": "배 (베팅액 대비 당첨금)",
+      "basis": "1등 조건: 전반 1-0 / 최종 2-0 (둘 다 맞혀야 함). 적중 7,856명, 참가 91,205명",
+      "status": "verified",
+      "previous": "12.36배, 7,856명",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/015/0000515833",
+        "https://www.hankookilbo.com/news/article/200206060044116302",
+        "https://m.sports.naver.com/general/article/001/0000181524"
+      ],
+      "note": "한국경제·한국일보 2002-06-06. 발매액은 매체마다 다르다: 한경 11억9,937만, 한국일보 11억9,337만, 연합 06-05 11억8,837만. 배당·적중자 수는 일치한다. [2차 재검증] 연합 2002-06-05(001/0000181524)도 12.36배, 적중 7,856명, 참가 9만1,205명으로 보도해 세 번째 독립 출처가 된다."
+    },
+    {
+      "id": "toto.wc2002.usa",
+      "asset": "축구토토 스페셜 12회: 한국-미국(2002-06-10)",
+      "date": "2002-06-10",
+      "value": 17.85,
+      "unit": "배",
+      "basis": "1등 조건: 전반 미국 1-0 리드 / 최종 1-1. 적중 7,423명, 참가 100,333명, 발매 14억5,642만원",
+      "status": "verified",
+      "previous": "17.85배",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/015/0000517570",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=17.85%EB%B0%B0&ds=2002.06.10&de=2002.06.20",
+        "https://m.sports.naver.com/general/article/001/0000185350"
+      ],
+      "note": "한국경제·연합 2002-06-11. 10만원 베팅 16명의 수령액은 연합이 178만5천원(17.85배와 일치), 한경이 185만5천원(오기로 보임)이다. 17.85를 채택했다. [2차 재검증] 연합 원문(001/0000185350)을 다시 보니 17.85배, 7,423명, 10만원 × 16명 = 178만5천원으로 내부 계산이 맞는다. 제3의 매체는 찾지 못했지만 배당 표기는 두 매체가 일치한다."
+    },
+    {
+      "id": "toto.wc2002.portugal",
+      "asset": "축구토토 스페셜 13회: 한국-포르투갈(2002-06-14)",
+      "date": "2002-06-14",
+      "value": 13.88,
+      "unit": "배",
+      "basis": "1등 조건: 전반 0-0 / 최종 한국 1-0. 적중 7,364명(10만원 베팅 36명 → 각 138만8천원)",
+      "status": "verified",
+      "previous": "13.88배",
+      "sources": [
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=13.88%EB%B0%B0&ds=2002.06.14&de=2002.06.25",
+        "https://n.news.naver.com/mnews/article/008/0000179098"
+      ],
+      "note": "연합 2002-06-16, 머니투데이 2002-06-17."
+    },
+    {
+      "id": "toto.wc2002.italy",
+      "asset": "축구토토 스페셜: 한국-이탈리아 16강(2002-06-18)",
+      "date": "2002-06-18",
+      "value": 14.2,
+      "unit": "배",
+      "basis": "1등 조건: 전반 이탈리아 1-0 리드 / 최종 한국 2-1(연장 골든골 포함). 적중 8,871명, 참가 93,269명, 발매 14억7,933만7천원",
+      "status": "verified",
+      "previous": "14.2배, 8,871명",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000191412",
+        "https://n.news.naver.com/mnews/article/015/0000520268"
+      ],
+      "note": "연합·한국경제 2002-06-19. 회차 번호는 기사에 없다(12·13·15회 사이라 14회로 추정되나 미확인)."
+    },
+    {
+      "id": "toto.wc2002.spain_special",
+      "asset": "축구토토 스페셜 15회: 한국-스페인 8강(2002-06-22)",
+      "date": "2002-06-22",
+      "value": 45.07,
+      "unit": "배",
+      "basis": "1등 조건: 전반 0-0 / 최종 0-0(연장 포함, 승부차기 제외). 적중 1,957명(10만원 → 450만7천원)",
+      "status": "verified",
+      "previous": "45.07배 (머니투데이 단독, 부분 검증)",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/008/0000180949",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=45.07%EB%B0%B0&ds=2002.06.22&de=2002.07.05"
+      ],
+      "note": "머니투데이와 별도로 연합 2002-06-23 '축구토토 스페셜 15회차, 45배 고액 배당'을 찾아 두 출처로 확인했다."
+    },
+    {
+      "id": "toto.wc2002.spain_score",
+      "asset": "축구토토 스코어게임 6회: 한국-스페인(최종 스코어만)",
+      "date": "2002-06-22",
+      "value": 27.44,
+      "unit": "배",
+      "basis": "1등 조건: 최종 0-0 (8강 4경기 개별 배당)",
+      "status": "unverifiable",
+      "previous": "27.44배",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/008/0000181034"
+      ],
+      "note": "머니투데이 2002-06-24 한 곳에서만 확인했다(같은 기사에 브라질-잉글랜드 3.17, 독일-미국 5.39, 세네갈-터키 5.88, 평균 10.47배). 대체안: 게임에서는 스페셜 15회(45.07배, 두 출처 확인)만 쓰거나, 이 값을 '약 27배'로만 표기할 것. [2차 재검증] 네이버에서 '스코어게임 6회차'와 '27.44배'를 검색해도 머니투데이 1건만 나왔다. unverifiable 판정을 유지한다."
+    },
+    {
+      "id": "toto.wc2002.germany",
+      "asset": "축구토토 스코어게임 7회: 한국-독일 4강(2002-06-25)",
+      "date": "2002-06-25",
+      "value": null,
+      "value_text": "배당 미확인 (정답 최종 독일 1-0)",
+      "unit": "배",
+      "basis": "최종 스코어만 맞히는 스코어게임(준결승부터 스페셜 중단)",
+      "status": "unverifiable",
+      "previous": "확인 실패",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000196303",
+        "https://n.news.naver.com/mnews/article/008/0000181034",
+        "https://m.sports.naver.com/general/article/001/0000194400"
+      ],
+      "note": "7회차는 판매액 12억원(그중 한-독전 10억원)과 참가자 예상 비율(한국 승 45.4%)까지만 확인했고, 결과 배당 기사는 찾지 못했다. 대체안: 게임에서는 이 경기 베팅을 빼거나 '배당 비공개'로 처리할 것. [2차 재검증] 연합 2002-06-24에는 7회차 중간 집계(2만7,065건, 한국 승 45.4%)만 있다. 결과 배당 기사는 이번에도 찾지 못했다."
+    },
+    {
+      "id": "toto.wc2002.turkey",
+      "asset": "축구토토 스코어게임 8회: 한국-터키 3·4위전(2002-06-29)",
+      "date": "2002-06-29",
+      "value": 32.77,
+      "unit": "배",
+      "basis": "1등 조건: 최종 터키 3-2. 적중 793명, 참가 48,209명",
+      "status": "unverifiable",
+      "previous": "32.77배",
+      "sources": [
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=32.77%EB%B0%B0&ds=2002.06.29&de=2002.07.10",
+        "https://m.sports.naver.com/general/article/001/0000199672"
+      ],
+      "note": "연합 2002-07-02 한 곳에서만 확인했다(Daum 뉴스 검색에서도 다른 매체는 없었다). 대체안: '약 32배'로 표기하거나 제외할 것. [2차 재검증] 연합 원문을 보면 22명 × 10만원 = 327만7천원으로 32.77배와 맞지만 여전히 한 매체뿐이다. '토토 793명', '스코어게임 배당'으로 검색해도 다른 매체는 없었다. unverifiable을 유지한다."
+    },
+    {
+      "id": "lotto.launch",
+      "asset": "로또 6/45 판매 시작·가격",
+      "date": "2002-12-02",
+      "value": 2000,
+      "unit": "KRW / 1게임",
+      "basis": "국민은행(KLS 컨소시엄) 온라인연합복권, 전국 약 5,000개 판매점 동시 발매",
+      "status": "verified",
+      "previous": "2002-12-02, 2,000원",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000280236",
+        "https://n.news.naver.com/mnews/article/008/0000227802",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EB%A1%9C%EB%98%90%202%EC%9D%BC%EB%B6%80%ED%84%B0&ds=2002.11.25&de=2002.12.02"
+      ],
+      "note": "연합·머니투데이·매경 2002-11-28, 동아 2002-11-27."
+    },
+    {
+      "id": "lotto.r1.result",
+      "asset": "로또 1회 추첨",
+      "date": "2002-12-07",
+      "value": 0,
+      "value_text": "10 23 29 33 37 40 + 보너스 16 / 1등 0명(이월 863,604,600원), 2등 1명 143,934,100원",
+      "unit": "1등 당첨자 수",
+      "basis": "동행복권 공식 회차 조회 API",
+      "status": "verified",
+      "previous": "10 23 29 33 37 40 +16, 1등 0",
+      "sources": [
+        "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=1",
+        "https://n.news.naver.com/mnews/article/009/0000262669",
+        "https://n.news.naver.com/mnews/article/029/0000009657",
+        "https://n.news.naver.com/mnews/article/015/0000574984"
+      ],
+      "note": "매일경제 2002-12-08, 디지털타임스 2002-12-09 보도 번호가 일치한다. 이월액은 공식 863,604,600원, 매경 8억6,360만8,600원으로 4,000원 차이가 나며 공식값을 채택했다. 1회 판매액은 공식 3,681,782,000원이다. [2차 재검증] 동행복권 API를 다시 조회해 1등 이월 863,604,600원, 2등 143,934,100원, 판매 3,681,782,000원을 확인했다. 한국경제 2002-12-09도 매경처럼 '8억6천3백60만8천6백원'으로 적었다. 두 신문 모두 같은 국민은행 발표를 옮긴 것으로 보인다. 그러나 등수별 배분을 계산하면 공식값이 맞다. 당첨금 풀은 판매액의 50%이고, 여기서 5등 고정액을 뺀 1,439,341,000원의 60%가 863,604,600원(1등)이고 10%가 143,934,100원(2등, API와 정확히 일치)이다. 따라서 공식값을 유지한다."
+    },
+    {
+      "id": "lotto.r19.jackpot",
+      "asset": "로또 19회 1등 당첨금(1인)",
+      "date": "2003-04-12",
+      "value": 40722959400,
+      "unit": "KRW (세전)",
+      "basis": "동행복권 공식 API rnk1WnAmt, 1등 1명",
+      "status": "verified",
+      "previous": "40,722,959,400",
+      "sources": [
+        "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=19",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EB%A1%9C%EB%98%90%20407%EC%96%B5&ds=2003.04.12&de=2003.04.20"
+      ],
+      "note": "이데일리·한겨레 2003-04-13: '407억2,295만9,400원'(세전). lottohell.com도 같다(동행복권 재가공이라 독립 출처로 세지 않음)."
+    },
+    {
+      "id": "lotto.r19.numbers",
+      "asset": "로또 19회 당첨번호",
+      "date": "2003-04-12",
+      "value": null,
+      "value_text": "6 30 38 39 40 43 + 보너스 26",
+      "unit": "번호",
+      "basis": "동행복권 공식 API",
+      "status": "verified",
+      "previous": "6 30 38 39 40 43 +26",
+      "sources": [
+        "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=19",
+        "https://search.naver.com/search.naver?where=news&sort=2&pd=3&query=%EB%A1%9C%EB%98%90%20407%EC%96%B5&ds=2003.04.12&de=2003.04.20"
+      ],
+      "note": "연합·경향·머니투데이·파이낸셜 2003-04-13 보도 번호가 일치한다."
+    },
+    {
+      "id": "lotto.r19.winners",
+      "asset": "로또 19회 1등 당첨자 수",
+      "date": "2003-04-12",
+      "value": 1,
+      "unit": "명",
+      "basis": "동행복권 공식 API rnk1WnNope",
+      "status": "verified",
+      "previous": "1명",
+      "sources": [
+        "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=19",
+        "https://n.news.naver.com/mnews/article/001/0000357239"
+      ],
+      "note": "판매액 105,957,818,000원(공식)이고, 파이낸셜 2003-04-13의 '판매금액 1059억원'과 일치한다. 18회 이월액은 157억5,156만원(공식 rnk1SumWnAmt)이다. 회귀자가 같은 번호를 사면 1등 2명이 돼 1인당 약 203.6억(세전)이 된다(단순 계산)."
+    },
+    {
+      "id": "lotto.carryover_limit.initial",
+      "asset": "로또 1등 이월 한도(출시 당시)",
+      "date": "2002-12-02",
+      "value": 5,
+      "unit": "회 (5회 연속 1등 없으면 6회째 차등위자에게 분배)",
+      "basis": "2002-11-26 복권발행조정위원회 결정",
+      "status": "verified",
+      "previous": "최대 5회",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000279122",
+        "https://n.news.naver.com/mnews/article/029/0000008224",
+        "https://n.news.naver.com/mnews/article/020/0000166625"
+      ],
+      "note": ""
+    },
+    {
+      "id": "lotto.carryover_limit.2003",
+      "asset": "로또 1등 이월 한도 축소",
+      "date": "2003-02-02",
+      "value": 2,
+      "unit": "회 (3회째 미당첨 시 1등 당첨금을 2등에게 균등 분배)",
+      "basis": "2003-01-27 복권발행조정위원회 결정, 2003-02-02 판매분(2-08 추첨 10회)부터",
+      "status": "verified",
+      "previous": "5회→2회, 2003-02-02 판매분",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/001/0000311272",
+        "https://n.news.naver.com/mnews/article/009/0000273308"
+      ],
+      "note": "연합·매경·동아·국민·파이낸셜 2003-01-27이 모두 같다."
+    },
+    {
+      "id": "lotto.purchase_cap.2004",
+      "asset": "복권 1인 1회 구매 한도",
+      "date": "2004-04-01",
+      "value": 100000,
+      "unit": "KRW",
+      "basis": "복권 및 복권기금법 제5조② + 같은 법 시행령 제3조 (대통령령 18316, 2004-04-01 시행)",
+      "status": "verified",
+      "previous": "2004-04-01 10만원 (2003년엔 한도 없음)",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=59278",
+        "https://n.news.naver.com/mnews/article/001/0000586450",
+        "https://n.news.naver.com/mnews/article/008/0000383690"
+      ],
+      "note": "연합·머니투데이 2004-03-09. 법률은 20만원 안에서 대통령령으로 정하도록 했고, 시행령이 10만원으로 정했다."
+    },
+    {
+      "id": "lotto.price_cut.2004",
+      "asset": "로또 1게임 가격 인하",
+      "date": "2004-08-01",
+      "value": 1000,
+      "unit": "KRW / 1게임",
+      "basis": "2004-01-30 복권발행조정위원회 결정",
+      "status": "verified",
+      "previous": "2004-08-01 1,000원",
+      "sources": [
+        "https://n.news.naver.com/mnews/article/011/0000019956",
+        "https://n.news.naver.com/mnews/article/018/0000120650",
+        "https://n.news.naver.com/mnews/article/009/0000342253"
+      ],
+      "note": "이데일리·매경 2004-01-30: 1등 예상당첨금이 37억에서 19억으로 준다."
+    },
+    {
+      "id": "lotto.minor_ban.2004",
+      "asset": "복권 청소년 판매 금지 법제화",
+      "date": "2004-04-01",
+      "value": 19,
+      "unit": "세 미만(청소년보호법상 청소년) 판매 금지",
+      "basis": "복권및복권기금법 제5조③ (법률 7159, 2004-01-29 제정, 2004-04-01 시행)",
+      "status": "verified",
+      "previous": "복권법 이전(2002-12~2004-03) 로또 구매연령 근거 확인 실패",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=55726",
+        "https://n.news.naver.com/mnews/article/001/0000279122",
+        "https://n.news.naver.com/mnews/article/029/0000008224"
+      ],
+      "note": "연합·디지털타임스 2002-11-26~27: 미성년자 판매·당첨금 지급 금지 조항은 앞으로 만들 통합복권법에 넣을 예정이라고 했다. 즉 2002-12~2004-03 로또에는 법률상 명시적 금지 조항이 없었던 것으로 보인다(조문 부재는 원문으로 입증하지 못함). 게임에선 '판매점 관행상 어린이 구매 불가, 어른 명의 필요'로 처리할 것을 권장한다."
+    },
+    {
+      "id": "lotto_toto.self_purchase.1993born",
+      "asset": "1993년생 로또·토토 본인 합법 구매 가능일",
+      "date": "2012-01-01",
+      "value": 19,
+      "unit": "세가 되는 해의 1월 1일 (1993+19=2012)",
+      "basis": "복권법 제5조③(2011-07-01판)·국민체육진흥법 제30조①(2011-04-05판)이 모두 '청소년보호법 제2조제1호의 청소년' 판매 금지를 규정하고, 청소년보호법 제2조1호(2011-11-20판)는 청소년을 '만 19세 미만. 다만 만 19세에 도달하는 해의 1월 1일을 맞이한 자를 제외'로 정의",
+      "status": "verified",
+      "previous": "2012-01-01",
+      "sources": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=111548",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=111967",
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=113198"
+      ],
+      "note": "서로 다른 법률 3개 원문을 조합해 확인했다(연 나이 규정은 2001-08-25 시행 개정부터 있었다). 주의: 증여공제의 '미성년자'는 민법 기준이라, 1993년생은 2012년에 로또는 살 수 있어도 증여공제상으로는 2013년까지 미성년이다."
+    }
+  ]
+}

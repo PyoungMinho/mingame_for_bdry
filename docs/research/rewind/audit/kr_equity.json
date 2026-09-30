@@ -1,0 +1,1640 @@
+{
+  "batch": "kr_equity",
+  "audited_at": "2026-09-30",
+  "method": "네이버 siseJson(수정) · 다음 일별(원시가·기준가) · Yahoo chart API 3개 벤더 일별 전수 다운로드 후 스크립트 대조 + 2026 값/분할/새롬은 언론 기사 추가 대조. 2025-03 이후 네이버·다음 '종가'는 NXT 통합 체결가일 수 있어, KRX 공식 종가는 Yahoo 종가와 다음 익일 prevClosingPrice(기준가)로 판정.",
+  "items": [
+    {
+      "id": "samsung.close.2000",
+      "asset": "삼성전자(005930)",
+      "date": "2000-12-26",
+      "value": 3160,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "3160",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 3,160 = 다음 원시가 158,000÷50 일치(당시 호가창 가격 158,000원), Yahoo 3,160 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2001",
+      "asset": "삼성전자(005930)",
+      "date": "2001-12-28",
+      "value": 5580,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "5580",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 5,580 = 다음 원시가 279,000÷50 일치(당시 호가창 가격 279,000원), Yahoo 5,580 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2002",
+      "asset": "삼성전자(005930)",
+      "date": "2002-12-30",
+      "value": 6280,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "6280",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 6,280 = 다음 원시가 314,000÷50 일치(당시 호가창 가격 314,000원), Yahoo 6,280 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2003",
+      "asset": "삼성전자(005930)",
+      "date": "2003-12-30",
+      "value": 9020,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "9020",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 9,020 = 다음 원시가 451,000÷50 일치(당시 호가창 가격 451,000원), Yahoo 9,020 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2004",
+      "asset": "삼성전자(005930)",
+      "date": "2004-12-30",
+      "value": 9010,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "9010",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 9,010 = 다음 원시가 450,500÷50 일치(당시 호가창 가격 450,500원), Yahoo 9,010 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2005",
+      "asset": "삼성전자(005930)",
+      "date": "2005-12-29",
+      "value": 13180,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "13180",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://images.samsung.com/is/content/samsung/p5/sec/aboutsamsung/2005_K.pdf"
+      ],
+      "note": "네이버 수정 13,180 = 다음 원시가 659,000÷50 일치(당시 호가창 가격 659,000원). Yahoo는 13,160로 표기(불일치) — 원천에 가까운 다음 원시가·네이버 2곳 일치값 채택 [2차 재검증 agreed] 삼성전자 2005 연차보고서(원천) 주가표 2005 Q4 고 662,000 / 저 546,000 / 종가 659,000 → ÷50 = 13,180 확인. Google Finance 주간 시계열도 13,160으로 Yahoo와 같은 값 → Yahoo·Google은 같은 벤더 계열의 동일 오류로 판단(독립 2곳으로 세지 않음)."
+    },
+    {
+      "id": "samsung.close.2006",
+      "asset": "삼성전자(005930)",
+      "date": "2006-12-28",
+      "value": 12260,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "12260",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 12,260 = 다음 원시가 613,000÷50 일치(당시 호가창 가격 613,000원), Yahoo 12,260 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2007",
+      "asset": "삼성전자(005930)",
+      "date": "2007-12-28",
+      "value": 11120,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "11120",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 11,120 = 다음 원시가 556,000÷50 일치(당시 호가창 가격 556,000원), Yahoo 11,120 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2008",
+      "asset": "삼성전자(005930)",
+      "date": "2008-12-30",
+      "value": 9020,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "9020",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 9,020 = 다음 원시가 451,000÷50 일치(당시 호가창 가격 451,000원), Yahoo 9,020 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2009",
+      "asset": "삼성전자(005930)",
+      "date": "2009-12-30",
+      "value": 15980,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "15980",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 15,980 = 다음 원시가 799,000÷50 일치(당시 호가창 가격 799,000원), Yahoo 15,980 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2010",
+      "asset": "삼성전자(005930)",
+      "date": "2010-12-30",
+      "value": 18980,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "18980",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 18,980 = 다음 원시가 949,000÷50 일치(당시 호가창 가격 949,000원), Yahoo 18,980 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2011",
+      "asset": "삼성전자(005930)",
+      "date": "2011-12-29",
+      "value": 21160,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "21160",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 21,160 = 다음 원시가 1,058,000÷50 일치(당시 호가창 가격 1,058,000원), Yahoo 21,160 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2012",
+      "asset": "삼성전자(005930)",
+      "date": "2012-12-28",
+      "value": 30440,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "30440",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 30,440 = 다음 원시가 1,522,000÷50 일치(당시 호가창 가격 1,522,000원), Yahoo 30,440 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2013",
+      "asset": "삼성전자(005930)",
+      "date": "2013-12-30",
+      "value": 27440,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "27440",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 27,440 = 다음 원시가 1,372,000÷50 일치(당시 호가창 가격 1,372,000원), Yahoo 27,440 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2014",
+      "asset": "삼성전자(005930)",
+      "date": "2014-12-30",
+      "value": 26540,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "26540",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 26,540 = 다음 원시가 1,327,000÷50 일치(당시 호가창 가격 1,327,000원), Yahoo 26,540 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2015",
+      "asset": "삼성전자(005930)",
+      "date": "2015-12-30",
+      "value": 25200,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "25200",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 25,200 = 다음 원시가 1,260,000÷50 일치(당시 호가창 가격 1,260,000원), Yahoo 25,200 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2016",
+      "asset": "삼성전자(005930)",
+      "date": "2016-12-29",
+      "value": 36040,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "36040",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 36,040 = 다음 원시가 1,802,000÷50 일치(당시 호가창 가격 1,802,000원), Yahoo 36,040 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2017",
+      "asset": "삼성전자(005930)",
+      "date": "2017-12-28",
+      "value": 50960,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "50960",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 50,960 = 다음 원시가 2,548,000÷50 일치(당시 호가창 가격 2,548,000원), Yahoo 50,960 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2018",
+      "asset": "삼성전자(005930)",
+      "date": "2018-12-28",
+      "value": 38700,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "38700",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 38,700 = 다음 원시가 38,700÷1 일치, Yahoo 38,700 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2019",
+      "asset": "삼성전자(005930)",
+      "date": "2019-12-30",
+      "value": 55800,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "55800",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 55,800 = 다음 원시가 55,800÷1 일치, Yahoo 55,800 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2020",
+      "asset": "삼성전자(005930)",
+      "date": "2020-12-30",
+      "value": 81000,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "81000",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 81,000 = 다음 원시가 81,000÷1 일치, Yahoo 81,000 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2021",
+      "asset": "삼성전자(005930)",
+      "date": "2021-12-30",
+      "value": 78300,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "78300",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 78,300 = 다음 원시가 78,300÷1 일치, Yahoo 78,300 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2022",
+      "asset": "삼성전자(005930)",
+      "date": "2022-12-29",
+      "value": 55300,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "55300",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 55,300 = 다음 원시가 55,300÷1 일치, Yahoo 55,300 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2023",
+      "asset": "삼성전자(005930)",
+      "date": "2023-12-28",
+      "value": 78500,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "78500",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 78,500 = 다음 원시가 78,500÷1 일치, Yahoo 78,500 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2024",
+      "asset": "삼성전자(005930)",
+      "date": "2024-12-30",
+      "value": 53200,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "53200",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 53,200 = 다음 원시가 53,200÷1 일치, Yahoo 53,200 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2025",
+      "asset": "삼성전자(005930)",
+      "date": "2025-12-30",
+      "value": 119900,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "119900",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정 119,900 = 다음 원시가 119,900÷1 일치, Yahoo 119,900 일치(3곳)"
+    },
+    {
+      "id": "samsung.close.2026-09-29",
+      "asset": "삼성전자(005930)",
+      "date": "2026-09-29",
+      "value": 272500,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST; 엔딩 정산 기준일",
+      "status": "verified",
+      "previous": "272500 (1차 조사원 275,000 → 1차 검증에서 정정)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://news.jkn.co.kr/post/1000942",
+        "https://www.businesskorea.co.kr/news/articleView.html?idxno=277855",
+        "https://www.google.com/finance/quote/005930:KRX",
+        "https://m.stock.naver.com/api/stock/005930/price?pageSize=3&page=1"
+      ],
+      "note": "Yahoo 종가 272,500 · 다음 9/30 행 prevClosingPrice(기준가) 272,500 · 네이버 모바일 9/30 전일비(-1,250→271,250)로 역산한 전일종가 272,500 · 재경일보·비즈니스코리아 마감기사 272,500(+2,500, +0.93%) 일치. 네이버 siseJson·다음 일별 tradePrice 275,000은 넥스트레이드(NXT) 애프터마켓 포함 통합 체결가로 KRX 공식 종가 아님(2026-09-14 이후 반복되는 괴리). 게임은 272,500 사용. [2차 재검증 agreed] Google Finance 2026-09-30 10:2x KST 시세 273,000(+500) → 전일(9/29) 종가를 역산하면 value와 일치. 네이버 모바일 API 9/30 행의 전일비로 역산한 값도 일치. 반면 같은 API의 9/29 행 closePrice는 NXT 통합 체결가(감사자 지적 재현)이므로 2025-03 이후 값은 반드시 KRX 기준가로 대조할 것."
+    },
+    {
+      "id": "kospi.close.2000",
+      "asset": "코스피",
+      "date": "2000-12-26",
+      "value": 504.62,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "504.62",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(504.62)"
+    },
+    {
+      "id": "kospi.close.2001",
+      "asset": "코스피",
+      "date": "2001-12-28",
+      "value": 693.7,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "693.70",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(693.7)"
+    },
+    {
+      "id": "kospi.close.2002",
+      "asset": "코스피",
+      "date": "2002-12-30",
+      "value": 627.55,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "627.55",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(627.55)"
+    },
+    {
+      "id": "kospi.close.2003",
+      "asset": "코스피",
+      "date": "2003-12-30",
+      "value": 810.71,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "810.71",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(810.71)"
+    },
+    {
+      "id": "kospi.close.2004",
+      "asset": "코스피",
+      "date": "2004-12-30",
+      "value": 895.92,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "895.92",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(895.92)"
+    },
+    {
+      "id": "kospi.close.2005",
+      "asset": "코스피",
+      "date": "2005-12-29",
+      "value": 1379.37,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1379.37",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1379.37)"
+    },
+    {
+      "id": "kospi.close.2006",
+      "asset": "코스피",
+      "date": "2006-12-28",
+      "value": 1434.46,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1434.46",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1434.46)"
+    },
+    {
+      "id": "kospi.close.2007",
+      "asset": "코스피",
+      "date": "2007-12-28",
+      "value": 1897.13,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1897.13",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1897.13)"
+    },
+    {
+      "id": "kospi.close.2008",
+      "asset": "코스피",
+      "date": "2008-12-30",
+      "value": 1124.47,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1124.47",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1124.47)"
+    },
+    {
+      "id": "kospi.close.2009",
+      "asset": "코스피",
+      "date": "2009-12-30",
+      "value": 1682.77,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1682.77",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1682.77)"
+    },
+    {
+      "id": "kospi.close.2010",
+      "asset": "코스피",
+      "date": "2010-12-30",
+      "value": 2051.0,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2051.00",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2051.0)"
+    },
+    {
+      "id": "kospi.close.2011",
+      "asset": "코스피",
+      "date": "2011-12-29",
+      "value": 1825.74,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1825.74",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1825.74)"
+    },
+    {
+      "id": "kospi.close.2012",
+      "asset": "코스피",
+      "date": "2012-12-28",
+      "value": 1997.05,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1997.05",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1997.05)"
+    },
+    {
+      "id": "kospi.close.2013",
+      "asset": "코스피",
+      "date": "2013-12-30",
+      "value": 2011.34,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2011.34",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2011.34)"
+    },
+    {
+      "id": "kospi.close.2014",
+      "asset": "코스피",
+      "date": "2014-12-30",
+      "value": 1915.59,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1915.59",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1915.59)"
+    },
+    {
+      "id": "kospi.close.2015",
+      "asset": "코스피",
+      "date": "2015-12-30",
+      "value": 1961.31,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "1961.31",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(1961.31)"
+    },
+    {
+      "id": "kospi.close.2016",
+      "asset": "코스피",
+      "date": "2016-12-29",
+      "value": 2026.46,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2026.46",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2026.46)"
+    },
+    {
+      "id": "kospi.close.2017",
+      "asset": "코스피",
+      "date": "2017-12-28",
+      "value": 2467.49,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2467.49",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2467.49)"
+    },
+    {
+      "id": "kospi.close.2018",
+      "asset": "코스피",
+      "date": "2018-12-28",
+      "value": 2041.04,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2041.04",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2041.04)"
+    },
+    {
+      "id": "kospi.close.2019",
+      "asset": "코스피",
+      "date": "2019-12-30",
+      "value": 2197.67,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2197.67",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2197.67)"
+    },
+    {
+      "id": "kospi.close.2020",
+      "asset": "코스피",
+      "date": "2020-12-30",
+      "value": 2873.47,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2873.47",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2873.47)"
+    },
+    {
+      "id": "kospi.close.2021",
+      "asset": "코스피",
+      "date": "2021-12-30",
+      "value": 2977.65,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2977.65",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2977.65)"
+    },
+    {
+      "id": "kospi.close.2022",
+      "asset": "코스피",
+      "date": "2022-12-29",
+      "value": 2236.4,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2236.40",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2236.4)"
+    },
+    {
+      "id": "kospi.close.2023",
+      "asset": "코스피",
+      "date": "2023-12-28",
+      "value": 2655.28,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2655.28",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2655.28)"
+    },
+    {
+      "id": "kospi.close.2024",
+      "asset": "코스피",
+      "date": "2024-12-30",
+      "value": 2399.49,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "2399.49",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(2399.49)"
+    },
+    {
+      "id": "kospi.close.2025",
+      "asset": "코스피",
+      "date": "2025-12-30",
+      "value": 4214.17,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 연말=그해 마지막 거래일",
+      "status": "verified",
+      "previous": "4214.17",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "네이버·다음·Yahoo 3곳 일치(4214.17)"
+    },
+    {
+      "id": "kospi.close.2026-09-29",
+      "asset": "코스피",
+      "date": "2026-09-29",
+      "value": 6870.81,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST; 엔딩 정산 기준일",
+      "status": "verified",
+      "previous": "6870.81",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true",
+        "https://www.mt.co.kr/stock/2026/09/29/2026092915491674477",
+        "https://www.businesskorea.co.kr/news/articleView.html?idxno=277855"
+      ],
+      "note": "네이버·Yahoo·다음 6,870.81(-18.93, -0.27%) 일치, 머니투데이·비즈니스코리아 마감기사 일치. 9/30 값은 장중(미확정)이므로 엔딩에 쓰지 말 것."
+    },
+    {
+      "id": "kospi.close.2000-01-04",
+      "asset": "코스피",
+      "date": "2000-01-04",
+      "value": 1059.04,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "1059.04",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "게임 시작일 종가. 장중 고가 1,066.18 = 2000년 연중 최고(3곳 일치). 2000년 첫 거래일."
+    },
+    {
+      "id": "kospi.high.2000-01-04",
+      "asset": "코스피",
+      "date": "2000-01-04",
+      "value": 1066.18,
+      "unit": "pt",
+      "basis": "코스피 장중 고가, KST",
+      "status": "verified",
+      "previous": "1066.18",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split"
+      ],
+      "note": "네이버·Yahoo 일치. 2000년 연중 최고 장중가."
+    },
+    {
+      "id": "kospi.close.2001-09-17",
+      "asset": "코스피",
+      "date": "2001-09-17",
+      "value": 468.76,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "468.76",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "2000-01-03~2026-09-29 전체 최저 종가(네이버·다음 전수 확인). 전일비 -13.53. 장중 최저는 2001-09-21 463.54(네이버·Yahoo)."
+    },
+    {
+      "id": "kospi.low.2001-09-21",
+      "asset": "코스피",
+      "date": "2001-09-21",
+      "value": 463.54,
+      "unit": "pt",
+      "basis": "코스피 장중 저가, KST",
+      "status": "verified",
+      "previous": "463.54",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split"
+      ],
+      "note": "2000~2026 전체 장중 최저. 네이버·Yahoo 일치."
+    },
+    {
+      "id": "kospi.close.2003-03-17",
+      "asset": "코스피",
+      "date": "2003-03-17",
+      "value": 515.24,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "515.24",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "2003년 최저 종가(전일비 -22.41). 장중 저가 512.30(네이버·Yahoo, 2003년 장중 최저)."
+    },
+    {
+      "id": "kospi.close.2007-10-31",
+      "asset": "코스피",
+      "date": "2007-10-31",
+      "value": 2064.85,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "2064.85",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "2008년 금융위기 전 종가 고점. 다음날 11-01 장중 2,085.45(네이버·Yahoo 일치), 11-01 종가 2,063.14. (같은 행의 환율 900.7원은 macro 배치 범위)"
+    },
+    {
+      "id": "kospi.close.2008-10-24",
+      "asset": "코스피",
+      "date": "2008-10-24",
+      "value": 938.75,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "938.75 (-110.96p)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일(10-23) 1,049.71 대비 -110.96p(-10.57%), 다음 changePrice -110.96 일치. 2008년 최저 종가."
+    },
+    {
+      "id": "kospi.low.2008-10-27",
+      "asset": "코스피",
+      "date": "2008-10-27",
+      "value": 892.16,
+      "unit": "pt",
+      "basis": "코스피 장중 저가, KST",
+      "status": "verified",
+      "previous": "892.16",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split"
+      ],
+      "note": "2008년 장중 최저. 당일 종가 946.45. 네이버·Yahoo 일치."
+    },
+    {
+      "id": "kospi.close.2020-03-19",
+      "asset": "코스피",
+      "date": "2020-03-19",
+      "value": 1457.64,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "1457.64",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일비 -133.56. 장중 저가 1,439.43(네이버·Yahoo 일치)."
+    },
+    {
+      "id": "kospi.low.2022-09-30",
+      "asset": "코스피",
+      "date": "2022-09-30",
+      "value": 2134.77,
+      "unit": "pt",
+      "basis": "코스피 장중 저가, KST",
+      "status": "verified",
+      "previous": "2134.77",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split"
+      ],
+      "note": "2022년 장중·종가 최저일(종가 2,155.49, 3곳 일치)."
+    },
+    {
+      "id": "kospi.close.2025-04-09",
+      "asset": "코스피",
+      "date": "2025-04-09",
+      "value": 2293.7,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "2293.70",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "2025년 최저 종가(전일비 -40.53). 장중 저가 2,284.72(네이버·Yahoo)."
+    },
+    {
+      "id": "kospi.close.2026-03-04",
+      "asset": "코스피",
+      "date": "2026-03-04",
+      "value": 5093.54,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "5093.54 (-12.06%)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일(03-03) 5,791.91 대비 -698.37 = -12.06%. 3곳 일치."
+    },
+    {
+      "id": "kospi.close.2026-03-05",
+      "asset": "코스피",
+      "date": "2026-03-05",
+      "value": 5583.9,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "+9.63%",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일 대비 +490.36 = +9.63%. 3곳 일치."
+    },
+    {
+      "id": "kospi.high.2026-06-19",
+      "asset": "코스피",
+      "date": "2026-06-19",
+      "value": 9385.59,
+      "unit": "pt",
+      "basis": "코스피 장중 고가, KST",
+      "status": "verified",
+      "previous": "9385.59",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://www.mt.co.kr/stock/2026/06/19/2026061915464944048"
+      ],
+      "note": "2000~2026-09-29 사상 최고 장중가(전수 확인). 당일 종가 9,052.42(-11.42), 장중 저가 8,831.72."
+    },
+    {
+      "id": "kospi.close.2026-07-28",
+      "asset": "코스피",
+      "date": "2026-07-28",
+      "value": 6023.66,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "6023.66 (-10.84%)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일(07-27) 6,755.75 대비 -732.09 = -10.84%."
+    },
+    {
+      "id": "kospi.close.2026-07-29",
+      "asset": "코스피",
+      "date": "2026-07-29",
+      "value": 5663.24,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "5663.24",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일비 -360.42(-5.98%). 장중 저가 5,262.77 = 7월 장중 최저(네이버·Yahoo)."
+    },
+    {
+      "id": "kospi.low.2026-07-29",
+      "asset": "코스피",
+      "date": "2026-07-29",
+      "value": 5262.77,
+      "unit": "pt",
+      "basis": "코스피 장중 저가, KST",
+      "status": "verified",
+      "previous": "5262.77",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split"
+      ],
+      "note": "2026년 7월 장중 최저."
+    },
+    {
+      "id": "kospi.close.2026-07-30",
+      "asset": "코스피",
+      "date": "2026-07-30",
+      "value": 5593.56,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "5593.56 (-1.23%)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true"
+      ],
+      "note": "전일비 -69.68 = -1.23%. 2026년 7월 종가 최저."
+    },
+    {
+      "id": "kospi.close.2026-07-31",
+      "asset": "코스피",
+      "date": "2026-07-31",
+      "value": 6595.45,
+      "unit": "pt",
+      "basis": "코스피 지수(포인트), KRX 종가, 날짜 KST",
+      "status": "verified",
+      "previous": "6595.45 (+17.91%)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/market_index/days?market=KOSPI&perPage=100&pagination=true",
+        "https://www.fnnews.com/news/202607311650367289"
+      ],
+      "note": "전일비 +1,001.89 = +17.91%(사상 최대 상승률, 파이낸셜뉴스). 7월 월간 -22.19%(6/30 8,476.48 대비)."
+    },
+    {
+      "id": "samsung.close.2000-01-04",
+      "asset": "삼성전자(005930)",
+      "date": "2000-01-04",
+      "value": 6110,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "6110 (305,500)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "다음 원시가 305,500÷50. 3곳 일치."
+    },
+    {
+      "id": "samsung.low.2000-10-18",
+      "asset": "삼성전자(005930)",
+      "date": "2000-10-18",
+      "value": 2420,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가 장중 저가, KRW",
+      "status": "verified",
+      "previous": "2420 (121,000)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "다음 원시가 장중 121,000÷50. 2000년 및 2000~2026 전체 장중 최저. 당일 종가 2,730(136,500)도 전체 최저 종가. 2000년 장중 최고는 07-13 7,880(394,000)."
+    },
+    {
+      "id": "samsung.close.2008-10-24",
+      "asset": "삼성전자(005930)",
+      "date": "2008-10-24",
+      "value": 8150,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "-13.76%",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://view.asiae.co.kr/article/2009072713321522884",
+        "https://www.newsis.com/view/NISX20161011_0014442417"
+      ],
+      "note": "다음 원시가 407,500(전일 472,500 대비 -65,000 = -13.76%), 네이버 수정 8,150 일치. Yahoo는 종가·저가를 8,040으로 표기(불일치, Yahoo 오류로 판단 — 원시가 2곳 채택). [2차 재검증 agreed] 아시아경제(2009-07-27) '10월 24일 주가가 40만7500원까지' + 뉴시스(2016) '2008년 10월24일(-13.76%)' 일치(472,500→407,500 = -13.757%). Google Finance 주간값도 8,040으로 Yahoo와 동일 벤더 오류. 참고: 파이낸셜뉴스(2024-08-05)는 같은 날 낙폭을 -14.07%로 적었으나 407,500·403,000 어느 쪽과도 산술이 맞지 않아 기사 오기로 판단."
+    },
+    {
+      "id": "samsung.low.2008-10-27",
+      "asset": "삼성전자(005930)",
+      "date": "2008-10-27",
+      "value": 8060,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가 장중 저가, KRW",
+      "status": "verified",
+      "previous": "8060 (403,000)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://www.newspim.com/news/view/20170126000124"
+      ],
+      "note": "다음 원시가 403,000÷50, 네이버·Yahoo 당일 저가 일치. 네이버·다음 기준 2008년 장중 최저. 단 Yahoo는 10-24 저가를 8,040으로 표기해 Yahoo 기준으론 10-24가 최저 — 원시가(다음)·네이버 2곳 일치값 채택. [2차 재검증 agreed] 뉴스핌(2017-01-26) '2008년 최저가는 40만 3000원' → ÷50 = 8,060 일치(날짜는 기사에 없고 10-27은 네이버·다음 기준). Yahoo·Google 8,040(402,000)은 원천 근거 없음."
+    },
+    {
+      "id": "samsung.split.2018-05-04",
+      "asset": "삼성전자(005930)",
+      "date": "2018-05-04",
+      "value": 50,
+      "unit": "분할비율(1주→50주)",
+      "basis": "액면가 5,000원→100원 액면분할, 분할 후 첫 거래일",
+      "status": "verified",
+      "previous": "2018-05-04 (50:1)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://www.seoul.co.kr/news/economy/industry/2018/05/04/20180504500024",
+        "https://www.seoul.co.kr/news/economy/securities/2018/04/30/20180430018020"
+      ],
+      "note": "Yahoo split 이벤트 2018-05-04 50:1, 다음 원시가 04-27 종가 2,650,000 → 05-04 시가 53,000·종가 51,900, 04-30~05-03 거래정지(거래량 0, 05-01 휴장) — 서울신문 기사 일치. 게임: 2018-05-04에 보유주수 ×50, 가격 ÷50."
+    },
+    {
+      "id": "samsung.close.2018-04-27",
+      "asset": "삼성전자(005930)",
+      "date": "2018-04-27",
+      "value": 53000,
+      "unit": "KRW/주(수정)",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "53000 (2,650,000)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "분할 전 마지막 거래일. 원시가 2,650,000."
+    },
+    {
+      "id": "samsung.close.2018-05-04",
+      "asset": "삼성전자(005930)",
+      "date": "2018-05-04",
+      "value": 51900,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "51900",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://www.seoul.co.kr/news/economy/industry/2018/05/04/20180504500024"
+      ],
+      "note": "분할 후 첫날 시가 53,000, 종가 51,900(-2.08%)."
+    },
+    {
+      "id": "samsung.low.2020-03-19",
+      "asset": "삼성전자(005930)",
+      "date": "2020-03-19",
+      "value": 42300,
+      "unit": "KRW/주",
+      "basis": "삼성전자 장중 저가, KRW",
+      "status": "verified",
+      "previous": "42300",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "2020년 장중 최저. 당일 종가 42,950. 2020년 종가 최저는 03-23 42,500(3곳 일치)."
+    },
+    {
+      "id": "samsung.high.2021-01-11",
+      "asset": "삼성전자(005930)",
+      "date": "2021-01-11",
+      "value": 96800,
+      "unit": "KRW/주",
+      "basis": "삼성전자 장중 고가, KRW",
+      "status": "verified",
+      "previous": "96800 / 종가 91,000",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "당일 종가 91,000. 이 고가를 처음 넘은 날 2025-10-16(종가 97,700) = 약 4년 9개월(전수 확인)."
+    },
+    {
+      "id": "samsung.close.2021-01-11",
+      "asset": "삼성전자(005930)",
+      "date": "2021-01-11",
+      "value": 91000,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "91000",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "3곳 일치."
+    },
+    {
+      "id": "samsung.low.2022-09-30",
+      "asset": "삼성전자(005930)",
+      "date": "2022-09-30",
+      "value": 51800,
+      "unit": "KRW/주",
+      "basis": "삼성전자 장중 저가, KRW",
+      "status": "verified",
+      "previous": "51800",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "2022년 장중 최저. 당일 종가 53,100. 2022년 종가 최저는 09-29 52,600."
+    },
+    {
+      "id": "samsung.close.2024-11-14",
+      "asset": "삼성전자(005930)",
+      "date": "2024-11-14",
+      "value": 49900,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "49900",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "당일 장중 저가 = 종가 = 49,900, 2024년 장중·종가 최저. 다음 changePrice -700(전일 50,600)."
+    },
+    {
+      "id": "samsung.high.2026-06-19",
+      "asset": "삼성전자(005930)",
+      "date": "2026-06-19",
+      "value": 374500,
+      "unit": "KRW/주",
+      "basis": "삼성전자 장중 고가, KRW",
+      "status": "verified",
+      "previous": "374500",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "2000~2026-09-29 사상 최고 장중가(전수 확인, NXT 포함 네이버와 KRX 기준 Yahoo 동일). 당일 종가 354,000. 2000-10-18 장중 저가 2,420 대비 약 154.8배."
+    },
+    {
+      "id": "samsung.close.2026-07-29",
+      "asset": "삼성전자(005930)",
+      "date": "2026-07-29",
+      "value": 208500,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "208500",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "장중 저가 189,200(3곳 일치). 전일(07-28) 종가 220,000."
+    },
+    {
+      "id": "samsung.low.2026-07-29",
+      "asset": "삼성전자(005930)",
+      "date": "2026-07-29",
+      "value": 189200,
+      "unit": "KRW/주",
+      "basis": "삼성전자 장중 저가, KRW",
+      "status": "verified",
+      "previous": "189200",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "3곳 일치."
+    },
+    {
+      "id": "samsung.close.2026-07-30",
+      "asset": "삼성전자(005930)",
+      "date": "2026-07-30",
+      "value": 207000,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "207000",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true"
+      ],
+      "note": "3곳 일치."
+    },
+    {
+      "id": "samsung.close.2026-07-31",
+      "asset": "삼성전자(005930)",
+      "date": "2026-07-31",
+      "value": 262500,
+      "unit": "KRW/주",
+      "basis": "삼성전자 수정주가(2018-05-04 50:1 액면분할 반영, 배당 미반영), KRX 정규장 종가, 원(KRW), 날짜 KST",
+      "status": "verified",
+      "previous": "262500 (+26.8%)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A005930/days?symbolCode=A005930&perPage=100&pagination=true",
+        "https://news.ikbc.co.kr/article/view/kbc202607310047"
+      ],
+      "note": "전일 207,000 대비 +55,500 = +26.81%(kbc 기사 '삼전 26.81%' 일치)."
+    },
+    {
+      "id": "saerom.close.2000-02-18.raw",
+      "asset": "새롬기술(현 솔본, 035610)",
+      "date": "2000-02-18",
+      "value": 282000,
+      "unit": "KRW/주(당시 원시가)",
+      "basis": "당시 호가 원시가(2000-02-29 무상증자 前, 1999-11-15 10:1 액면분할 後), KRX 코스닥 종가",
+      "status": "verified",
+      "previous": "282000 (장중 308,000)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=035610&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/035610.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035610/days?symbolCode=A035610&perPage=100&pagination=true",
+        "https://www.newsis.com/view/NISX20210122_0001315003"
+      ],
+      "note": "다음 원시가·Yahoo(이 종목은 비수정) 종가 282,000/장중 308,000 일치, 뉴시스 '2000년 2월18일 28만2000원 최고점' 일치. 원시가 기준 사상 최고 종가·장중가."
+    },
+    {
+      "id": "saerom.high.2000-02-18.raw",
+      "asset": "새롬기술(현 솔본, 035610)",
+      "date": "2000-02-18",
+      "value": 308000,
+      "unit": "KRW/주(당시 원시가)",
+      "basis": "당시 호가 원시가 장중 고가",
+      "status": "verified",
+      "previous": "308000",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=035610&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/035610.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035610/days?symbolCode=A035610&perPage=100&pagination=true"
+      ],
+      "note": "다음·Yahoo 일치."
+    },
+    {
+      "id": "saerom.close.2000-02-29.adj",
+      "asset": "새롬기술(현 솔본, 035610)",
+      "date": "2000-02-29",
+      "value": 143000,
+      "unit": "KRW/주(무증 반영 수정가)",
+      "basis": "무상증자(2000-02-29 권리락, 1:1) 반영 수정주가 종가. 2000-02-29 이후는 원시가=수정가",
+      "status": "corrected",
+      "previous": "(1차: 고점=2000-02-18 282,000으로만 기재)",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=035610&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/035610.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035610/days?symbolCode=A035610&perPage=100&pagination=true",
+        "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0000007731"
+      ],
+      "note": "무증 반영 동일 기준에서는 2000-02-18 = 141,000(네이버 수정), 최고 종가는 2000-02-29 143,000(상한가, 다음·Yahoo 원시가 동일), 최고 장중가는 2000-03-02 156,500. 즉 '3월 초 고점'은 수정가 기준으론 맞고, 원시가 기준으론 2/18. 게임은 한 기준으로 통일할 것: 수익률 계산은 수정가(143,000 → 연말 5,500 = -96.2%), 대사·신문 장면만 원시가 282,000. [2차 재검증 agreed] 당시 기사 오마이뉴스(2000-05-16): '2월29일 100% 무상증자 권리락으로 주가가 14만3,000원', '2월18일까지 ... 30만8,000원까지' → 권리락일 143,000 및 2/18 장중 308,000 독립 확인. 낙폭 산술 5,500/143,000 = -96.15%, 5,500/141,000 = -96.10% 확인. 다수 언론의 '3월 초 28만2000원'은 날짜(2/18)와 기준(무증 전)을 섞은 서술이므로 대사에 쓸 때 '2월 18일 28만2천원'으로 쓸 것."
+    },
+    {
+      "id": "saerom.high.2000-03-02.adj",
+      "asset": "새롬기술(현 솔본, 035610)",
+      "date": "2000-03-02",
+      "value": 156500,
+      "unit": "KRW/주(무증 반영 수정가)",
+      "basis": "무상증자 반영 기준 장중 고가(=당일 원시가)",
+      "status": "corrected",
+      "previous": "없음",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=035610&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/035610.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035610/days?symbolCode=A035610&perPage=100&pagination=true"
+      ],
+      "note": "네이버 수정·다음 원시·Yahoo 일치. 무증 반영 기준 사상 최고 장중가. [2차 재검증 agreed, 부분] 네이버·다음·Yahoo 외 4번째 출처(당일 기사)는 찾지 못함(한경 2000년 기사는 봇 차단). 권리락일 종가 143,000(오마이뉴스 확인) 기준 2000년 코스닥 가격제한폭 12% 상한 ≈160,000 이내라 값은 정합. Yahoo가 코스콤 계열과 다른 벤더이므로 독립 2곳 요건은 충족."
+    },
+    {
+      "id": "saerom.close.2000-12-26",
+      "asset": "새롬기술(현 솔본, 035610)",
+      "date": "2000-12-26",
+      "value": 5500,
+      "unit": "KRW/주",
+      "basis": "2000년 마지막 거래일 종가(무증 後 원시가 = 네이버 수정가)",
+      "status": "verified",
+      "previous": "5500",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=035610&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/035610.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035610/days?symbolCode=A035610&perPage=100&pagination=true",
+        "https://www.newsis.com/view/NISX20210122_0001315003"
+      ],
+      "note": "네이버·다음·Yahoo·뉴시스 일치. 수정가 기준 낙폭: 143,000(2/29) 대비 -96.2%, 141,000(2/18) 대비 -96.1%. rewind-research §3의 '-98%'(282,000→5,500)는 무증 전후 가격을 섞은 계산이라 쓰지 말 것."
+    },
+    {
+      "id": "ecopro.high.2023-07-26.raw",
+      "asset": "에코프로(086520)",
+      "date": "2023-07-26",
+      "value": 1539000,
+      "unit": "KRW/주(당시 원시가)",
+      "basis": "당시 호가 원시가 장중 고가(2024-04-25 5:1 분할 前), KRX 코스닥",
+      "status": "verified",
+      "previous": "1539000",
+      "sources": [
+        "https://finance.daum.net/api/quote/A086520/days?symbolCode=A086520&perPage=100&pagination=true",
+        "https://query1.finance.yahoo.com/v8/finance/chart/086520.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://mobile.newsis.com/view/NISX20230728_0002394963"
+      ],
+      "note": "다음 원시가 1,539,000(종가 1,228,000, 장중 저가 1,136,000 → 변동폭 약 31%). Yahoo 수정 301,764.72 × 5.1(5:1 분할 × 2025-02 2% 주식배당) = 1,539,000 역산 일치. 사상 최고가."
+    },
+    {
+      "id": "ecopro.high.2023-07-26.adj",
+      "asset": "에코프로(086520)",
+      "date": "2023-07-26",
+      "value": 301957,
+      "unit": "KRW/주(수정)",
+      "basis": "수정주가(5:1 분할 + 2025 주식배당 반영, 현재 주식수 기준) 장중 고가",
+      "status": "verified",
+      "previous": "301957",
+      "sources": [
+        "https://api.finance.naver.com/siseJson.naver?symbol=086520&requestType=1&startTime=19990101&endTime=20260930&timeframe=day",
+        "https://query1.finance.yahoo.com/v8/finance/chart/086520.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A086520/days?symbolCode=A086520&perPage=100&pagination=true",
+        "https://www.google.com/finance/quote/086520:KOSDAQ"
+      ],
+      "note": "네이버 수정 301,957(원시가÷5.0967), Yahoo 301,764.72(원시가÷5.1) — 2025년 2% 주식배당 조정계수 차이(권리락 기준가 방식 vs 단순 1.02)로 0.06% 차이. 2026-09-29 78,800과 같은 네이버 기준 계열이므로 301,957 채택. [2차 재검증 agreed, 주의] Google Finance 장기 주간 시계열은 2023-07-28 주 216,470.59 = 원시 1,104,000÷5.1, 2025-01-03 주 59,607.84 = 60,800÷1.02 → Google도 Yahoo처럼 계수 5.1 사용(네이버 5.0967). 보유자 기준 실제 주식 수는 1주→5주×1.02 = 5.1주이므로 '그때 1주 산 사람의 지금 가치'로는 1,539,000÷5.1 = 301,765가 더 정확하다. 차이는 0.06%라 게임 결과에 사실상 영향이 없으므로, 에코프로의 다른 수정가(연말값)와 같은 네이버 계열로 맞춘 301,957을 유지한다. 한 게임 안에서 두 계수를 섞지 말 것."
+    },
+    {
+      "id": "skhynix.close.2026-09-29",
+      "asset": "SK하이닉스(000660)",
+      "date": "2026-09-29",
+      "value": 1765000,
+      "unit": "KRW/주",
+      "basis": "SK하이닉스(000660) KRX 정규장 종가(수정주가 계열, 배당 미반영), KST",
+      "status": "verified",
+      "previous": "1765000 (1차 조사원 1790000 → 1차 검증 정정)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/000660.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A000660/days?symbolCode=A000660&perPage=100&pagination=true",
+        "https://www.businesskorea.co.kr/news/articleView.html?idxno=277855",
+        "https://www.google.com/finance/quote/000660:KRX",
+        "https://m.stock.naver.com/api/stock/000660/price?pageSize=3&page=1"
+      ],
+      "note": "Yahoo 종가 1,765,000 = 다음 9/30 행 prevClosingPrice 1,765,000 일치 = 비즈니스코리아 마감기사 일치. 전일비 -3,000(-0.17%), 전일 1,768,000(Yahoo 9/28 종가 = 다음 9/29 기준가로 교차 일치). 네이버·다음 체결가 1790000는 NXT 통합 체결가. [2차 재검증 agreed] Google Finance 2026-09-30 10:2x KST 시세 1,808,000(+43,000) → 전일(9/29) 종가를 역산하면 value와 일치. 네이버 모바일 API 9/30 행의 전일비로 역산한 값도 일치. 반면 같은 API의 9/29 행 closePrice는 NXT 통합 체결가(감사자 지적 재현)이므로 2025-03 이후 값은 반드시 KRX 기준가로 대조할 것."
+    },
+    {
+      "id": "naver.close.2026-09-29",
+      "asset": "NAVER(035420)",
+      "date": "2026-09-29",
+      "value": 194800,
+      "unit": "KRW/주",
+      "basis": "NAVER(035420) KRX 정규장 종가(수정주가 계열, 배당 미반영), KST",
+      "status": "verified",
+      "previous": "194800 (1차 조사원 194900 → 1차 검증 정정)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/035420.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035420/days?symbolCode=A035420&perPage=100&pagination=true",
+        "https://www.google.com/finance/quote/035420:KRX",
+        "https://m.stock.naver.com/api/stock/035420/price?pageSize=3&page=1"
+      ],
+      "note": "Yahoo 종가 194,800 = 다음 9/30 행 prevClosingPrice 194,800 일치. 전일비 -2,900, 전일 197,700(Yahoo 9/28 종가 = 다음 9/29 기준가로 교차 일치). 네이버·다음 체결가 194900는 NXT 통합 체결가. [2차 재검증 agreed] Google Finance 2026-09-30 10:2x KST 시세 195,100(+300) → 전일(9/29) 종가를 역산하면 value와 일치. 네이버 모바일 API 9/30 행의 전일비로 역산한 값도 일치. 반면 같은 API의 9/29 행 closePrice는 NXT 통합 체결가(감사자 지적 재현)이므로 2025-03 이후 값은 반드시 KRX 기준가로 대조할 것."
+    },
+    {
+      "id": "kakao.close.2026-09-29",
+      "asset": "카카오(035720)",
+      "date": "2026-09-29",
+      "value": 33700,
+      "unit": "KRW/주",
+      "basis": "카카오(035720) KRX 정규장 종가(수정주가 계열, 배당 미반영), KST",
+      "status": "verified",
+      "previous": "33700 (1차 조사원 33750 → 1차 검증 정정)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/035720.KS?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A035720/days?symbolCode=A035720&perPage=100&pagination=true",
+        "https://www.google.com/finance/quote/035720:KRX",
+        "https://m.stock.naver.com/api/stock/035720/price?pageSize=3&page=1"
+      ],
+      "note": "Yahoo 종가 33,700 = 다음 9/30 행 prevClosingPrice 33,700 일치. 전일비 -450, 전일 34,150(Yahoo 9/28 종가 = 다음 9/29 기준가로 교차 일치). 네이버·다음 체결가 33750는 NXT 통합 체결가. [2차 재검증 agreed] Google Finance 2026-09-30 10:2x KST 시세 33,850(+150) → 전일(9/29) 종가를 역산하면 value와 일치. 네이버 모바일 API 9/30 행의 전일비로 역산한 값도 일치. 반면 같은 API의 9/29 행 closePrice는 NXT 통합 체결가(감사자 지적 재현)이므로 2025-03 이후 값은 반드시 KRX 기준가로 대조할 것."
+    },
+    {
+      "id": "ecopro.close.2026-09-29",
+      "asset": "에코프로(086520)",
+      "date": "2026-09-29",
+      "value": 78800,
+      "unit": "KRW/주",
+      "basis": "에코프로(086520) KRX 정규장 종가(수정주가 계열, 배당 미반영), KST",
+      "status": "verified",
+      "previous": "78800 (1차 조사원 79400 → 1차 검증 정정)",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/086520.KQ?period1=915148800&period2=1791000000&interval=1d&events=split",
+        "https://finance.daum.net/api/quote/A086520/days?symbolCode=A086520&perPage=100&pagination=true",
+        "https://www.google.com/finance/quote/086520:KOSDAQ",
+        "https://m.stock.naver.com/api/stock/086520/price?pageSize=3&page=1"
+      ],
+      "note": "Yahoo 종가 78,800 = 다음 9/30 행 prevClosingPrice 78,800 일치. 전일비 -3,100, 전일 81,900(Yahoo 9/28 종가 = 다음 9/29 기준가로 교차 일치). 네이버·다음 체결가 79400는 NXT 통합 체결가. [2차 재검증 agreed] Google Finance 2026-09-30 10:2x KST 시세 81,000(+2,200) → 전일(9/29) 종가를 역산하면 value와 일치. 네이버 모바일 API 9/30 행의 전일비로 역산한 값도 일치. 반면 같은 API의 9/29 행 closePrice는 NXT 통합 체결가(감사자 지적 재현)이므로 2025-03 이후 값은 반드시 KRX 기준가로 대조할 것."
+    }
+  ]
+}

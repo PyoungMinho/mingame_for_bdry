@@ -1,0 +1,990 @@
+{
+  "batch": "crypto",
+  "audited": "2026-09-30",
+  "basis_rules": {
+    "usd": "2013~: Bitstamp BTC/USD UTC 일봉(원천 거래소)으로 통일. 2010~2012: Mt.Gox 원시체결(당시 거래량 80%+, Bitstamp는 2011-09 개장·거래 희박) — 2차 재검증 2026-09-30에서 2011·2012를 Mt.Gox로 바꿈. 교차: Coinbase, Kraken, Bitfinex, CoinMetrics, Yahoo(CMC 집계), bitcoincharts 원시체결 아카이브.",
+    "krw": "연말 = 12-31 24:00 KST. 2017~: 업비트 1분봉(23:59 KST) 종가, 교차 빗썸 1분봉·코빗 KST 일봉. 2013~2016: 코빗 KST 일봉 종가, 교차 빗썸·bitcoinity.",
+    "status": "verified = 1차값이 원천값과 ±1% 이내이고 날짜·기준 동일. corrected = 1% 초과 또는 날짜/기준 오류."
+  },
+  "items": [
+    {
+      "id": "btc.usd.close.2010",
+      "asset": "BTC/USD",
+      "date": "2010-12-31",
+      "value": 0.3,
+      "unit": "USD/BTC",
+      "basis": "2010-12-31 UTC 일말 가격. 당시 사실상 유일 시장 Mt.Gox 기반 (Bitstamp·Coinbase·Yahoo 미존재)",
+      "status": "verified",
+      "previous": "0.30",
+      "sources": [
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2010-12-31&end_time=2010-12-31",
+        "https://api.blockchain.info/charts/market-price?timespan=all&format=json&sampled=false",
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all"
+      ],
+      "note": "CoinMetrics PriceUSD 12-31 = 0.30, blockchain.info market-price 12-31 = 0.30, bitcoinity Mt.Gox 12-31 일평균 0.2970(고 0.300/저 0.292). 3개 데이터셋 일치. 단 2010년엔 Mt.Gox 외 거래소가 거의 없어 세 데이터 모두 같은 Mt.Gox 체결에서 파생 — '독립 출처'는 데이터 가공처 기준. 게임값 $0.30 확정."
+    },
+    {
+      "id": "btc.usd.close.2011",
+      "asset": "BTC/USD",
+      "date": "2011-12-31",
+      "value": 4.72,
+      "unit": "USD/BTC",
+      "basis": "Mt.Gox BTC/USD 12-31 UTC 마지막 체결가(23:59 UTC). 2011은 Bitstamp 개장 직후(12-31 체결 6건·95 BTC)라 Mt.Gox 기준",
+      "status": "corrected",
+      "previous": "4.61",
+      "sources": [
+        "http://web.archive.org/web/20140330235726id_/http://api.bitcoincharts.com/v1/csv/mtgoxUSD.csv.gz",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2011-12-31&end_time=2011-12-31",
+        "http://web.archive.org/web/20140330235717id_/http://api.bitcoincharts.com/v1/csv/btceUSD.csv.gz"
+      ],
+      "note": " [2차 재검증 2026-09-30] 감사 목록 외 추가 정정(2012와 같은 결함): 감사자 4.58은 Bitstamp 12-31 체결 6건(95 BTC) 값이다. Mt.Gox는 같은 날 129,731 BTC(11,058건), 종가 4.722(20~24시 UTC 4.63~4.75, 일중 4.20~5.00, VWAP 4.60). CoinMetrics 4.71과 일치. BTC-e 4.648. 1차 4.61은 Mt.Gox 일 VWAP(4.60)에 가깝지만 종가 기준으론 -2.4%. 게임값 4.72."
+    },
+    {
+      "id": "btc.usd.close.2012",
+      "asset": "BTC/USD",
+      "date": "2012-12-31",
+      "value": 13.51,
+      "unit": "USD/BTC",
+      "basis": "Mt.Gox BTC/USD 12-31 UTC 마지막 체결가(23:58:33 UTC). 2010~2012는 Mt.Gox가 거래량 80%+인 사실상 기준시장이라 Mt.Gox로 둔다(2013~는 Bitstamp)",
+      "status": "verified",
+      "previous": "13.53",
+      "sources": [
+        "http://web.archive.org/web/20140330235726id_/http://api.bitcoincharts.com/v1/csv/mtgoxUSD.csv.gz",
+        "http://web.archive.org/web/20140330234429id_/http://api.bitcoincharts.com/v1/csv/bitfloorUSD.csv.gz",
+        "http://web.archive.org/web/20140330235717id_/http://api.bitcoincharts.com/v1/csv/btceUSD.csv.gz",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2012-12-31&end_time=2012-12-31"
+      ],
+      "note": " [2차 재검증 2026-09-30] 감사자 13.24(Bitstamp) 뒤집음: bitcoincharts 원시체결 아카이브 기준 12-31(UTC) 거래량 Mt.Gox 15,050 BTC(1,990건) vs Bitstamp 1,642 BTC(195건). Bitstamp 13.24는 21:16 UTC 이후 체결이 없는 3시간 묵은 값이다. Mt.Gox 종가 13.51(일중 13.37~13.56, VWAP 13.48) / Bitfloor 13.47 / CoinMetrics 13.55 / blockchain.info 13.57 / BTC-e 13.28. 1차 13.53은 Mt.Gox 종가와 0.15% 차이라 틀린 값이 아니다. 게임값 13.51(또는 1차 13.53 유지 가능). 원래 감사 메모: Bitstamp 13.24 / CoinMetrics 13.55 / blockchain.info 13.57 / Mt.Gox 일평균 13.46."
+    },
+    {
+      "id": "btc.usd.close.2013",
+      "asset": "BTC/USD",
+      "date": "2013-12-31",
+      "value": 732.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "corrected",
+      "previous": "754.01",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1388448000",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2013-12-31&end_time=2013-12-31",
+        "https://api.blockchain.info/charts/market-price?timespan=all&format=json&sampled=false",
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all",
+        "http://web.archive.org/web/20140330235717id_/http://api.bitcoincharts.com/v1/csv/btceUSD.csv.gz",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tBTCUSD/hist?start=1388448000000&end=1388534399000&sort=1"
+      ],
+      "note": "Bitstamp 732.0 / CoinMetrics 729.56 / blockchain.info 736.5 / Mt.Gox 일평균 797.54(고 814.00/저 777.00). 1차값 대비 +3.01%. 2011~2013은 Mt.Gox가 거래량 대부분이던 시기라 거래소 간 편차가 ±3% 이상(2013년 말 Mt.Gox는 출금 지연으로 약 $800 프리미엄). [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: BTC-e 12-31 23:59:51 UTC 체결 730.5 / Bitfinex 12-31 UTC 일봉 종가 729.99 / bitcoincharts Bitstamp 원시체결 23:59:35 UTC 732.0. Mt.Gox 원시체결 종가 806.01(출금지연 프리미엄, 기준 부적합)."
+    },
+    {
+      "id": "btc.usd.close.2014",
+      "asset": "BTC/USD",
+      "date": "2014-12-31",
+      "value": 321.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "320.19",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1419984000",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2014-12-31&end_time=2014-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 321.0 / CoinMetrics 320.66 / Yahoo(CMC집계) 320.19. 1차값 대비 -0.25%."
+    },
+    {
+      "id": "btc.usd.close.2015",
+      "asset": "BTC/USD",
+      "date": "2015-12-31",
+      "value": 430.89,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "430.57",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1451520000",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2015-12-31T00:00:00Z&end=2015-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2015-12-31&end_time=2015-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 430.89 / Coinbase 430.35 / CoinMetrics 429.68 / Yahoo(CMC집계) 430.57. 1차값 대비 -0.07%."
+    },
+    {
+      "id": "btc.usd.close.2016",
+      "asset": "BTC/USD",
+      "date": "2016-12-31",
+      "value": 966.3,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "963.74",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1483142400",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2016-12-31T00:00:00Z&end=2016-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2016-12-31&end_time=2016-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 966.3 / Coinbase 973.37 / CoinMetrics 968.97 / Yahoo(CMC집계) 963.74. 1차값 대비 -0.26%."
+    },
+    {
+      "id": "btc.usd.close.2017",
+      "asset": "BTC/USD",
+      "date": "2017-12-31",
+      "value": 13880.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "corrected",
+      "previous": "14156.4",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1514678400",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2017-12-31T00:00:00Z&end=2017-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2017-12-31&end_time=2017-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d",
+        "https://api.kraken.com/0/public/Trades?pair=XBTUSD&since=1514764500000000000",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tBTCUSD/hist?start=1514678400000&end=1514764799000&sort=1",
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=1514678400000&limit=1"
+      ],
+      "note": "Bitstamp 13,880.0 / Coinbase 13,863.13 / CoinMetrics 13,921.48 / Yahoo(CMC집계) 14,156.40. 1차값 대비 +1.99%. 1차값(StatMuse=CoinMarketCap/Yahoo 집계)은 김치 프리미엄이 붙은 한국 거래소가 섞여 미국 원천 거래소보다 1~2% 높음. [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: Kraken 마지막 체결 13,990.0(23:59:59 UTC) / Bitfinex 일봉 13,769 / Binance BTCUSDT 13,716.36. 미국·국제 거래소가 Bitstamp 값 주변에 모이고 CMC 집계값만 높다."
+    },
+    {
+      "id": "btc.usd.close.2018",
+      "asset": "BTC/USD",
+      "date": "2018-12-31",
+      "value": 3693.3,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "corrected",
+      "previous": "3742.7",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1546214400",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2018-12-31T00:00:00Z&end=2018-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2018-12-31&end_time=2018-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d",
+        "https://api.kraken.com/0/public/Trades?pair=XBTUSD&since=1546300500000000000",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tBTCUSD/hist?start=1546214400000&end=1546300799000&sort=1",
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=1546214400000&limit=1"
+      ],
+      "note": "Bitstamp 3,693.3 / Coinbase 3,691.86 / CoinMetrics 3,687.20 / Yahoo(CMC집계) 3,742.70. 1차값 대비 +1.34%. 1차값(StatMuse=CoinMarketCap/Yahoo 집계)은 김치 프리미엄이 붙은 한국 거래소가 섞여 미국 원천 거래소보다 1~2% 높음. [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: Kraken 마지막 체결 3,691.9(23:59:45 UTC) / Bitfinex 일봉 3,830.5(당시 Bitfinex 프리미엄) / Binance BTCUSDT 3,702.90. 미국·국제 거래소가 Bitstamp 값 주변에 모이고 CMC 집계값만 높다."
+    },
+    {
+      "id": "btc.usd.close.2019",
+      "asset": "BTC/USD",
+      "date": "2019-12-31",
+      "value": 7168.36,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "7193.6",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1577750400",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2019-12-31T00:00:00Z&end=2019-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2019-12-31&end_time=2019-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 7,168.36 / Coinbase 7,165.72 / CoinMetrics 7,167.40 / Yahoo(CMC집계) 7,193.60. 1차값 대비 +0.35%."
+    },
+    {
+      "id": "btc.usd.close.2020",
+      "asset": "BTC/USD",
+      "date": "2020-12-31",
+      "value": 28992.79,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "29001.72",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1609372800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2020-12-31T00:00:00Z&end=2020-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2020-12-31&end_time=2020-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 28,992.79 / Coinbase 28,990.08 / CoinMetrics 29,022.67 / Yahoo(CMC집계) 29,001.72. 1차값 대비 +0.03%."
+    },
+    {
+      "id": "btc.usd.close.2021",
+      "asset": "BTC/USD",
+      "date": "2021-12-31",
+      "value": 46214.37,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "46306.45",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1640908800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2021-12-31T00:00:00Z&end=2021-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2021-12-31&end_time=2021-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 46,214.37 / Coinbase 46,211.24 / CoinMetrics 46,355.12 / Yahoo(CMC집계) 46,306.45. 1차값 대비 +0.20%."
+    },
+    {
+      "id": "btc.usd.close.2022",
+      "asset": "BTC/USD",
+      "date": "2022-12-31",
+      "value": 16528.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "16547.5",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1672444800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2022-12-31T00:00:00Z&end=2022-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2022-12-31&end_time=2022-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 16,528.0 / Coinbase 16,530.35 / CoinMetrics 16,524.22 / Yahoo(CMC집계) 16,547.50. 1차값 대비 +0.12%."
+    },
+    {
+      "id": "btc.usd.close.2023",
+      "asset": "BTC/USD",
+      "date": "2023-12-31",
+      "value": 42258.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "42265.19",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1703980800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2023-12-31T00:00:00Z&end=2023-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2023-12-31&end_time=2023-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 42,258.0 / Coinbase 42,288.06 / CoinMetrics 42,217.16 / Yahoo(CMC집계) 42,265.19. 1차값 대비 +0.02%."
+    },
+    {
+      "id": "btc.usd.close.2024",
+      "asset": "BTC/USD",
+      "date": "2024-12-31",
+      "value": 93381.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "93429.2",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1735603200",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2024-12-31T00:00:00Z&end=2024-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2024-12-31&end_time=2024-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 93,381.0 / Coinbase 93,354.22 / CoinMetrics 93,389.73 / Yahoo(CMC집계) 93,429.20. 1차값 대비 +0.05%."
+    },
+    {
+      "id": "btc.usd.close.2025",
+      "asset": "BTC/USD",
+      "date": "2025-12-31",
+      "value": 87496.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(=12-31 24:00 UTC = 1/1 09:00 KST). 게임 USD 기준을 원천 거래소 Bitstamp로 통일",
+      "status": "verified",
+      "previous": "87508.83",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1767139200",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2025-12-31T00:00:00Z&end=2025-12-31T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2025-12-31&end_time=2025-12-31",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 87,496.0 / Coinbase 87,497.94 / CoinMetrics 87,516.98 / Yahoo(CMC집계) 87,508.83. 1차값 대비 +0.01%."
+    },
+    {
+      "id": "btc.usd.close.2026-09-28",
+      "asset": "BTC/USD",
+      "date": "2026-09-28",
+      "value": 83461.65,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(24:00 UTC = 다음날 09:00 KST)",
+      "status": "verified",
+      "previous": "83,502.61 (StatMuse/Yahoo 9/28 종가)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1790553600",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2026-09-28T00:00:00Z&end=2026-09-28T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2026-09-28&end_time=2026-09-28",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 83,461.65 / Coinbase 83,456.74 / CoinMetrics 83,516.76 / Yahoo 83,502.61 — 모두 ±0.3% 이내."
+    },
+    {
+      "id": "btc.usd.close.2026-09-29",
+      "asset": "BTC/USD",
+      "date": "2026-09-29",
+      "value": 83629.41,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp BTC/USD UTC 일봉 종가(24:00 UTC = 다음날 09:00 KST)",
+      "status": "verified",
+      "previous": "83,607.21 (Fortune 9/29 14:45 ET 장중가)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1790640000",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2026-09-29T00:00:00Z&end=2026-09-29T23:59:59Z",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2026-09-29&end_time=2026-09-29",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 83,629.41 / Coinbase 83,638.42 / CoinMetrics 83,674.66 — 모두 ±0.3% 이내. Yahoo 일봉은 9/29 행이 null(데이터 누락) → Yahoo 1시간봉 9/29 22:00 UTC 종가 83,608.69로 보조 확인."
+    },
+    {
+      "id": "btc.krw.close.2013",
+      "asset": "BTC/KRW (국내 거래소 실제 시세)",
+      "date": "2013-12-31",
+      "value": 764002,
+      "unit": "KRW/BTC",
+      "basis": "코빗 KST 12-31 일봉 종가(12-31 24:00 KST). 코빗=국내 최초 원화 거래소(2013). 업비트 데이터는 2017-09-25부터라 사용 불가",
+      "status": "corrected",
+      "previous": "약 79.6만(USD×환율 계산값)",
+      "sources": [
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1388415600000&end=1388501999000&limit=1",
+        "https://api.bithumb.com/v1/candles/days?market=KRW-BTC&count=1&to=2014-01-01%2000:00:00",
+        "https://data.bitcoinity.org/export_data.csv?currency=KRW&data_type=price&c=e&t=l&timespan=all",
+        "http://web.archive.org/web/20140711163344id_/http://api.bitcoincharts.com/v1/csv/korbitKRW.csv.gz"
+      ],
+      "note": "1차엔 국내 실제 시세가 없어 USD×환율 추정만 있었음 → 실제 거래소 시세로 대체(1차 추정 대비 -4.0%). 코빗 종가 764,002 / 빗썸(전신 XCOIN) KST 일봉 종가 768,000 / bitcoinity 12-31 일평균 코빗 768,224·빗썸 768,499. 두 거래소 차이 ±1% 이내. 게임 대체안(USD×환율) 불필요. [2차 재검증 2026-09-30] 감사자 판단 동의. bitcoincharts 코빗 원시체결 아카이브(2014-07 스냅샷)에서 12-31 24:00 KST 이전 마지막 체결 = 22:54:38 KST 764,002로 정확히 일치."
+    },
+    {
+      "id": "btc.krw.close.2014",
+      "asset": "BTC/KRW (국내 거래소 실제 시세)",
+      "date": "2014-12-31",
+      "value": 338000,
+      "unit": "KRW/BTC",
+      "basis": "코빗 KST 12-31 일봉 종가(12-31 24:00 KST). 코빗=국내 최초 원화 거래소(2013). 업비트 데이터는 2017-09-25부터라 사용 불가",
+      "status": "corrected",
+      "previous": "약 35.2만(계산값)",
+      "sources": [
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1419951600000&end=1420037999000&limit=1",
+        "https://api.bithumb.com/v1/candles/days?market=KRW-BTC&count=1&to=2015-01-01%2000:00:00",
+        "https://data.bitcoinity.org/export_data.csv?currency=KRW&data_type=price&c=e&t=l&timespan=all",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1420037999999&size=2"
+      ],
+      "note": "1차엔 국내 실제 시세가 없어 USD×환율 추정만 있었음 → 실제 거래소 시세로 대체(1차 추정 대비 -4.0%). 코빗 종가 338,000 / 빗썸(전신 XCOIN) KST 일봉 종가 341,000 / bitcoinity 12-31 일평균 코빗 339,943·빗썸 340,860. 두 거래소 차이 ±1% 이내. 게임 대체안(USD×환율) 불필요. [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: 코인원 일봉(12-31 09:00 KST 종가) 339,000(시각 기준이 달라 참고용). 코빗·빗썸과 ±1% 이내."
+    },
+    {
+      "id": "btc.krw.close.2015",
+      "asset": "BTC/KRW (국내 거래소 실제 시세)",
+      "date": "2015-12-31",
+      "value": 509900,
+      "unit": "KRW/BTC",
+      "basis": "코빗 KST 12-31 일봉 종가(12-31 24:00 KST). 코빗=국내 최초 원화 거래소(2013). 업비트 데이터는 2017-09-25부터라 사용 불가",
+      "status": "corrected",
+      "previous": "약 50.5만(계산값)",
+      "sources": [
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1451487600000&end=1451573999000&limit=1",
+        "https://api.bithumb.com/v1/candles/days?market=KRW-BTC&count=1&to=2016-01-01%2000:00:00",
+        "https://data.bitcoinity.org/export_data.csv?currency=KRW&data_type=price&c=e&t=l&timespan=all",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1451573999999&size=2"
+      ],
+      "note": "1차엔 국내 실제 시세가 없어 USD×환율 추정만 있었음 → 실제 거래소 시세로 대체(1차 추정 대비 +1.0%). 코빗 종가 509,900 / 빗썸(전신 XCOIN) KST 일봉 종가 506,000 / bitcoinity 12-31 일평균 코빗 507,298·빗썸 507,210. 두 거래소 차이 ±1% 이내. 게임 대체안(USD×환율) 불필요. [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: 코인원 12-31 23시 KST 1시간봉 종가 506,500. 코빗·빗썸과 ±1% 이내."
+    },
+    {
+      "id": "btc.krw.close.2016",
+      "asset": "BTC/KRW (국내 거래소 실제 시세)",
+      "date": "2016-12-31",
+      "value": 1192500,
+      "unit": "KRW/BTC",
+      "basis": "코빗 KST 12-31 일봉 종가(12-31 24:00 KST). 코빗=국내 최초 원화 거래소(2013). 업비트 데이터는 2017-09-25부터라 사용 불가",
+      "status": "corrected",
+      "previous": "약 116.4만(계산값)",
+      "sources": [
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1483110000000&end=1483196399000&limit=1",
+        "https://api.bithumb.com/v1/candles/days?market=KRW-BTC&count=1&to=2017-01-01%2000:00:00",
+        "https://data.bitcoinity.org/export_data.csv?currency=KRW&data_type=price&c=e&t=l&timespan=all",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1483196399999&size=2"
+      ],
+      "note": "1차엔 국내 실제 시세가 없어 USD×환율 추정만 있었음 → 실제 거래소 시세로 대체(1차 추정 대비 +2.4%). 코빗 종가 1,192,500 / 빗썸(전신 XCOIN) KST 일봉 종가 1,192,000 / bitcoinity 12-31 일평균 코빗 1,192,599·빗썸 1,191,948. 두 거래소 차이 ±1% 이내. 게임 대체안(USD×환율) 불필요. [2차 재검증 2026-09-30] 감사자 판단 동의. 다른 원천: 코인원 12-31 23시 KST 1시간봉 종가 1,192,500. 코빗·빗썸과 ±1% 이내."
+    },
+    {
+      "id": "btc.krw.close.2017",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2017-12-31",
+      "value": 18713000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "19280000 (업비트 API 일봉 '2017-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2018-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2018-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1514646000000&end=1514732399000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1514732340000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 18,713,000 / 빗썸 23:59 1분봉 18,674,000 / 코빗 KST 일봉 종가 18,640,000 (3개 거래소 ±0.3% 이내). 1차 대비 -2.94%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 18,670,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2018",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2018-12-31",
+      "value": 4262000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "4200000 (업비트 API 일봉 '2018-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2019-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2019-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1546182000000&end=1546268399000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1546268340000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 4,262,000 / 빗썸 23:59 1분봉 4,265,000 / 코빗 KST 일봉 종가 4,269,500 (3개 거래소 ±0.3% 이내). 1차 대비 +1.48%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 4,264,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2019",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2019-12-31",
+      "value": 8342000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "8312000 (업비트 API 일봉 '2019-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2020-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2020-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1577718000000&end=1577804399000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1577804340000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 8,342,000 / 빗썸 23:59 1분봉 8,343,000 / 코빗 KST 일봉 종가 8,351,500 (3개 거래소 ±0.3% 이내). 1차 대비 +0.36%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 8,349,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2020",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2020-12-31",
+      "value": 31612000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "32042000 (업비트 API 일봉 '2020-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2021-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2021-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1609340400000&end=1609426799000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1609426740000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 31,612,000 / 빗썸 23:59 1분봉 31,596,000 / 코빗 KST 일봉 종가 31,662,500 (3개 거래소 ±0.3% 이내). 1차 대비 -1.34%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 31,637,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2021",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2021-12-31",
+      "value": 58412000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "56784000 (업비트 API 일봉 '2021-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2022-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2022-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1640876400000&end=1640962799000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1640962740000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 58,412,000 / 빗썸 23:59 1분봉 58,441,000 / 코빗 KST 일봉 종가 58,419,000 (3개 거래소 ±0.3% 이내). 1차 대비 +2.87%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 58,323,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2022",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2022-12-31",
+      "value": 21164000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "21079000 (업비트 API 일봉 '2022-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2023-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2023-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1672412400000&end=1672498799000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1672498740000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 21,164,000 / 빗썸 23:59 1분봉 21,149,000 / 코빗 KST 일봉 종가 21,145,000 (3개 거래소 ±0.3% 이내). 1차 대비 +0.40%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 21,138,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2023",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2023-12-31",
+      "value": 56901000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "57047000 (업비트 API 일봉 '2023-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2024-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2024-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1703948400000&end=1704034799000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1704034740000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 56,901,000 / 빗썸 23:59 1분봉 56,949,000 / 코빗 KST 일봉 종가 56,876,000 (3개 거래소 ±0.3% 이내). 1차 대비 -0.26%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 56,919,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2024",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2024-12-31",
+      "value": 142200000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "139257000 (업비트 API 일봉 '2024-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2025-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2025-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1735570800000&end=1735657199000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1735657140000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 142,200,000 / 빗썸 23:59 1분봉 142,010,000 / 코빗 KST 일봉 종가 142,048,000 (3개 거래소 ±0.3% 이내). 1차 대비 +2.11%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 142,060,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2025",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2025-12-31",
+      "value": 128336000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 12-31 23:59 KST 1분봉 종가 = 12-31 24:00 KST 연말 종가",
+      "status": "corrected",
+      "previous": "128067000 (업비트 API 일봉 '2025-12-31' 종가 = 실제로는 다음해 1/1 09:00 KST 시점)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2026-01-01T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2026-01-01%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1767106800000&end=1767193199000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1767193140000&size=1"
+      ],
+      "note": "기준 정정: 업비트 일봉 API는 UTC 00:00(=KST 09:00)에 끊기므로 1차 값은 1월 1일 오전 9시 가격이었음. KST 연말(24:00) 기준으로 재산출: 업비트 128,336,000 / 빗썸 23:59 1분봉 128,437,000 / 코빗 KST 일봉 종가 128,392,000 (3개 거래소 ±0.3% 이내). 1차 대비 +0.21%. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원(다른 거래소) 12-31 23:59 KST 1분봉 종가 128,360,000로 업비트 값과 ±0.2% 이내. 업비트 일봉 API가 KST 09:00에 끊기는 것도 재현했다(2017-12-31 일봉 candle_date_time_kst 09:00, 종가 19,280,000 = 1/1 09:00 KST 값)."
+    },
+    {
+      "id": "btc.krw.close.2026-09-29",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2026-09-29",
+      "value": 113263000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 KRW-BTC 9/29 23:59 KST 1분봉 종가(9/29 24:00 KST)",
+      "status": "corrected",
+      "previous": "113,587,000 (업비트 일봉 '9/29' 종가 = 실제로는 9/30 09:00 KST)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2026-09-30T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/1?market=KRW-BTC&count=1&to=2026-09-30%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1790607600000&end=1790693999000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1m&timestamp=1790693940000&size=1"
+      ],
+      "note": "업비트 113,263,000 / 빗썸 KST 9/29 일봉 종가 113,255,000 / 코빗 113,210,000. 게임 결산 시점을 9/30 09:00 KST로 잡으면 113,587,000 사용. USD 결산값(9/29 UTC 종가)은 9/30 09:00 KST 시점이므로, USD·원화 결산 시각을 맞추려면 이 차이를 인지할 것. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원 9/29 23:59 KST 1분봉 종가 113,210,000(업비트와 -0.05%). 업비트 9/30 09:00 KST 일봉 시가 113,587,000 = 1차값임을 재현했다."
+    },
+    {
+      "id": "btc.event.pizza.2010-05-22",
+      "asset": "BTC",
+      "date": "2010-05-22",
+      "value": 10000,
+      "unit": "BTC (피자 2판 대금)",
+      "basis": "거래 완료 보고 게시 시각 2010-05-22 19:17 (bitcointalk 표시시각)",
+      "status": "verified",
+      "previous": "10,000 BTC = 피자 2판(약 $41)",
+      "sources": [
+        "https://bitcointalk.org/index.php?topic=137.0",
+        "https://en.wikipedia.org/wiki/History_of_bitcoin"
+      ],
+      "note": "10,000 BTC·피자 2판·5/22 완료 모두 원문(bitcointalk) 확인. 달러 가치는 출처별 상이: Wikipedia '당시 약 $41'(시세 환산), 라슬로 본인은 6/12 글에서 '피자값 총 약 $25(팁 포함 $30)'. 게임엔 '10,000 BTC(당시 약 $41 상당)' 표기 권장, 1BTC≈$0.004. 이 시점엔 거래소가 없어 BTC 매수 불가."
+    },
+    {
+      "id": "btc.event.mtgox_first_trade",
+      "asset": "BTC/USD (Mt.Gox)",
+      "date": "2010-07-17",
+      "value": 0.04951,
+      "unit": "USD/BTC",
+      "basis": "Mt.Gox 첫 체결 2010-07-17 23:09:17 UTC = 2010-07-18 08:09 KST, 20 BTC",
+      "status": "verified",
+      "previous": "2010-07-18, $0.05",
+      "sources": [
+        "https://bitcoin.clarkmoody.com/posts/ten-years-bitcoin-market-data",
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all",
+        "https://cryptopotato.com/10-years-ago-first-bitcoin-trade-on-mt-gox-for-0-05-per-btc/"
+      ],
+      "note": "첫 체결가 $0.04951(20 BTC, 총 $0.99). bitcoinity Mt.Gox 07-17(UTC) 데이터 0.04951 일치. 1차 '7/18, $0.05'는 KST 날짜·반올림 값으로 틀리진 않음 → 게임엔 '2010-07-18(한국시간) $0.0495' 표기. 다음날(7/18 UTC) 고가 $0.0859, CoinMetrics 일별 시작값 7/18 $0.0858."
+    },
+    {
+      "id": "btc.usd.high.2011-06-08",
+      "asset": "BTC/USD (Mt.Gox)",
+      "date": "2011-06-08",
+      "value": 31.91,
+      "unit": "USD/BTC",
+      "basis": "Mt.Gox 장중 최고가(UTC)",
+      "status": "verified",
+      "previous": "약 31.91",
+      "sources": [
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all",
+        "https://bitcoinmagazine.com/markets/anniversary-of-the-great-bubble-of-2011-1339139269",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2011-06-08&end_time=2011-06-08",
+        "http://web.archive.org/web/20140330235726id_/http://api.bitcoincharts.com/v1/csv/mtgoxUSD.csv.gz"
+      ],
+      "note": "bitcoinity Mt.Gox 6/8 고가 31.9099, Bitcoin Magazine 등 '$31.91 on June 8'. CoinMetrics 일별 최고 6/8 $29.03(일말 기준). 이후 6/19 Mt.Gox 해킹 순간폭락, 11월까지 -93%. [2차 재검증 2026-09-30] 감사자 판단 동의. bitcoincharts Mt.Gox 원시체결 아카이브: 2011년 최고 체결 31.9099(2011-06-08 17:10:38 UTC). 2011년 BTC-e 최고는 12.0. 주의: 이 시각은 한국시간 6/9 02:10이라 게임이 KST 날짜를 쓰면 2011-06-09."
+    },
+    {
+      "id": "btc.usd.high.2011",
+      "asset": "BTC/USD",
+      "date": "2011-06-08",
+      "value": 31.91,
+      "unit": "USD/BTC",
+      "basis": "2011년 연중 최고가(Mt.Gox 장중)",
+      "status": "corrected",
+      "previous": "35.88 (1차 표 '2011 연중 고점')",
+      "sources": [
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all",
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&start_time=2011-06-08&end_time=2011-06-08",
+        "https://api.blockchain.info/charts/market-price?timespan=all&format=json&sampled=false",
+        "http://web.archive.org/web/20140330235726id_/http://api.bitcoincharts.com/v1/csv/mtgoxUSD.csv.gz"
+      ],
+      "note": "1차 표의 2011 연중 고점 35.88은 어느 원천에도 없음: Mt.Gox 장중 최고 31.91, CoinMetrics 일별 최고 29.03, blockchain.info 일별 최고도 30 안팎. 35.88은 오류 → 31.91로 정정. [2차 재검증 2026-09-30] 감사자 판단 동의. bitcoincharts Mt.Gox 원시체결 아카이브: 2011년 최고 체결 31.9099(2011-06-08 17:10:38 UTC). 2011년 BTC-e 최고는 12.0. 주의: 이 시각은 한국시간 6/9 02:10이라 게임이 KST 날짜를 쓰면 2011-06-09."
+    },
+    {
+      "id": "btc.event.first_1000.2013-11-27",
+      "asset": "BTC/USD (Mt.Gox)",
+      "date": "2013-11-27",
+      "value": 1000,
+      "unit": "USD/BTC (돌파 기준선)",
+      "basis": "Mt.Gox에서 USD 기준 첫 $1,000 돌파. CoinDesk 보도 게시 11/27 09:52 EST(=14:52 UTC, 23:52 KST) 이전에 발생 → UTC·미국·한국시간 모두 11/27",
+      "status": "corrected",
+      "previous": "2013-11-28 (1차: '한국시간으론 11/28 표기 권장')",
+      "sources": [
+        "https://www.coindesk.com/markets/2013/11/27/bitcoin-price-hits-1000-after-doubling-in-7-days-what-next",
+        "https://www.cnbc.com/2013/11/27/bitcoin-hits-1000-for-first-time.html",
+        "https://data.bitcoinity.org/export_data.csv?currency=USD&data_type=price&exchange=mtgox&t=l&timespan=all",
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1385596800",
+        "http://web.archive.org/web/20140330235726id_/http://api.bitcoincharts.com/v1/csv/mtgoxUSD.csv.gz",
+        "http://web.archive.org/web/20140331001242id_/http://api.bitcoincharts.com/v1/csv/bitstampUSD.csv.gz",
+        "http://web.archive.org/web/20140330235717id_/http://api.bitcoincharts.com/v1/csv/btceUSD.csv.gz"
+      ],
+      "note": "CoinDesk(11/27 09:52 EST 게시)·CNBC(11/27, Mt.Gox 최고 $1,030)가 11/27 돌파 보도, bitcoinity Mt.Gox 11/26 고가 975 → 11/27 고가 1,094.79. Bitstamp는 하루 늦은 11/28(UTC) 고가 1,050.18로 첫 돌파 — Wikipedia '28 November'는 이 차이로 보임. 게임은 '2013-11-27 Mt.Gox $1,000 돌파'로. 11월 말 Mt.Gox 고점 $1,242(11/29), Bitstamp 고점 $1,163(11/30). [2차 재검증 2026-09-30] 감사자 판단 동의. 원시체결 아카이브로 정확한 시각을 확인했다. Mt.Gox 첫 $1,000 체결은 2013-11-27 14:49:34 UTC(=09:49 EST, 23:49 KST)로 UTC·미국·한국 날짜 모두 11/27. 11/26 Mt.Gox 최고는 975.0. Bitstamp 첫 $1,000은 11-28 11:57 UTC, BTC-e는 11-28 16:14 UTC."
+    },
+    {
+      "id": "btc.event.mtgox_bankruptcy.2014-02-28",
+      "asset": "Mt.Gox",
+      "date": "2014-02-28",
+      "value": 850000,
+      "unit": "BTC (분실 신고량)",
+      "basis": "도쿄지방법원 민사재생(파산보호) 신청일",
+      "status": "verified",
+      "previous": "2014-02-28, 85만 BTC",
+      "sources": [
+        "https://techcrunch.com/2014/02/28/mt-gox-files-for-bankruptcy",
+        "https://www.npr.org/sections/thetwo-way/2014/02/28/283863219/mtgox-files-for-bankruptcy-nearly-500m-of-bitcoins-lost",
+        "https://www.business-standard.com/amp/article/reuters/mt-gox-files-for-bankruptcy-protection-in-tokyo-media-114022800788_1.html"
+      ],
+      "note": "2/28 도쿄 파산보호 신청, 85만 BTC(고객분 약 75만) 분실 발표, 당시 약 4.7~4.8억달러. 2/7 출금 중단 선행. 이후 약 20만 BTC 발견. 게임: 2014-02-07 이전 Mt.Gox 보관분은 동결(환불은 2024년 이후) 처리 권장."
+    },
+    {
+      "id": "btc.usd.high.2017-12-17",
+      "asset": "BTC/USD",
+      "date": "2017-12-17",
+      "value": 19666.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최고(UTC 12:00대 = KST 12/17 21시대)",
+      "status": "verified",
+      "previous": "약 19,783 (CMC 19,783.06)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1513468800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2017-12-17T00:00:00Z&end=2017-12-17T23:59:59Z",
+        "https://en.wikipedia.org/wiki/2018_cryptocurrency_crash"
+      ],
+      "note": "Bitstamp 19,666 / Coinbase 19,891.99 / CoinMarketCap 19,783.06(Wikipedia) / Yahoo 20,089. 날짜 12/17 전 출처 일치. 게임 USD 기준 Bitstamp로 통일해 19,666 사용(1차 대비 -0.6%). 당일 Bitstamp 종가 18,953."
+    },
+    {
+      "id": "btc.krw.high.2018-01-06",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2018-01-06",
+      "value": 28885000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 장중 최고(1/6 10시대 KST)",
+      "status": "verified",
+      "previous": "업비트 2,888만 / 빗썸 2,598만",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2018-01-09T00:00:00%2B09:00",
+        "https://www.dailian.co.kr/news/view/947981",
+        "https://api.bithumb.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2018-01-09%2000:00:00",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1516374000000&size=500"
+      ],
+      "note": "업비트 API 1/6 10시(KST) 고가 28,885,000, 데일리안 '업비트 기준 2888만원'. 빗썸은 같은 날 25,988,000(데일리안 2,598만) — 거래소별 차이 11%. 코빗 1/6 고가 27,299,000. 김치 프리미엄 정점기. [2차 재검증 2026-09-30] 감사자 판단 동의. 업비트 1시간봉 재현: 1/6 10시 KST 28,885,000(1/3~1/19 최고). 코인원 같은 날 최고 26,616,000(1/6 07시). 거래소별 차이가 크니 \"업비트 기준\" 표기 필수."
+    },
+    {
+      "id": "btc.usd.low.2018-12-15",
+      "asset": "BTC/USD",
+      "date": "2018-12-15",
+      "value": 3122.28,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최저(UTC 15시대 = KST 12/16 00시대)",
+      "status": "verified",
+      "previous": "약 3,122~3,200",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1544832000",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2018-12-15T00:00:00Z&end=2018-12-15T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 3,122.28 / Coinbase 3,128.89 / Yahoo(CMC) 3,191.30. UTC 12/15, 한국시간으론 12/16 자정 직후. 2017 고점 대비 -84%."
+    },
+    {
+      "id": "btc.usd.low.2020-03-13",
+      "asset": "BTC/USD",
+      "date": "2020-03-13",
+      "value": 3850.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최저(UTC 02시대 = KST 3/13 11시대)",
+      "status": "corrected",
+      "previous": "4,106.98 (StatMuse/CMC 저점, Bitstamp 3,850 병기)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1584057600",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2020-03-13T00:00:00Z&end=2020-03-13T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d",
+        "https://api.kraken.com/0/public/Trades?pair=XBTUSD&since=1584057600000000000",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tBTCUSD/hist?start=1584057600000&end=1584143999000&sort=1",
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=1584057600000&limit=1"
+      ],
+      "note": "Bitstamp 3,850.00 / Coinbase 3,858 → 원천 거래소 2곳 일치. CMC/Yahoo 집계 저점 4,106.98은 집계 평활로 약 6% 높음. USD 기준을 Bitstamp로 통일해 3,850 채택. 날짜 3/13(UTC·KST 동일). [2차 재검증 2026-09-30] 감사자 판단 동의(Bitstamp 기준값). 다른 거래소 저가는 제각각이다: Kraken 3,913.1(02:17 UTC) / Bitfinex 4,000 / Binance BTCUSDT 3,782.13. 급락 순간이라 거래소마다 ±3% 차이가 난다. 게임은 \"Bitstamp 기준 약 3,850달러\"로 표기."
+    },
+    {
+      "id": "btc.krw.low.2020-03-13",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2020-03-13",
+      "value": 5489000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 장중 최저(3/13 11시대 KST)",
+      "status": "verified",
+      "previous": "업비트 3/13 일봉 저가 5,489,000",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2020-03-17T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2020-03-17%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1584025200000&end=1584111599000&limit=1"
+      ],
+      "note": "업비트 5,489,000 / 빗썸 5,494,000(같은 시각) / 코빗 5,500,000."
+    },
+    {
+      "id": "btc.usd.high.2021-11-10",
+      "asset": "BTC/USD",
+      "date": "2021-11-10",
+      "value": 69000.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최고(UTC 14시대 = KST 11/10 23시대)",
+      "status": "verified",
+      "previous": "68,990.90",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1636502400",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2021-11-10T00:00:00Z&end=2021-11-10T23:59:59Z",
+        "https://www.forbes.com/sites/cbovaird/2021/11/10/bitcoin-hits-latest-all-time-high-close-to-69000-as-multiple-factors-drive-gains/"
+      ],
+      "note": "Bitstamp 69,000.00 / Coinbase 69,000 / Forbes 68,990.90 / Yahoo(CMC) 68,789.63. 원화 고점은 업비트 11/9 8,270만(범위 외)."
+    },
+    {
+      "id": "luna.usd.high.2022-04-05",
+      "asset": "LUNA/USD",
+      "date": "2022-04-05",
+      "value": 119.18,
+      "unit": "USD/LUNA",
+      "basis": "CoinGecko·CoinMarketCap 집계 사상 최고(2022-04-05 04:24 UTC)",
+      "status": "corrected",
+      "previous": "1차 119.18 → 1차 팩트체크가 119.51로 정정",
+      "sources": [
+        "https://api.coingecko.com/api/v3/coins/terra-luna?localization=false&tickers=false",
+        "https://query1.finance.yahoo.com/v8/finance/chart/LUNC-USD?period1=1648771200&period2=1653004800&interval=1d",
+        "https://api.binance.com/api/v3/klines?symbol=LUNAUSDT&interval=1d&startTime=1648771200000&endTime=1653004800000",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tLUNA:USD/hist?start=1648944000000&end=1649376000000&sort=1",
+        "https://api.kraken.com/0/public/Trades?pair=LUNAUSD&since=1649116800000000000"
+      ],
+      "note": "CoinGecko ATH 119.18(04-05) = Yahoo/CMC 04-05 고가 119.18 (독립 집계 2곳 정확히 일치). 바이낸스 원천 고가 119.55, Wikipedia 119.51(거래소 장중값). 1차의 119.51 정정은 불필요했음 → 집계 기준 119.18 복원, 거래소별 119.2~119.6 편차 note. [2차 재검증 2026-09-30] 감사자 판단 동의(집계 기준). CoinGecko API가 지금도 ATH 119.18(2022-04-05 04:24 UTC)로 반환한다. 거래소 원천은 Kraken 119.50(12:24 UTC) / Bitfinex 119.44 / Binance 119.55로 모두 119.4~119.6이다. BTC는 거래소 기준, LUNA는 집계 기준이라 기준이 섞여 있지만 차이는 0.3%라 게임 영향은 미미하다. \"약 119달러\"로 표기해도 된다."
+    },
+    {
+      "id": "luna.usd.close.2022-05-06",
+      "asset": "LUNA/USD",
+      "date": "2022-05-06",
+      "value": 77.3,
+      "unit": "USD/LUNA",
+      "basis": "바이낸스 LUNAUSDT UTC 일봉 종가(붕괴 직전 마지막 정상가)",
+      "status": "verified",
+      "previous": "(1차 없음)",
+      "sources": [
+        "https://api.binance.com/api/v3/klines?symbol=LUNAUSDT&interval=1d&startTime=1648771200000&endTime=1653004800000",
+        "https://query1.finance.yahoo.com/v8/finance/chart/LUNC-USD?period1=1648771200&period2=1653004800&interval=1d"
+      ],
+      "note": "바이낸스 77.30 / Yahoo(CMC) 77.46. 5/7부터 UST 디페그 시작, 5/9 LUNA 30달러대, 5/11 1달러 붕괴."
+    },
+    {
+      "id": "luna.usd.close.2022-05-13",
+      "asset": "LUNA/USD",
+      "date": "2022-05-13",
+      "value": 0.0001,
+      "unit": "USD/LUNA",
+      "basis": "UTC 일봉 종가(사실상 0)",
+      "status": "verified",
+      "previous": "'일주일 만에 사실상 0'",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/LUNC-USD?period1=1648771200&period2=1653004800&interval=1d",
+        "https://api.binance.com/api/v3/klines?symbol=LUNAUSDT&interval=1d&startTime=1648771200000&endTime=1653004800000"
+      ],
+      "note": "Yahoo(CMC) 0.000102 / 바이낸스 0.00005(5/12~13 거래 중단·재개 영향으로 값 불안정). 게임은 '5/13 이후 -99.99%, 사실상 0'으로 처리 권장(고점 대비 약 100만분의 1)."
+    },
+    {
+      "id": "ust.usd.close.2022-05-09",
+      "asset": "UST/USD",
+      "date": "2022-05-09",
+      "value": 0.754,
+      "unit": "USD/UST",
+      "basis": "바이낸스 USTUSDT UTC 일봉 종가 — 1달러 페그 이탈 첫날",
+      "status": "verified",
+      "previous": "5/9부터 디페그",
+      "sources": [
+        "https://api.binance.com/api/v3/klines?symbol=USTUSDT&interval=1d&startTime=1651881600000&endTime=1652745600000",
+        "https://query1.finance.yahoo.com/v8/finance/chart/USTC-USD?period1=1651881600&period2=1654041600&interval=1d",
+        "https://en.wikipedia.org/wiki/Terra_(blockchain)"
+      ],
+      "note": "바이낸스 0.754 / Yahoo 0.793 (집계 차이 5%). 날짜 5/9 일치. 1차 미확인 'UST 최저 $0.044'는 Yahoo 기준 5월 말 0.02~0.03, 6/1 0.015까지 하락 → '$0.044'는 특정 시점값일 뿐 최저 아님(게임 사용 비권장)."
+    },
+    {
+      "id": "btc.usd.low.2022-05-12",
+      "asset": "BTC/USD",
+      "date": "2022-05-12",
+      "value": 25401.05,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최저(UTC) — 루나 사태 BTC 저점",
+      "status": "verified",
+      "previous": "(1차 없음)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1652313600",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2022-05-12T00:00:00Z&end=2022-05-12T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 25,401.05 / Coinbase 25,338.53 / Yahoo(CMC) 26,350.49(집계 평활로 높음). 루나 이벤트에서 BTC 동반 급락값으로 사용 가능."
+    },
+    {
+      "id": "btc.usd.low.2022-11-21",
+      "asset": "BTC/USD",
+      "date": "2022-11-21",
+      "value": 15479.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최저(UTC 21시대 = KST 11/22 06시대)",
+      "status": "verified",
+      "previous": "15,479 (Bitstamp) / 15,480~15,587",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1668988800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2022-11-21T00:00:00Z&end=2022-11-21T23:59:59Z",
+        "https://www.cnbc.com/2022/11/22/bitcoin-btc-hits-2-year-low-as-ftx-collapse-contagion-fears-linger.html"
+      ],
+      "note": "Bitstamp 15,479 / Coinbase 15,460 / Yahoo(CMC) 15,599.05. UTC 11/21 밤 = 한국시간 11/22 아침. FTX 파산신청은 11/11."
+    },
+    {
+      "id": "btc.krw.first_100m.2024-03-11",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2024-03-11",
+      "value": 100000000,
+      "unit": "KRW/BTC (돌파 기준선)",
+      "basis": "업비트에서 처음 1억원 체결: 2024-03-11 16:32 KST",
+      "status": "verified",
+      "previous": "3/11 첫 1억 돌파, 업비트 1억73만9천원",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/1?market=KRW-BTC&count=60&to=2024-03-11T17:00:00%2B09:00",
+        "https://www.ajunews.com/view/20240311164622066",
+        "https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03309526638822336"
+      ],
+      "note": "업비트 API 1분봉: 16:32 KST 첫 1억 도달(이전 모든 고가 1억 미만) = 아주경제·이데일리 '오후 4시 32분 1억 돌파' 일치. 빗썸은 같은 날 20:41 KST 첫 1억."
+    },
+    {
+      "id": "btc.usd.first_100k.2024-12-05",
+      "asset": "BTC/USD",
+      "date": "2024-12-05",
+      "value": 100000,
+      "unit": "USD/BTC (돌파 기준선)",
+      "basis": "첫 $100,000 체결 2024-12-05 02:33 UTC = 12/05 11:33 KST (= 12/04 21:33 ET)",
+      "status": "verified",
+      "previous": "12/4(ET)·12/5 돌파, 당일 103,679",
+      "sources": [
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=60&start=2024-12-05T02:00:00Z&end=2024-12-05T04:00:00Z",
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=60&limit=1000&start=1733356800",
+        "https://en.wikipedia.org/wiki/History_of_bitcoin"
+      ],
+      "note": "Coinbase·Bitstamp 1분봉 모두 02:33 UTC 첫 10만 도달. Wikipedia '12/5 $100,000'. 당일 고가 Bitstamp 103,647 / Coinbase 104,000 / Yahoo 103,900.47. 1차의 103,679는 출처 불명(범위 내)."
+    },
+    {
+      "id": "btc.usd.ath.2025-10-06",
+      "asset": "BTC/USD",
+      "date": "2025-10-06",
+      "value": 126272.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 사상 최고(UTC 18시대 = KST 10/7 03시대)",
+      "status": "verified",
+      "previous": "126,198.07",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1759708800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2025-10-06T00:00:00Z&end=2025-10-06T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 126,272 / Coinbase 126,296 / Yahoo(CMC) 126,198.07 (±0.1%). 2026-09-29까지 경신 없음(3개 출처 확인). 한국시간으론 10/7 새벽."
+    },
+    {
+      "id": "btc.krw.ath.2025-10-09",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2025-10-09",
+      "value": 179869000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 장중 원화 사상 최고(10/9 22시대 KST)",
+      "status": "verified",
+      "previous": "179,869,000 (10/9, 1차 팩트체크 정정값)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2025-10-11T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2025-10-11%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1759935600000&end=1760021999000&limit=1"
+      ],
+      "note": "업비트 179,869,000(10/9 22시 KST) / 빗썸 179,734,000(같은 시각) / 코빗 10/9 고가 179,709,000. 3개 거래소 모두 10/9가 사상 최고. USD ATH(10/6)와 날짜 다름(원화 약세·추석연휴). 언론 보도 '10/4 1억7,499만'은 당시 최고일 뿐."
+    },
+    {
+      "id": "btc.usd.high.2026-01-14",
+      "asset": "BTC/USD",
+      "date": "2026-01-14",
+      "value": 97939.0,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최고(UTC 20시대 = KST 1/15 05시대) — 2026 연고점",
+      "status": "verified",
+      "previous": "97,694 (CoinDesk) / 97,860.60 (StatMuse)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1768348800",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2026-01-14T00:00:00Z&end=2026-01-14T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d"
+      ],
+      "note": "Bitstamp 97,939 / Coinbase 97,963.62 / Yahoo 97,860.60. UTC 1/14, 한국시간 1/15 새벽."
+    },
+    {
+      "id": "btc.krw.high.2026",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2026-01-15",
+      "value": 143050000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 장중 최고 2026-01-15 05시대 KST — 2026 원화 연고점",
+      "status": "corrected",
+      "previous": "1/14 143,050,000 (업비트 UTC일봉 날짜)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2026-01-18T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2026-01-18%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1768402800000&end=1768489199000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1790694000000&size=500"
+      ],
+      "note": "값은 맞고 날짜만 정정: 업비트 1/15 05시(KST) 143,050,000 / 빗썸 같은 시각 143,100,000 / 코빗 1/15 고가 143,201,000. USD 고점(1/14 UTC)과 같은 순간이지만 한국 날짜로는 1/15. [2차 재검증 2026-09-30] 감사자 판단 동의. 코인원 2026 1시간봉 전체 최고가 = 1/15 05시 KST 143,180,000(1/14 KST 최고 141,720,000). 날짜 1/15 확정."
+    },
+    {
+      "id": "btc.usd.low.2026",
+      "asset": "BTC/USD",
+      "date": "2026-07-01",
+      "value": 57734.63,
+      "unit": "USD/BTC",
+      "basis": "Bitstamp 장중 최저 2026-07-01 01시대 UTC(=KST 7/1 10시대, 미국 동부 6/30 21시대) — 2026 연저점",
+      "status": "corrected",
+      "previous": "2026-06-30, 57,718 (StatMuse 57,747.77)",
+      "sources": [
+        "https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1&start=1782864000",
+        "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start=2026-07-01T00:00:00Z&end=2026-07-01T23:59:59Z",
+        "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1410000000&period2=1791000000&interval=1d",
+        "https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440&since=1782604800",
+        "https://api-pub.bitfinex.com/v2/candles/trade:1D:tBTCUSD/hist?start=1767225600000&end=1790726400000&sort=1&limit=300",
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=1782864000000&limit=1"
+      ],
+      "note": "값은 맞고 날짜 정정: Bitstamp 57,734.63 / Coinbase 57,717.55 / Yahoo 57,747.77 — 모두 UTC 7/1 일봉 저가. UTC 6/30 저가는 58,076(Bitstamp). '6/30'은 미국 동부시간 보도 기준(investinglive). 게임(한국시간)은 7/1 사용. [2차 재검증 2026-09-30] 감사자 판단 동의. 7/1 UTC 일봉 저가: Kraken 57,740 / Bitfinex 57,803 / Binance BTCUSDT 57,800.19. 6/30 UTC 저가는 Kraken 58,100 / Bitfinex 58,188. Bitfinex 2026-01-01~09-29 일봉 전체에서도 최저는 7/1이다(2/6 저가 60,100)."
+    },
+    {
+      "id": "btc.krw.low.2026-08-14",
+      "asset": "BTC/KRW (업비트)",
+      "date": "2026-08-14",
+      "value": 88342000,
+      "unit": "KRW/BTC",
+      "basis": "업비트 장중 최저 8/14 23시대 KST — 2026 업비트 원화 연저점",
+      "status": "verified",
+      "previous": "88,342,000 (8/14)",
+      "sources": [
+        "https://api.upbit.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2026-08-18T00:00:00%2B09:00",
+        "https://api.bithumb.com/v1/candles/minutes/60?market=KRW-BTC&count=200&to=2026-08-18%2000:00:00",
+        "https://api.korbit.co.kr/v2/candles?symbol=btc_krw&interval=1D&start=1786633200000&end=1786719599000&limit=1",
+        "https://api.coinone.co.kr/public/v2/chart/KRW/BTC?interval=1h&timestamp=1790694000000&size=500"
+      ],
+      "note": "업비트 88,342,000 / 빗썸 88,334,000(같은 시각) / 코빗 88,348,000. 날짜 8/14(KST) 맞음. 주의: '업비트 기준' 연저점임 — 빗썸(2/6 19시 81,110,000)·코빗(2/6 06시 82,000,000)은 2/6에 거래소 단독 급락이 있어 해당 거래소 연저점은 2/6. 업비트 2/6 저가 89,000,000, 7/1 저가 88,770,000. [2차 재검증 2026-09-30] 감사자 판단 동의(업비트 기준). 업비트 1시간봉 재현: 8/14 23시 88,342,000, 2/6 09시 89,000,000, 7/1 10시 88,770,000. 코인원은 2/6 09시 88,280,000 / 8/14 23시 88,300,000 / 7/1 88,350,000으로 세 날이 2만~7만원 차이. 코인원 기준 연저점은 2/6이다. \"업비트 기준\" 표기가 반드시 필요하다."
+    }
+  ]
+}

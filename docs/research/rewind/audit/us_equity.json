@@ -1,0 +1,1851 @@
+{
+  "batch": "us_equity",
+  "audited": "2026-09-30",
+  "method": "연말·이벤트 종가는 서로 다른 벤더의 일봉 API(Yahoo Finance chart, CNBC ts-api 'adjusted'(=분할만 반영, 배당 미반영임을 NVDA 2002·AAPL 2007 값으로 확인), 네이버 해외주식 차트 API(2010~), Nasdaq 공식 historical API(최근 10년), EODHD(AAPL·TSLA 명목가 → 분할배수로 환산))에서 직접 추출해 대조. 소스 간 상위 데이터 공급사가 겹칠 가능성은 배제 못 하나 Nasdaq(상장 거래소)·SEC 공시·기업 IR을 원천으로 우선. 분할은 SEC 8-K/10-Q·Apple IR·Yahoo·EODHD·stocksplithistory 대조. 값은 1차 소스(2016~ Nasdaq, 그 외 Yahoo) 기준 <100은 소수 4자리, ≥100은 2자리.",
+  "items": [
+    {
+      "id": "aapl.close.1999",
+      "asset": "AAPL",
+      "date": "1999-12-31",
+      "value": 0.918,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.9180",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/19991201000000/20000105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=1999-12-31&to=1999-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.9180, CNBC 0.9180, EODHD 0.9180 (최대 편차 0.003%). EODHD 당시 명목가 $102.82. 게임 시작 기준점(1999 마지막 거래일). 감사범위(2000~) 밖이지만 1차 표에 있어 포함."
+    },
+    {
+      "id": "aapl.close.2000",
+      "asset": "AAPL",
+      "date": "2000-12-29",
+      "value": 0.2656,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.2656",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20000101000000/20010105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2000-12-29&to=2000-12-29"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.2656, CNBC 0.2656, EODHD 0.2656 (최대 편차 0.009%). EODHD 당시 명목가 $14.87."
+    },
+    {
+      "id": "aapl.close.2001",
+      "asset": "AAPL",
+      "date": "2001-12-31",
+      "value": 0.3911,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3911",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20010101000000/20020105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2001-12-31&to=2001-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.3911, CNBC 0.3911, EODHD 0.3911 (최대 편차 0.007%). EODHD 당시 명목가 $21.90."
+    },
+    {
+      "id": "aapl.close.2002",
+      "asset": "AAPL",
+      "date": "2002-12-31",
+      "value": 0.2559,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.2559",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20020101000000/20030105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2002-12-31&to=2002-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.2559, CNBC 0.2559, EODHD 0.2559 (최대 편차 0.003%). EODHD 당시 명목가 $14.33."
+    },
+    {
+      "id": "aapl.close.2003",
+      "asset": "AAPL",
+      "date": "2003-12-31",
+      "value": 0.3816,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3816",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20030101000000/20040105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2003-12-31&to=2003-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.3816, CNBC 0.3816, EODHD 0.3816 (최대 편차 0.002%). EODHD 당시 명목가 $21.37."
+    },
+    {
+      "id": "aapl.close.2004",
+      "asset": "AAPL",
+      "date": "2004-12-31",
+      "value": 1.15,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "1.1500",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20040101000000/20050105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2004-12-31&to=2004-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 1.1500, CNBC 1.1500, EODHD 1.1500 (최대 편차 0.000%). EODHD 당시 명목가 $64.40."
+    },
+    {
+      "id": "aapl.close.2005",
+      "asset": "AAPL",
+      "date": "2005-12-30",
+      "value": 2.5675,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "2.5675",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20050101000000/20060105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2005-12-30&to=2005-12-30"
+      ],
+      "note": "3개 소스 대조: Yahoo 2.5675, CNBC 2.5675, EODHD 2.5675 (최대 편차 0.000%). EODHD 당시 명목가 $71.89."
+    },
+    {
+      "id": "aapl.close.2006",
+      "asset": "AAPL",
+      "date": "2006-12-29",
+      "value": 3.03,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "3.0300",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20060101000000/20070105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2006-12-29&to=2006-12-29"
+      ],
+      "note": "3개 소스 대조: Yahoo 3.0300, CNBC 3.0300, EODHD 3.0300 (최대 편차 0.000%). EODHD 당시 명목가 $84.84."
+    },
+    {
+      "id": "aapl.close.2007",
+      "asset": "AAPL",
+      "date": "2007-12-31",
+      "value": 7.0743,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "7.0743",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20070101000000/20080105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2007-12-31&to=2007-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 7.0743, CNBC 7.0743, EODHD 7.0743 (최대 편차 0.000%). EODHD 당시 명목가 $198.08."
+    },
+    {
+      "id": "aapl.close.2008",
+      "asset": "AAPL",
+      "date": "2008-12-31",
+      "value": 3.0482,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "3.0482",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20080101000000/20090105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2008-12-31&to=2008-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 3.0482, CNBC 3.0482, EODHD 3.0482 (최대 편차 0.000%). EODHD 당시 명목가 $85.35."
+    },
+    {
+      "id": "aapl.close.2009",
+      "asset": "AAPL",
+      "date": "2009-12-31",
+      "value": 7.5261,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "7.5261",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20090101000000/20100105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2009-12-31&to=2009-12-31"
+      ],
+      "note": "3개 소스 대조: Yahoo 7.5261, CNBC 7.5261, EODHD 7.5261 (최대 편차 0.000%). EODHD 당시 명목가 $210.73."
+    },
+    {
+      "id": "aapl.close.2010",
+      "asset": "AAPL",
+      "date": "2010-12-31",
+      "value": 11.52,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "11.52",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20100101000000/20110105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201001010000&endDateTime=201012310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2010-12-31&to=2010-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 11.5200, CNBC 11.5200, Naver 11.5200, EODHD 11.5200 (최대 편차 0.000%). EODHD 당시 명목가 $322.56.  1차 값 11.52은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2011",
+      "asset": "AAPL",
+      "date": "2011-12-30",
+      "value": 14.4643,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "14.46",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20110101000000/20120105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201101010000&endDateTime=201112310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2011-12-30&to=2011-12-30"
+      ],
+      "note": "4개 소스 대조: Yahoo 14.4643, CNBC 14.4643, Naver 14.4650, EODHD 14.4643 (최대 편차 0.005%). EODHD 당시 명목가 $405.00.  1차 값 14.46은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2012",
+      "asset": "AAPL",
+      "date": "2012-12-31",
+      "value": 19.0061,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "19.01",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20120101000000/20130105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201201010000&endDateTime=201212310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2012-12-31&to=2012-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 19.0061, CNBC 19.0062, Naver 19.0050, EODHD 19.0061 (최대 편차 0.006%). EODHD 당시 명목가 $532.17.  1차 값 19.01은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2013",
+      "asset": "AAPL",
+      "date": "2013-12-31",
+      "value": 20.0364,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "20.04",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20130101000000/20140105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201301010000&endDateTime=201312310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2013-12-31&to=2013-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 20.0364, CNBC 20.0364, Naver 20.0375, EODHD 20.0364 (최대 편차 0.005%). EODHD 당시 명목가 $561.02.  1차 값 20.04은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2014",
+      "asset": "AAPL",
+      "date": "2014-12-31",
+      "value": 27.595,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "27.59",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20140101000000/20150105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201401010000&endDateTime=201412310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2014-12-31&to=2014-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 27.5950, CNBC 27.5950, Naver 27.5950, EODHD 27.5950 (최대 편차 0.000%). EODHD 당시 명목가 $110.38.  1차 값 27.59은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2015",
+      "asset": "AAPL",
+      "date": "2015-12-31",
+      "value": 26.315,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "26.32",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20150101000000/20160105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201501010000&endDateTime=201512310000",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2015-12-31&to=2015-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 26.3150, CNBC 26.3150, Naver 26.3150, EODHD 26.3150 (최대 편차 0.000%). EODHD 당시 명목가 $105.26.  1차 값 26.32은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2016",
+      "asset": "AAPL",
+      "date": "2016-12-30",
+      "value": 28.955,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "28.95",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20160101000000/20170105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201601010000&endDateTime=201612310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2016-12-01&todate=2016-12-30&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2016-12-30&to=2016-12-30"
+      ],
+      "note": "5개 소스 대조: Yahoo 28.9550, CNBC 28.9550, Naver 28.9550, Nasdaq 28.9550, EODHD 28.9550 (최대 편차 0.000%). EODHD 당시 명목가 $115.82.  1차 값 28.95은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2017",
+      "asset": "AAPL",
+      "date": "2017-12-29",
+      "value": 42.3075,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "42.31",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20170101000000/20180105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201701010000&endDateTime=201712310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2017-12-01&todate=2017-12-29&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2017-12-29&to=2017-12-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 42.3075, CNBC 42.3075, Naver 42.3075, Nasdaq 42.3075, EODHD 42.3075 (최대 편차 0.000%). EODHD 당시 명목가 $169.23.  1차 값 42.31은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2018",
+      "asset": "AAPL",
+      "date": "2018-12-31",
+      "value": 39.435,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "39.44",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20180101000000/20190105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201801010000&endDateTime=201812310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2018-12-01&todate=2018-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2018-12-31&to=2018-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 39.4350, CNBC 39.4350, Naver 39.4350, Nasdaq 39.4350, EODHD 39.4350 (최대 편차 0.000%). EODHD 당시 명목가 $157.74.  1차 값 39.44은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2019",
+      "asset": "AAPL",
+      "date": "2019-12-31",
+      "value": 73.4125,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "73.41",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20190101000000/20200105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=201901010000&endDateTime=201912310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2019-12-01&todate=2019-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2019-12-31&to=2019-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 73.4125, CNBC 73.4125, Naver 73.4125, Nasdaq 73.4125, EODHD 73.4125 (최대 편차 0.000%). EODHD 당시 명목가 $293.65.  1차 값 73.41은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2020",
+      "asset": "AAPL",
+      "date": "2020-12-31",
+      "value": 132.69,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "132.69",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2020-12-01&todate=2020-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2020-12-31&to=2020-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 132.6900, CNBC 132.6900, Naver 132.6900, Nasdaq 132.6900, EODHD 132.6900 (최대 편차 0.000%). EODHD 당시 명목가 $132.69.  1차 값 132.69은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2021",
+      "asset": "AAPL",
+      "date": "2021-12-31",
+      "value": 177.57,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "177.57",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20210101000000/20220105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202101010000&endDateTime=202112310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2021-12-01&todate=2021-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2021-12-31&to=2021-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 177.5700, CNBC 177.5700, Naver 177.5700, Nasdaq 177.5700, EODHD 177.5700 (최대 편차 0.000%). EODHD 당시 명목가 $177.57.  1차 값 177.57은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2022",
+      "asset": "AAPL",
+      "date": "2022-12-30",
+      "value": 129.93,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "129.93",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20220101000000/20230105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202201010000&endDateTime=202212310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2022-12-01&todate=2022-12-30&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2022-12-30&to=2022-12-30"
+      ],
+      "note": "5개 소스 대조: Yahoo 129.9300, CNBC 129.9300, Naver 129.9300, Nasdaq 129.9300, EODHD 129.9300 (최대 편차 0.000%). EODHD 당시 명목가 $129.93.  1차 값 129.93은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2023",
+      "asset": "AAPL",
+      "date": "2023-12-29",
+      "value": 192.53,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "192.53",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20230101000000/20240105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202301010000&endDateTime=202312310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2023-12-01&todate=2023-12-29&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2023-12-29&to=2023-12-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 192.5300, CNBC 192.5300, Naver 192.5300, Nasdaq 192.5300, EODHD 192.5300 (최대 편차 0.000%). EODHD 당시 명목가 $192.53.  1차 값 192.53은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2024",
+      "asset": "AAPL",
+      "date": "2024-12-31",
+      "value": 250.42,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "250.42",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20240101000000/20250105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202401010000&endDateTime=202412310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2024-12-01&todate=2024-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2024-12-31&to=2024-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 250.4200, CNBC 250.4200, Naver 250.4200, Nasdaq 250.4200, EODHD 250.4200 (최대 편차 0.000%). EODHD 당시 명목가 $250.42.  1차 값 250.42은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2025",
+      "asset": "AAPL",
+      "date": "2025-12-31",
+      "value": 271.86,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "271.86",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2025-12-01&todate=2025-12-31&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2025-12-31&to=2025-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 271.8600, CNBC 271.8600, Naver 271.8600, Nasdaq 271.8600, EODHD 271.8600 (최대 편차 0.000%). EODHD 당시 명목가 $271.86.  1차 값 271.86은 반올림 표기로 일치."
+    },
+    {
+      "id": "aapl.close.2026-09-29",
+      "asset": "AAPL",
+      "date": "2026-09-29",
+      "value": 329.4,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "329.40",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20260101000000/20261001000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202601010000&endDateTime=202612310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2026-09-01&todate=2026-09-29&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2026-09-29&to=2026-09-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 329.4000, CNBC 329.4000, Naver 329.4000, Nasdaq 329.4000, EODHD 329.4000 (최대 편차 0.000%). EODHD 당시 명목가 $329.40. 게임 종료 평가일 종가."
+    },
+    {
+      "id": "nvda.close.1999",
+      "asset": "NVDA",
+      "date": "1999-12-31",
+      "value": 0.0978,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.0978",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/19991201000000/20000105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.0978, CNBC 0.0978 (최대 편차 0.014%). 게임 시작 기준점(1999 마지막 거래일). 감사범위(2000~) 밖이지만 1차 표에 있어 포함. 2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2000",
+      "asset": "NVDA",
+      "date": "2000-12-29",
+      "value": 0.1365,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.1365",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20000101000000/20010105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.1365, CNBC 0.1365 (최대 편차 0.017%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2001",
+      "asset": "NVDA",
+      "date": "2001-12-31",
+      "value": 0.5575,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.5575",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20010101000000/20020105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.5575, CNBC 0.5575 (최대 편차 0.000%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2002",
+      "asset": "NVDA",
+      "date": "2002-12-31",
+      "value": 0.0959,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.0959",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20020101000000/20030105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.0959, CNBC 0.0959 (최대 편차 0.018%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2003",
+      "asset": "NVDA",
+      "date": "2003-12-31",
+      "value": 0.1933,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.1933",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20030101000000/20040105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.1933, CNBC 0.1933 (최대 편차 0.017%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2004",
+      "asset": "NVDA",
+      "date": "2004-12-31",
+      "value": 0.1963,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.1963",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20040101000000/20050105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.1963, CNBC 0.1963 (최대 편차 0.017%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2005",
+      "asset": "NVDA",
+      "date": "2005-12-30",
+      "value": 0.3047,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3047",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20050101000000/20060105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.3047, CNBC 0.3047 (최대 편차 0.011%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2006",
+      "asset": "NVDA",
+      "date": "2006-12-29",
+      "value": 0.6168,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.6168",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20060101000000/20070105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.6168, CNBC 0.6168 (최대 편차 0.005%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2007",
+      "asset": "NVDA",
+      "date": "2007-12-31",
+      "value": 0.8505,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.8505",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20070101000000/20080105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.8505, CNBC 0.8505 (최대 편차 0.000%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2008",
+      "asset": "NVDA",
+      "date": "2008-12-31",
+      "value": 0.2017,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.2017",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20080101000000/20090105000000/adjusted/EST5EDT.json",
+        "https://www.digrin.com/stocks/detail/NVDA/price"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.2017, CNBC 0.2018 (최대 편차 0.025%). Yahoo 0.2017 vs CNBC 0.2018 — 명목 종가 $8.07 ÷ 40(2008년 이후 분할 2021 4:1 × 2024 10:1)=0.20175로 반올림 차이일 뿐. 게임값 0.2017 유지 가능. 2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인. [2차 재검증] Digrin 월말 가격표: December 2008 Real price $8.07(명목) / Adjusted $0.185(배당까지 반영한 값이라 게임 기준과 다름). 명목 $8.07 ÷ 40 = 0.20175 → 0.2017 유지. (StatMuse $0.18도 배당반영값으로 기준 상이.)"
+    },
+    {
+      "id": "nvda.close.2009",
+      "asset": "NVDA",
+      "date": "2009-12-31",
+      "value": 0.467,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.4670",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20090101000000/20100105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.4670, CNBC 0.4670 (최대 편차 0.000%).  2000~2009 NVDA는 Naver·Nasdaq(10년 한도)·EODHD(데모 차단) 미제공 → Yahoo·CNBC 2곳으로 확인."
+    },
+    {
+      "id": "nvda.close.2010",
+      "asset": "NVDA",
+      "date": "2010-12-31",
+      "value": 0.385,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3850",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20100101000000/20110105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201001010000&endDateTime=201012310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.3850, CNBC 0.3850, Naver 0.3850 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2011",
+      "asset": "NVDA",
+      "date": "2011-12-30",
+      "value": 0.3465,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3465",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20110101000000/20120105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201101010000&endDateTime=201112310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.3465, CNBC 0.3465, Naver 0.3465 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2012",
+      "asset": "NVDA",
+      "date": "2012-12-31",
+      "value": 0.3065,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.3065",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20120101000000/20130105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201201010000&endDateTime=201212310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.3065, CNBC 0.3065, Naver 0.3065 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2013",
+      "asset": "NVDA",
+      "date": "2013-12-31",
+      "value": 0.4005,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.4005",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20130101000000/20140105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201301010000&endDateTime=201312310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.4005, CNBC 0.4005, Naver 0.4005 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2014",
+      "asset": "NVDA",
+      "date": "2014-12-31",
+      "value": 0.5013,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.5013",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20140101000000/20150105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201401010000&endDateTime=201412310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.5013, CNBC 0.5013, Naver 0.5013 (최대 편차 0.010%)."
+    },
+    {
+      "id": "nvda.close.2015",
+      "asset": "NVDA",
+      "date": "2015-12-31",
+      "value": 0.824,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.8240",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20150101000000/20160105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201501010000&endDateTime=201512310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.8240, CNBC 0.8240, Naver 0.8240 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2016",
+      "asset": "NVDA",
+      "date": "2016-12-30",
+      "value": 2.6685,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "2.6685",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20160101000000/20170105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201601010000&endDateTime=201612310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2016-12-01&todate=2016-12-30&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 2.6685, CNBC 2.6685, Naver 2.6685, Nasdaq 2.6685 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2017",
+      "asset": "NVDA",
+      "date": "2017-12-29",
+      "value": 4.8375,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "4.8375",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20170101000000/20180105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201701010000&endDateTime=201712310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2017-12-01&todate=2017-12-29&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 4.8375, CNBC 4.8375, Naver 4.8375, Nasdaq 4.8375 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2018",
+      "asset": "NVDA",
+      "date": "2018-12-31",
+      "value": 3.3375,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "3.3375",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20180101000000/20190105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201801010000&endDateTime=201812310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2018-12-01&todate=2018-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 3.3375, CNBC 3.3375, Naver 3.3375, Nasdaq 3.3375 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2019",
+      "asset": "NVDA",
+      "date": "2019-12-31",
+      "value": 5.8825,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "5.8825",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20190101000000/20200105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=201901010000&endDateTime=201912310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2019-12-01&todate=2019-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 5.8825, CNBC 5.8825, Naver 5.8825, Nasdaq 5.8825 (최대 편차 0.000%)."
+    },
+    {
+      "id": "nvda.close.2020",
+      "asset": "NVDA",
+      "date": "2020-12-31",
+      "value": 13.055,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "13.06",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2020-12-01&todate=2020-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 13.0550, CNBC 13.0550, Naver 13.0550, Nasdaq 13.0550 (최대 편차 0.000%).  1차 값 13.06은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2021",
+      "asset": "NVDA",
+      "date": "2021-12-31",
+      "value": 29.411,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "29.41",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20210101000000/20220105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202101010000&endDateTime=202112310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2021-12-01&todate=2021-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 29.4110, CNBC 29.4110, Naver 29.4110, Nasdaq 29.4110 (최대 편차 0.000%).  1차 값 29.41은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2022",
+      "asset": "NVDA",
+      "date": "2022-12-30",
+      "value": 14.614,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "14.61",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20220101000000/20230105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202201010000&endDateTime=202212310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2022-12-01&todate=2022-12-30&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 14.6140, CNBC 14.6140, Naver 14.6140, Nasdaq 14.6140 (최대 편차 0.000%).  1차 값 14.61은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2023",
+      "asset": "NVDA",
+      "date": "2023-12-29",
+      "value": 49.522,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "49.52",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20230101000000/20240105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202301010000&endDateTime=202312310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2023-12-01&todate=2023-12-29&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 49.5220, CNBC 49.5220, Naver 49.5220, Nasdaq 49.5220 (최대 편차 0.000%).  1차 값 49.52은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2024",
+      "asset": "NVDA",
+      "date": "2024-12-31",
+      "value": 134.29,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "134.29",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20240101000000/20250105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202401010000&endDateTime=202412310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2024-12-01&todate=2024-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 134.2900, CNBC 134.2900, Naver 134.2900, Nasdaq 134.2900 (최대 편차 0.000%).  1차 값 134.29은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2025",
+      "asset": "NVDA",
+      "date": "2025-12-31",
+      "value": 186.5,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "186.50",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2025-12-01&todate=2025-12-31&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 186.5000, CNBC 186.5000, Naver 186.5000, Nasdaq 186.5000 (최대 편차 0.000%).  1차 값 186.50은 반올림 표기로 일치."
+    },
+    {
+      "id": "nvda.close.2026-09-29",
+      "asset": "NVDA",
+      "date": "2026-09-29",
+      "value": 227.21,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "227.21",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20260101000000/20261001000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202601010000&endDateTime=202612310000"
+      ],
+      "note": "3개 소스 대조: Yahoo 227.2100, CNBC 227.2100, Naver 227.2100 (최대 편차 0.000%). 게임 종료 평가일 종가. Nasdaq API는 NVDA 9/29 행이 조회 시점에 아직 없었음(9/28까지)."
+    },
+    {
+      "id": "tsla.close.2010",
+      "asset": "TSLA",
+      "date": "2010-12-31",
+      "value": 1.7753,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "1.7753",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20100101000000/20110105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201001010000&endDateTime=201012310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2010-12-31&to=2010-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 1.7753, CNBC 1.7753, Naver 1.7753, EODHD 1.7753 (최대 편차 0.002%). EODHD 당시 명목가 $26.63. TSLA는 2010-06-29 상장 → 2010이 첫 연말."
+    },
+    {
+      "id": "tsla.close.2011",
+      "asset": "TSLA",
+      "date": "2011-12-30",
+      "value": 1.904,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "1.9040",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20110101000000/20120105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201101010000&endDateTime=201112310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2011-12-30&to=2011-12-30"
+      ],
+      "note": "4개 소스 대조: Yahoo 1.9040, CNBC 1.9040, Naver 1.9040, EODHD 1.9040 (최대 편차 0.000%). EODHD 당시 명목가 $28.56."
+    },
+    {
+      "id": "tsla.close.2012",
+      "asset": "TSLA",
+      "date": "2012-12-31",
+      "value": 2.258,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "2.2580",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20120101000000/20130105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201201010000&endDateTime=201212310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2012-12-31&to=2012-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 2.2580, CNBC 2.2580, Naver 2.2580, EODHD 2.2580 (최대 편차 0.000%). EODHD 당시 명목가 $33.87."
+    },
+    {
+      "id": "tsla.close.2013",
+      "asset": "TSLA",
+      "date": "2013-12-31",
+      "value": 10.0287,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "10.03",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20130101000000/20140105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201301010000&endDateTime=201312310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2013-12-31&to=2013-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 10.0287, CNBC 10.0286, Naver 10.0287, EODHD 10.0287 (최대 편차 0.001%). EODHD 당시 명목가 $150.43.  1차 값 10.03은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2014",
+      "asset": "TSLA",
+      "date": "2014-12-31",
+      "value": 14.8273,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "14.83",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20140101000000/20150105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201401010000&endDateTime=201412310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2014-12-31&to=2014-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 14.8273, CNBC 14.8273, Naver 14.8273, EODHD 14.8273 (최대 편차 0.000%). EODHD 당시 명목가 $222.41.  1차 값 14.83은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2015",
+      "asset": "TSLA",
+      "date": "2015-12-31",
+      "value": 16.0007,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "16.00",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20150101000000/20160105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201501010000&endDateTime=201512310000",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2015-12-31&to=2015-12-31"
+      ],
+      "note": "4개 소스 대조: Yahoo 16.0007, CNBC 16.0007, Naver 16.0007, EODHD 16.0007 (최대 편차 0.000%). EODHD 당시 명목가 $240.01.  1차 값 16.00은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2016",
+      "asset": "TSLA",
+      "date": "2016-12-30",
+      "value": 14.246,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "14.25",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20160101000000/20170105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201601010000&endDateTime=201612310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2016-12-01&todate=2016-12-30&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2016-12-30&to=2016-12-30"
+      ],
+      "note": "5개 소스 대조: Yahoo 14.2460, CNBC 14.2460, Naver 14.2460, Nasdaq 14.2460, EODHD 14.2460 (최대 편차 0.000%). EODHD 당시 명목가 $213.69.  1차 값 14.25은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2017",
+      "asset": "TSLA",
+      "date": "2017-12-29",
+      "value": 20.7567,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "20.76",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20170101000000/20180105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201701010000&endDateTime=201712310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2017-12-01&todate=2017-12-29&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2017-12-29&to=2017-12-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 20.7567, CNBC 20.7566, Naver 20.7566, Nasdaq 20.7567, EODHD 20.7567 (최대 편차 0.000%). EODHD 당시 명목가 $311.35.  1차 값 20.76은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2018",
+      "asset": "TSLA",
+      "date": "2018-12-31",
+      "value": 22.1867,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "22.19",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20180101000000/20190105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201801010000&endDateTime=201812310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2018-12-01&todate=2018-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2018-12-31&to=2018-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 22.1867, CNBC 22.1866, Naver 22.1866, Nasdaq 22.1867, EODHD 22.1867 (최대 편차 0.000%). EODHD 당시 명목가 $332.80.  1차 값 22.19은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2019",
+      "asset": "TSLA",
+      "date": "2019-12-31",
+      "value": 27.8887,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "27.89",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20190101000000/20200105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=201901010000&endDateTime=201912310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2019-12-01&todate=2019-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2019-12-31&to=2019-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 27.8887, CNBC 27.8886, Naver 27.8886, Nasdaq 27.8887, EODHD 27.8887 (최대 편차 0.000%). EODHD 당시 명목가 $418.33.  1차 값 27.89은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2020",
+      "asset": "TSLA",
+      "date": "2020-12-31",
+      "value": 235.22,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "235.22",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2020-12-01&todate=2020-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2020-12-31&to=2020-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 235.2233, CNBC 235.2231, Naver 235.2231, Nasdaq 235.2233, EODHD 235.2233 (최대 편차 0.000%). EODHD 당시 명목가 $705.67.  1차 값 235.22은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2021",
+      "asset": "TSLA",
+      "date": "2021-12-31",
+      "value": 352.26,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "352.26",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20210101000000/20220105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202101010000&endDateTime=202112310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2021-12-01&todate=2021-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2021-12-31&to=2021-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 352.2600, CNBC 352.2596, Naver 352.2596, Nasdaq 352.2600, EODHD 352.2600 (최대 편차 0.000%). EODHD 당시 명목가 $1056.78.  1차 값 352.26은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2022",
+      "asset": "TSLA",
+      "date": "2022-12-30",
+      "value": 123.18,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "123.18",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20220101000000/20230105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202201010000&endDateTime=202212310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2022-12-01&todate=2022-12-30&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2022-12-30&to=2022-12-30"
+      ],
+      "note": "5개 소스 대조: Yahoo 123.1800, CNBC 123.1800, Naver 123.1800, Nasdaq 123.1800, EODHD 123.1800 (최대 편차 0.000%). EODHD 당시 명목가 $123.18.  1차 값 123.18은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2023",
+      "asset": "TSLA",
+      "date": "2023-12-29",
+      "value": 248.48,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "248.48",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20230101000000/20240105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202301010000&endDateTime=202312310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2023-12-01&todate=2023-12-29&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2023-12-29&to=2023-12-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 248.4800, CNBC 248.4800, Naver 248.4800, Nasdaq 248.4800, EODHD 248.4800 (최대 편차 0.000%). EODHD 당시 명목가 $248.48.  1차 값 248.48은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2024",
+      "asset": "TSLA",
+      "date": "2024-12-31",
+      "value": 403.84,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "403.84",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20240101000000/20250105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202401010000&endDateTime=202412310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2024-12-01&todate=2024-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2024-12-31&to=2024-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 403.8400, CNBC 403.8400, Naver 403.8400, Nasdaq 403.8400, EODHD 403.8400 (최대 편차 0.000%). EODHD 당시 명목가 $403.84.  1차 값 403.84은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2025",
+      "asset": "TSLA",
+      "date": "2025-12-31",
+      "value": 449.72,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "449.72",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2025-12-01&todate=2025-12-31&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2025-12-31&to=2025-12-31"
+      ],
+      "note": "5개 소스 대조: Yahoo 449.7200, CNBC 449.7200, Naver 449.7200, Nasdaq 449.7200, EODHD 449.7200 (최대 편차 0.000%). EODHD 당시 명목가 $449.72.  1차 값 449.72은 반올림 표기로 일치."
+    },
+    {
+      "id": "tsla.close.2026-09-29",
+      "asset": "TSLA",
+      "date": "2026-09-29",
+      "value": 352.84,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "352.84",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20260101000000/20261001000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202601010000&endDateTime=202612310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2026-09-01&todate=2026-09-29&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2026-09-29&to=2026-09-29"
+      ],
+      "note": "5개 소스 대조: Yahoo 352.8400, CNBC 352.8400, Naver 352.8400, Nasdaq 352.8400, EODHD 352.8400 (최대 편차 0.000%). EODHD 당시 명목가 $352.84. 게임 종료 평가일 종가."
+    },
+    {
+      "id": "aapl.event.2000-09-28.prev_close",
+      "asset": "AAPL",
+      "date": "2000-09-28",
+      "value": 0.9554,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.9554",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20000101000000/20010105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2000-09-28&to=2000-09-28"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.9554, CNBC 0.9554, EODHD 0.9554 (최대 편차 0.004%). EODHD 당시 명목가 $53.50. 2000-09-28 (실적경고 전날). 명목 $53.50."
+    },
+    {
+      "id": "aapl.event.2000-09-29",
+      "asset": "AAPL",
+      "date": "2000-09-29",
+      "value": 0.4598,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.4598",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20000101000000/20010105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2000-09-29&to=2000-09-29"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.4598, CNBC 0.4598, EODHD 0.4598 (최대 편차 0.005%). EODHD 당시 명목가 $25.75. 2000-09-29 실적경고 폭락. 전일 대비 -51.9%(0.9554→0.4598). 명목 $53.50→$25.75(EODHD 53.5024→25.7488)로 1차 정정값과 일치. WaPo \"Apple Loses 52%\" 보도와 부합."
+    },
+    {
+      "id": "nvda.event.2002-10-09",
+      "asset": "NVDA",
+      "date": "2002-10-09",
+      "value": 0.0614,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.0614",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20020101000000/20030105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.0614, CNBC 0.0614 (최대 편차 0.028%). Yahoo·CNBC 모두 2000~2026 전체 기간 최저 종가가 이 날로 확인됨(닷컴 바닥)."
+    },
+    {
+      "id": "aapl.event.2003-04-17",
+      "asset": "AAPL",
+      "date": "2003-04-17",
+      "value": 0.2343,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.2343",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20030101000000/20040105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2003-04-17&to=2003-04-17"
+      ],
+      "note": "3개 소스 대조: Yahoo 0.2343, CNBC 0.2343, EODHD 0.2343 (최대 편차 0.006%). EODHD 당시 명목가 $13.12. Yahoo·CNBC 모두 2000~2004 최저 종가가 이 날로 확인. 명목 $13.12. 다음날 4/18은 성금요일 휴장."
+    },
+    {
+      "id": "aapl.event.2007-01-08.prev_close",
+      "asset": "AAPL",
+      "date": "2007-01-08",
+      "value": 3.0525,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "3.0525",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20070101000000/20080105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2007-01-08&to=2007-01-08"
+      ],
+      "note": "3개 소스 대조: Yahoo 3.0525, CNBC 3.0525, EODHD 3.0525 (최대 편차 0.000%). EODHD 당시 명목가 $85.47. 아이폰 공개 전날 종가."
+    },
+    {
+      "id": "aapl.event.2007-01-09",
+      "asset": "AAPL",
+      "date": "2007-01-09",
+      "value": 3.3061,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "3.3061",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20070101000000/20080105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2007-01-09&to=2007-01-09"
+      ],
+      "note": "3개 소스 대조: Yahoo 3.3061, CNBC 3.3061, EODHD 3.3061 (최대 편차 0.001%). EODHD 당시 명목가 $92.57. 아이폰 공개일(맥월드). 전일 대비 +8.31%. 명목 $92.57."
+    },
+    {
+      "id": "nvda.event.2008-11-20",
+      "asset": "NVDA",
+      "date": "2008-11-20",
+      "value": 0.1475,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "0.1475",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20080101000000/20090105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "2개 소스 대조: Yahoo 0.1475, CNBC 0.1475 (최대 편차 0.000%). Yahoo·CNBC 모두 2008~2009 최저 종가가 이 날로 확인(금융위기 바닥)."
+    },
+    {
+      "id": "aapl.event.2009-01-20",
+      "asset": "AAPL",
+      "date": "2009-01-20",
+      "value": 2.7929,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "2.7929",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20090101000000/20100105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2009-01-20&to=2009-01-20"
+      ],
+      "note": "3개 소스 대조: Yahoo 2.7929, CNBC 2.7929, EODHD 2.7929 (최대 편차 0.002%). EODHD 당시 명목가 $78.20. Yahoo·CNBC 모두 2008~2009 최저 종가가 이 날로 확인. 명목 $78.20."
+    },
+    {
+      "id": "tsla.event.2010-06-29.first_close",
+      "asset": "TSLA",
+      "date": "2010-06-29",
+      "value": 1.5927,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "1.5927",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20100101000000/20110105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2010-06-29&to=2010-06-29"
+      ],
+      "note": "3개 소스 대조: Yahoo 1.5927, CNBC 1.5927, EODHD 1.5927 (최대 편차 0.002%). EODHD 당시 명목가 $23.89. TSLA 상장 첫날 종가. 명목 $23.89(EODHD 23.8905) ÷15. 공모가 대비 +40.5%."
+    },
+    {
+      "id": "tsla.event.2010-07-07.all_time_low",
+      "asset": "TSLA",
+      "date": "2010-07-07",
+      "value": 1.0533,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "1.0533",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20100101000000/20110105000000/adjusted/EST5EDT.json",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2010-07-07&to=2010-07-07"
+      ],
+      "note": "3개 소스 대조: Yahoo 1.0533, CNBC 1.0533, EODHD 1.0533 (최대 편차 0.003%). EODHD 당시 명목가 $15.80. Yahoo·CNBC 모두 상장 이후 전체 기간 최저 종가가 이 날로 확인. 명목 $15.80."
+    },
+    {
+      "id": "aapl.event.2020-02-19",
+      "asset": "AAPL",
+      "date": "2020-02-19",
+      "value": 80.905,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "80.905",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2020-02-01&todate=2020-02-19&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2020-02-19&to=2020-02-19",
+        "https://www.statmuse.com/money/ask/apple-daily-closing-price-february-2020"
+      ],
+      "note": "5개 소스 대조: Yahoo 80.9050, CNBC 80.9050, Naver 80.9050, Nasdaq 80.9050, EODHD 80.9050 (최대 편차 0.000%). EODHD 당시 명목가 $323.62. 코로나 폭락 직전 비교 기준일(2/19, S&P500 고점일) 종가. 주의: AAPL의 2020년 2월 최고 종가는 2/12 81.80 — 1차 문서의 \"80.9\"는 2/19 종가로서 맞음. [2차 재검증] StatMuse 2020년 2월 일별 종가(배당반영 기준, 절대값은 다르나 비율 비교 가능): 2/12 78.92가 2월 최고, 2/19 78.06. 비율 78.06/78.92=0.9891 ≈ 80.905/81.80=0.9891로 정합 → 2/19 종가 80.905 맞음, '폭락 전 고점'으로 쓸 거면 2/12 81.80."
+    },
+    {
+      "id": "aapl.event.2020-03-23.covid_low",
+      "asset": "AAPL",
+      "date": "2020-03-23",
+      "value": 56.0925,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "56.09",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/AAPL/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/AAPL.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2020-03-01&todate=2020-03-23&limit=9999",
+        "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2020-03-23&to=2020-03-23"
+      ],
+      "note": "5개 소스 대조: Yahoo 56.0925, CNBC 56.0925, Naver 56.0925, Nasdaq 56.0925, EODHD 56.0925 (최대 편차 0.000%). EODHD 당시 명목가 $224.37. Yahoo·CNBC·Naver·Nasdaq 모두 2020-03 최저 종가가 3/23로 확인(코로나 바닥). 2/19 대비 -30.7%."
+    },
+    {
+      "id": "nvda.event.2020-02-19",
+      "asset": "NVDA",
+      "date": "2020-02-19",
+      "value": 7.8675,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "7.87",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2020-02-01&todate=2020-02-19&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 7.8675, CNBC 7.8675, Naver 7.8675, Nasdaq 7.8675 (최대 편차 0.000%). 코로나 폭락 직전 2/19 종가(2020년 2월 최고 종가도 이 날)."
+    },
+    {
+      "id": "nvda.event.2020-03-16.covid_low",
+      "asset": "NVDA",
+      "date": "2020-03-16",
+      "value": 4.91,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "4.91",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2020-03-01&todate=2020-03-16&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 4.9100, CNBC 4.9100, Naver 4.9100, Nasdaq 4.9100 (최대 편차 0.000%). 2020-03 최저 종가가 3/16로 확인(AAPL·TSLA와 바닥일이 다름에 주의). 2/19 대비 -37.6%."
+    },
+    {
+      "id": "tsla.event.2020-02-19",
+      "asset": "TSLA",
+      "date": "2020-02-19",
+      "value": 61.1614,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "61.16",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2020-02-01&todate=2020-02-19&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2020-02-19&to=2020-02-19"
+      ],
+      "note": "5개 소스 대조: Yahoo 61.1613, CNBC 61.1613, Naver 61.1613, Nasdaq 61.1614, EODHD 61.1613 (최대 편차 0.000%). EODHD 당시 명목가 $917.42. 코로나 폭락 직전 2/19 종가(2020년 2월 최고 종가도 이 날). 명목 $917.42."
+    },
+    {
+      "id": "tsla.event.2020-03-18.covid_low",
+      "asset": "TSLA",
+      "date": "2020-03-18",
+      "value": 24.0813,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "24.08",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20200101000000/20210105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202001010000&endDateTime=202012310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2020-03-01&todate=2020-03-18&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2020-03-18&to=2020-03-18"
+      ],
+      "note": "5개 소스 대조: Yahoo 24.0813, CNBC 24.0813, Naver 24.0813, Nasdaq 24.0813, EODHD 24.0813 (최대 편차 0.000%). EODHD 당시 명목가 $361.22. 2020-03 최저 종가가 3/18로 확인. 2/19 대비 -60.6%. 명목 $361.22."
+    },
+    {
+      "id": "nvda.event.2022-11-30",
+      "asset": "NVDA",
+      "date": "2022-11-30",
+      "value": 16.923,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "16.92",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20220101000000/20230105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202201010000&endDateTime=202212310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2022-11-01&todate=2022-11-30&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 16.9230, CNBC 16.9230, Naver 16.9230, Nasdaq 16.9230 (최대 편차 0.000%). ChatGPT 공개일 종가(16.923). 전일 15.639 대비 +8.2%."
+    },
+    {
+      "id": "nvda.event.2023-05-24.prev_close",
+      "asset": "NVDA",
+      "date": "2023-05-24",
+      "value": 30.538,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "30.54",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20230101000000/20240105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202301010000&endDateTime=202312310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2023-05-01&todate=2023-05-24&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 30.5380, CNBC 30.5380, Naver 30.5380, Nasdaq 30.5380 (최대 편차 0.000%). 가이던스 발표(5/24 장마감 후) 당일 종가 30.538."
+    },
+    {
+      "id": "nvda.event.2023-05-25",
+      "asset": "NVDA",
+      "date": "2023-05-25",
+      "value": 37.98,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "37.98",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20230101000000/20240105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202301010000&endDateTime=202312310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2023-05-01&todate=2023-05-25&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 37.9800, CNBC 37.9800, Naver 37.9800, Nasdaq 37.9800 (최대 편차 0.000%). 가이던스 쇼크 다음날 종가. 전일 대비 +24.37%. CNBC 2023-05-25 보도와 부합."
+    },
+    {
+      "id": "nvda.event.2025-01-24.prev_close",
+      "asset": "NVDA",
+      "date": "2025-01-24",
+      "value": 142.62,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "142.62",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2025-01-01&todate=2025-01-24&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 142.6200, CNBC 142.6200, Naver 142.6200, Nasdaq 142.6200 (최대 편차 0.000%). 딥시크 쇼크 직전 거래일(금) 종가."
+    },
+    {
+      "id": "nvda.event.2025-01-27",
+      "asset": "NVDA",
+      "date": "2025-01-27",
+      "value": 118.42,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "118.42",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/NVDA.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/NVDA/historical?assetclass=stocks&fromdate=2025-01-01&todate=2025-01-27&limit=9999"
+      ],
+      "note": "4개 소스 대조: Yahoo 118.4200, CNBC 118.4200, Naver 118.4200, Nasdaq 118.4200 (최대 편차 0.000%). 딥시크 쇼크. 전일 대비 -16.97%. 시총 감소 약 5,890억달러는 Bloomberg·Yahoo Finance·Tom's Hardware 보도 \"$589 billion\"과 일치(https://www.bloomberg.com/news/articles/2025-01-27/asml-sinks-as-china-ai-startup-triggers-panic-in-tech-stocks). 일부 기사(NBC) \"$118.50\"은 장후 표기/반올림으로 추정 — 정규장 종가 118.42 사용."
+    },
+    {
+      "id": "tsla.event.2025-12-16.all_time_high",
+      "asset": "TSLA",
+      "date": "2025-12-16",
+      "value": 489.88,
+      "unit": "USD/주",
+      "basis": "분할 반영 종가(split-adjusted close, 배당 미반영), USD/주, 미국 동부시간(ET) 정규장 종가",
+      "status": "verified",
+      "previous": "489.88",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20250101000000/20260105000000/adjusted/EST5EDT.json",
+        "https://api.stock.naver.com/chart/foreign/item/TSLA.O/day?startDateTime=202501010000&endDateTime=202512310000",
+        "https://api.nasdaq.com/api/quote/TSLA/historical?assetclass=stocks&fromdate=2025-12-01&todate=2025-12-16&limit=9999",
+        "https://eodhd.com/api/eod/TSLA.US?api_token=demo&fmt=json&from=2025-12-16&to=2025-12-16"
+      ],
+      "note": "5개 소스 대조: Yahoo 489.8800, CNBC 489.8800, Naver 489.8800, Nasdaq 489.8800, EODHD 489.8800 (최대 편차 0.000%). EODHD 당시 명목가 $489.88. Yahoo·CNBC 모두 상장 이후 전체 기간(2026-09-29까지) 최고 종가가 이 날로 확인. 전일 475.31 대비 +3.07%."
+    },
+    {
+      "id": "tsla.event.2010-06-29.ipo_price",
+      "asset": "TSLA",
+      "date": "2010-06-29",
+      "value": 1.1333,
+      "unit": "USD/주",
+      "basis": "공모가 명목 $17.00 ÷ 15(2020 5:1 × 2022 3:1) = 분할 반영 1.1333",
+      "status": "verified",
+      "previous": "$17 / 분할반영 $1.1333",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1318605/000119312510149105/d424b4.htm",
+        "https://ts-api.cnbc.com/harmony/app/bars/TSLA/1D/20100101000000/20150105000000/adjusted/EST5EDT.json"
+      ],
+      "note": "SEC 424B4 확정 투자설명서(2010-06-29): 'The initial public offering price per share is $17.00'. CNBC 일봉 API는 상장 전일(2010-06-28) 공모가 기준 레코드 1.1333을 보유(=17/15) — 독립 확인. 명목 공모가 $17.00."
+    },
+    {
+      "id": "aapl.split.2000-06-21",
+      "asset": "AAPL",
+      "date": "2000-06-21",
+      "value": 2,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "2:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2000-06-21 2:1",
+      "sources": [
+        "https://investor.apple.com/faq/default.aspx",
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/AAPL.US?api_token=demo&fmt=json"
+      ],
+      "note": "Apple IR FAQ: 2-for-1 June 21, 2000; Yahoo events 2000-06-21 2:1; EODHD splits 2000-06-21 2/1"
+    },
+    {
+      "id": "aapl.split.2005-02-28",
+      "asset": "AAPL",
+      "date": "2005-02-28",
+      "value": 2,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "2:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2005-02-28 2:1",
+      "sources": [
+        "https://investor.apple.com/faq/default.aspx",
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/AAPL.US?api_token=demo&fmt=json"
+      ],
+      "note": "Apple IR FAQ 2005-02-28; Yahoo; EODHD"
+    },
+    {
+      "id": "aapl.split.2014-06-09",
+      "asset": "AAPL",
+      "date": "2014-06-09",
+      "value": 7,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "7:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2014-06-09 7:1",
+      "sources": [
+        "https://investor.apple.com/faq/default.aspx",
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/AAPL.US?api_token=demo&fmt=json"
+      ],
+      "note": "Apple IR FAQ 2014-06-09; Yahoo; EODHD"
+    },
+    {
+      "id": "aapl.split.2020-08-31",
+      "asset": "AAPL",
+      "date": "2020-08-31",
+      "value": 4,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "4:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2020-08-31 4:1",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/AAPL.US?api_token=demo&fmt=json",
+        "https://investor.apple.com/faq/default.aspx",
+        "https://www.apple.com/newsroom/2020/07/apple-reports-third-quarter-results/"
+      ],
+      "note": "Yahoo·EODHD 2020-08-31(분할가 거래 개시일); Apple IR FAQ는 'August 28, 2020'(신주 배분일) 표기. 게임에서는 보유주식이 늘어나는 날 = 8/31(월) 사용. [2차 재검증] Apple Newsroom 2020-07-30 실적 보도자료(원천): 'shareholder of record at the close of business on August 24, 2020 will receive three additional shares… trading will begin on a split-adjusted basis on August 31, 2020' → 기준일(record) 8/24, 배분일 8/28, 분할가 거래 개시 8/31. 게임일 8/31·4:1 확인."
+    },
+    {
+      "id": "nvda.split.2000-06-27",
+      "asset": "NVDA",
+      "date": "2000-06-27",
+      "value": 2,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "2:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2000-06-27 2:1",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.stocksplithistory.com/nvidia/"
+      ],
+      "note": "Yahoo 2000-06-27; stocksplithistory.com 06/27/2000"
+    },
+    {
+      "id": "nvda.split.2001-09-17",
+      "asset": "NVDA",
+      "date": "2001-09-17",
+      "value": 2,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "2:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "corrected",
+      "previous": "2001-09-12 2:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1045810/000101287001502932/0001012870-01-502932.txt",
+        "https://www.sec.gov/Archives/edgar/data/1045810/000101287001501827/0001012870-01-501827.txt",
+        "https://www.stocksplithistory.com/nvidia/",
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://ts-api.cnbc.com/harmony/app/bars/NVDA/1D/20010901000000/20010930000000/unadjusted/EST5EDT.json"
+      ],
+      "note": "정정: 1차 2001-09-12는 9·11 테러로 미국 증시 휴장일(9/11~9/14). 원천 SEC 10-Q(2001-11-23 제출): 기준일 2001-08-28, 'The transfer agent distributed the shares resulting from the split on September 17, 2001'(직전 10-Q에서는 9/11 배분 예정이었음). Yahoo는 이 분할을 2001-09-10로, stocksplithistory.com은 09/17/2001로 표기해 출처끼리 불일치. Yahoo·CNBC 분할반영 일봉이 9/10 0.3157 → 9/17 0.2833(-10%, 2배 단절 없음)으로 이어져 9/17 재개장부터 분할가로 거래된 것과 정합. 게임 이벤트일 = 2001-09-17(재개장일) 권장. [2차 재검증] 분할반영 일봉의 연속성만으로는 9/10~9/17 사이 어느 날짜든 구분 불가하므로 비조정(명목) 일봉으로 확인: 9/10 종가 $75.76(분할 전 가격대) → 9/17 종가 $33.99(분할 후 가격대). 즉 분할가 첫 거래일은 9/17이 맞고 Yahoo의 2001-09-10 표기는 라벨 오류. 75.76/240=0.3157, 33.99/120=0.2833으로 조정값과도 정합."
+    },
+    {
+      "id": "nvda.split.2006-04-07",
+      "asset": "NVDA",
+      "date": "2006-04-07",
+      "value": 2,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "2:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2006-04-07 2:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1045810/000104581006000010/pressrelease.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.stocksplithistory.com/nvidia/"
+      ],
+      "note": "SEC 8-K(2006-03): 기준일 2006-03-17, 배분 on or about 2006-04-06 → 분할가 거래 04-07; Yahoo 2006-04-07; stocksplithistory 04/07/2006"
+    },
+    {
+      "id": "nvda.split.2007-09-11",
+      "asset": "NVDA",
+      "date": "2007-09-11",
+      "value": 1.5,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "3:2 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2007-09-11 3:2",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1045810/000104581007000042/exhibit.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.stocksplithistory.com/nvidia/"
+      ],
+      "note": "SEC 8-K(2007-08): 기준일 2007-08-20, 배분 on or about 2007-09-10 → 분할가 거래 09-11; Yahoo 2007-09-11; stocksplithistory 09/11/2007"
+    },
+    {
+      "id": "nvda.split.2021-07-20",
+      "asset": "NVDA",
+      "date": "2021-07-20",
+      "value": 4,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "4:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2021-07-20 4:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1045810/000104581021000056/pr-may2021.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split"
+      ],
+      "note": "SEC 8-K 보도자료 2021-05-21: 'Trading is expected to begin on a stock split-adjusted basis on July 20'; Yahoo 2021-07-20"
+    },
+    {
+      "id": "nvda.split.2024-06-10",
+      "asset": "NVDA",
+      "date": "2024-06-10",
+      "value": 10,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "10:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2024-06-10 10:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1045810/000104581024000113/q1fy25pr.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split"
+      ],
+      "note": "SEC 8-K 2024-05-22: 'Trading is expected to commence on a split-adjusted basis at market open on Monday, June 10, 2024'; Yahoo 2024-06-10"
+    },
+    {
+      "id": "tsla.split.2020-08-31",
+      "asset": "TSLA",
+      "date": "2020-08-31",
+      "value": 5,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "5:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2020-08-31 5:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1318605/000156459020039353/tsla-ex991_6.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1277769600&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/TSLA.US?api_token=demo&fmt=json"
+      ],
+      "note": "SEC 8-K 2020-08-11: 기준일 08-21, 배분 08-28 장후, 'Trading will begin on a stock split-adjusted basis on August 31, 2020'; Yahoo·EODHD 2020-08-31 5:1"
+    },
+    {
+      "id": "tsla.split.2022-08-25",
+      "asset": "TSLA",
+      "date": "2022-08-25",
+      "value": 3,
+      "unit": "분할 배수(1주→n주)",
+      "basis": "3:1 액면분할, date=분할가 거래 개시일(ex-date, ET)",
+      "status": "verified",
+      "previous": "2022-08-25 3:1",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1318605/000156459022028207/tsla-ex991_6.htm",
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1277769600&period2=1790800000&interval=1d&events=split",
+        "https://eodhd.com/api/splits/TSLA.US?api_token=demo&fmt=json"
+      ],
+      "note": "SEC 8-K 2022-08-05: 기준일 08-17, 배분 08-24 장후, 'Trading will begin on a stock split-adjusted basis on August 25, 2022'; Yahoo·EODHD 2022-08-25 3:1"
+    },
+    {
+      "id": "aapl.split.cumulative",
+      "asset": "AAPL",
+      "date": "2026-09-29",
+      "value": 224,
+      "unit": "누적 분할 배수(주)",
+      "basis": "2000-01-01 보유 1주(TSLA는 상장 시 1주)가 2026-09-29에 되는 주식 수",
+      "status": "verified",
+      "previous": "224",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193"
+      ],
+      "note": "2×2×7×4=224. 위 개별 분할 항목(SEC·IR·Yahoo 대조)에서 도출. 1차 값 일치."
+    },
+    {
+      "id": "nvda.split.cumulative",
+      "asset": "NVDA",
+      "date": "2026-09-29",
+      "value": 480,
+      "unit": "누적 분할 배수(주)",
+      "basis": "2000-01-01 보유 1주(TSLA는 상장 시 1주)가 2026-09-29에 되는 주식 수",
+      "status": "verified",
+      "previous": "480",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810"
+      ],
+      "note": "2×2×2×1.5×4×10=480. 위 개별 분할 항목(SEC·IR·Yahoo 대조)에서 도출. 1차 값 일치."
+    },
+    {
+      "id": "tsla.split.cumulative",
+      "asset": "TSLA",
+      "date": "2026-09-29",
+      "value": 15,
+      "unit": "누적 분할 배수(주)",
+      "basis": "2000-01-01 보유 1주(TSLA는 상장 시 1주)가 2026-09-29에 되는 주식 수",
+      "status": "verified",
+      "previous": "15",
+      "sources": [
+        "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=946440000&period2=1790800000&interval=1d&events=split",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001318605"
+      ],
+      "note": "5×3=15. 위 개별 분할 항목(SEC·IR·Yahoo 대조)에서 도출. 1차 값 일치."
+    }
+  ]
+}
