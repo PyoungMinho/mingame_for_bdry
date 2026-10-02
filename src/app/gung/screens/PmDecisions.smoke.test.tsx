@@ -148,7 +148,8 @@ describe('SCR-10 명판관 · 결말 → 요약(원고 7-2)', () => {
     await syncTo(/^지목/, false);
     await hostVotes([2, 1, 2, 2]); // 2번(범인) 검거
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+    // R7: 보너스를 하나도 안 적었으면 「보너스 없이 공개하겠소?」 → 그대로 공개
+    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && !screen.queryByRole('img', { name: /도장: (검거|도주|미결)/ }); i++) await tap(btn(/^다음/));
     expect(screen.getByRole('img', { name: '도장: 검거' })).toBeInTheDocument();
     const text = bodyText();
@@ -165,6 +166,9 @@ describe('SCR-10 명판관 · 결말 → 요약(원고 7-2)', () => {
     const code = findCode(4, (k) => asg(k).culpritSeat !== 2);
     await joinAsPlayer(code, 2);
     await syncTo(/^진상 공개/);
+    // G5: 진상 대기 → 방장 「범인이 밝혀졌소」 → 확인 시트 → P9
+    await tap(btn(/범인이 밝혀졌어요/));
+    await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
     const text = bodyText();
     const ep = text.indexOf(c.truth.epilogue!.slice(0, 20));
     const sum = text.indexOf(c.truth.summary!.slice(0, 20));
@@ -193,7 +197,7 @@ describe('BUG-27 결정 — 용어 「?」·시각표', () => {
     expect(screen.getByRole('region', { name: '시각표' })).toBeInTheDocument();
     expect(bodyText()).toContain('19~21시');
     await syncTo(/^조사 1/);
-    await tap(btn('용어 풀이·시각표'));
+    await tap(btn('궁 배치도·시각표·인물·용어'));
     const sheet = dialog().textContent ?? '';
     expect(sheet).toContain('술시');
     expect(sheet).toContain('19~21시');
@@ -228,7 +232,7 @@ describe('BUG-27 결정 — 용어 「?」·시각표', () => {
     expect(bodyText()).not.toContain(term);
 
     // 용어 시트엔 활맥이 없고, 내 패 › 비밀(봉인 속)엔 있다
-    await tap(btn('용어 풀이·시각표'));
+    await tap(btn('궁 배치도·시각표·인물·용어'));
     expect(dialog().textContent).not.toContain('활맥');
     await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     await tap(btn('내 패'));

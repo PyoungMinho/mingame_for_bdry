@@ -242,7 +242,7 @@ describe('share — 결과 카드(§8-3, §9) 스포일러 프리', () => {
   it('일반 추천 카드(§8-4) — 코드 없음', () => {
     const p = genericPayload();
     expect(p.kakao.content.title).toBe('세자 독살 사건 — 술자리 추리 게임');
-    expect(p.kakao.content.description).toBe('4~6명 · 폰 하나씩 · 약 50분. 범인은 이 자리에 있다.');
+    expect(p.kakao.content.description).toBe('4~6명 · 폰 하나씩 · 약 60분. 범인은 이 자리에 있다.');
     expect(p.kakao.buttons[0].title).toBe('방 만들러 가기');
     expect(p.url).toBe('https://project-orsrw.vercel.app/gung');
   });

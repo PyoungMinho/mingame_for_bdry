@@ -58,6 +58,16 @@ async function createRoom(n: 4 | 5 | 6) {
   await tap(btn(/대기실로/));
 }
 
+/** 개선 묶음 1 G2: 방장 본인 조사는 무대가 아니라 단서함 「지금 고르기」로(무대엔 봉인 카드가 없다) */
+async function hostPick(index = 0) {
+  await tap(btn(/내 조사\(장소·단서\)는 단서함에서/));
+  const nows = screen.getAllByRole('button', { name: '지금 고르기' });
+  await tap(nows[nows.length - 1]);
+  const sheet = screen.getByRole('dialog');
+  await tap(within(sheet).getAllByRole('button').filter((b) => b.className.includes('gu-place-tile'))[index]);
+  await tap(within(sheet).getByRole('button', { name: /조사하기/ }));
+}
+
 async function hostToRound1() {
   await tap(btn(/사건 시작/));
   await tap(btn(/시작하겠소/));
@@ -97,16 +107,17 @@ describe('GungApp 런타임 스모크', () => {
     expect(screen.getByText(/지금:\s*1번/)).toBeInTheDocument();
     await tap(btn(/첫째 조사 시작/));
 
-    // H5 조사1 — 2탭: 타일 선택 → 인라인 "○○ 조사하기"
-    expect(screen.getByText('방장의 조사')).toBeInTheDocument();
-    const placeTiles = tiles('gu-place-tile');
-    expect(placeTiles.length).toBeGreaterThan(0);
-    await tap(placeTiles[0]);
-    await tap(btn(/조사하기$/));
+    // H5 조사1 — G2: 무대엔 봉인 카드가 없고(방장 조사는 단서함), 고르기 타이머는 방장이 낭독 뒤에 시작한다
+    expect(document.querySelectorAll('.gu-sealed')).toHaveLength(0);
+    expect(tiles('gu-place-tile')).toHaveLength(0);
+    await tap(btn(/다 읽었소 → 고르기 2분 시작/));
+    expect(screen.queryByRole('button', { name: /고르기 2분 시작/ })).toBeNull();
+    await hostPick(0);
 
-    // 장소를 고르면 ClueCard(봉인)로 바뀐다
+    // 장소를 고르면 단서함에 ClueCard(봉인)
     expect(screen.getByText(/꾹 누르고 있으면 보여요/)).toBeInTheDocument();
 
+    await tap(btn('진행'));
     await tap(btn(/토론 \d+분 시작/));
     expect(screen.getByRole('heading', { name: /조사 1 · 토론/ })).toBeInTheDocument();
 
@@ -159,8 +170,8 @@ describe('GungApp 런타임 스모크', () => {
     await hostToRound1();
 
     for (const label of [/둘째 조사 시작/, /셋째 조사 시작/, /최종 변론으로/]) {
-      await tap(tiles('gu-place-tile')[0]);
-      await tap(btn(/조사하기$/));
+      await hostPick(0);
+      await tap(btn('진행'));
       await tap(btn(/토론 \d+분 시작/));
       await tap(btn(label));
     }
@@ -177,7 +188,9 @@ describe('GungApp 런타임 스모크', () => {
     // H8 집계 — 1→2, 2·3·4→1 이라 단독 1위(1번). 표 목록과 최다 지목 줄이 보인다
     expect(screen.getByText(/최다 지목:/)).toBeInTheDocument();
     await tap(btn(/진상 공개/));
-    await tap(btn(/공개하겠소/));
+    // R7: 보너스 입력이 0개면 확인 문구가 바뀐다
+    expect(within(screen.getByRole('dialog')).getByText('보너스 없이 공개하겠소?')).toBeInTheDocument();
+    await tap(btn('그대로 공개'));
 
     // H9 진상 — "다음 (k/N)"/"점수 보기"를 끝까지
     for (let i = 0; i < 30; i++) {
@@ -215,8 +228,7 @@ describe('리뷰 회귀', () => {
   it('단서 카드는 처음 열 때(openClue 저장) 닫히지 않고 손을 뗄 때까지 열려 있다', async () => {
     await createRoom(4);
     await hostToRound1();
-    await tap(tiles('gu-place-tile')[0]);
-    await tap(btn(/조사하기$/));
+    await hostPick(0);
     const surface = screen.getByRole('button', { name: /단서 — 비밀 정보/ });
     expect(surface.textContent).not.toMatch(/손을 떼면/);
     fireEvent.pointerDown(surface, { pointerId: 1 });
@@ -275,6 +287,10 @@ describe('리뷰 회귀', () => {
 
     await tap(btn(/진상 공개 시작됐어요/));
     await tap(within(screen.getByRole('dialog')).getByRole('button', { name: /넘어가겠소/ }));
+    // G5 P9-0 — 대기 화면: 범인 없음. 방장 「범인이 밝혀졌소」 뒤 확인 시트를 거쳐야 P9
+    expect(screen.queryByText(new RegExp(`${a.culpritSeat}번 · `))).toBeNull();
+    await tap(btn(/범인이 밝혀졌어요/));
+    await tap(within(screen.getByRole('dialog')).getByRole('button', { name: '보겠소' }));
     // P9 — 빈 화면이 아니라 진상 전문 + 내 지목 칩
     expect(screen.getAllByText('그날 밤의 진상').length).toBeGreaterThan(0);
     expect(screen.getByText(/내 지목:/)).toBeInTheDocument();

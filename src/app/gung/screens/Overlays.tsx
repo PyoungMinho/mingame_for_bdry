@@ -6,10 +6,13 @@
  * O4(토스트)·O7(카운트다운)은 Toast/CountdownOverlay 컴포넌트를 GungApp 이 직접 쓴다. O9 는 Setup.tsx.
  */
 import { useEffect, useState } from 'react';
-import { DEFAULT_SCORING, PHASE_LABELS, scoringOf, syncOptions, type GameState, type GungCase, type RoundNo } from '@/lib/gung';
-import { BottomSheet, GuButton, SeatRing, TermList, TimeTable } from '../components';
-import type { TermItem, WatchRowView } from '../components';
+import { DEFAULT_SCORING, GUIDE, PHASE_LABELS, scoringOf, syncOptions, type GameState, type GungCase, type RoundNo } from '@/lib/gung';
+import { BottomSheet, GuButton, LieRulesBox, PalaceMap, RoleIcon, SeatRing, TermList, TimeTable } from '../components';
+import type { PalaceMapProps, RoleIconKey, TermItem, WatchRowView } from '../components';
 import { seatRingItems } from './adapters';
+import { roundSignal } from './signals';
+
+export { roundSignal };
 
 export interface ConfirmRequest {
   title: string;
@@ -21,11 +24,6 @@ export interface ConfirmRequest {
 }
 
 const ROUND_WORD: Record<RoundNo, string> = { 1: '첫째', 2: '둘째', 3: '셋째' };
-
-/** 방장이 외치는 조사 시작 신호(§2-C 구두 신호 지도) — 플레이어 게이트 캡션과 같은 말 */
-export function roundSignal(round: RoundNo): string {
-  return `${ROUND_WORD[round]} 조사를 시작하오`;
-}
 
 /**
  * 조사 라운드 진입 확인 — 플레이어 게이트(「N라운드 시작됐어요」)와 진행 단계 맞추기(O1)가 **같은 시트**를 쓴다(QA BUG-05 와 그 우회로).
@@ -309,15 +307,16 @@ export function SeatChangeSheet({ open, onClose, state, n, onChange }: { open: b
   );
 }
 
-/** O5 — 하는 법(6단계 + 점수 규칙 표 + 안내 2줄, §13) */
+/** O5 — 하는 법(R1 거짓말 규칙 상자 맨 위 + 6단계 + 점수 규칙 표 + 안내 2줄, §13) */
 export function RulesSheet({ open, onClose, c }: { open: boolean; onClose: () => void; c: GungCase }) {
   const r = c ? scoringOf(c) : DEFAULT_SCORING;
   return (
     <BottomSheet title="하는 법" open={open} onClose={onClose}>
+      <LieRulesBox />
       <ol className="gu-plainlist gu-steps">
         <li>① 방장이 사건 개요를 읽는다</li>
         <li>② 각자 비밀 패를 몰래 본다(꾹 누르는 동안만 보임)</li>
-        <li>③ 자기소개 — 신분만 사극 말투로 밝힌다</li>
+        <li>{GUIDE.rulesIntroStep}</li>
         <li>④ 조사 3번 — 장소 1곳 → 단서 → 공개할지 숨길지</li>
         <li>⑤ 최종 변론 1인 1분</li>
         <li>⑥ 셋에 동시 지목 → 진상 공개 → 점수</li>
@@ -356,17 +355,101 @@ export function RulesSheet({ open, onClose, c }: { open: boolean; onClose: () =>
   );
 }
 
+/** 「?」 시트 인물 섹션 — 자기소개 뒤(rolesVisible)에만 사람이 보인다. 인원·배정만으로 정해진다(역할 무관) */
+export interface HelpPeople {
+  visible: boolean;
+  seated: { seat?: number; name: string; icon: RoleIconKey; subtitle?: string; profile: string }[];
+  /** 4·5인 판의 NPC(「이 자리에 없으나 증언을 남긴 이」) — 6인이면 빈 배열(머리도 없다) */
+  absent: { name: string; icon: RoleIconKey; subtitle?: string; profile: string }[];
+  aliases: string[];
+}
+
+function PeopleSection({ people }: { people: HelpPeople }) {
+  return (
+    <section className="gu-help-people" aria-label={GUIDE.peopleSection}>
+      <p className="gu-h3">{GUIDE.peopleSection}</p>
+      {!people.visible ? (
+        <p className="gu-muted">{GUIDE.peopleLocked}</p>
+      ) : (
+        <>
+          <ul className="gu-roster">
+            {people.seated.map((p) => (
+              <li key={p.seat} className="gu-roster-item">
+                <p className="gu-roster-head">
+                  <span className="gu-num">{p.seat}번</span> · <RoleIcon iconKey={p.icon} size={18} /> <span className="gu-roster-name">{p.name}</span>
+                </p>
+                {p.subtitle && <p className="gu-roster-sub">{p.subtitle}</p>}
+                <p className="gu-roster-profile">{p.profile}</p>
+              </li>
+            ))}
+          </ul>
+          {people.absent.length > 0 && (
+            <>
+              <p className="gu-roster-absent-head">{GUIDE.peopleAbsentHead}</p>
+              <ul className="gu-roster">
+                {people.absent.map((p) => (
+                  <li key={p.name} className="gu-roster-item">
+                    <p className="gu-roster-head">
+                      <RoleIcon iconKey={p.icon} size={18} /> <span className="gu-roster-name">{p.name}</span>
+                    </p>
+                    {p.subtitle && <p className="gu-roster-sub">{p.subtitle}</p>}
+                    <p className="gu-roster-profile">{p.profile}</p>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </>
+      )}
+      <p className="gu-roster-absent-head">{GUIDE.aliasHead}</p>
+      <ul className="gu-aliases">
+        {people.aliases.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 /**
- * 용어 풀이 「?」(원고 1-6) + 시각표(원고 1-5). 목록은 인원·라운드만으로 정해진다 — 모든 폰에서 같다.
+ * 「?」 시트(R2 재구성) — 궁 배치도 → 시각표(원고 1-5) → 인물 → 용어(원고 1-6). 목록은 인원·단계만으로 정해진다 — 모든 폰에서 같다.
  * 장소 카드 용어는 그 카드 안(봉인 속), 역할 전용 용어는 내 패 봉인 속에만 있다.
  */
-export function TermsSheet({ open, onClose, rows, note, terms }: { open: boolean; onClose: () => void; rows: WatchRowView[]; note?: string; terms: TermItem[] }) {
+export function TermsSheet({
+  open,
+  onClose,
+  rows,
+  note,
+  terms,
+  map,
+  people,
+}: {
+  open: boolean;
+  onClose: () => void;
+  rows: WatchRowView[];
+  note?: string;
+  terms: TermItem[];
+  map: Pick<PalaceMapProps, 'maps' | 'placeIcons' | 'note'>;
+  people: HelpPeople;
+}) {
   return (
-    <BottomSheet title="용어 풀이 · 시각표" open={open} onClose={onClose}>
+    <BottomSheet title={GUIDE.helpSheetTitle} open={open} onClose={onClose} className="gu-help-sheet">
+      <p className="gu-h3">{GUIDE.mapSection}</p>
+      <PalaceMap {...map} zoom />
       <TimeTable rows={rows} note={note} />
-      <p className="gu-h3">용어</p>
+      <PeopleSection people={people} />
+      <p className="gu-h3">{GUIDE.termsSection}</p>
       <TermList terms={terms} />
       <p className="gu-micro">단서 카드에만 나오는 말은 그 카드를 열면 카드 아래에 풀이가 붙소.</p>
+    </BottomSheet>
+  );
+}
+
+/** 배치도만 담은 시트(R2) — 장소 고르기 위 「🗺 궁 배치도 보기」·브리핑 지도 탭. 전체 높이로 연다 */
+export function MapSheet({ open, onClose, map }: { open: boolean; onClose: () => void; map: Pick<PalaceMapProps, 'maps' | 'placeIcons' | 'note'> }) {
+  return (
+    <BottomSheet title={GUIDE.mapSection} open={open} onClose={onClose} className="gu-map-sheet">
+      <PalaceMap {...map} zoom />
     </BottomSheet>
   );
 }

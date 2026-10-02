@@ -12,6 +12,7 @@
 import { assignSeats, seatOfRole, type Assignment } from './assign';
 import { isPlaceInRound } from './deck';
 import { parseRoomCode } from './room';
+import { placeCardById } from './seal';
 import {
   DEFAULT_SCORING,
   DEFAULT_TIMERS,
@@ -162,6 +163,20 @@ export interface VoteState {
   bonus?: Record<number, Record<string, number>>;
 }
 
+/**
+ * 공개 단서 보드 한 줄(개선 묶음 1 · R5) — 본문은 저장하지 않는다(언제나 사건 데이터에서 다시 계산).
+ * 방장이 인장 번호로만 올린다(간편 모드 없음). seats = '누가 밝혔소?'에서 고른 자리(비어 있어도 된다).
+ */
+export interface BoardEntry {
+  id: string;
+  round: RoundNo;
+  seats: number[];
+}
+/** 보드 최대 장 수 — 한 판에 열 수 있는 장소 카드 수(7곳 × 3라운드) */
+export const BOARD_LIMIT = 21;
+/** 카드 id 형식(DG-1 · HW-1b · NPC-5A 는 장소 카드가 아니라 보드에 못 오른다) */
+export const BOARD_ID_RE = /^[A-Z]{2,3}-\d{1,2}[a-z]?$/;
+
 export interface HostState {
   /** 롤콜 확인된 자리(1 은 항상 포함) */
   rollCall: number[];
@@ -175,6 +190,8 @@ export interface HostState {
   /** seat → missionId → 판정(null = 미판정) */
   missions: Record<number, Record<string, boolean | null>>;
   revealIndex: number;
+  /** 공개 단서 보드(R5) — 올린 순서. 되돌리기 스택에 함께 실린다 */
+  board: BoardEntry[];
   startedAt?: number;
   endedAt?: number;
   /** 되돌리기 스택(최대 HISTORY_LIMIT, 영속) */
@@ -222,6 +239,7 @@ export function emptyHost(): HostState {
     absentSeats: [],
     missions: {},
     revealIndex: 0,
+    board: [],
     history: [],
   };
 }
@@ -497,7 +515,13 @@ export type GameAction =
   | { type: 'bonusAnswer'; seat: number; questionId: string; option: number | null }
   | { type: 'revealAll' }
   | { type: 'mission'; seat: number; missionId: string; value: boolean | null }
-  | { type: 'setAbsent'; seat: number; absent: boolean };
+  | { type: 'setAbsent'; seat: number; absent: boolean }
+  /**
+   * 공개 단서 보드에 올림(R5) — 인장으로 찾은 장소 카드 id 만. 이미 오른 카드면 새 자리만 덧붙인다.
+   * 아직 들어서지 않은 라운드의 카드·장소 카드가 아닌 id 는 거부(no-op).
+   */
+  | { type: 'postClue'; id: string; seats: number[] }
+  | { type: 'unpostClue'; id: string };
 
 function touch(s: GameState, now: number, patch: Partial<GameState>): GameState {
   return { ...s, ...patch, updatedAt: now };
@@ -544,7 +568,8 @@ function hostAdvance(h: HostCore, phase: Phase, ctx: GameContext, n: number, cul
       return { phase, host: { ...h, roundSub: 'discuss', timer: startTimer('discuss', timerMs(c, 'discuss'), now) } };
     }
     if (r < 3) {
-      return { phase: phaseOfRound((r + 1) as RoundNo), host: { ...h, roundSub: 'select', timer: startTimer('select', timerMs(c, 'select'), now) } };
+      // G2: 조사 라운드에 들어서면 고르기 타이머는 멈춰 둔다 — 방장이 공용 단서를 다 읽은 뒤 「고르기 2분 시작」으로 연다
+      return { phase: phaseOfRound((r + 1) as RoundNo), host: { ...h, roundSub: 'select', timer: null } };
     }
     return {
       phase: 'defense',
@@ -560,7 +585,8 @@ function hostAdvance(h: HostCore, phase: Phase, ctx: GameContext, n: number, cul
     case 'cards':
       return { phase: 'intro', host: { ...h, introCurrent: active[0] ?? 1, timer: null } };
     case 'intro':
-      return { phase: 'r1', host: { ...h, roundSub: 'select', timer: startTimer('select', timerMs(c, 'select'), now) } };
+      // G2: 낭독 먼저 — 고르기 타이머는 방장이 수동으로 시작
+      return { phase: 'r1', host: { ...h, roundSub: 'select', timer: null } };
     case 'defense': {
       const d = h.defense ?? { order: active, index: 0 };
       if (d.index < d.order.length - 1) {
@@ -781,6 +807,31 @@ function hostOnly(s: GameState, ctx: GameContext, action: GameAction, n: number)
         if (h.absentSeats.includes(action.seat) === action.absent) return null;
         return { phase: p, host: applyAbsent(h, action.seat, action.absent, n) };
       });
+    case 'postClue':
+      return hostChange(s, ctx, true, (h, p) => {
+        if (typeof action.id !== 'string' || !BOARD_ID_RE.test(action.id)) return null;
+        const card = placeCardById(ctx.c, n as PlayerCount, action.id);
+        if (!card || card.round > reachedRound(p)) return null;
+        if (!Array.isArray(action.seats) || !action.seats.every((x) => Number.isInteger(x) && x >= 1 && x <= n)) return null;
+        const seats = Array.from(new Set(action.seats)).sort((x, y) => x - y);
+        const board = h.board ?? [];
+        const i = board.findIndex((e) => e.id === action.id);
+        if (i >= 0) {
+          const merged = Array.from(new Set([...board[i].seats, ...seats])).sort((x, y) => x - y);
+          if (merged.length === board[i].seats.length) return null; // 새 자리 없음 — 기록하지 않는다
+          const next = board.slice();
+          next[i] = { ...board[i], seats: merged };
+          return { phase: p, host: { ...h, board: next } };
+        }
+        if (board.length >= BOARD_LIMIT) return null;
+        return { phase: p, host: { ...h, board: [...board, { id: card.id, round: card.round, seats }] } };
+      });
+    case 'unpostClue':
+      return hostChange(s, ctx, true, (h, p) => {
+        const board = h.board ?? [];
+        if (!board.some((e) => e.id === action.id)) return null;
+        return { phase: p, host: { ...h, board: board.filter((e) => e.id !== action.id) } };
+      });
     default:
       return s;
   }
@@ -807,7 +858,8 @@ export function applyAction(s: GameState, action: GameAction, ctx: GameContext):
     case 'skipIntro': {
       if (s.phase !== 'cards') return s;
       if (s.role === 'host') {
-        return hostChange(s, ctx, true, (h) => ({ phase: 'r1', host: { ...h, roundSub: 'select', timer: startTimer('select', timerMs(c, 'select'), now) } }));
+        // G2: 낭독 먼저 — 고르기 타이머는 방장이 수동으로 시작
+        return hostChange(s, ctx, true, (h) => ({ phase: 'r1', host: { ...h, roundSub: 'select', timer: null } }));
       }
       return touch(s, now, { phase: 'r1' });
     }

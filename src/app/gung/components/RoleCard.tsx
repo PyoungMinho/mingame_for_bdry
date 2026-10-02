@@ -8,10 +8,17 @@
  * PM 피드백(쪽 나눔 폐지) — 그날 밤·거짓말·미션·말투처럼 항목이 여럿인 섹션은 원고 줄 구분을 살려
  * ①②③ 번호 목록으로 한 화면에 다 보여준다(SealedCard가 글자 크기를 알아서 줄인다). 더는 쪽을 나누지 않으므로
  * 섹션을 바꾸면(= 봉인이 다시 걸리면) 그다음 열 때 늘 처음부터 전체가 보인다 — "몇 쪽인지 모르겠다"는 불만 자체가 사라진다.
+ *
+ * 개선 묶음 1
+ *  - G4: 정체 칸은 범인 「범인」·무고자 「결백」 도장을 **같은 크기·색·회전·자리**로 받는다(열린 실루엣 동일).
+ *  - G3: '말투' 섹션 맨 위에 모든 역할 공통 안내 한 줄 — 자기소개 때 말투 예시를 읽지 않게.
+ *  - R1: '거짓말' 섹션 맨 위에 모든 역할 같은 「거짓말 규칙」 상자(범인 패에 「물으면 사실대로」가 없어도 상자는 같다).
+ *  - R1: 칩 위 안내(패 확인 단계 '꼭 볼 3칸') · 한 번 연 칩의 점(seen)은 상위가 넘긴다.
  */
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { GUIDE } from '@/lib/gung/guide-data';
 import { circledNum } from './numbering';
 import { SealedCard } from './SealedCard';
 import { SealStamp } from './SealStamp';
@@ -34,9 +41,13 @@ export interface RoleCardProps {
   className?: string;
   /** 'memory' — 처음 그릴 때 '비밀' 섹션을 열면 새로 풀린 기억 블록이 보이도록 그리로 스크롤한다(「새 기억이 떠올랐소」 알림 뒤) */
   startAt?: 'memory';
+  /** 칩 위 안내 한 줄(패 확인 단계 「꼭 볼 3칸」) — 모든 역할에 같은 문구만 */
+  hint?: string;
+  /** 한 번 열어 본 섹션(칩의 점) */
+  seen?: Partial<Record<SectionKey, boolean>>;
 }
 
-export function RoleCard({ content, activeSection, onSectionChange, open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs, watermark, className, startAt }: RoleCardProps) {
+export function RoleCard({ content, activeSection, onSectionChange, open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs, watermark, className, startAt, hint, seen }: RoleCardProps) {
   const full = sectionText(content, activeSection);
   const memoryRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +60,8 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
 
   return (
     <div className={['gu-rolecard', className ?? ''].filter(Boolean).join(' ')}>
-      <SectionChips active={activeSection} onChange={onSectionChange} />
+      {hint && <p className="gu-rolecard-hint">{hint}</p>}
+      <SectionChips active={activeSection} onChange={onSectionChange} seen={seen} />
       <div className="gu-hopae">
         <span className="gu-hopae-hole" aria-hidden />
         <SealedCard
@@ -64,7 +76,7 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
           renderContent={() => (
             <div className="gu-hopae-content">
               <h3 className="gu-hopae-section-title gu-display">{full.title}</h3>
-              {activeSection === 'identity' && content.isCulprit && <SealStamp text="범인" size={56} className="gu-hopae-stamp" />}
+              {activeSection === 'identity' && <SealStamp text={content.isCulprit ? '범인' : '결백'} size={56} className="gu-hopae-stamp" />}
               {activeSection === 'profile' && <p className="gu-hopae-rolename gu-display">{content.roleName}</p>}
               {full.body && (
                 <p className="gu-hopae-body">
@@ -92,6 +104,8 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
                   ))}
                 </ol>
               )}
+              {activeSection === 'lies' && <LieRulesBox compact />}
+              {activeSection === 'speech' && <p className="gu-hopae-speech-head">{GUIDE.speechHead}</p>}
               {full.list && activeSection === 'speech' && (
                 <ol className="gu-hopae-speech gu-numlist">
                   {full.list.map((s, i) => (
@@ -123,6 +137,36 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
         />
       </div>
     </div>
+  );
+}
+
+/**
+ * R1 「거짓말 규칙」 상자 — 하는 법 시트 맨 위와 내 패 '거짓말' 섹션 맨 위에 **같은 문자열**로 들어간다.
+ * 출처: 브리핑 '둘.'(원고 7-1) · 공통 규칙 2(원고 1-7 = 플레이어 뷰 2-4). 질문 주제는 제안하지 않는다.
+ */
+export function LieRulesBox({ className, compact }: { className?: string; compact?: boolean }) {
+  if (compact) {
+    return (
+      <section className={['gu-lierules', 'gu-lierules-compact', className ?? ''].filter(Boolean).join(' ')} aria-label={GUIDE.lieRulesTitle}>
+        <p className="gu-lierules-title">{GUIDE.lieRulesTitle}</p>
+        <p className="gu-lierules-short">{GUIDE.lieRulesShort}</p>
+      </section>
+    );
+  }
+  return (
+    <section className={['gu-lierules', className ?? ''].filter(Boolean).join(' ')} aria-label={GUIDE.lieRulesTitle}>
+      <p className="gu-lierules-title">{GUIDE.lieRulesTitle}</p>
+      <ol className="gu-lierules-list">
+        {GUIDE.lieRules.map((line, i) => (
+          <li key={i}>
+            <span className="gu-numitem-mark" aria-hidden>
+              {circledNum(i + 1)}
+            </span>
+            <span>{line}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 

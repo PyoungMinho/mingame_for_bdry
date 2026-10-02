@@ -263,7 +263,7 @@
   bottom: 0;
   z-index: var(--gu-z-bar);
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr); /* 개선 묶음 1 R4: 진행·내 패·단서함·수첩 — 모든 역할·인원 4개 */
   height: 60px;
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--gu-bg-2);
@@ -875,7 +875,7 @@
   border-radius: var(--gu-radius-lg);
 }
 .gu-toast-text { font-size: var(--gu-fs-small); color: var(--gu-body); }
-.gu-toast-action { color: var(--gu-gold-ink); font-weight: 700; height: 48px; padding: 0 var(--gu-sp-3); }
+.gu-toast-action { color: var(--gu-gold-ink); font-weight: 700; height: 48px; padding: 0 var(--gu-sp-3); white-space: nowrap; flex-shrink: 0; } /* QA(개선 묶음 1): 신호가 붙어 두 줄이 된 토스트에서 「되돌/리기」로 꺾이지 않게 */
 
 .gu-banner {
   display: flex;
@@ -1061,9 +1061,9 @@
 .gu-seatchip[data-picked] { background: var(--gu-cta); border-color: var(--gu-cta); color: var(--gu-cta-ink); }
 
 /* ── 방장 화면 보조 ── */
-.gu-defense-chips { display: flex; gap: var(--gu-sp-2); justify-content: center; }
+.gu-defense-chips { display: flex; gap: 4px; justify-content: center; flex-wrap: nowrap; } /* R6: 아이콘이 붙어도 6칩 한 줄(360px) */
 .gu-defense-chip {
-  min-width: 40px; height: 40px; padding: 0 10px; border-radius: var(--gu-radius-pill); /* QA BUG-26: 표시용(누르는 칩 아님) — 멀리서 읽히게 */
+  min-width: 40px; height: 40px; padding: 0 6px; gap: 2px; border-radius: var(--gu-radius-pill); /* QA BUG-26: 표시용(누르는 칩 아님) — 멀리서 읽히게 */
   display: flex; align-items: center; justify-content: center; font-family: var(--gu-font-mono); font-size: var(--gu-fs-small);
   background: var(--gu-surface); color: var(--gu-muted);
 }
@@ -1346,3 +1346,182 @@
 
 /* ── 동률자 추가 변론(원고 8-1) ── */
 .gu-tiedefense { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border: 1px solid var(--gu-red-fill); border-radius: var(--gu-radius-lg); }
+
+
+/* ============================================================================
+ * 개선 묶음 1 (docs/planning/gung-improve-spec.md) — 기존 토큰만 사용
+ * ========================================================================== */
+
+/* R6 변론 칩 역할 아이콘 */
+.gu-defense-chip-icon { flex-shrink: 0; opacity: 0.9; }
+
+/* R1 '꼭 볼 3칸' · 칩 '봤음' 점 */
+.gu-rolecard-hint { margin: 0; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-gold-ink); text-align: center; }
+.gu-chip { position: relative; }
+.gu-chip-seen {
+  position: absolute; top: 6px; right: 8px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gu-green-ink);
+}
+
+/* R1 거짓말 규칙 상자 — 하는 법 시트(다크)·내 패 거짓말 섹션(한지) 두 곳 */
+.gu-lierules { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border-radius: var(--gu-radius-md); border: 1px solid var(--gu-line-2); background: var(--gu-bg-2); margin-bottom: var(--gu-sp-3); }
+.gu-lierules-title { margin: 0; font-family: var(--gu-font-display); font-size: 17px; color: var(--gu-gold-ink); }
+.gu-lierules-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: var(--gu-fs-small); line-height: 1.5; color: var(--gu-body); }
+.gu-lierules-list li { display: flex; gap: var(--gu-sp-2); align-items: flex-start; }
+.gu-lierules-list .gu-numitem-mark { color: var(--gu-gold-ink); }
+.gu-sealed-paper .gu-lierules { background: color-mix(in srgb, var(--gu-paper-2) 70%, transparent); border-color: color-mix(in srgb, var(--gu-paper-muted) 40%, transparent); margin-bottom: 0; padding: 10px var(--gu-sp-3); gap: 6px; }
+.gu-sealed-paper .gu-lierules-title { color: var(--gu-paper-accent); font-size: calc(17px * var(--gu-seal-scale, 1)); }
+/* QA(개선 묶음 1): 봉인 카드의 '최소 14px' 규약(SealedCard FIT_STEPS) — 15px 기준 글자는 0.82배로 줄면 12.4px 가 되므로 바닥을 건다 */
+.gu-sealed-paper .gu-lierules-list { color: var(--gu-paper-ink); font-size: max(14px, calc(var(--gu-fs-small) * var(--gu-seal-scale, 1))); gap: 4px; line-height: 1.45; }
+.gu-sealed-paper .gu-lierules-list .gu-numitem-mark { color: var(--gu-paper-accent); }
+
+/* G3 말투 섹션 머리 */
+.gu-hopae-speech-head { margin: 0; font-size: max(14px, calc(var(--gu-fs-small) * var(--gu-seal-scale, 1))); line-height: 1.5; color: var(--gu-paper-muted); border-left: 2px solid var(--gu-paper-accent); padding-left: var(--gu-sp-2); }
+
+/* R5 공개 카드 인장 */
+.gu-cluecard-seal { display: flex; align-items: center; gap: var(--gu-sp-3); margin: var(--gu-sp-3) 0 0; padding-top: var(--gu-sp-2); border-top: 1px dashed color-mix(in srgb, var(--gu-paper-muted) 45%, transparent); font-size: var(--gu-fs-small); color: var(--gu-paper-muted); clear: both; }
+.gu-cluecard-seal-num {
+  flex-shrink: 0; font-size: 26px; font-weight: 700; letter-spacing: 2px; color: var(--gu-red-fill);
+  border: 2px solid var(--gu-red-fill); border-radius: var(--gu-radius-sm); padding: 2px 8px; line-height: 1.1;
+}
+
+/* R5 장소 고르기 — 안내·꼬리표 · R2 배치도 링크 */
+.gu-placehint { margin: 0; font-size: var(--gu-fs-small); color: var(--gu-blue-ink); }
+.gu-maplink { align-self: flex-start; color: var(--gu-gold-ink); text-decoration-color: color-mix(in srgb, var(--gu-gold-ink) 60%, transparent); }
+.gu-place-tag { font-size: 12px; color: var(--gu-cta-ink); background: var(--gu-cta); border-radius: var(--gu-radius-pill); padding: 1px 8px; margin-top: 2px; }
+
+/* R2 궁 배치도 — 한지 위 먹선. 사람·동선·시각·물건은 데이터에 자리가 없다 */
+.gu-map { margin: 0; display: flex; flex-direction: column; gap: var(--gu-sp-3); padding: var(--gu-sp-3); border-radius: var(--gu-radius-lg); background: var(--gu-paper); color: var(--gu-paper-ink); }
+.gu-map[data-tappable] { cursor: zoom-in; }
+.gu-map[data-tappable]:focus-visible { outline: 2px solid var(--gu-cta); outline-offset: 2px; }
+.gu-map-block { display: flex; flex-direction: column; gap: 4px; }
+.gu-map-title { margin: 0; font-family: var(--gu-font-display); font-size: 15px; color: var(--gu-paper-accent); }
+.gu-map-svg { display: block; width: 100%; height: auto; font-family: var(--gu-font-body); }
+.gu-map-box { fill: var(--gu-paper-2); stroke: var(--gu-paper-ink); stroke-width: 1.2; }
+.gu-map-node:not([data-place]) .gu-map-box { fill: color-mix(in srgb, var(--gu-paper-2) 40%, var(--gu-paper)); stroke-dasharray: 3 2; }
+.gu-map-icon { color: var(--gu-paper-accent); }
+.gu-map-t { fill: var(--gu-paper-ink); }
+.gu-map-t--name { font-size: 12.5px; font-weight: 700; }
+.gu-map-t--sub { font-size: 10px; font-weight: 400; fill: var(--gu-paper-muted); }
+.gu-map-t--sm { font-size: 10.5px; }
+.gu-map-t--md { font-size: 12px; font-weight: 700; }
+.gu-map-t[data-tone='muted'] { fill: var(--gu-paper-muted); }
+.gu-map-line { stroke: var(--gu-paper-ink); stroke-width: 1.4; fill: none; }
+.gu-map-line[data-style='road'] { stroke: var(--gu-wood); stroke-width: 4; stroke-linecap: round; }
+.gu-map-line[data-style='lane'] { stroke: var(--gu-wood); stroke-width: 1.4; stroke-dasharray: 2 3; }
+.gu-map-line[data-style='shut'] { stroke: var(--gu-paper-muted); stroke-width: 1.4; stroke-dasharray: 4 3; }
+.gu-map-fence { fill: none; stroke: var(--gu-paper-ink); }
+.gu-map-fence[data-style='wall'] { stroke-width: 3; }
+.gu-map-fence[data-style='group'] { stroke-width: 1; stroke-dasharray: 3 3; stroke: var(--gu-paper-muted); }
+.gu-map-gate-bg { fill: var(--gu-paper); stroke: none; }
+.gu-map-gate-glyph { stroke: var(--gu-paper-ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.gu-map-bar { stroke: var(--gu-red-fill); stroke-width: 3; stroke-linecap: round; }
+.gu-map-note { margin: 0; font-size: 13px; line-height: 1.55; color: var(--gu-paper-muted); }
+.gu-map-sheet .gu-sheet-body { max-height: 96dvh; }
+/* QA(개선 묶음 1): 큰 지도 — viewBox 320 을 448px(1.4배)로. 가장 작은 지도 글자(10) → 14px. 좌우로 밀어 본다 */
+.gu-map-pan { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--gu-sp-3)); padding: 0 var(--gu-sp-3); }
+.gu-map--zoom .gu-map-svg { width: 448px; max-width: none; }
+.gu-map-panhint { margin: 0; font-size: var(--gu-fs-caption); color: var(--gu-paper-muted); text-align: center; }
+.gu-map--zoom .gu-map-note { font-size: var(--gu-fs-caption); }
+
+/* R2 「?」 시트 — 인물록·부르는 말 */
+.gu-help-sheet .gu-sheet-content { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-help-people { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-roster { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-roster-item { padding: var(--gu-sp-3); border-radius: var(--gu-radius-md); background: var(--gu-surface); }
+.gu-roster-head { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--gu-ink); font-weight: 700; }
+.gu-roster-name { font-family: var(--gu-font-display); font-size: 17px; font-weight: 400; }
+.gu-roster-sub { margin: 2px 0 0; font-size: var(--gu-fs-caption); color: var(--gu-gold-ink); }
+.gu-roster-profile { margin: 6px 0 0; font-size: var(--gu-fs-small); line-height: 1.6; color: var(--gu-body); }
+.gu-roster-absent-head { margin: var(--gu-sp-2) 0 0; font-size: var(--gu-fs-small); color: var(--gu-blue-ink); }
+.gu-aliases { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: var(--gu-fs-small); color: var(--gu-body); }
+
+/* R3 공용 단서 접힘 블록 · 시각 어림 */
+.gu-fold { border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2); padding: 0 var(--gu-sp-3); }
+.gu-fold[open] { padding-bottom: var(--gu-sp-3); }
+.gu-fold-summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; list-style: none; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-blue-ink); }
+.gu-fold-summary::-webkit-details-marker { display: none; }
+.gu-publicclue--fold .gu-publicclue-card { padding: var(--gu-sp-3); }
+.gu-publicclue-round { margin: 0 0 2px; font-size: 12px; color: color-mix(in srgb, var(--gu-ink) 75%, transparent); }
+.gu-timehint { margin: 0; font-size: 13px; line-height: 1.5; color: var(--gu-muted); }
+.gu-cluestab-public .gu-timehint { margin-top: var(--gu-sp-2); }
+.gu-askline { margin: 0; font-size: var(--gu-fs-small); color: var(--gu-body); border-left: 2px solid var(--gu-blue-fill); padding-left: var(--gu-sp-3); }
+.gu-skipnote { text-align: center; margin-top: 2px; }
+
+/* R5 공개 단서 보드(방장 무대 — 낭독용 큰 글씨) */
+.gu-board { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+section.gu-board { padding: var(--gu-sp-3); border: 1px solid var(--gu-blue-fill); border-radius: var(--gu-radius-lg); }
+details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
+.gu-board-title { margin: 0; font-size: var(--gu-fs-h2); color: var(--gu-blue-ink); }
+.gu-board-round { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-board-round-head { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-size: var(--gu-fs-small); color: var(--gu-muted); }
+.gu-board-item { padding: var(--gu-sp-3) var(--gu-sp-4); border-radius: var(--gu-radius-lg); background: var(--gu-paper); color: var(--gu-paper-ink); margin-top: var(--gu-sp-2); }
+.gu-board-item-head { margin: 0 0 var(--gu-sp-2); font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-paper-accent); }
+.gu-board-item-body { margin: 0; font-size: calc(var(--gu-fs-stage) * var(--gu-stage-scale, 1)); line-height: 1.6; font-family: var(--gu-font-read); white-space: pre-line; }
+.gu-board-item-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gu-sp-2); margin-top: var(--gu-sp-2); }
+.gu-board-seat { font-size: 13px; padding: 2px 10px; border-radius: var(--gu-radius-pill); background: var(--gu-blue-fill); color: var(--gu-ink); }
+.gu-board-unpost { margin-left: auto; color: var(--gu-paper-muted); min-height: 44px; }
+
+/* R5 인장 키패드 */
+.gu-sealpad { display: flex; flex-direction: column; gap: var(--gu-sp-3); align-items: center; }
+.gu-sealpad-slots { display: flex; gap: var(--gu-sp-2); }
+.gu-sealpad-slot { width: 52px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; border-radius: var(--gu-radius-md); border: 2px solid var(--gu-line-3); color: var(--gu-ink); background: var(--gu-surface); }
+.gu-sealpad-slot[data-filled] { border-color: var(--gu-cta); }
+.gu-sealpad-msg { margin: 0; min-height: 22px; font-size: var(--gu-fs-small); color: var(--gu-muted); }
+.gu-sealpad-msg[data-tone='warn'] { color: var(--gu-red-ink); font-weight: 700; }
+.gu-sealpad-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gu-sp-2); width: 100%; max-width: 320px; }
+.gu-sealpad-key { height: 56px; border-radius: var(--gu-radius-md); background: var(--gu-surface-2); border: 1px solid var(--gu-line-2); color: var(--gu-ink); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.gu-sealpad-key:disabled { opacity: 0.35; cursor: not-allowed; }
+.gu-sealpad-who { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-sealpad-found { margin: 0; font-size: 18px; color: var(--gu-gold-ink); }
+
+/* R4 개인 추리 수첩 */
+.gu-notes { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-notes-head { margin: 0; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-ink); }
+.gu-notes-legend { margin: 0; font-size: 13px; color: var(--gu-muted); }
+.gu-notes-table { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-notes-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 52px); gap: 6px; align-items: center; }
+.gu-notes-row--head { min-height: 40px; }
+.gu-notes-colhead { text-align: center; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-gold-ink); }
+.gu-notes-help { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: none; border: none; color: var(--gu-muted); cursor: pointer; }
+.gu-notes-helpbox { margin: 0; padding: var(--gu-sp-2) var(--gu-sp-3); list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--gu-body); background: var(--gu-bg-2); border-radius: var(--gu-radius-md); }
+.gu-notes-rowwrap { display: flex; flex-direction: column; gap: 4px; padding-bottom: var(--gu-sp-2); border-bottom: 1px solid var(--gu-line); }
+.gu-notes-who { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--gu-ink); }
+.gu-notes-who-label { font-size: var(--gu-fs-small); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gu-notes-cellwrap { display: flex; justify-content: center; }
+.gu-notes-cell {
+  width: 52px; height: 48px; border-radius: var(--gu-radius-md); border: 1.5px solid var(--gu-line-3);
+  background: var(--gu-surface); color: var(--gu-ink); font-size: 24px; line-height: 1; cursor: pointer;
+}
+.gu-notes-cell[data-mark='o'] { border-color: var(--gu-green-fill); color: var(--gu-green-ink); background: color-mix(in srgb, var(--gu-green-fill) 22%, var(--gu-surface)); }
+.gu-notes-cell[data-mark='x'] { border-color: var(--gu-red-fill); color: var(--gu-red-ink); background: color-mix(in srgb, var(--gu-red-fill) 18%, var(--gu-surface)); }
+.gu-notes-line, .gu-notes-free {
+  width: 100%; box-sizing: border-box; border-radius: var(--gu-radius-md); border: 1px solid var(--gu-line-2);
+  background: var(--gu-bg-2); color: var(--gu-ink); font: inherit; font-size: 16px; /* iOS 확대 방지(16px 미만이면 입력 때 줌) */
+}
+.gu-notes-line { height: 40px; padding: 0 var(--gu-sp-3); }
+.gu-notes-free { min-height: 96px; padding: var(--gu-sp-2) var(--gu-sp-3); resize: vertical; line-height: 1.5; }
+.gu-notes-line::placeholder, .gu-notes-free::placeholder { color: var(--gu-muted); }
+
+/* R6 최종 변론 3칸 틀 */
+.gu-defframe { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-defframe-item { display: flex; align-items: flex-start; gap: var(--gu-sp-3); padding: var(--gu-sp-3); border-radius: var(--gu-radius-md); background: var(--gu-surface); font-size: calc(var(--gu-fs-body) * var(--gu-stage-scale, 1)); line-height: 1.45; color: var(--gu-ink); }
+.gu-defframe-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--gu-cta); color: var(--gu-cta-ink); font-weight: 700; }
+.gu-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gu-sp-2); }
+
+/* R7 보너스 — 펼친 단계(방장) · 참조 카드(플레이어) */
+.gu-bonus { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-bonusref { display: flex; flex-direction: column; gap: var(--gu-sp-3); padding: var(--gu-sp-3); border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-surface); text-align: left; width: 100%; }
+.gu-bonusref-q { display: flex; flex-direction: column; gap: var(--gu-sp-1); }
+
+/* G5 진상 대기 */
+.gu-ptruth-wait { align-items: flex-start; padding-top: var(--gu-sp-6); }
+
+/* M2 모두의 패 펼치기 */
+.gu-allsheets-toggle { align-self: flex-end; }
+.gu-bonus > p.gu-bonus-summary { cursor: default; margin: 0; min-height: 0; color: var(--gu-gold-ink); }
+/* R2 「?」 시트 제목(배치도 · 시각표 · 인물 · 용어)이 375px 에서 두 줄로 꺾이지 않게 */
+.gu-help-sheet .gu-sheet-head h2 { font-size: 22px; }
+
+/* 봉인 패 '거짓말' 칸 규칙 한 줄 요약(QA F-1) */
+.gu-lierules-short { margin: 0; font-size: max(14px, calc(15px * var(--gu-seal-scale, 1))); line-height: 1.55; }

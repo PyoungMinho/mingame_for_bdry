@@ -381,7 +381,7 @@ export function resultShareInput(r: GameResult, n: PlayerCount, date: string): R
 export function genericPayload(opts: { origin?: string; imageOrigin?: string; title?: string } = {}): SharePayload {
   const title = opts.title ?? APP_TITLE;
   const home = homeUrl(opts.origin);
-  const desc = '4~6명 · 폰 하나씩 · 약 50분. 범인은 이 자리에 있다.';
+  const desc = '4~6명 · 폰 하나씩 · 약 60분. 범인은 이 자리에 있다.';
   return {
     kakao: {
       objectType: 'feed',

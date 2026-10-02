@@ -11,3 +11,8 @@ export * from './game';
 export * from './validate';
 export * from './storage';
 export * from './share';
+// 개선 묶음 1 — 인장(R5) · 수첩(R4) · 손으로 쓴 공개 부록(R2) · 안내 문구
+export * from './seal';
+export * from './notes';
+export * from './case-extras';
+export * from './guide-data';

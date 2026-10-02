@@ -34,6 +34,7 @@ import {
   saveGame,
   savePrefs,
   clearGame as storageClearGame,
+  clearNote,
 } from '@/lib/gung';
 import { sejaCase } from '@/lib/gung/case-data';
 
@@ -255,6 +256,8 @@ export function useGungGame(): UseGungGame {
         const room = generateRoomCode(n);
         const fresh = newHostGame(sejaCase, room.code, nowMs());
         if (!fresh) return null;
+        // 새 방 — 개인 추리 수첩(gu:note:v1)도 비운다(R4)
+        if (storageRef.current) clearNote(storageRef.current.storage);
         setState(fresh);
         persist(fresh);
         setPendingRoom(null);
@@ -338,7 +341,10 @@ export function useGungGame(): UseGungGame {
 
   const resetToHome = useCallback(() => {
     const opened = storageRef.current;
-    if (opened) storageClearGame(opened.storage);
+    if (opened) {
+      storageClearGame(opened.storage);
+      clearNote(opened.storage); // '처음으로' — 수첩도 지운다(R4)
+    }
     setState(null);
     setPendingRoom(null);
     setConflictSaved(null);

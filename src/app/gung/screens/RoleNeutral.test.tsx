@@ -12,7 +12,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { assignFromCode, castFor, formatRoomCode, parseRoomCode, publicSeats, roleAtSeat, SEED_ALPHABET, type PlayerCount } from '@/lib/gung';
+import { assignFromCode, castFor, formatRoomCode, GUIDE, parseRoomCode, placeCardsFor, publicSeats, roleAtSeat, sealTable, SEED_ALPHABET, type PlayerCount } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
 import { GungApp } from './GungApp';
 
@@ -65,21 +65,46 @@ function codeWith(n: PlayerCount, role: string, seat: number): string {
   throw new Error(`no code for ${n} ${role}@${seat}`);
 }
 
+/**
+ * 향 타이머 표시(남은 시간·막대)는 1초 실시간 인터벌이 다시 그릴 때 바뀐다 — Date 만 가짜인 테스트에서 병렬 부하가 크면
+ * 같은 탭 순서라도 06:45 / 07:00 처럼 찍히는 시점이 갈린다(역할과 무관한 타이밍 차이). QA: 비교에서 그 값만 가린다.
+ */
+function maskTimer(html: string): string {
+  return html
+    .replace(/(<p class="gu-timer-num[^"]*">)[^<]*(<\/p>)/g, '$1‹TIMER›$2')
+    .replace(/(class="gu-timer-stick-fill" style=")[^"]*(")/g, '$1‹PCT›$2')
+    .replace(/(class="gu-timer-ember" style=")[^"]*(")/g, '$1‹PCT›$2');
+}
+
 /** 코드마다 다른 것(방 코드·사건 표식)만 자리표시자로. roles=true 면 공개된 자리·역할명 표기도 */
 function normalize(code: string, roles = false): string {
   const room = parseRoomCode(code)!;
-  let html = document.body.innerHTML;
+  let html = maskTimer(document.body.innerHTML);
   html = html.replaceAll(formatRoomCode(code), '‹CODE›').replaceAll(room.display, '‹CODE›').replaceAll(code, '‹CODE›').replaceAll(room.tag, '‹TAG›');
   if (roles) {
     const names = publicSeats(c, assignFromCode(c, code)!)
       .flatMap((s) => [s.name, s.shortName])
       .sort((x, y) => y.length - x.length);
     for (const nm of names) html = html.replaceAll(nm, '‹ROLE›');
-    // 역할 아이콘(lucide 클래스)도 자리 따라 다르다 — 공개 정보라 지운다
-    html = html.replace(/lucide-[a-z-]+/g, 'lucide-‹ICON›');
+    // 역할 아이콘(lucide 클래스·도형)도 자리 따라 다르다 — 공개 정보라 지운다(R6 변론 칩 아이콘 포함)
+    html = html.replace(/lucide-[a-z0-9-]+/g, 'lucide-‹ICON›');
+    html = html.replace(/(<svg[^>]*class="[^"]*gu-icon[^"]*"[^>]*>)[\s\S]*?(<\/svg>)/g, '$1‹ICON›$2');
   }
   return html;
 }
+/**
+ * 「?」 시트(R2) 비교용 — 인물록의 '자리 → 역할'은 자기소개 뒤 공개 정보(D16)라 코드마다 순서가 다르다.
+ * 그래서 인물 카드는 자리표시자로 바꾸고, 카드 묶음(자리 번호를 뗀 내용)은 정렬해 따로 붙인다 — 구조·문구·인원 구성은 그대로 비교된다.
+ */
+function helpSheetSignature(dlg: HTMLElement): string {
+  const items = Array.from(dlg.querySelectorAll('.gu-roster-item'))
+    .map((e) => (e.textContent ?? '').replace(/^\d+번 · /, ''))
+    .sort();
+  const clone = dlg.cloneNode(true) as HTMLElement;
+  clone.querySelectorAll('.gu-roster-item').forEach((e) => (e.textContent = '‹PERSON›'));
+  return `${clone.innerHTML.replace(/(<svg[^>]*class="[^"]*gu-icon[^"]*"[^>]*>)[\s\S]*?(<\/svg>)/g, '$1$2')}|${items.join('|')}`;
+}
+
 const textOf = (html: string) => {
   const d = document.createElement('div');
   d.innerHTML = html;
@@ -117,8 +142,8 @@ async function hostRun(code: string): Promise<{ steps: Record<string, string>; s
   await tap(btn(/셋째 조사 시작/));
   shot('r3-select'); // ← 예전엔 방장이 조상궁·세자빈이면 여기 「새 기억이 떠올랐소」
   // 용어 시트(「?」) — 역할 전용 용어(활맥)가 끼면 목록으로 역할이 드러난다
-  await tap(btn('용어 풀이·시각표'));
-  const terms = dialog().textContent ?? '';
+  await tap(btn('궁 배치도·시각표·인물·용어'));
+  const terms = helpSheetSignature(dialog());
   await tap(within(dialog()).getByRole('button', { name: '닫기' }));
   // 알림 → 지금 확인하기 → 봉인된 내 패(비밀 섹션) — 봉인 상태 DOM
   await tap(btn(/지금 확인하기/));
@@ -225,4 +250,66 @@ describe('조사 3 진입 알림·봉인 화면 — 플레이어 폰(자리 2), 
       expect(r.sealed, `자리 2=${r.role} 봉인`).toEqual(base.sealed);
     }
   }, 60_000);
+});
+
+/**
+ * 개선 묶음 1 — 새 화면까지 넓힌 역할 독립성(스펙 '공통 규칙' · R2·R4·R5 수용 기준).
+ *  - 자기소개 전 「?」 시트(배치도·시각표·인물 잠김·용어) — 원문 그대로 같다.
+ *  - 수첩 탭 머리·표 구조 — 자기소개 전엔 그대로, 뒤엔 역할 표기(D16)만 자리표시자로.
+ *  - 공개 단서 보드 — 같은 카드 순서로 인장(코드마다 번호는 다르다)을 넣으면 무대 DOM 이 같다.
+ * (G5 진상 대기 화면의 역할 독립성은 Improve.test.tsx — 플레이어 자리 2 역할만 바꾼 판끼리 비교)
+ */
+describe('개선 묶음 1 — 새 화면 역할 독립성(방장 역할만 바꾼 같은 판)', () => {
+  for (const n of [6, 4] as PlayerCount[]) {
+    it(`${n}인: 자기소개 전 「?」 시트 · 수첩 탭 · 같은 인장 입력 순서의 공개 단서 보드 무대가 방장 역할과 무관하게 같다`, async () => {
+      const cards = placeCardsFor(c, n);
+      const picks = [cards.filter((x) => x.round === 1)[0], cards.filter((x) => x.round === 1)[3], cards.filter((x) => x.round === 2)[1]];
+      const runs: { role: string; help: string; notesPre: string; notesPost: string; board: string }[] = [];
+      for (const role of castFor(c, n)) {
+        const code = codeWith(n, role, 1);
+        search = `code=${code}&as=host`;
+        render(<GungApp />);
+        await flush();
+        await tap(btn(/방장으로 입장하기/));
+        await tap(within(dialog()).getByRole('button', { name: '취소' }));
+        await tap(btn(GUIDE.helpLabel));
+        const help = dialog().innerHTML;
+        await tap(within(dialog()).getByRole('button', { name: '닫기' }));
+        await tap(btn('수첩'));
+        const notesPre = normalize(code);
+        await tap(btn('진행'));
+        await tap(screen.getByRole('button', { name: /진행 단계/ }));
+        await tap(screen.getByRole('radio', { name: /^조사 2/ }));
+        await tap(btn(/^이동/));
+        await tap(within(dialog()).getByRole('button', { name: /가겠소/ }));
+        await tap(btn(/토론 \d+분 시작/));
+        const seals = sealTable(c, n, code);
+        for (const card of picks) {
+          await tap(btn(GUIDE.boardAdd));
+          for (const d of String(seals.get(card.id))) await tap(within(dialog()).getByRole('button', { name: d }));
+          await tap(within(dialog()).getByRole('button', { name: '2' }));
+          await tap(within(dialog()).getByRole('button', { name: GUIDE.sealPost }));
+        }
+        expect(screen.queryByRole('dialog')).toBeNull();
+        const board = normalize(code, true);
+        await tap(btn('수첩'));
+        const notesPost = normalize(code, true);
+        runs.push({ role, help, notesPre, notesPost, board });
+        cleanup();
+        window.localStorage.clear();
+        vi.setSystemTime(START);
+      }
+      const [base, ...rest] = runs;
+      expect(base.help).toContain(GUIDE.peopleLocked);
+      expect(textOf(base.board)).toContain(`공개 단서 보드 (${picks.length}장)`);
+      for (const card of picks) expect(textOf(base.board)).toContain(card.title);
+      expect(textOf(base.notesPost)).toContain(GUIDE.notesHead);
+      for (const r of rest) {
+        expect(r.help, `${n}인 방장=${r.role} 「?」 시트(자기소개 전)`).toBe(base.help);
+        expect(r.notesPre, `${n}인 방장=${r.role} 수첩(자기소개 전)`).toBe(base.notesPre);
+        expect(r.notesPost, `${n}인 방장=${r.role} 수첩(자기소개 뒤)`).toBe(base.notesPost);
+        expect(r.board, `${n}인 방장=${r.role} 보드 무대`).toBe(base.board);
+      }
+    }, 90_000);
+  }
 });

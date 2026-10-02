@@ -1,10 +1,11 @@
 /**
  * §5-4 BottomTabs — 60px + safe-area. 방장 첫 탭 '진행'(Landmark) / 플레이어 '지금'(Footprints).
  * 탭 전환 시 모든 봉인 카드를 재봉인해야 한다(§1-4) — 그 호출은 상위(screens)가 onChange 안에서 한다.
+ * 개선 묶음 1(R4): 4번째 탭 '수첩'(NotebookPen) — 모든 역할·인원에서 탭은 늘 4개다.
  */
-import { Contact, Footprints, Landmark, ScrollText } from 'lucide-react';
+import { Contact, Footprints, Landmark, NotebookPen, ScrollText } from 'lucide-react';
 
-export type GuTabKey = 'progress' | 'cards' | 'clues';
+export type GuTabKey = 'progress' | 'cards' | 'clues' | 'notes';
 
 export interface BottomTabsProps {
   role: 'host' | 'player';
@@ -22,6 +23,7 @@ export function BottomTabs({ role, active, onChange, clueBadge, className }: Bot
     { key: 'progress', label: progressLabel, icon: ProgressIcon },
     { key: 'cards', label: '내 패', icon: Contact },
     { key: 'clues', label: '단서함', icon: ScrollText, badge: clueBadge },
+    { key: 'notes', label: '수첩', icon: NotebookPen },
   ];
   return (
     <nav className={['gu-tabbar', className ?? ''].filter(Boolean).join(' ')} aria-label="화면 전환">

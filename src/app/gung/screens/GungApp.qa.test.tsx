@@ -216,7 +216,9 @@ describe('SEAL — 비밀 카드 봉인', () => {
     // 연 동안엔(손으로 가린 채) 항목 전부가 ①②③… 번호 목록으로 한 화면에 — 쪽을 넘기지 않아도 끝까지 다 보인다
     await keyOpen(sealedSurface());
     expect(document.querySelector('.gu-sealed-pager')).toBeNull();
-    const marks = Array.from(document.querySelectorAll('.gu-rolecard .gu-numitem-mark')).map((m) => m.textContent);
+    // (개선 묶음 1 R1: 섹션 맨 위엔 모든 역할 같은 「거짓말 규칙」 상자가 따로 있다 — 그 번호는 패 항목 목록이 아니다)
+    expect(document.querySelector('.gu-rolecard .gu-hopae-content > .gu-lierules')).not.toBeNull();
+    const marks = Array.from(document.querySelectorAll('.gu-rolecard .gu-hopae-list .gu-numitem-mark')).map((m) => m.textContent);
     expect(marks).toEqual(Array.from({ length: expectedLieCount }, (_, i) => circledNum(i + 1)));
   }, 60_000);
 
@@ -421,7 +423,7 @@ describe('RVL — 진상 공개 순서·스포일러', () => {
     for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
     expect(screen.getByText(/최다 지목:/)).toBeInTheDocument();
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
 
     const seen: string[] = [];
     for (let i = 0; i < 20; i++) {
@@ -742,7 +744,7 @@ describe('FLOW — 진행·되돌리기·새로고침', () => {
     await hostRecover('7F3K5');
     await syncTo(/^조사 2/, false);
     expect(screen.queryByText(/^\d\d:\d\d$/)).toBeNull();
-    await tap(btn(/장소 고르기 타이머 시작/));
+    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
     expect(screen.getByText('02:00')).toBeInTheDocument();
     await syncTo(/^최종 변론/);
     await tap(btn(/변론 타이머 시작/));
@@ -772,7 +774,7 @@ describe('FLOW — 진행·되돌리기·새로고침', () => {
     await tap(btn('건너뛰기'));
     for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
     const ok = screen.getAllByRole('button', { name: '성공' });
     await tap(ok[0]);
@@ -901,7 +903,7 @@ describe('TMR — 타이머·화면 꺼짐 방지', () => {
     Object.defineProperty(navigator, 'vibrate', { value: vib, configurable: true });
     await hostRecover('7F3K5');
     await syncTo(/^조사 1/, false);
-    await tap(btn(/장소 고르기 타이머 시작/));
+    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
     await advance(119_000);
     expect(vib).not.toHaveBeenCalledWith([200, 100, 200]);
     await advance(2_000);
@@ -990,8 +992,8 @@ describe('VOTE·SCR — 지목 입력·집계·판정 화면', () => {
     expect(saved().host.vote.first).toEqual({});
     for (const t of [4, 4, 4, 1, 4]) await tap(btn(new RegExp(`^${t}번`)));
     expect(saved().host.vote.sub).toBe('tally');
-    // 집계 화면에 범인 여부 표시가 없다(보너스 안내의 일반 문장 "범인의 답은 점수에 들어가지 않소"만 예외)
-    expect(bodyText().replace('범인의 답은 점수에 들어가지 않소', '')).not.toMatch(/범인/);
+    // 집계 화면에 범인 여부 표시가 없다(보너스 머리의 일반 문장 "범인의 답은 셈하지 않소"만 예외 — R7)
+    expect(bodyText().replace('범인의 답은 셈하지 않소', '')).not.toMatch(/범인/);
     expect(screen.queryByRole('img', { name: /도장/ })).toBeNull();
     await tap(btn('3번의 지목 고치기'));
     expect(saved().host.vote.sub).toBe('input');
@@ -1017,7 +1019,7 @@ describe('VOTE·SCR — 지목 입력·집계·판정 화면', () => {
     await tap(btn('건너뛰기'));
     for (const t of [2, 1, 2, 2]) await tap(btn(new RegExp(`^${t}번`)));
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
     const order = () => Array.from(document.querySelectorAll('.gu-scorerow-who')).map((e) => Number(/(\d+)번/.exec(e.textContent ?? '')![1]));
     expect(order()).toEqual([1, 2, 3, 4]);
@@ -1233,7 +1235,7 @@ describe('셋업·저장·기타', () => {
     Object.defineProperty(navigator, 'vibrate', { value: vib, configurable: true });
     await hostRecover('7F3K5');
     await syncTo(/^조사 1/, false);
-    await tap(btn(/장소 고르기 타이머 시작/));
+    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
     cleanup();
     vi.setSystemTime(new Date(Date.now() + 45_000));
     search = 'code=7F3K5';
@@ -1257,6 +1259,10 @@ describe('셋업·저장·기타', () => {
     await tap(btn(/지목 확정/));
     await tap(btn(/진상 공개 시작됐어요/));
     await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+    // G5: 대기 화면엔 범인 배너가 없다 → 방장 「범인이 밝혀졌소」 뒤 확인 시트를 거쳐야 보인다
+    expect(screen.queryByText(/당신이 범인이었소/)).toBeNull();
+    await tap(btn(/범인이 밝혀졌어요/));
+    await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
     expect(screen.getByText(/당신이 범인이었소/)).toBeInTheDocument();
     expect(screen.queryByText(/내 지목:/)).toBeNull();
     cleanup();
@@ -1267,6 +1273,9 @@ describe('셋업·저장·기타', () => {
     await tap(btn(/지목 확정/));
     await tap(btn(/진상 공개 시작됐어요/));
     await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+    expect(screen.queryByText(/✓ 적중/)).toBeNull(); // G5 대기 화면 — 적중 표시 없음
+    await tap(btn(/범인이 밝혀졌어요/));
+    await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
     expect(screen.getByText(new RegExp(`내 지목: ${culprit}번 ✓ 적중`))).toBeInTheDocument();
   });
 
@@ -1287,7 +1296,7 @@ describe('셋업·저장·기타', () => {
       await tap(btn('건너뛰기'));
       for (const t of [3, 3, 1, 3]) await tap(btn(new RegExp(`^${t}번`))); // 3번(무고) 지목 → 도주
       await tap(btn(/진상 공개/));
-      await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+      await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
       for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
       expect(screen.getByText(/오늘의 주인공: 범인/)).toBeInTheDocument();
       expect(screen.getByText(/범인 도주 · 2번 숙의/)).toBeInTheDocument();

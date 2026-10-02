@@ -67,6 +67,11 @@ export interface PlaceIconProps {
   className?: string;
 }
 
+/** 장소 아이콘 컴포넌트 자체 — SVG 안에 중첩해 그릴 때(궁 배치도) x·y 를 넘기려고 */
+export function placeIconComponent(iconKey: PlaceIconKey): LucideIcon {
+  return PLACE_ICON[iconKey] ?? MapPin;
+}
+
 export function PlaceIcon({ iconKey, size = 20, className }: PlaceIconProps) {
   const Icon = PLACE_ICON[iconKey] ?? MapPin;
   return <Icon aria-hidden focusable={false} size={size} strokeWidth={1.75} className={className ? `gu-icon ${className}` : 'gu-icon'} />;

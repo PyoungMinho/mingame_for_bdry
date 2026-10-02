@@ -5,7 +5,7 @@
  */
 import { useState, type ReactNode } from 'react';
 import type { GungCase, PlayerCount, RoomCode as RoomCodeT } from '@/lib/gung';
-import { extractRoomCode, formatRoomCode } from '@/lib/gung';
+import { extractRoomCode, formatRoomCode, GUIDE } from '@/lib/gung';
 import { Banner, CodeInput, GuButton, RoomCode, SeatRing, ShareActions } from '../components';
 import { seatRingItems } from './adapters';
 
@@ -47,7 +47,8 @@ export function Home({
       <div className="gu-home-chips">
         <span className="gu-infochip">4~6인</span>
         <span className="gu-infochip">폰 1대씩</span>
-        <span className="gu-infochip">약 50분</span>
+        {/* M1(개선 묶음 1): 시뮬 실측 약 70분 + 보너스 단계·인장 입력 — 실측 뒤 다시 맞춘다 */}
+        <span className="gu-infochip">{GUIDE.homeMinutes}</span>
       </div>
       {hasResume && (
         <div className="gu-home-resume">

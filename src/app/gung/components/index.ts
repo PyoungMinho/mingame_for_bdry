@@ -1,5 +1,6 @@
 /**
  * `src/app/gung/components` 공개 API — §5 전부. 프레젠테이션 전용(상태 로직·`src/lib/gung` 엔진 import 없음).
+ * 예외 하나: 안내 문구 상수 `@/lib/gung/guide-data`(import 없는 순수 상수 모듈)는 써도 된다(개선 묶음 1).
  * 화면 조립(screens/)·상태(lib/useGame.ts 등)는 @페이지개발자 담당.
  */
 
@@ -13,7 +14,7 @@ export { GuButton, type GuButtonProps, type GuButtonVariant } from './GuButton';
 
 // 프라이버시 · 내 패 · 단서
 export { SealedCard, type SealedCardProps } from './SealedCard';
-export { RoleCard, MemoryBlock, type RoleCardProps } from './RoleCard';
+export { RoleCard, MemoryBlock, LieRulesBox, type RoleCardProps } from './RoleCard';
 export { SectionChips, type SectionChipsProps } from './SectionChips';
 export { ClueCard, type ClueCardProps } from './ClueCard';
 export { DisclosureToggle, type DisclosureToggleProps } from './DisclosureToggle';
@@ -22,6 +23,7 @@ export { circledNum } from './numbering';
 
 // 장소 · 자리
 export { PlaceGrid, type PlaceGridProps } from './PlaceGrid';
+export { PalaceMap, type PalaceMapProps, type PalaceMapView, type PalaceMapItemView } from './PalaceMap';
 export { SeatRing, type SeatRingProps } from './SeatRing';
 export { SeatGrid, type SeatGridProps } from './SeatGrid';
 
@@ -42,6 +44,8 @@ export { CodeInput, type CodeInputProps } from './CodeInput';
 
 // 오버레이 · 피드백
 export { BottomSheet, type BottomSheetProps } from './BottomSheet';
+export { SealKeypadSheet, type SealKeypadSheetProps, type SealLookup } from './SealKeypadSheet';
+export { NotebookTab, type NotebookTabProps, type NotebookRow, type NoteColKey, type NoteMarkValue } from './NotebookTab';
 export { Toast, type ToastProps } from './Toast';
 export { Banner, type BannerProps } from './Banner';
 export { HostCue, type HostCueProps } from './HostCue';
@@ -53,7 +57,7 @@ export { ShareActions, type ShareActionsProps } from './ShareActions';
 export { ResultImageModal, type ResultImageModalProps } from './ResultImageModal';
 
 // 아이콘
-export { RoleIcon, type RoleIconProps, PlaceIcon, type PlaceIconProps } from './icons';
+export { RoleIcon, type RoleIconProps, PlaceIcon, type PlaceIconProps, placeIconComponent } from './icons';
 
 // 공유 프레젠테이션 타입
 export * from './types';

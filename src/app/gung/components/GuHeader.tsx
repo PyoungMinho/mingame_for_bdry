@@ -15,13 +15,15 @@ export interface GuHeaderProps {
   /** 🕯 점등(ON) / 🌙 미지원(OFF) / 표시 안 함(NA) */
   wake?: 'on' | 'off' | 'na';
   onMenu?: () => void;
-  /** 「?」 용어 풀이·시각표(원고 1-5·1-6) — 모든 폰·모든 역할에 같은 버튼 */
+  /** 「?」 궁 배치도·시각표·인물·용어(원고 1-5·1-6, 개선 묶음 1 R2) — 모든 폰·모든 역할에 같은 버튼 */
   onHelp?: () => void;
+  /** 「?」 버튼 접근성 이름 */
+  helpLabel?: string;
   rightExtra?: ReactNode;
   className?: string;
 }
 
-export function GuHeader({ left = null, onLeft, title, rail, wake = 'na', onMenu, onHelp, rightExtra, className }: GuHeaderProps) {
+export function GuHeader({ left = null, onLeft, title, rail, wake = 'na', onMenu, onHelp, helpLabel = '용어 풀이·시각표', rightExtra, className }: GuHeaderProps) {
   return (
     <header className={['gu-header', className ?? ''].filter(Boolean).join(' ')}>
       <div className="gu-header-bar">
@@ -47,7 +49,7 @@ export function GuHeader({ left = null, onLeft, title, rail, wake = 'na', onMenu
             ))}
           {rightExtra}
           {onHelp && (
-            <button type="button" className="gu-header-iconbtn" onClick={onHelp} aria-label="용어 풀이·시각표">
+            <button type="button" className="gu-header-iconbtn" onClick={onHelp} aria-label={helpLabel}>
               <CircleHelp aria-hidden />
             </button>
           )}

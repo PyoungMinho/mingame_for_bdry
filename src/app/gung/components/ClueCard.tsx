@@ -2,9 +2,11 @@
  * §5-10 ClueCard — undecided/private = SealedCard(꾹), public = 개봉 한지(낭독용 20px) + "공개" 도장.
  * D5: 미결정·비공개 단서는 봉인, 공개 단서는 개봉(숨길 이유가 없음).
  * PM 피드백(쪽 나눔 폐지) — 전문을 한 화면에(SealedCard 가 글자 크기를 알아서 줄인다). "다음 쪽"은 없다.
+ * 개선 묶음 1(R5): 공개한 장소 카드에만 인장 번호 — 미정·비공개 상태의 DOM 엔 숫자가 없다(상위도 공개일 때만 넘긴다).
  */
 'use client';
 
+import { guideText } from '@/lib/gung/guide-data';
 import { SealedCard } from './SealedCard';
 import { SealStamp } from './SealStamp';
 import { DisclosureToggle } from './DisclosureToggle';
@@ -28,10 +30,12 @@ export interface ClueCardProps {
   disclosureEnabled?: boolean;
   /** 카드 연동 용어(원고 1-6 「그 카드를 열었을 때만 ?로 보임」) — 봉인 중엔 그리지 않고, 연 동안 단서 본문 아래에만 */
   terms?: TermItem[];
+  /** 공개 단서 인장(4자리) — disclosure === 'public' 일 때만 그린다 */
+  seal?: number | null;
   className?: string;
 }
 
-export function ClueCard({ roundNo, place, clueId, clueText, disclosure, open = false, mode = 'hold', pressBind, holdProgress, onDisclose, disclosureEnabled = false, terms, className }: ClueCardProps) {
+export function ClueCard({ roundNo, place, clueId, clueText, disclosure, open = false, mode = 'hold', pressBind, holdProgress, onDisclose, disclosureEnabled = false, terms, seal, className }: ClueCardProps) {
   return (
     <div className={['gu-cluecard', className ?? ''].filter(Boolean).join(' ')}>
       <div className="gu-cluecard-head">
@@ -48,6 +52,12 @@ export function ClueCard({ roundNo, place, clueId, clueText, disclosure, open = 
           <p className="gu-cluecard-text">{clueText}</p>
           {terms && <TermList terms={terms} variant="card" />}
           <p className="gu-cluecard-readout">📢 소리 내어 읽어주시오</p>
+          {typeof seal === 'number' && (
+            <p className="gu-cluecard-seal">
+              <span className="gu-cluecard-seal-num gu-num">{seal}</span>
+              <span>{guideText.sealLine(seal)}</span>
+            </p>
+          )}
         </div>
       ) : (
         <>

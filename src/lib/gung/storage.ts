@@ -7,11 +7,17 @@
  *  - 12시간 무활동(updatedAt) → 자동 이어하기 하지 않고 삭제.
  *  - caseVersion 이 현재 번들과 다르면 복원은 하되 versionMismatch 플래그(배너 "사건 내용이 갱신됐어요").
  *  - 봉인 열림 여부·사건 본문은 저장하지 않는다(스키마에 자리가 없다).
+ *  - 버전 관리(개선 묶음 1): `gu:game:v1` 스키마는 그대로 두고 방장 `board`(공개 단서 보드) 필드만 **선택 필드**로 더했다 —
+ *    예전 저장엔 없으면 빈 보드로 읽고, 예전 번들은 화이트리스트라 이 필드를 조용히 버린다(양방향 호환, v 올리지 않음).
+ *    개인 추리 수첩은 별도 키 `gu:note:v1`(notes.ts) — 게임 저장과 섞지 않는다.
  */
 import {
+  BOARD_ID_RE,
+  BOARD_LIMIT,
   HISTORY_LIMIT,
   SAVE_VERSION,
   isPhase,
+  type BoardEntry,
   type Disclosure,
   type GameState,
   type HostCore,
@@ -27,6 +33,8 @@ import type { RoundNo } from './types';
 export const STORAGE_KEYS = {
   game: 'gu:game:v1',
   prefs: 'gu:prefs:v1',
+  /** 개인 추리 수첩(R4) — notes.ts 가 읽고 쓴다 */
+  note: 'gu:note:v1',
 } as const;
 
 export const GAME_TTL_MS = 12 * 60 * 60 * 1000;
@@ -158,6 +166,24 @@ function parseVote(v: unknown, n: number): VoteState | null | undefined {
   return out;
 }
 
+/**
+ * 공개 단서 보드(R5) — 부가 정보라 관대하게: 필드가 없으면(개선 묶음 1 이전 저장) 빈 보드, 깨진 줄은 그 줄만 버린다.
+ * id 형식·라운드 1~3·자리 1..n·최대 BOARD_LIMIT·id 중복 제거. 카드 본문은 스키마에 자리가 없다.
+ */
+function parseBoard(v: unknown, n: number): BoardEntry[] {
+  if (!Array.isArray(v)) return [];
+  const out: BoardEntry[] = [];
+  for (const e of v) {
+    if (out.length >= BOARD_LIMIT) break;
+    if (!isObj(e) || typeof e.id !== 'string' || !BOARD_ID_RE.test(e.id)) continue;
+    if (!(ROUND_KEYS as readonly string[]).includes(String(e.round)) || !isInt(e.round)) continue;
+    const seats = seatList(e.seats, n);
+    if (!seats || out.some((x) => x.id === e.id)) continue;
+    out.push({ id: e.id, round: e.round as RoundNo, seats });
+  }
+  return out;
+}
+
 function parseHostCore(v: unknown, n: number): HostCore | null {
   if (!isObj(v)) return null;
   const rollCall = seatList(v.rollCall, n);
@@ -206,6 +232,7 @@ function parseHostCore(v: unknown, n: number): HostCore | null {
     absentSeats,
     missions,
     revealIndex: v.revealIndex,
+    board: parseBoard(v.board, n),
   };
   if (v.startedAt !== undefined) core.startedAt = v.startedAt as number;
   if (v.endedAt !== undefined) core.endedAt = v.endedAt as number;

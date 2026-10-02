@@ -116,12 +116,12 @@ const ROLE_WORDS = [...new Set(c.roles.flatMap((r) => [r.name, r.shortName ?? r.
  * 공개 자리 표기(D16: 자기소개 뒤 "N번 · 역할명")가 나오는 곳 — 여기서만 역할명을 자리 기준 ‹Rk›로 바꾼다.
  * 나머지는 원문 그대로 비교한다(정규화를 좁게 할수록 놓치는 게 없다 — 다르면 그대로 걸린다).
  */
-const ROLE_LABEL = '.gu-display-xl, .gu-votestepper, .gu-tally, .gu-ballotlist, .gu-h2, .gu-tiedefense, .gu-bonus-row';
+const ROLE_LABEL = '.gu-display-xl, .gu-votestepper, .gu-tally, .gu-ballotlist, .gu-h2, .gu-tiedefense, .gu-bonus-row, .gu-defense-chips';
 /** ROLE_LABEL 안이라도 원문인 것(보너스 문항 보기 "세자빈·중전·숙의") */
 const VERBATIM = '.gu-bonus-legend, .gu-bonus-opt';
 /** 인원·장소만으로 정해지는 원문(공용 카드·타임라인·용어·시각표·브리핑·장소 이름/설명·보너스 보기) — "역할명이 없어야 한다" 검사에서 뺀다 */
 const FIXED_TEXT =
-  '.gu-publicclue, .gu-gatetl, .gu-terms, .gu-timetable, .gu-cluestab-public, .gu-briefing-p, .gu-placegrid, .gu-cluecard-head, .gu-bonus-legend, .gu-bonus-opt';
+  '.gu-publicclue, .gu-gatetl, .gu-terms, .gu-timetable, .gu-cluestab-public, .gu-briefing-p, .gu-placegrid, .gu-cluecard-head, .gu-bonus-legend, .gu-bonus-opt, .gu-map, .gu-aliases';
 const ROLE_ICON = /lucide-(crown|flower-?2|scroll-text|pill|key-round|user-round)\b/;
 const tabBtn = (label: RegExp) => within(screen.getByRole('navigation', { name: '화면 전환' })).getByRole('button', { name: label });
 function textOutside(html: string, selector: string): string {
@@ -184,6 +184,16 @@ function canon(code: string, opts: { roles?: boolean; seats?: boolean } = {}): O
   if (opts.roles) {
     for (const svg of [...clone.querySelectorAll('svg')]) {
       if (ROLE_ICON.test(svg.getAttribute('class') ?? '') && svg.closest(ROLE_LABEL)) svg.replaceWith(document.createElement('role-icon'));
+    }
+    // R2 「?」 시트 인물록 — '자리 → 역할'은 자기소개 뒤 공개 정보(D16)라 코드마다 순서가 다르다. 카드는 자리표시자로,
+    // 내용(자리 번호를 뗀 것)은 정렬해 끝에 붙인다 — 인원 구성·문구는 그대로 비교된다
+    const roster = [...clone.querySelectorAll('.gu-roster-item')];
+    if (roster.length) {
+      const sig = roster.map((e) => (e.textContent ?? '').replace(/^\d+번 · /, '')).sort();
+      roster.forEach((e) => e.replaceWith(document.createElement('roster-item')));
+      const el = document.createElement('roster-sig');
+      el.textContent = sig.join('|');
+      clone.appendChild(el);
     }
   }
   const post = (s: string) => {
@@ -297,18 +307,23 @@ async function hostPublicRun(code: string): Promise<{ pre: Shot[]; stage: Shot[]
       snap('r3-o1-confirm'); // 조사 진입 확인 시트
       await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
       snap('r3-o1-again');
-      await tap(btn('용어 풀이·시각표'));
+      await tap(btn('궁 배치도·시각표·인물·용어'));
       snap('r3-terms');
       await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     }
+    // 개선 묶음 1 G2: 고르기 타이머는 낭독 뒤 방장이 시작한다(라운드 진입·O1 진입 모두 멈춘 채)
+    await tap(btn(/다 읽었소 → 고르기 2분 시작/));
+    snap(`r${r}-timer`);
+    // G2: 방장 본인 조사는 공용 무대가 아니라 단서함(사적 탭)에서 고른다 — 무대엔 장소 타일·봉인 카드가 없다
+    expect(document.querySelectorAll('.gu-sealed, .gu-place-tile')).toHaveLength(0);
     const place = singleCardPlace(n, r);
-    await tap(placeTile(place.name));
-    await tap(btn(new RegExp(`${place.name} 조사하기`)));
+    await tap(tabBtn(/단서함/));
+    const nows = screen.getAllByRole('button', { name: '지금 고르기' });
+    await tap(nows[nows.length - 1]);
+    await tap(within(dialog()).getAllByRole('button').find((b) => b.className.includes('gu-place-tile') && b.textContent?.includes(place.name)));
+    await tap(within(dialog()).getByRole('button', { name: new RegExp(`${place.name} 조사하기`) }));
+    await tap(tabBtn(/^진행/));
     snap(`r${r}-picked`);
-    if (r === 3 && qbtn(/타이머 시작/)) {
-      await tap(btn(/타이머 시작/)); // O1 로 들어와 타이머가 없다(BUG-07 경로)
-      snap('r3-timer');
-    }
     await tap(btn(/토론 \d+분 시작/));
     snap(`r${r}-discuss`);
     await tap(btn(r < 3 ? /조사 시작/ : /최종 변론으로/));
@@ -363,7 +378,8 @@ describe('(a) 방장 공용 화면 — 4·5·6인 × 방장 역할 전부, 조�
       expect(at('r3-o1-confirm')).toContain('셋째 조사로 넘어가겠소?');
       expect(at('tally')).toContain('동률');
       expect(at('final')).toContain('재지목 집계');
-      expect(at('reveal-confirm')).toContain('진상을 공개하겠소?');
+      // R7: 보너스를 하나도 적지 않은 판이라 진상 직전 확인은 「보너스 없이 공개하겠소?」
+      expect(at('reveal-confirm')).toContain('보너스 없이 공개하겠소?');
       expect(at('defense-1')).toContain('‹R1›');
       for (const r of runs) {
         // 자기소개 전 방장 무대엔 역할명이 없다(브리핑 낭독문의 {{cast}} 는 인원별 고정 원문이라 제외)
@@ -589,7 +605,7 @@ async function absentKeepRun(code: string): Promise<{ pre: Shot[]; beats: Shot[]
   snap('tally');
   await tap(btn(/진상 공개/));
   snap('reveal-confirm');
-  await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+  await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
   // 진상 비트 — 범인 도장 전까지는 범인과 무관해야 한다(역할명 정규화 없이: 낭독문은 원문 그대로)
   for (let i = 0; i < 30 && !document.querySelector('.gu-reveal-culprit'); i++) {
     beats.push({ key: `beat-${i}`, ...canon(code) });
@@ -840,7 +856,7 @@ async function hostToResult(code: string, outcome: 'caught' | 'escaped') {
   const target = outcome === 'caught' ? a.culpritSeat : innocent;
   for (let v = 1; v <= n; v++) await ballot(v === target ? (outcome === 'caught' ? innocent : other) : target);
   await tap(btn(/진상 공개/));
-  await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+  await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
   for (let i = 0; i < 30 && !qbtn(/점수 보기/); i++) await tap(btn(/^다음 \(/));
   await tap(btn(/점수 보기/));
 }
@@ -926,7 +942,7 @@ describe('(e) 결과 공유 — 범인·방 코드 없음', () => {
     const t = active.find((s) => s !== 1)!;
     for (const v of active) await ballot(v === t ? 1 : t);
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && !qbtn(/점수 보기/); i++) await tap(btn(/^다음 \(/));
     await tap(btn(/점수 보기/));
     expect(document.body.textContent).toContain('판결 없음(범인 자리 비움)');
@@ -942,6 +958,9 @@ describe('(e) 결과 공유 — 범인·방 코드 없음', () => {
     await playerEnter(code, 2);
     await o1(/^진상 공개/);
     await tap(within(dialog()).getByRole('button', { name: /가겠소/ }));
+    // G5: 진상 대기 → 「범인이 밝혀졌어요」 → 확인 시트 → P9
+    await tap(btn(/범인이 밝혀졌어요/));
+    await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
     await tap(btn('다른 모임에 추천하기'));
     expect(cap.webshare).toHaveLength(1);
     const blob = JSON.stringify(cap.webshare);

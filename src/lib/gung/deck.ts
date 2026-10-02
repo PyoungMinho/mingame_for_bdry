@@ -10,6 +10,7 @@
  *  - 내문 출입 타임라인: 열린 공용 카드의 gateLog 만 눈금(술시~축시 × 초·정·말)에 올린다(gateTimeline).
  */
 import { castFor, npcRolesFor, roleById } from './assign';
+import { GUIDE } from './guide-data';
 import { hash32, mix } from './rng';
 import {
   DEFAULT_NPC_HEADING,
@@ -352,6 +353,21 @@ export function timeTable(c: GungCase): WatchRow[] {
 
 /** 시각표 아래 한 줄(원고 1-5) */
 export const TIME_TABLE_NOTE = '반 시진 ≈ 1시간';
+
+/**
+ * 시각 어림 한 줄(개선 묶음 1 · R3) — timeTable(c)에서 만든다(하드코딩 금지). 출입 눈금(gateAxis)에 쓰는 시진의 '초' 시각만 골라
+ * 「시각 어림 — 술시 초 19시 · … · 정은 초에서 1시간 뒤 · 말은 1시간 반 넘어 · 반 시진 ≈ 1시간」. 공용 단서 목록 아래(방장·플레이어 공통).
+ */
+export function timeHint(c: GungCase): string {
+  const starts = timeTable(c)
+    .filter((r) => r.parts)
+    .map((r) => {
+      const m = /초≈([^\s·]+)/.exec(r.parts ?? '');
+      return m ? `${r.name} 초 ${m[1]}` : null;
+    })
+    .filter((x): x is string => x !== null);
+  return `${GUIDE.timeHintHead} — ${[...starts, ...GUIDE.timeHintTail, TIME_TABLE_NOTE].join(' · ')}`;
+}
 
 // ─────────────────────────────── 브리핑 ───────────────────────────────
 

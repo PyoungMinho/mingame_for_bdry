@@ -239,8 +239,9 @@ describe('라운드 잠금·출입 타임라인 — 방장 폰', () => {
     expect(screen.getByText(NOTICE)).toBeInTheDocument();
     expect(screen.queryByText(/새 기억|떠오르는 기억/)).toBeNull(); // 공용 무대엔 역할별 표시가 없다
     expect(within(tl()).getByText(gateLine('PB-3', (e) => e.roleId === 'eunuch' && e.dir === 'in'))).toBeInTheDocument();
-    await tap(tiles('gu-place-tile')[0]);
-    await tap(btn(/조사하기$/));
+    // 개선 묶음 1 G2: 방장 본인 장소 고르기는 무대가 아니라 단서함에서 — 무대엔 장소 타일·봉인 카드가 없다
+    expect(tiles('gu-place-tile')).toHaveLength(0);
+    expect(document.querySelectorAll('.gu-sealed')).toHaveLength(0);
     await tap(btn(/토론 \d+분 시작/));
     const total = sejaCase.rounds.flatMap((r) => r.publicCards ?? []).reduce((n, c) => n + (c.gateLog?.length ?? 0), 0);
     expect(within(tl()).getAllByRole('listitem')).toHaveLength(total);

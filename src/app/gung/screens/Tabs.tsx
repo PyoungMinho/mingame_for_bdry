@@ -3,10 +3,16 @@
 /**
  * T1 내 패 / T2 단서함 — §3 T1·T2. 둘 다 BottomTabs에서 띄우는 탭이면서, 플레이어의 cards 단계(P3)
  * 본문으로도 그대로 임베드된다(§3: "P3. 패 확인 = T1 RoleCard 임베드").
+ *
+ * 개선 묶음 1
+ *  - R1: 패 확인 단계엔 칩 위 「꼭 볼 3칸」(모든 역할 같은 문구), 한 번 연 칩엔 점(onSeen → 상위 UI 상태, 저장 안 함).
+ *  - R3: 단서함 '공용 단서' 위에 내문 출입 타임라인(방장과 같은 gateTimeline·gateRoundsShown), 목록 아래 시각 어림 한 줄.
+ *  - R5: 공개한 장소 카드에만 인장 번호.
  */
 import { useEffect, useState } from 'react';
 import { getClue, type Assignment, type GungCase, type ResolvedSheet, type RoundNo } from '@/lib/gung';
-import { ClueCard, RoleCard } from '../components';
+import { ClueCard, GateTimelineBar, RoleCard } from '../components';
+import type { GateTimelineView } from '../components';
 import type { Disclosure, SectionKey, TermItem } from '../components/types';
 import { useHoldReveal } from '../lib/useHoldReveal';
 import { placeToSummary, sheetToContent } from './adapters';
@@ -17,6 +23,9 @@ export function MyCardTab({
   sealEpoch,
   revealMode,
   focus,
+  hint,
+  seen,
+  onSeen,
 }: {
   /** getSheet(…, reachedRound(phase)) — 이 폰의 진행 단계로 잠금 블록이 이미 걸러져 있어야 한다 */
   sheet: ResolvedSheet;
@@ -25,9 +34,19 @@ export function MyCardTab({
   revealMode: 'hold' | 'tap';
   /** 'memory' — 「새 기억이 떠올랐소」 알림에서 들어옴: '비밀' 섹션의 잠금 블록 쪽부터 */
   focus?: 'memory' | null;
+  /** 칩 위 안내(패 확인 단계 「꼭 볼 3칸」) */
+  hint?: string;
+  /** 한 번 연 섹션(칩 점) */
+  seen?: Partial<Record<SectionKey, boolean>>;
+  onSeen?: (section: SectionKey) => void;
 }) {
   const [section, setSection] = useState<SectionKey>(focus === 'memory' ? 'secret' : 'identity');
   const reveal = useHoldReveal(revealMode, `${String(sealEpoch)}-${section}`);
+  useEffect(() => {
+    if (reveal.open && !seen?.[section]) onSeen?.(section);
+    // onSeen 은 매 렌더 새 람다 — 열림 전이·섹션 변경에만 반응한다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reveal.open, section]);
   const content = sheetToContent(sheet, seat);
   // §10-1 워터마크 "3번 · 22:41" — 열린 상태에서만 그리므로 렌더 시각을 써도 서버 렌더와 불일치가 없다
   const watermark = reveal.open ? `${seat}번 · ${hhmm(new Date())}` : undefined;
@@ -44,6 +63,8 @@ export function MyCardTab({
       tapTotalMs={reveal.tapTotalMs}
       watermark={watermark}
       startAt={focus === 'memory' ? 'memory' : undefined}
+      hint={hint}
+      seen={seen}
     />
   );
 }
@@ -70,6 +91,9 @@ export function CluesTab({
   onDisclose,
   onOpened,
   onPickNow,
+  timeline,
+  timeHint,
+  sealOf,
 }: {
   c: GungCase;
   a: Assignment;
@@ -78,6 +102,12 @@ export function CluesTab({
   rounds: Partial<Record<RoundNo, RoundClueState>>;
   /** 이 폰이 들어선 라운드까지의 공용·NPC 단서(지금 라운드 포함 — 원고 1-7: 라운드 시작 때 공개, QA BUG-04 결정) */
   publicUpTo: { id: string; round: RoundNo; title: string; body: string }[];
+  /** R3 — 방장과 같은 내문 출입 타임라인(이 폰이 들어선 라운드의 공용 카드 출입 기록만) */
+  timeline?: GateTimelineView | null;
+  /** R3 — 시각 어림 한 줄(timeTable 에서 생성) */
+  timeHint?: string;
+  /** R5 — 장소 카드 id → 인장(공개한 카드에만 그린다) */
+  sealOf?: (cardId: string) => number | null;
   sealEpoch: unknown;
   revealMode: 'hold' | 'tap';
   onDisclose: (round: RoundNo, value: 'public' | 'private') => void;
@@ -118,9 +148,11 @@ export function CluesTab({
               revealMode={revealMode}
               onDisclose={(v) => onDisclose(r, v)}
               onOpened={() => onOpened(r)}
+              seal={pick.disclosure === 'public' && clue ? sealOf?.(clue.id) ?? null : null}
             />
           );
         })}
+      {timeline && <GateTimelineBar data={timeline} />}
       {publicUpTo.length > 0 && (
         <div className="gu-cluestab-public">
           <p className="gu-cluestab-public-label">공용 단서</p>
@@ -129,6 +161,7 @@ export function CluesTab({
               <span className="gu-cluestab-public-round">조사 {p.round} · {p.title}</span> {p.body}
             </p>
           ))}
+          {timeHint && <p className="gu-timehint">{timeHint}</p>}
         </div>
       )}
     </div>
@@ -148,6 +181,7 @@ function ClueTabCard({
   revealMode,
   onDisclose,
   onOpened,
+  seal,
 }: {
   round: RoundNo;
   placeId: string;
@@ -162,6 +196,7 @@ function ClueTabCard({
   revealMode: 'hold' | 'tap';
   onDisclose: (value: 'public' | 'private') => void;
   onOpened: () => void;
+  seal?: number | null;
 }) {
   const reveal = useHoldReveal(revealMode, `${String(sealEpoch)}-${round}`);
   useEffect(() => {
@@ -184,6 +219,7 @@ function ClueTabCard({
       holdProgress={reveal.holdProgress}
       onDisclose={onDisclose}
       disclosureEnabled={opened}
+      seal={disclosure === 'public' ? seal : null}
     />
   );
 }

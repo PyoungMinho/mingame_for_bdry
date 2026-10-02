@@ -340,6 +340,8 @@ export interface GungCase {
   timers?: Partial<TimerConfig>;
   /** 무고자 '정체' 문구 오버라이드 */
   innocentIdentity?: string;
+  /** 무고자 '정체' 둘째 문단 오버라이드(없으면 DEFAULT_INNOCENT_BODY) */
+  innocentBody?: string;
   /** 범인 '정체' 머리 문구 오버라이드 */
   culpritIdentity?: string;
   /** NPC 카드 묶음 제목 — 원고: '추가 증언' */
@@ -349,5 +351,10 @@ export interface GungCase {
 }
 
 export const DEFAULT_INNOCENT_IDENTITY = '당신은 범인이 아니오. 진범을 찾으시오.';
+/**
+ * 무고자 '정체' 둘째 문단(개선 묶음 1 · G4) — 범인 패는 머리 + crime 한 줄, 무고자 패는 머리 + 이 한 줄.
+ * 열린 정체 칸의 실루엣(도장·문단 수)을 범인과 같게 맞춘다. 사건 정보 없음(표시 형식) — docs/planning/gung-improve-spec.md G4.
+ */
+export const DEFAULT_INNOCENT_BODY = '제 비밀은 지키되, 범인은 반드시 물증으로 가려내시오.';
 export const DEFAULT_CULPRIT_IDENTITY = '당신이 범인이오.';
 export const DEFAULT_NPC_HEADING = '추가 증언';

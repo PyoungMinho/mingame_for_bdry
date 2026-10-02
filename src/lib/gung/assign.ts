@@ -14,6 +14,7 @@ import { hash32, makeRng, mix, shuffle } from './rng';
 import { parseRoomCode, type RoomCode } from './room';
 import {
   DEFAULT_CULPRIT_IDENTITY,
+  DEFAULT_INNOCENT_BODY,
   DEFAULT_INNOCENT_IDENTITY,
   type GlossaryTerm,
   type GungCase,
@@ -151,7 +152,7 @@ export interface ResolvedSheet {
   subtitle?: string;
   icon: RoleIconKey;
   isCulprit: boolean;
-  /** '정체' 섹션 — 범인/무고 텍스트만 다르고 구조는 같다 */
+  /** '정체' 섹션 — 범인/무고 텍스트만 다르고 구조는 같다(G4: 둘 다 머리 + 한 문단) */
   identity: { headline: string; body?: string };
   profile: string;
   glance: string[];
@@ -230,7 +231,7 @@ export function getSheet(c: GungCase, a: Assignment, seat: number, upToRound: nu
     isCulprit,
     identity: isCulprit
       ? { headline: c.culpritIdentity ?? DEFAULT_CULPRIT_IDENTITY, body: r.crime }
-      : { headline: c.innocentIdentity ?? DEFAULT_INNOCENT_IDENTITY },
+      : { headline: c.innocentIdentity ?? DEFAULT_INNOCENT_IDENTITY, body: c.innocentBody ?? DEFAULT_INNOCENT_BODY },
     profile: r.profile,
     glance: r.glance.slice(),
     secrets: r.secrets.slice(),
