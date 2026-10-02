@@ -89,7 +89,6 @@ const qdialog = () => screen.queryByRole('dialog');
 const headerUndo = () => document.querySelector<HTMLElement>('.gu-header-iconbtn[aria-label="되돌리기"]');
 const seatNode = (seat: number) => screen.getAllByRole('button').find((b) => b.className.includes('gu-seat-node') && b.textContent?.startsWith(String(seat)));
 const sealedSurface = () => document.querySelector<HTMLElement>('.gu-rolecard .gu-sealed-surface');
-const pagerLabel = () => document.querySelector('.gu-rolecard .gu-sealed-pager-label')?.textContent ?? '';
 
 function resetBetweenRuns() {
   cleanup();
@@ -384,15 +383,11 @@ describe('(a) 방장 공용 화면 — 4·5·6인 × 방장 역할 전부, 조�
 
 // ═══════════════════════════════ (b) 봉인 화면 — 범인 = 무고 ═══════════════════════════════
 
-/** 지금 탭의 내 패 7섹션 × (첫 쪽 + '다음 쪽' 2회) 봉인 화면 */
+/** 지금 탭의 내 패 7섹션 봉인 화면(쪽 나눔 폐지 — 섹션마다 한 번 열어 전체를 한 번에 본다) */
 async function sealedSections(code: string, out: string[], tag: string) {
   for (const tab of ['정체', '신분', '비밀', '그날 밤', '거짓말', '미션', '말투']) {
     await tap(screen.getByRole('tab', { name: tab }));
     out.push(`${tag}/${tab}/0\n${canon(code, { seats: true }).dom}`);
-    for (let k = 1; k <= 2; k++) {
-      await tap(btn(/다음 쪽/));
-      out.push(`${tag}/${tab}/${k}\n${canon(code, { seats: true }).dom}`);
-    }
   }
 }
 
@@ -424,10 +419,6 @@ async function playerSealedRun(code: string, seat: number): Promise<string[]> {
   out.push(`r3-notice\n${canon(code, { seats: true }).dom}`);
   await tap(btn(/지금 확인하기/));
   out.push(`r3-focus\n${canon(code, { seats: true }).dom}`);
-  for (let k = 1; k <= 3; k++) {
-    await tap(btn(/다음 쪽/));
-    out.push(`r3-focus/${k}\n${canon(code, { seats: true }).dom}`);
-  }
   await sealedSections(code, out, 'r3');
   return out;
 }
@@ -461,10 +452,11 @@ describe('(b) 봉인 화면 — 범인 자리와 무고 자리가 같다', () =>
       }
       const culprit = runs.find((r) => r.seat === a.culpritSeat)!;
       const innocents = runs.filter((r) => r.seat !== a.culpritSeat);
-      expect(culprit.shots.length).toBeGreaterThan(40);
+      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(7섹션 × cards-hold/cards-tap/r3 = 21) + 자기소개·단서·조사3 알림 등
+      expect(culprit.shots.length).toBeGreaterThan(20);
       // 탐침 유효성 — 봉인 카드를 실제로 찍었고, 그 안엔 역할 글이 없다
       const sectionShots = culprit.shots.filter((s) => s.slice(0, s.indexOf('\n')).split('/').length >= 3);
-      expect(sectionShots.length).toBeGreaterThan(40);
+      expect(sectionShots.length).toBeGreaterThan(15);
       expect(sectionShots.every((s) => s.includes('gu-sealed-surface'))).toBe(true);
       for (const s of culprit.shots) {
         const t = textOutside(s.slice(s.indexOf('\n') + 1), FIXED_TEXT);
@@ -486,7 +478,8 @@ describe('(b) 봉인 화면 — 범인 자리와 무고 자리가 같다', () =>
       resetBetweenRuns();
       const i = await hostSealedRun(innocent);
       expect(g.length).toBe(i.length);
-      expect(g.length).toBeGreaterThan(40);
+      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(7섹션 × host-cards/host-r3 = 14) + r3 알림 포커스
+      expect(g.length).toBeGreaterThan(10);
       for (let k = 0; k < g.length; k++) expect(i[k], g[k].slice(0, g[k].indexOf('\n'))).toBe(g[k]);
     }, 60_000);
   }
@@ -683,21 +676,15 @@ function probe(t: string): string {
   throw new Error(`no distinct probe: ${t}`);
 }
 
-/** 지금 탭 내 패 '비밀' 섹션을 열어 모든 쪽의 글을 모은다(열기 = Enter 누름, 닫기 = 뗌) */
+/** 지금 탭 내 패 '비밀' 섹션을 열어 전문을 모은다(쪽 나눔 폐지 — 한 번 열면 전부 보인다. 열기 = Enter 누름, 닫기 = 뗌) */
 async function readSecretPages(): Promise<string> {
   await tap(screen.getByRole('tab', { name: '비밀' }));
-  let all = '';
-  for (let i = 0; i < 12; i++) {
-    const s = sealedSurface()!;
-    fireEvent.keyDown(s, { key: 'Enter' });
-    await flush();
-    all += document.querySelector('.gu-rolecard')?.textContent ?? '';
-    const [cur, total] = pagerLabel().split('/').map(Number);
-    fireEvent.keyUp(sealedSurface()!, { key: 'Enter' });
-    await flush();
-    if (!total || cur >= total) break;
-    await tap(btn(/다음 쪽/));
-  }
+  const s = sealedSurface()!;
+  fireEvent.keyDown(s, { key: 'Enter' });
+  await flush();
+  const all = document.querySelector('.gu-rolecard')?.textContent ?? '';
+  fireEvent.keyUp(sealedSurface()!, { key: 'Enter' });
+  await flush();
   return all;
 }
 

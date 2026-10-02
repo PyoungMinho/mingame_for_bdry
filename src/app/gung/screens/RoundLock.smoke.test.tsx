@@ -106,26 +106,21 @@ async function syncTo(label: RegExp, openSheet = true) {
   if (confirm) await tap(confirm);
 }
 
-/** 내 패 › 비밀 섹션을 열고(키보드 = 즉시 열림) 모든 쪽 글을 모아 돌려준다. 마지막에 다시 봉인 */
+/** 내 패 › 비밀 섹션을 열고(키보드 = 즉시 열림) 전문을 돌려준다(쪽 나눔 폐지 — 한 번 열면 전부 보인다). 마지막에 다시 봉인 */
 async function readSecretPages(alreadyOnCards = false): Promise<string[]> {
   if (!alreadyOnCards) {
     await tap(btn(/내 패/));
     await dismissPeekTip();
     await tap(screen.getByRole('tab', { name: '비밀' }));
   }
-  const pages: string[] = [];
-  // 봉인 중엔 쪽 수가 보이지 않는다(D3 — QA BUG-01: 봉인면 '1/3' 칩이 범인을 흘렸다). 연 상태의 'i/N' 라벨로 센다.
-  let count = 1;
-  for (let i = 0; i < count; i++) {
-    const surface = screen.getByRole('button', { name: /자리의 패 — 비밀 정보/ });
-    fireEvent.keyDown(surface, { key: 'Enter' });
-    await flush();
-    pages.push(surface.textContent ?? '');
-    count = Number((document.querySelector('.gu-sealed-pager-label')?.textContent ?? '1/1').split('/')[1]);
-    fireEvent.keyUp(surface, { key: 'Enter' });
-    await flush();
-    if (i < count - 1) await tap(screen.getByRole('button', { name: /다음 쪽/ }));
-  }
+  const surface = screen.getByRole('button', { name: /자리의 패 — 비밀 정보/ });
+  fireEvent.keyDown(surface, { key: 'Enter' });
+  await flush();
+  // D3(QA BUG-01)는 그대로 — 쪽 칩 자체가 없으니 범인만 흘릴 길이 표시도 없다
+  expect(document.querySelector('.gu-sealed-pager')).toBeNull();
+  const pages = [surface.textContent ?? ''];
+  fireEvent.keyUp(surface, { key: 'Enter' });
+  await flush();
   return pages;
 }
 

@@ -2,45 +2,23 @@
  * §5-8 RoleCard — 호패(끈 구멍 + 나무결 프레임) + SectionChips + SealedCard.
  * 섹션별 렌더: 정체(범인이면 '정체' 섹션이 **열린 상태에서만** SealStamp "범인"), 신분(역할명+프로필),
  * 비밀, 그날 밤(시각 리스트), 거짓말(불릿), 미션(손글씨 메모), 말투(손글씨 ×2~3).
- * 비밀 섹션 끝엔 라운드 잠금 블록(「R3에 떠오르는 기억」)이 따로 쪽을 차지한다 — 잠긴 동안엔 안내 한 줄만.
+ * 비밀 섹션 끝엔 라운드 잠금 블록(「R3에 떠오르는 기억」)이 따로 붙는다.
  * 「R2부터」「R3부터」 표기는 글자 그대로 두고 배지(RoundTagText)로만 꾸민다.
+ *
+ * PM 피드백(쪽 나눔 폐지) — 그날 밤·거짓말·미션·말투처럼 항목이 여럿인 섹션은 원고 줄 구분을 살려
+ * ①②③ 번호 목록으로 한 화면에 다 보여준다(SealedCard가 글자 크기를 알아서 줄인다). 더는 쪽을 나누지 않으므로
+ * 섹션을 바꾸면(= 봉인이 다시 걸리면) 그다음 열 때 늘 처음부터 전체가 보인다 — "몇 쪽인지 모르겠다"는 불만 자체가 사라진다.
  */
 'use client';
 
-import { useState } from 'react';
-import { paginateItems, paginateText } from './paginate';
-import type { SealedCardPages } from './SealedCard';
+import { useEffect, useRef } from 'react';
+import { circledNum } from './numbering';
 import { SealedCard } from './SealedCard';
 import { SealStamp } from './SealStamp';
 import { RoundTagText } from './RoundTagText';
 import { SectionChips } from './SectionChips';
-import type { MemoryContent, NightBeat, PressBind, RoleCardContent, SealMode, SectionKey } from './types';
+import type { MemoryContent, PressBind, RoleCardContent, SealMode, SectionKey } from './types';
 import { sectionText } from './types';
-
-type Chunk = { body?: string; list?: string[]; night?: NightBeat[]; memory?: MemoryContent };
-
-/** 섹션 → 쪽(한 화면 분량) 목록. '비밀'이면 잠금 블록 쪽을 뒤에 붙인다. */
-function buildChunks(content: RoleCardContent, section: SectionKey): Chunk[] {
-  const full = sectionText(content, section);
-  // D3: '정체'는 절대 쪽을 나누지 않는다 — 범인 문구만 길어 봉인면에 "1/2" 칩이 뜨면 어깨 너머로 범인이 드러난다
-  const chunks: Chunk[] = full.body
-    ? (section === 'identity' ? [full.body] : paginateText(full.body)).map((body) => ({ body }))
-    : full.list
-      ? paginateItems(full.list, (x) => x.length + 8).map((list) => ({ list }))
-      : full.night
-        ? paginateItems(full.night, (b) => b.time.length + b.text.length + 10).map((night) => ({ night }))
-        : [{}];
-  if (section === 'secret') {
-    for (const m of content.memories ?? []) {
-      if (m.lines?.length) {
-        for (const lines of paginateItems(m.lines, (x) => x.length + 8)) chunks.push({ memory: { ...m, lines } });
-      } else {
-        chunks.push({ memory: { title: m.title, round: m.round, lockedHint: m.lockedHint } });
-      }
-    }
-  }
-  return chunks;
-}
 
 export interface RoleCardProps {
   content: RoleCardContent;
@@ -53,24 +31,21 @@ export interface RoleCardProps {
   tapRemainingMs?: number;
   tapTotalMs?: number;
   watermark?: string;
-  pages?: SealedCardPages;
   className?: string;
-  /** 'memory' — 처음 그릴 때 '비밀' 섹션의 잠금 블록 쪽부터 연다(「새 기억이 떠올랐소」 → 내 패에서 보기) */
+  /** 'memory' — 처음 그릴 때 '비밀' 섹션을 열면 새로 풀린 기억 블록이 보이도록 그리로 스크롤한다(「새 기억이 떠올랐소」 알림 뒤) */
   startAt?: 'memory';
 }
 
-export function RoleCard({ content, activeSection, onSectionChange, open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs, watermark, pages, className, startAt }: RoleCardProps) {
+export function RoleCard({ content, activeSection, onSectionChange, open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs, watermark, className, startAt }: RoleCardProps) {
   const full = sectionText(content, activeSection);
-  const chunks = buildChunks(content, activeSection);
-  // §5-7 쪽 나눔 — 꾹 누른 채로는 스크롤이 안 되므로 한 화면 분량으로 자른다(섹션이 바뀌면 1쪽부터)
-  const [pageState, setPageState] = useState<{ section: SectionKey; index: number }>(() => ({
-    section: activeSection,
-    index: startAt === 'memory' ? Math.max(0, chunks.findIndex((ch) => ch.memory)) : 0,
-  }));
-  const pageIndex = pageState.section === activeSection ? Math.min(pageState.index, chunks.length - 1) : 0;
-  const section = { title: full.title, ...chunks[pageIndex] };
-  // D3(QA BUG-01): 쪽 칩은 섹션·역할과 무관하게 **늘** 둔다 — 쪽이 여러 장일 때만 칩이 있으면 그 존재 자체가 내용 길이를 흘린다.
-  const autoPages: SealedCardPages = { index: pageIndex, count: chunks.length, onChange: (index) => setPageState({ section: activeSection, index }) };
+  const memoryRef = useRef<HTMLDivElement>(null);
+
+  // 「새 기억이 떠올랐소」에서 들어왔으면 — 비밀 섹션을 열 때 새 기억 블록이 보이는 자리로 스크롤(내용은 처음부터 전부 그려진다)
+  useEffect(() => {
+    if (open && startAt === 'memory' && activeSection === 'secret') {
+      memoryRef.current?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [open, startAt, activeSection]);
 
   return (
     <div className={['gu-rolecard', className ?? ''].filter(Boolean).join(' ')}>
@@ -86,45 +61,62 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
           tapRemainingMs={tapRemainingMs}
           tapTotalMs={tapTotalMs}
           watermark={watermark}
-          pages={pages ?? autoPages}
           renderContent={() => (
             <div className="gu-hopae-content">
-              <h3 className="gu-hopae-section-title gu-display">{section.title}</h3>
-              {activeSection === 'identity' && pageIndex === 0 && content.isCulprit && <SealStamp text="범인" size={56} className="gu-hopae-stamp" />}
-              {activeSection === 'profile' && pageIndex === 0 && <p className="gu-hopae-rolename gu-display">{content.roleName}</p>}
-              {section.body && (
+              <h3 className="gu-hopae-section-title gu-display">{full.title}</h3>
+              {activeSection === 'identity' && content.isCulprit && <SealStamp text="범인" size={56} className="gu-hopae-stamp" />}
+              {activeSection === 'profile' && <p className="gu-hopae-rolename gu-display">{content.roleName}</p>}
+              {full.body && (
                 <p className="gu-hopae-body">
-                  <RoundTagText text={section.body} current={content.round} />
+                  <RoundTagText text={full.body} current={content.round} />
                 </p>
               )}
-              {section.memory && <MemoryBlock memory={section.memory} />}
-              {section.night && (
-                <ul className="gu-hopae-night">
-                  {section.night.map((b, i) => (
+              {activeSection === 'secret' &&
+                content.memories?.map((m, i) => (
+                  <div key={i} ref={i === 0 ? memoryRef : undefined}>
+                    <MemoryBlock memory={m} />
+                  </div>
+                ))}
+              {full.night && (
+                <ol className="gu-hopae-night gu-numlist">
+                  {full.night.map((b, i) => (
                     <li key={i}>
-                      <span className="gu-hopae-night-time">{b.time}</span>
-                      <span>{b.text}</span>
+                      <span className="gu-numitem-mark" aria-hidden>
+                        {circledNum(i + 1)}
+                      </span>
+                      <span>
+                        {b.time && <span className="gu-hopae-night-time">{b.time}</span>}
+                        {b.text}
+                      </span>
                     </li>
                   ))}
-                </ul>
+                </ol>
               )}
-              {section.list && activeSection === 'speech' && (
-                <ul className="gu-hopae-speech">
-                  {section.list.map((s, i) => (
+              {full.list && activeSection === 'speech' && (
+                <ol className="gu-hopae-speech gu-numlist">
+                  {full.list.map((s, i) => (
                     <li key={i} className="gu-font-hand">
+                      <span className="gu-numitem-mark" aria-hidden>
+                        {circledNum(i + 1)}
+                      </span>
                       “{s}”
                     </li>
                   ))}
-                </ul>
+                </ol>
               )}
-              {section.list && activeSection !== 'speech' && (
-                <ul className="gu-hopae-list">
-                  {section.list.map((s, i) => (
+              {full.list && activeSection !== 'speech' && (
+                <ol className="gu-hopae-list gu-numlist">
+                  {full.list.map((s, i) => (
                     <li key={i}>
-                      <RoundTagText text={s} current={content.round} />
+                      <span className="gu-numitem-mark" aria-hidden>
+                        {circledNum(i + 1)}
+                      </span>
+                      <span>
+                        <RoundTagText text={s} current={content.round} />
+                      </span>
                     </li>
                   ))}
-                </ul>
+                </ol>
               )}
             </div>
           )}
@@ -134,7 +126,7 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
   );
 }
 
-/** 라운드 잠금 블록 한 쪽 — 열린 뒤엔 촛불 테두리 + 줄 목록, 잠긴 동안엔 안내 한 줄(본문 없음) */
+/** 라운드 잠금 블록 — 열린 뒤엔 촛불 테두리 + 줄 목록, 잠긴 동안엔 안내 한 줄(본문 없음) */
 export function MemoryBlock({ memory }: { memory: MemoryContent }) {
   const unlocked = Boolean(memory.lines?.length);
   return (

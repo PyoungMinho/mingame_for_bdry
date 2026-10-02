@@ -26,7 +26,7 @@ import {
   rolesVisible,
   roundPlaces,
 } from '@/lib/gung';
-import { ClueCard, GuButton, MemoryBlock, PlaceGrid, RevealScroll, RoleIcon, RoundTagText, SealStamp, SeatGrid, ShareActions } from '../components';
+import { ClueCard, GuButton, MemoryBlock, PlaceGrid, RevealScroll, RoleIcon, RoundTagText, SealStamp, SeatGrid, ShareActions, circledNum } from '../components';
 import type { GuTabKey } from '../components';
 import { useHoldReveal } from '../lib/useHoldReveal';
 import { placeToSummary, sheetToContent } from './adapters';
@@ -547,15 +547,34 @@ function AllSheets({ sheets }: { sheets: ResolvedSheet[] }) {
                 </div>
                 <div className="gu-allsheets-block">
                   <p className="gu-allsheets-title">거짓말</p>
-                  <ul className="gu-hopae-list">
+                  <ul className="gu-hopae-list gu-numlist">
                     {content.lies.map((l, i) => (
                       <li key={i}>
-                        <RoundTagText text={l} current={content.round} />
+                        <span className="gu-numitem-mark" aria-hidden>
+                          {circledNum(i + 1)}
+                        </span>
+                        <span>
+                          <RoundTagText text={l} current={content.round} />
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <SheetBlock title="미션" body={content.mission} />
+                {content.mission.length > 0 && (
+                  <div className="gu-allsheets-block">
+                    <p className="gu-allsheets-title">미션</p>
+                    <ul className="gu-hopae-list gu-numlist">
+                      {content.mission.map((m, i) => (
+                        <li key={i}>
+                          <span className="gu-numitem-mark" aria-hidden>
+                            {circledNum(i + 1)}
+                          </span>
+                          <span>{m}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </section>

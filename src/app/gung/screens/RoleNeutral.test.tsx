@@ -198,13 +198,8 @@ async function playerRun(code: string): Promise<{ progress: string; sealed: stri
   const sealed: string[] = [];
   for (const tab of screen.getAllByRole('tab')) {
     await tap(tab);
+    // 쪽 나눔 폐지 — 탭마다 한 번씩만 찍어도 된다(더는 '다음 쪽'으로 더 볼 쪽이 없다)
     sealed.push(document.querySelector('.gu-rolecard')?.outerHTML ?? '');
-    // 봉인 상태에서 '다음 쪽'을 눌러도 같아야 한다
-    const next = qbtn(/다음 쪽/);
-    if (next) {
-      await tap(next);
-      sealed.push(document.querySelector('.gu-rolecard')?.outerHTML ?? '');
-    }
   }
   return { progress, sealed };
 }

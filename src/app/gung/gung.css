@@ -376,7 +376,10 @@
 .gu-sealed-surface {
   position: relative;
   border-radius: var(--gu-radius-lg);
-  touch-action: none;
+  /* hold(꾹) 모드만 touch-action:none — 스크롤 제스처로 바뀌면 pointercancel 이 떠 즉시 풀린다(§10-1).
+     tap(15초) 모드는 누르고 있을 필요가 없으니 열린 동안 손을 떼고 세로로 스크롤할 수 있어야 한다(PM 피드백: 쪽 나눔 폐지로
+     카드가 길어질 수 있는 극단 사례의 대안). */
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -385,6 +388,7 @@
   align-items: center;
   justify-content: center;
 }
+.gu-sealed-surface[data-mode='hold'] { touch-action: none; }
 .gu-sealed-closed {
   width: 100%;
   background: var(--gu-surface);
@@ -437,26 +441,26 @@
   color: color-mix(in srgb, var(--gu-paper-muted) 60%, transparent);
 }
 .gu-sealed-paper {
+  /* §useSealFit(SealedCard.tsx) 가 섹션 전체가 한 화면에 들어오도록 이 안의 글자 크기를 단계적으로 줄인다
+     (--gu-seal-scale, 기본 1 · 최소 14px/17px ≈ 0.8235). 넘치면(극단) 줄이지 않고 카드가 자라 페이지 스크롤로 본다 —
+     내부 스크롤(overflow)은 두지 않는다. */
   background: var(--gu-paper);
   color: var(--gu-paper-ink);
   border-radius: var(--gu-radius-lg);
   padding: var(--gu-sp-5);
 }
 .gu-sealed-release { text-align: center; font-size: var(--gu-fs-caption); color: var(--gu-muted); margin: var(--gu-sp-2) 0 0; }
+/* §useSealFit 3단계 — 비밀처럼 아주 길어 끌어올려도 넘칠 때만, 탭바(액션바) 바로 위에 고정되는 「아래 더 있음」 표시.
+   봉인 상태엔 그리지 않는다(내용 길이 비노출, D3). top 은 SealedCard 가 그 띠의 아래 경계(px)로 넣는다. */
+.gu-sealed-more {
+  position: fixed; left: 50%; transform: translate(-50%, calc(-100% - var(--gu-sp-2)));
+  z-index: var(--gu-z-bar); margin: 0; padding: 6px 14px; border-radius: var(--gu-radius-pill);
+  background: var(--gu-bg-2); border: 1px solid var(--gu-gold-ink); color: var(--gu-gold-ink);
+  font-size: var(--gu-fs-caption); font-weight: 700; white-space: nowrap; pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
 .gu-sealed-tapbar { display: block; height: 3px; background: var(--gu-surface-2); border-radius: var(--gu-radius-pill); overflow: hidden; margin-top: var(--gu-sp-1); }
 .gu-sealed-tapbar-fill { display: block; height: 100%; background: var(--gu-cta); transition: width 1s linear; }
-
-.gu-sealed-pager { display: flex; justify-content: center; margin-top: var(--gu-sp-2); }
-.gu-sealed-pager-btn, .gu-sealed-pager-label {
-  font-family: var(--gu-font-mono);
-  font-size: var(--gu-fs-caption);
-  color: var(--gu-muted);
-  padding: var(--gu-sp-1) var(--gu-sp-3);
-  border-radius: var(--gu-radius-pill);
-  border: 1px solid var(--gu-line-2);
-}
-/* QA BUG-26: 손 뗀 뒤 탭하는 쪽 칩 — 터치 타깃 48px 하한 */
-.gu-sealed-pager-btn { min-height: 48px; min-width: 96px; background: transparent; }
 
 /* ============================================================================
  * §5-8 RoleCard / 호패
@@ -485,16 +489,30 @@
 }
 .gu-hopae .gu-sealed-surface { flex: 1; width: 100%; }
 .gu-hopae-content { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
-.gu-hopae-section-title { font-size: var(--gu-fs-h2); color: var(--gu-paper-accent); margin: 0; }
-.gu-hopae-rolename { font-size: 28px; margin: 0; }
+/* §useSealFit — 열린 섹션 안의 글자는 모두 --gu-seal-scale(기본 1, 최소 ≈0.8235) 을 곱해 같이 줄어든다.
+   줄간격(line-height)은 비율(unitless)이라 글자가 줄어도 그대로 유지된다. */
+.gu-hopae-section-title { font-size: calc(var(--gu-fs-h2) * var(--gu-seal-scale, 1)); color: var(--gu-paper-accent); margin: 0; }
+.gu-hopae-rolename { font-size: calc(28px * var(--gu-seal-scale, 1)); margin: 0; }
 .gu-hopae-stamp { align-self: flex-start; }
-.gu-hopae-body { font-size: var(--gu-fs-body); line-height: 1.65; margin: 0; white-space: pre-line; }
+.gu-hopae-body { font-size: calc(var(--gu-fs-body) * var(--gu-seal-scale, 1)); line-height: 1.65; margin: 0; white-space: pre-line; }
 .gu-hopae-night { display: flex; flex-direction: column; gap: var(--gu-sp-2); margin: 0; padding: 0; list-style: none; }
-.gu-hopae-night li { display: flex; gap: var(--gu-sp-3); }
-.gu-hopae-night-time { font-size: 16px; color: var(--gu-paper-accent); flex-shrink: 0; min-width: 72px; }
-.gu-hopae-list { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-hopae-night li { display: flex; align-items: flex-start; gap: var(--gu-sp-2); font-size: calc(var(--gu-fs-body) * var(--gu-seal-scale, 1)); line-height: 1.5; }
+/* 시각은 줄 머리에 인라인(굵게·붉은 먹) — 예전처럼 72px 칸을 따로 잡으면 번호까지 붙은 320px 화면에서 본문 폭이 ~100px 로 좁아져
+   줄이 두세 배로 늘었다. 최소 14px(§10-2) */
+.gu-hopae-night-time { font-size: max(14px, calc(16px * var(--gu-seal-scale, 1))); font-weight: 700; color: var(--gu-paper-accent); margin-right: 0.45em; white-space: nowrap; }
+/* 모두의 패(게임 끝 비봉인 목록)의 그날 밤은 번호 없이 예전 2칸(시각 72px | 내용) 모양 그대로 */
+.gu-allsheets-body .gu-hopae-night li { gap: var(--gu-sp-3); }
+.gu-allsheets-body .gu-hopae-night-time { min-width: 72px; flex-shrink: 0; margin-right: 0; font-weight: inherit; white-space: normal; }
+.gu-hopae-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--gu-sp-2); font-size: calc(var(--gu-fs-body) * var(--gu-seal-scale, 1)); line-height: 1.5; }
+.gu-hopae-list li { display: flex; align-items: flex-start; gap: var(--gu-sp-2); }
 .gu-hopae-speech { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--gu-sp-3); }
-.gu-hopae-speech li { font-size: 22px; line-height: 1.35; transform: rotate(-1.4deg); }
+.gu-hopae-speech li { font-size: calc(22px * var(--gu-seal-scale, 1)); line-height: 1.35; transform: rotate(-1.4deg); }
+
+/* §5-8 번호 목록(①②③) — 그날 밤·거짓말·미션·말투처럼 항목이 여럿인 섹션. "몇 번째를 보는지 모르겠다"(PM 피드백)
+   대응: 쪽을 넘기지 않고 전부 한 화면에, 각 줄 앞에 원문자로 순서를 매긴다. */
+.gu-numitem-mark { flex-shrink: 0; font-weight: 700; font-family: var(--gu-font-display); color: var(--gu-paper-accent); }
+.gu-hopae-speech li .gu-numitem-mark { margin-right: var(--gu-sp-1); }
+.gu-hopae-night li .gu-numitem-mark { align-self: flex-start; }
 
 /* ============================================================================
  * §5-9 SectionChips
@@ -531,7 +549,7 @@
 }
 .gu-cluecard-place { font-size: var(--gu-fs-h2); flex: 1; }
 .gu-cluecard-id { font-size: 12px; color: var(--gu-muted); }
-.gu-cluecard-text { font-size: var(--gu-fs-body); line-height: 1.6; margin: 0; }
+.gu-cluecard-text { font-size: calc(var(--gu-fs-body) * var(--gu-seal-scale, 1)); line-height: 1.6; margin: 0; }
 .gu-cluecard-opened {
   position: relative;
   background: var(--gu-paper);
@@ -1259,6 +1277,7 @@
   border: 1.5px solid var(--gu-paper-accent); color: var(--gu-paper-accent); background: transparent;
   font-family: var(--gu-font-body); font-size: 0.78em; font-weight: 700; line-height: 1.55; white-space: nowrap; vertical-align: 0.06em;
 }
+.gu-sealed-paper .gu-rtag { font-size: max(13px, 0.78em); }
 .gu-rtag[data-state='open'] { background: var(--gu-paper-accent); color: var(--gu-paper); }
 .gu-rtag[data-state='locked'] { border-style: dashed; border-color: var(--gu-paper-muted); color: var(--gu-paper-muted); }
 
@@ -1267,11 +1286,11 @@
   background: rgba(242, 163, 59, 0.16); border-left: 4px solid var(--gu-candle); color: var(--gu-paper-ink);
 }
 .gu-memory[data-locked] { background: transparent; border: 1.5px dashed var(--gu-paper-muted); color: var(--gu-paper-muted); }
-.gu-memory-head { display: flex; align-items: center; gap: var(--gu-sp-2); margin: 0 0 var(--gu-sp-2); font-family: var(--gu-font-display); font-size: 19px; color: var(--gu-paper-accent); }
+.gu-memory-head { display: flex; align-items: center; gap: var(--gu-sp-2); margin: 0 0 var(--gu-sp-2); font-family: var(--gu-font-display); font-size: calc(19px * var(--gu-seal-scale, 1)); color: var(--gu-paper-accent); }
 .gu-memory-head .gu-rtag { margin-right: 0; font-size: 13px; }
 .gu-memory[data-locked] .gu-memory-head { margin-bottom: var(--gu-sp-1); color: var(--gu-paper-muted); }
-.gu-memory-lines { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: var(--gu-sp-2); font-size: var(--gu-fs-body); line-height: 1.6; }
-.gu-memory-locked { margin: 0; font-size: var(--gu-fs-small); line-height: 1.5; }
+.gu-memory-lines { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: var(--gu-sp-2); font-size: calc(var(--gu-fs-body) * var(--gu-seal-scale, 1)); line-height: 1.6; }
+.gu-memory-locked { margin: 0; font-size: max(14px, calc(var(--gu-fs-small) * var(--gu-seal-scale, 1))); line-height: 1.5; }
 .gu-banner--round { border-left-color: var(--gu-candle); }
 .gu-banner--round .gu-banner-text { color: var(--gu-ink); font-weight: 600; }
 
@@ -1311,7 +1330,11 @@
 .gu-terms-term { font-family: var(--gu-font-read); font-weight: 700; color: var(--gu-ink); font-size: var(--gu-fs-small); }
 .gu-terms-desc { margin: 0; color: var(--gu-body); font-size: var(--gu-fs-small); line-height: 1.55; }
 .gu-terms[data-variant='card'] { margin-top: var(--gu-sp-3); padding-top: var(--gu-sp-2); border-top: 1px dashed var(--gu-line-2); }
-.gu-terms[data-variant='card'] .gu-terms-term { color: var(--gu-blue-ink); }
+/* 카드 변형은 늘 한지(--gu-paper) 위에 그려진다(단서 카드 봉인 속·공개 카드). 다크 배경용 --gu-body(#CBC2B2)·--gu-blue-ink 는
+   한지 위 대비가 약 1.4:1·2:1 이라 설명이 거의 안 보였다 → 한지용 먹색으로(paper-ink 13.6:1 · paper-muted 6.3:1) */
+.gu-terms[data-variant='card'] { border-top-color: color-mix(in srgb, var(--gu-paper-muted) 45%, transparent); }
+.gu-terms[data-variant='card'] .gu-terms-term { color: var(--gu-paper-ink); }
+.gu-terms[data-variant='card'] .gu-terms-desc { color: var(--gu-paper-muted); }
 .gu-timetable { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2); }
 .gu-timetable-title { margin: 0; font-family: var(--gu-font-display); font-size: 16px; color: var(--gu-ink); }
 .gu-timetable-table { width: 100%; border-collapse: collapse; font-size: var(--gu-fs-small); color: var(--gu-body); }

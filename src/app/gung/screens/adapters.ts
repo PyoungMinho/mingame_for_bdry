@@ -27,15 +27,16 @@ export function sheetToContent(sheet: ResolvedSheet, seat: number): RoleCardCont
   // 역할 전용 용어(원고 1-6 「활맥 — 어의 비밀 카드 전용」)는 '비밀' 섹션 끝, 봉인 속에만 — 공용 「?」 시트에 올리면
   // 목록에 그 용어가 있는지로 역할이 드러난다(QA RISK-04 전수 점검)
   const roleTerms = sheet.terms.map((t) => `? ${t.term} — ${t.desc}`);
-  const secretBody = [...sheet.glance, '', ...sheet.secrets, ...(roleTerms.length ? ['', ...roleTerms] : [])]
-    .filter((l, i, arr) => !(l === '' && arr[i - 1] === ''))
-    .join('\n\n');
+  // 묶음 사이 빈 줄 1개만(예전엔 '' 구분자 + '\n\n' 결합으로 빈 줄 3개 — 한 화면을 70px씩 낭비)
+  // 「한눈에」 3줄은 붙여서, 비밀 항목은 문단으로, 용어는 붙여서
+  const secretBody = [sheet.glance.join('\n'), sheet.secrets.join('\n\n'), roleTerms.join('\n')].filter(Boolean).join('\n\n');
   const lies = [
     ...sheet.canLie.map((t) => `둘러대도 되는 것 — ${t}`),
     ...sheet.mustTell.map((t) => `물으면 사실대로 — ${t}`),
     ...sheet.lieTips.map((t) => `추천 변명 — ${t}`),
   ];
-  const missionText = sheet.missions.map((m) => `${m.tag ? `${m.tag} ` : ''}${m.text} (+${m.points}점${m.onlyIfEscaped ? ' · 탈출 시만' : ''})`).join('   ·   ');
+  // §5-7 쪽 나눔 폐지 — 미션도 거짓말·말투처럼 항목 배열로 두고 ①②③ 번호 목록으로 그린다(한 문단으로 이어 붙이지 않음)
+  const missionList = sheet.missions.map((m) => `${m.tag ? `${m.tag} ` : ''}${m.text} (+${m.points}점${m.onlyIfEscaped ? ' · 탈출 시만' : ''})`);
   return {
     seatLabel: `${seat}번 자리의 패`,
     roleName: sheet.name,
@@ -46,7 +47,7 @@ export function sheetToContent(sheet: ResolvedSheet, seat: number): RoleCardCont
     secret: secretBody,
     night: sheet.night.map((l) => ({ time: l.time ?? '', text: l.text })),
     lies,
-    mission: missionText,
+    mission: missionList,
     speech: sheet.speech,
     round: sheet.round,
     memories: memoriesToContent(sheet),

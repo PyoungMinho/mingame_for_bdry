@@ -51,7 +51,8 @@ export interface RoleCardContent {
   secret: string;
   night: NightBeat[];
   lies: string[];
-  mission: string;
+  /** 미션 ①②③… — 이전엔 한 문단으로 이어 붙였으나(쪽 나눔 폐지로) 거짓말·말투처럼 항목별로 보인다 */
+  mission: string[];
   speech: string[];
   /** 이 폰의 지금 조사 라운드(0 = 조사 전) — 「R2부터」 배지의 '지금 적용' 표시 */
   round?: number;
@@ -72,7 +73,7 @@ export function sectionText(content: RoleCardContent, section: SectionKey): { ti
     case 'lies':
       return { title: SECTION_LABEL.lies, list: content.lies };
     case 'mission':
-      return { title: SECTION_LABEL.mission, body: content.mission };
+      return { title: SECTION_LABEL.mission, list: content.mission };
     case 'speech':
       return { title: SECTION_LABEL.speech, list: content.speech };
   }

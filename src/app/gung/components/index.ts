@@ -12,12 +12,13 @@ export { ActionBar, type ActionBarProps } from './ActionBar';
 export { GuButton, type GuButtonProps, type GuButtonVariant } from './GuButton';
 
 // 프라이버시 · 내 패 · 단서
-export { SealedCard, type SealedCardProps, type SealedCardPages } from './SealedCard';
+export { SealedCard, type SealedCardProps } from './SealedCard';
 export { RoleCard, MemoryBlock, type RoleCardProps } from './RoleCard';
 export { SectionChips, type SectionChipsProps } from './SectionChips';
 export { ClueCard, type ClueCardProps } from './ClueCard';
 export { DisclosureToggle, type DisclosureToggleProps } from './DisclosureToggle';
 export { RoundTagText, splitRoundTags, type RoundTagTextProps, type RoundTagPart } from './RoundTagText';
+export { circledNum } from './numbering';
 
 // 장소 · 자리
 export { PlaceGrid, type PlaceGridProps } from './PlaceGrid';

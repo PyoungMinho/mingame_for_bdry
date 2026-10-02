@@ -218,20 +218,10 @@ describe('BUG-27 결정 — 용어 「?」·시각표', () => {
     await tap(btn(/조사하기/));
     expect(bodyText()).not.toContain(term); // 봉인 중
     const surface = screen.getByRole('button', { name: /단서 — 비밀 정보/ });
+    // 쪽 나눔 폐지 — 한 번 열면 전문이 다 보인다(더는 '다음 쪽'으로 찾아다니지 않는다)
     fireEvent.keyDown(surface, { key: 'Enter' });
     await flush();
-    // 마지막 쪽까지 넘기며 찾는다
-    let found = bodyText().includes(term);
-    for (let i = 0; i < 4 && !found; i++) {
-      fireEvent.keyUp(surface, { key: 'Enter' });
-      await flush();
-      const next = qbtn(/다음 쪽/);
-      if (!next) break;
-      await tap(next);
-      fireEvent.keyDown(surface, { key: 'Enter' });
-      await flush();
-      found = bodyText().includes(term);
-    }
+    const found = bodyText().includes(term);
     expect(found).toBe(true);
     fireEvent.keyUp(surface, { key: 'Enter' });
     await flush();
@@ -246,15 +236,12 @@ describe('BUG-27 결정 — 용어 「?」·시각표', () => {
     await tap(screen.getByRole('tab', { name: '비밀' }));
     expect(bodyText()).not.toContain('활맥');
     const card = screen.getByRole('button', { name: /자리의 패 — 비밀 정보/ });
-    let seen = '';
-    for (let i = 0; i < 6; i++) {
-      fireEvent.keyDown(card, { key: 'Enter' });
-      await flush();
-      seen += card.textContent ?? '';
-      fireEvent.keyUp(card, { key: 'Enter' });
-      await flush();
-      await tap(btn(/다음 쪽/));
-    }
+    // 쪽 나눔 폐지 — 비밀 섹션을 한 번 열면 역할 용어(활맥)까지 전부 같은 화면에 보인다
+    fireEvent.keyDown(card, { key: 'Enter' });
+    await flush();
+    const seen = card.textContent ?? '';
+    fireEvent.keyUp(card, { key: 'Enter' });
+    await flush();
     expect(seen).toContain('활맥');
   });
 });

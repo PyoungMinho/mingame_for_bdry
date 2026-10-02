@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, createEvent, fireEvent, render, screen, within } from '@testing-library/react';
 import { assignFromCode, getSheet, roleAtSeat, SEED_ALPHABET, seatOfRole, type PlayerCount } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
+import { circledNum } from '../components';
 import { useWakeLock } from '../lib/useWakeLock';
 import { GungApp } from './GungApp';
 
@@ -187,7 +188,7 @@ describe('SEAL — 비밀 카드 봉인', () => {
     }
   }, 60_000);
 
-  it('SEAL-09 [BUG-01] D3: 같은 판 자리 2~6(범인 포함) — 7섹션 봉인 화면 DOM 이 자리 번호만 빼고 완전히 같다(쪽 칩 포함)', async () => {
+  it('SEAL-09 [BUG-01] D3: 같은 판 자리 2~6(범인 포함) — 7섹션 봉인 화면 DOM 이 자리 번호만 빼고 완전히 같다(쪽 나눔 없음)', async () => {
     const code = findCode(6, (k) => asg(k).culpritSeat >= 2);
     const snaps: Record<number, string[]> = {};
     for (let seat = 2; seat <= 6; seat++) {
@@ -195,9 +196,6 @@ describe('SEAL — 비밀 카드 봉인', () => {
       const shots: string[] = [];
       for (const tab of SECTION_TABS) {
         await tap(screen.getByRole('tab', { name: tab }));
-        shots.push(document.body.innerHTML.replace(/\d+번/g, 'N번'));
-        // 쪽 넘기기를 눌러도(손 뗀 상태) 봉인면은 그대로
-        await tap(btn(/다음 쪽/));
         shots.push(document.body.innerHTML.replace(/\d+번/g, 'N번'));
       }
       snaps[seat] = shots;
@@ -208,13 +206,18 @@ describe('SEAL — 비밀 카드 봉인', () => {
     for (let seat = 2; seat <= 6; seat++) {
       snaps[seat].forEach((html, i) => expect(html, `seat ${seat}${seat === culprit ? '(범인)' : ''} shot ${i}`).toBe(snaps[2][i]));
     }
-    // 재현 케이스(설계서): 22225 2번(범인) '거짓말' — 봉인면에 '1/3' 같은 쪽 수가 없다
+    // 재현 케이스(설계서): 22225 2번(범인) '거짓말' — 쪽 나눔 폐지로 쪽 칩 자체가 DOM 에 없다(봉인·열림 둘 다)
+    const sh225 = getSheet(c, asg('22225'), 2, 3)!;
+    const expectedLieCount = sh225.canLie.length + sh225.mustTell.length + sh225.lieTips.length;
+    expect(expectedLieCount).toBeGreaterThan(1); // 탐침 유효성 — 예전엔 이게 여러 쪽으로 쪼개졌다
     await playerToCards('22225', 2);
     await tap(screen.getByRole('tab', { name: '거짓말' }));
-    expect(document.querySelector('.gu-sealed-pager')!.textContent).not.toMatch(/\d\/\d/);
-    // 연 동안엔(손으로 가린 채) 쪽 수가 보인다 — 범인 거짓말 3쪽
+    expect(document.querySelector('.gu-sealed-pager')).toBeNull();
+    // 연 동안엔(손으로 가린 채) 항목 전부가 ①②③… 번호 목록으로 한 화면에 — 쪽을 넘기지 않아도 끝까지 다 보인다
     await keyOpen(sealedSurface());
-    expect(document.querySelector('.gu-sealed-pager-label')!.textContent).toBe('1/3');
+    expect(document.querySelector('.gu-sealed-pager')).toBeNull();
+    const marks = Array.from(document.querySelectorAll('.gu-rolecard .gu-numitem-mark')).map((m) => m.textContent);
+    expect(marks).toEqual(Array.from({ length: expectedLieCount }, (_, i) => circledNum(i + 1)));
   }, 60_000);
 
   it('SEAL-02·03 홀드 400ms 경계(399 안 열림·401 열림) · 손 떼기 4종(up·cancel·lostcapture·leave) 즉시 봉인', async () => {
