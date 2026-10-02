@@ -1,0 +1,1325 @@
+/* ============================================================================
+ * 세자 독살 사건 (/gung) — 스코프 스타일시트
+ * globals.css / 루트 layout.tsx / tailwind.config.ts 무수정(blast radius 0) —
+ * 전 스타일은 `.gu-shell` 스코프 안에서만 유효. `src/app/gung/layout.tsx` 에서만 import.
+ * 토큰 출처: docs/design/gung-design-final.md §4-1 (그대로 사용) + §5 컴포넌트 스펙.
+ * ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Song+Myung&family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap');
+
+.gu-shell {
+  color-scheme: dark;
+
+  /* ── 먹(배경) 4단 ── */
+  --gu-bg: #0A0A0E;
+  --gu-bg-2: #13121A;
+  --gu-surface: #1C1823;
+  --gu-surface-2: #262030;
+  --gu-scrim: rgba(5, 5, 8, 0.74);
+
+  /* ── 텍스트(다크 위) ── */
+  --gu-ink: #F6F0E2;          /* 1차  — bg 17.4:1 */
+  --gu-body: #CBC2B2;         /* 본문 — bg 11.2:1, surface 9.9:1 */
+  --gu-muted: #9A907F;        /* 보조 — bg 6.3:1, surface-2 5.0:1 */
+  --gu-line: rgba(246, 240, 226, 0.10);
+  --gu-line-2: rgba(246, 240, 226, 0.20);
+  --gu-line-3: rgba(246, 240, 226, 0.34);
+
+  /* ── 한지(반전 표면) ── */
+  --gu-paper: #EFE6CE;
+  --gu-paper-2: #E4D7AF;
+  --gu-paper-ink: #241B13;    /* paper 13.6:1 */
+  --gu-paper-muted: #5E5040;  /* paper 6.3:1 */
+  --gu-paper-accent: #7A2A22; /* 한지 위 시각·라벨 — paper 7.7:1 */
+
+  /* ── 주 CTA(금) ── */
+  --gu-cta: #E3B655;
+  --gu-cta-press: #C79A3E;
+  --gu-cta-ink: #1A140E;      /* cta 9.6:1, press 7.1:1 */
+  --gu-gold-ink: #E3B655;     /* 다크 위 금색 텍스트 — bg 10.4:1 */
+
+  /* ── 단청 — 채움(fill) 전용: 위에는 --gu-ink 텍스트 ── */
+  --gu-red-fill: #9E2E27;     /* 인주·위험·범인  — ink 6.4:1 */
+  --gu-blue-fill: #2E5C82;    /* 공개·공용 정보  — ink 6.2:1 */
+  --gu-green-fill: #2F5A3E;   /* 완료·확인·적중  — ink 7.0:1 */
+  --gu-purple-fill: #5B4A86;  /* 비밀·개인 영역  — ink 6.7:1 */
+
+  /* ── 단청 — 다크 위 텍스트/아이콘 전용 ── */
+  --gu-red-ink: #EF7B6B;      /* bg 7.3:1, surface 6.4:1 */
+  --gu-blue-ink: #86B4DA;     /* bg 9.0:1 */
+  --gu-green-ink: #7FC59A;    /* bg 9.7:1 */
+  --gu-purple-ink: #B9A6E8;   /* surface 8.0:1 */
+
+  /* ── 광원·브랜드 ── */
+  --gu-candle: #F2A33B;       /* 글로우/불씨 전용(텍스트 금지) */
+  --gu-wood: #4A3426;         /* 두루마리 축·호패 나무결 */
+  --gu-kakao: #FEE500;
+  --gu-kakao-ink: #191919;    /* 13.8:1 */
+
+  /* ── 세맨틱 별칭 ── */
+  --gu-accent: var(--gu-cta);
+  --gu-danger: var(--gu-red-fill);
+  --gu-info: var(--gu-blue-fill);
+  --gu-success: var(--gu-green-fill);
+  --gu-secret: var(--gu-purple-fill);
+
+  /* ── 서체 ── */
+  --gu-font-display: 'Song Myung', 'Gowun Batang', serif;
+  --gu-font-read: 'Gowun Batang', 'Pretendard Variable', serif;
+  --gu-font-hand: 'Nanum Pen Script', 'Pretendard Variable', cursive;
+  --gu-font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --gu-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ── 타입 스케일 ── */
+  --gu-fs-display-xl: clamp(40px, 12vw, 52px);
+  --gu-fs-display: clamp(26px, 7vw, 32px);
+  --gu-fs-cue: 19px;
+  --gu-fs-stage: 20px;
+  --gu-fs-h2: 20px;
+  --gu-fs-h3: 17px;
+  --gu-fs-body: 17px;
+  --gu-fs-small: 15px;
+  --gu-fs-caption: 14px;
+  --gu-fs-micro: 12px;
+  --gu-fs-timer: clamp(72px, 26vw, 112px);
+  --gu-fs-timer-compact: 64px;
+  --gu-fs-code: 44px;
+  --gu-fs-countdown: 140px;
+  --gu-stage-scale: 1;
+
+  /* ── 스페이싱 ── */
+  --gu-sp-1: 4px;  --gu-sp-2: 8px;  --gu-sp-3: 12px; --gu-sp-4: 16px;
+  --gu-sp-5: 20px; --gu-sp-6: 24px; --gu-sp-7: 32px; --gu-sp-8: 48px;
+  --gu-gutter: 16px;
+  --gu-maxw: 480px;
+
+  /* ── 모양 ── */
+  --gu-radius-sm: 8px; --gu-radius-md: 12px; --gu-radius-lg: 16px;
+  --gu-radius-xl: 22px; --gu-radius-pill: 999px;
+  --gu-radius-hopae: 22px 22px 8px 8px;
+
+  /* ── 그림자/광원 ── */
+  --gu-shadow-card: 0 10px 28px -14px rgba(0, 0, 0, 0.65);
+  --gu-shadow-pop: 0 20px 48px -20px rgba(0, 0, 0, 0.7);
+  --gu-shadow-glow: 0 0 22px rgba(242, 163, 59, 0.35);
+  --gu-shadow-seal: 0 2px 5px rgba(158, 46, 39, 0.5);
+
+  /* ── 터치(음주 환경) ── */
+  --gu-tap-primary: 64px;
+  --gu-tap-secondary: 52px;
+  --gu-tap-icon: 48px;
+  --gu-tap-gap: 16px;
+  --gu-tap-gap-opposed: 24px;
+
+  /* ── 모션 ── */
+  --gu-ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --gu-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --gu-dur-fast: 120ms;
+  --gu-dur-base: 220ms;
+  --gu-dur-slow: 420ms;
+  --gu-dur-reveal: 600ms;
+  --gu-hold-ms: 400ms;
+
+  /* ── z-index ── */
+  --gu-z-content: 1; --gu-z-header: 20; --gu-z-bar: 30;
+  --gu-z-toast: 40; --gu-z-sheet: 50; --gu-z-overlay: 60;
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--gu-bg);
+  color: var(--gu-ink);
+  font-family: var(--gu-font-body);
+  font-size: var(--gu-fs-body);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+/* 루트 body 배경이 밝음 기준이라 iOS 오버스크롤 시 흰 번쩍임 → 고정 먹색 배경판으로 차단 */
+.gu-shell::before {
+  content: ''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(242, 163, 59, 0.10), transparent 60%),
+    var(--gu-bg);
+  pointer-events: none;
+}
+:where(.gu-shell) :where(button) { font: inherit; color: inherit; touch-action: manipulation; background: none; border: none; cursor: pointer; }
+.gu-shell :focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
+.gu-shell ::selection { background: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-shell .gu-display { font-family: var(--gu-font-display); font-weight: 400; font-synthesis: none; letter-spacing: 0.01em; }
+.gu-shell .gu-num { font-family: var(--gu-font-mono); font-variant-numeric: tabular-nums; }
+.gu-shell .gu-font-hand { font-family: var(--gu-font-hand); }
+
+.gu-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gu-shell *, .gu-shell *::before, .gu-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+ * §5-1 GuFrame — 화면 공통 레이아웃
+ * ========================================================================== */
+.gu-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.gu-frame-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.gu-frame-content {
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+  padding: var(--gu-sp-5) var(--gu-gutter) var(--gu-sp-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gu-sp-5);
+}
+.gu-frame[data-surface='stage'] .gu-frame-content { font-size: var(--gu-fs-stage); }
+.gu-frame[data-surface='private'] .gu-frame-content { font-size: var(--gu-fs-body); }
+
+/* ============================================================================
+ * §5-2 GuHeader / §5-3 PhaseRail
+ * ========================================================================== */
+.gu-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--gu-z-header);
+  background: color-mix(in srgb, var(--gu-bg-2) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--gu-line);
+  padding-top: env(safe-area-inset-top);
+}
+.gu-header-bar {
+  height: 56px;
+  display: grid;
+  grid-template-columns: 56px 1fr 88px;
+  align-items: center;
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+  padding: 0 var(--gu-sp-2);
+}
+.gu-header-left { display: flex; align-items: center; justify-content: flex-start; }
+.gu-header-right { display: flex; align-items: center; justify-content: flex-end; gap: var(--gu-sp-2); }
+.gu-header-title {
+  text-align: center;
+  font-size: var(--gu-fs-h2);
+  color: var(--gu-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gu-header-iconbtn {
+  width: var(--gu-tap-icon);
+  height: var(--gu-tap-icon);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gu-radius-pill);
+  color: var(--gu-body);
+}
+.gu-header-iconbtn:active { background: var(--gu-surface); }
+.gu-header-wake { width: 20px; height: 20px; color: var(--gu-muted); }
+.gu-header-wake[data-on] { color: var(--gu-candle); filter: drop-shadow(0 0 6px rgba(242, 163, 59, 0.6)); }
+
+.gu-rail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gu-sp-3);
+  width: 100%;
+  height: 48px;
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+}
+.gu-header-rail { padding-bottom: var(--gu-sp-2); }
+.gu-rail-pillar { color: var(--gu-line-3); fill: var(--gu-line-3); flex-shrink: 0; }
+.gu-rail-pillar rect { fill: currentColor; }
+.gu-rail-pillar[data-state='past'] { color: var(--gu-cta); }
+.gu-rail-pillar[data-state='current'] {
+  color: var(--gu-cta);
+  animation: gu-rail-glow 2.4s ease-in-out infinite alternate;
+}
+.gu-rail-pillar[data-state='future'] { color: transparent; stroke: var(--gu-line-3); stroke-width: 1; fill: transparent; }
+.gu-rail-pillar[data-state='future'] rect { fill: none; stroke: var(--gu-line-3); }
+@keyframes gu-rail-glow { from { opacity: 0.6; } to { opacity: 1; } }
+
+/* ============================================================================
+ * §5-4 BottomTabs
+ * ========================================================================== */
+.gu-tabbar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--gu-z-bar);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 60px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--gu-bg-2);
+  border-top: 1px solid var(--gu-line);
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+  width: 100%;
+}
+.gu-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--gu-muted);
+  position: relative;
+}
+.gu-tab[data-active] { color: var(--gu-gold-ink); }
+.gu-tab[data-active]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  background: var(--gu-cta);
+}
+.gu-tab-iconwrap { position: relative; }
+.gu-tab-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--gu-radius-pill);
+  background: var(--gu-red-fill);
+  color: var(--gu-ink);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+.gu-tab-label { font-size: 14px; } /* QA BUG-26: 디자인 §10-2 본문 최소 14px */
+
+/* ============================================================================
+ * §5-5 ActionBar
+ * ========================================================================== */
+.gu-actionbar-wrap {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--gu-z-bar);
+}
+.gu-actionbar-toast { max-width: var(--gu-maxw); margin: 0 auto; padding: 0 var(--gu-gutter); }
+.gu-actionbar {
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+  padding: var(--gu-sp-3) var(--gu-gutter) calc(var(--gu-sp-3) + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--gu-bg) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gu-sp-2);
+}
+.gu-actionbar-caption {
+  text-align: center;
+  font-size: var(--gu-fs-caption);
+  color: var(--gu-muted);
+  margin: 0;
+}
+.gu-actionbar-secondary { display: flex; justify-content: center; }
+
+/* ============================================================================
+ * §5-6 GuButton
+ * ========================================================================== */
+.gu-btn {
+  width: 100%;
+  height: var(--gu-btn-h, 52px);
+  border-radius: var(--gu-radius-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gu-sp-2);
+  font-weight: 700;
+  font-size: 19px;
+  transition: transform var(--gu-dur-fast) var(--gu-ease), background-color var(--gu-dur-fast) var(--gu-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.gu-btn:not(.gu-btn--full) { width: auto; padding: 0 var(--gu-sp-5); flex: none; }
+.gu-btn:active:not(:disabled) { transform: scale(0.98); }
+.gu-btn:disabled { cursor: not-allowed; }
+
+.gu-btn--primary { background: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-btn--primary:active:not(:disabled) { background: var(--gu-cta-press); }
+.gu-btn--secondary { background: transparent; color: var(--gu-ink); border: 1.5px solid var(--gu-line-3); font-size: 17px; font-weight: 600; }
+.gu-btn--danger { background: transparent; color: var(--gu-red-ink); border: 1.5px solid var(--gu-red-fill); font-size: 17px; font-weight: 600; }
+.gu-btn--ghost { background: transparent; color: var(--gu-muted); font-size: 15px; font-weight: 600; height: var(--gu-btn-h, 48px); }
+.gu-btn--kakao { background: var(--gu-kakao); color: var(--gu-kakao-ink); }
+
+.gu-btn:disabled {
+  background: var(--gu-surface-2);
+  color: var(--gu-muted);
+  border-color: transparent;
+}
+.gu-btn-label { line-height: 1.3; }
+.gu-btn-icon { display: inline-flex; align-items: center; }
+
+/* ============================================================================
+ * §5-7 SealedCard — 핵심 프라이버시 컴포넌트
+ * ========================================================================== */
+.gu-sealed-surface {
+  position: relative;
+  border-radius: var(--gu-radius-lg);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gu-sealed-closed {
+  width: 100%;
+  background: var(--gu-surface);
+  border: 1px solid var(--gu-line);
+  border-radius: var(--gu-radius-lg);
+  padding: var(--gu-sp-7) var(--gu-sp-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gu-sp-3);
+  text-align: center;
+}
+.gu-sealed-mark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--gu-red-fill);
+  color: var(--gu-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gu-font-display);
+  font-size: 28px;
+  box-shadow: var(--gu-shadow-seal);
+  position: relative;
+}
+.gu-sealed-mark::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(var(--gu-cta) calc(var(--gu-hold-progress, 0) * 360deg), transparent 0deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+}
+.gu-sealed-hint { display: flex; align-items: center; gap: var(--gu-sp-2); font-size: var(--gu-fs-h3); color: var(--gu-ink); margin: 0; }
+.gu-sealed-sub { font-size: var(--gu-fs-caption); color: var(--gu-muted); margin: 0; }
+
+.gu-sealed-open {
+  width: 100%;
+  position: relative;
+  animation: gu-seal-open var(--gu-dur-fast) var(--gu-ease);
+}
+@keyframes gu-seal-open { from { opacity: 0; } to { opacity: 1; } }
+.gu-sealed-watermark {
+  position: absolute;
+  top: var(--gu-sp-2);
+  right: var(--gu-sp-3);
+  font-size: var(--gu-fs-micro);
+  color: color-mix(in srgb, var(--gu-paper-muted) 60%, transparent);
+}
+.gu-sealed-paper {
+  background: var(--gu-paper);
+  color: var(--gu-paper-ink);
+  border-radius: var(--gu-radius-lg);
+  padding: var(--gu-sp-5);
+}
+.gu-sealed-release { text-align: center; font-size: var(--gu-fs-caption); color: var(--gu-muted); margin: var(--gu-sp-2) 0 0; }
+.gu-sealed-tapbar { display: block; height: 3px; background: var(--gu-surface-2); border-radius: var(--gu-radius-pill); overflow: hidden; margin-top: var(--gu-sp-1); }
+.gu-sealed-tapbar-fill { display: block; height: 100%; background: var(--gu-cta); transition: width 1s linear; }
+
+.gu-sealed-pager { display: flex; justify-content: center; margin-top: var(--gu-sp-2); }
+.gu-sealed-pager-btn, .gu-sealed-pager-label {
+  font-family: var(--gu-font-mono);
+  font-size: var(--gu-fs-caption);
+  color: var(--gu-muted);
+  padding: var(--gu-sp-1) var(--gu-sp-3);
+  border-radius: var(--gu-radius-pill);
+  border: 1px solid var(--gu-line-2);
+}
+/* QA BUG-26: 손 뗀 뒤 탭하는 쪽 칩 — 터치 타깃 48px 하한 */
+.gu-sealed-pager-btn { min-height: 48px; min-width: 96px; background: transparent; }
+
+/* ============================================================================
+ * §5-8 RoleCard / 호패
+ * ========================================================================== */
+.gu-rolecard { display: flex; flex-direction: column; gap: var(--gu-sp-4); height: 100%; }
+.gu-hopae {
+  position: relative;
+  flex: 1;
+  background: linear-gradient(160deg, var(--gu-surface), var(--gu-surface-2));
+  border-radius: var(--gu-radius-hopae);
+  border: 1px solid var(--gu-line-2);
+  padding: var(--gu-sp-6) var(--gu-sp-4) var(--gu-sp-4);
+  box-shadow: var(--gu-shadow-card);
+  display: flex;
+}
+.gu-hopae-hole {
+  position: absolute;
+  top: var(--gu-sp-3);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gu-bg);
+  border: 1px solid var(--gu-line-3);
+}
+.gu-hopae .gu-sealed-surface { flex: 1; width: 100%; }
+.gu-hopae-content { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-hopae-section-title { font-size: var(--gu-fs-h2); color: var(--gu-paper-accent); margin: 0; }
+.gu-hopae-rolename { font-size: 28px; margin: 0; }
+.gu-hopae-stamp { align-self: flex-start; }
+.gu-hopae-body { font-size: var(--gu-fs-body); line-height: 1.65; margin: 0; white-space: pre-line; }
+.gu-hopae-night { display: flex; flex-direction: column; gap: var(--gu-sp-2); margin: 0; padding: 0; list-style: none; }
+.gu-hopae-night li { display: flex; gap: var(--gu-sp-3); }
+.gu-hopae-night-time { font-size: 16px; color: var(--gu-paper-accent); flex-shrink: 0; min-width: 72px; }
+.gu-hopae-list { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-hopae-speech { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-hopae-speech li { font-size: 22px; line-height: 1.35; transform: rotate(-1.4deg); }
+
+/* ============================================================================
+ * §5-9 SectionChips
+ * ========================================================================== */
+.gu-chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gu-sp-2);
+}
+.gu-chip {
+  height: 48px;
+  border-radius: var(--gu-radius-md);
+  background: var(--gu-surface);
+  border: 1.5px solid transparent;
+  color: var(--gu-body);
+  font-size: var(--gu-fs-small);
+  font-weight: 600;
+}
+.gu-chip[data-active] { border-color: var(--gu-cta); color: var(--gu-gold-ink); }
+.gu-chip:nth-child(5) { grid-column: 1 / 2; }
+
+/* ============================================================================
+ * §5-10 ClueCard / §5-11 DisclosureToggle
+ * ========================================================================== */
+.gu-cluecard { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-cluecard-head { display: flex; align-items: center; gap: var(--gu-sp-2); }
+.gu-cluecard-round {
+  background: var(--gu-cta);
+  color: var(--gu-cta-ink);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px var(--gu-sp-2);
+  border-radius: var(--gu-radius-pill);
+}
+.gu-cluecard-place { font-size: var(--gu-fs-h2); flex: 1; }
+.gu-cluecard-id { font-size: 12px; color: var(--gu-muted); }
+.gu-cluecard-text { font-size: var(--gu-fs-body); line-height: 1.6; margin: 0; }
+.gu-cluecard-opened {
+  position: relative;
+  background: var(--gu-paper);
+  color: var(--gu-paper-ink);
+  border-radius: var(--gu-radius-lg);
+  padding: var(--gu-sp-5);
+}
+.gu-cluecard-opened .gu-cluecard-text { font-size: 20px; }
+.gu-cluecard-stamp { position: absolute; top: var(--gu-sp-3); right: var(--gu-sp-3); }
+.gu-cluecard-readout { color: var(--gu-blue-ink); font-size: var(--gu-fs-small); margin: var(--gu-sp-2) 0 0; }
+.gu-cluecard-disclose { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-cluecard-disclose-q { font-size: var(--gu-fs-body); margin: 0; }
+.gu-cluecard-disclose-hint { font-size: var(--gu-fs-micro); color: var(--gu-muted); margin: 0; }
+
+.gu-disclosure { display: flex; gap: var(--gu-tap-gap-opposed); }
+.gu-disclosure-seg {
+  flex: 1;
+  height: 52px;
+  border-radius: var(--gu-radius-md);
+  border: 1.5px solid var(--gu-line-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gu-sp-2);
+  font-weight: 600;
+  color: var(--gu-body);
+}
+.gu-disclosure-seg[data-tone='blue'][data-active] { background: var(--gu-blue-fill); color: var(--gu-ink); border-color: transparent; }
+.gu-disclosure-seg[data-tone='purple'][data-active] { background: var(--gu-purple-fill); color: var(--gu-ink); border-color: transparent; }
+.gu-disclosure-seg:disabled { opacity: 0.4; }
+
+/* ============================================================================
+ * §5-12 PlaceGrid
+ * ========================================================================== */
+.gu-placegrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gu-sp-3); }
+.gu-place-tile {
+  position: relative;
+  min-height: 100px;
+  background: var(--gu-surface);
+  border: 2px solid transparent;
+  border-radius: var(--gu-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gu-sp-1);
+  padding: var(--gu-sp-3);
+  text-align: center;
+}
+.gu-place-tile[data-selected] { border-color: var(--gu-cta); box-shadow: var(--gu-shadow-glow); }
+.gu-place-tile[data-dim] { opacity: 0.4; }
+.gu-place-name { font-size: 20px; }
+.gu-place-sub { font-size: var(--gu-fs-caption); color: var(--gu-muted); }
+.gu-place-check { position: absolute; top: var(--gu-sp-2); right: var(--gu-sp-2); color: var(--gu-cta); }
+
+/* ============================================================================
+ * §5-13 SeatRing
+ * ========================================================================== */
+.gu-seatring {
+  position: relative;
+  width: min(76vw, 280px);
+  height: min(76vw, 280px);
+  margin: 0 auto;
+}
+.gu-seat-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1.5px solid var(--gu-line-3);
+  background: var(--gu-surface);
+  color: var(--gu-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: transform var(--gu-dur-fast) var(--gu-ease);
+}
+.gu-seat-node[data-state='selected'] { background: var(--gu-cta); color: var(--gu-cta-ink); border-color: transparent; transform: translate(-50%, -50%) scale(1.1); }
+.gu-seat-node[data-state='checked'] { background: var(--gu-green-fill); color: var(--gu-ink); border-color: transparent; }
+.gu-seat-node[data-state='current'] { border-color: var(--gu-cta); box-shadow: var(--gu-shadow-glow); animation: gu-rail-glow 2.4s ease-in-out infinite alternate; }
+.gu-seat-node[data-state='done'] { color: var(--gu-muted); }
+.gu-seat-node[data-state='disabled'] { border-style: dashed; opacity: 0.4; }
+.gu-seat-node[data-state='absent'] { opacity: 0.5; }
+.gu-seat-num { font-size: 18px; }
+.gu-seat-icon { position: absolute; top: -4px; right: -4px; }
+.gu-seat-tag {
+  position: absolute;
+  bottom: -18px;
+  font-size: 11px;
+  color: var(--gu-muted);
+  white-space: nowrap;
+}
+.gu-seat-label { position: absolute; bottom: -18px; font-size: 12px; color: var(--gu-body); white-space: nowrap; }
+
+/* ============================================================================
+ * §5-14 SeatGrid
+ * ========================================================================== */
+.gu-seatgrid { display: grid; gap: var(--gu-sp-3); }
+.gu-seatgrid[data-cols='2'] { grid-template-columns: 1fr 1fr; }
+.gu-seatgrid[data-cols='3'] { grid-template-columns: repeat(3, 1fr); }
+.gu-seatgrid-tile {
+  min-width: 104px;
+  min-height: 96px;
+  background: var(--gu-surface);
+  border: 2px solid transparent;
+  border-radius: var(--gu-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gu-sp-1);
+}
+.gu-seatgrid-tile[data-selected] { background: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-seatgrid-num { font-size: 28px; }
+.gu-seatgrid-role { font-size: 18px; }
+
+/* ============================================================================
+ * §5-15 IncenseTimer
+ * ========================================================================== */
+.gu-timer { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-3); }
+.gu-timer-num { font-size: var(--gu-fs-timer-compact); color: var(--gu-ink); margin: 0; }
+.gu-timer[data-size='stage'] .gu-timer-num { font-size: var(--gu-fs-timer); }
+.gu-timer[data-low] .gu-timer-num { color: var(--gu-red-ink); }
+.gu-timer[data-critical] .gu-timer-num { animation: gu-timer-pulse 1s steps(2, jump-none) infinite; }
+@keyframes gu-timer-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.gu-timer-stick { position: relative; width: 100%; max-width: 320px; height: 8px; }
+.gu-timer-stick-track { position: absolute; inset: 0; background: var(--gu-surface-2); border-radius: var(--gu-radius-pill); }
+.gu-timer-stick-fill {
+  position: absolute; inset: 0;
+  background: #8B6B4A;
+  border-radius: var(--gu-radius-pill);
+  transform-origin: left center;
+  transition: transform 1s linear;
+}
+.gu-timer[data-low] .gu-timer-stick-fill { background: var(--gu-red-fill); }
+.gu-timer-ember {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gu-candle);
+  box-shadow: 0 0 8px var(--gu-candle);
+  transform: translate(-50%, -50%);
+}
+.gu-timer-controls { display: flex; gap: var(--gu-tap-gap); width: 100%; }
+
+/* ============================================================================
+ * §5-16 CountdownOverlay
+ * ========================================================================== */
+.gu-countdown {
+  position: fixed;
+  inset: 0;
+  z-index: var(--gu-z-overlay);
+  background: var(--gu-scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.gu-countdown-word {
+  font-size: var(--gu-fs-countdown);
+  color: var(--gu-ink);
+  animation: gu-countdown-pop 900ms var(--gu-ease);
+}
+.gu-countdown-word[data-final] { color: var(--gu-red-ink); }
+@keyframes gu-countdown-pop {
+  from { opacity: 0; transform: scale(1.3); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================================================
+ * §5-17 VoteStepper / §5-18 TallyBars
+ * ========================================================================== */
+.gu-votestepper { display: flex; flex-direction: column; gap: var(--gu-sp-4); }
+.gu-votestepper-progress { font-size: var(--gu-fs-caption); color: var(--gu-muted); text-align: center; }
+.gu-votestepper-q { font-size: var(--gu-fs-display); text-align: center; margin: 0; }
+.gu-votestepper-back { height: 52px; border: 1.5px solid var(--gu-line-3); border-radius: var(--gu-radius-lg); color: var(--gu-ink); }
+.gu-votestepper-back:disabled { opacity: 0.4; }
+.gu-votestepper-hint { text-align: center; font-size: var(--gu-fs-micro); color: var(--gu-muted); }
+
+.gu-tally { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-tally-row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: var(--gu-sp-3); height: 48px; }
+.gu-tally-label { font-size: var(--gu-fs-small); white-space: nowrap; }
+.gu-tally-bar-track { height: 10px; border-radius: var(--gu-radius-pill); background: var(--gu-surface-2); overflow: hidden; }
+.gu-tally-bar-fill { display: block; height: 100%; background: var(--gu-cta); border-radius: var(--gu-radius-pill); }
+.gu-tally-row[data-top] .gu-tally-bar-fill { background: var(--gu-gold-ink); }
+.gu-tally-count { font-size: 18px; min-width: 24px; text-align: right; }
+.gu-tally-tied { font-size: 12px; color: var(--gu-red-ink); border: 1px solid var(--gu-red-fill); border-radius: var(--gu-radius-pill); padding: 1px 6px; }
+
+/* ============================================================================
+ * §5-19 RevealScroll
+ * ========================================================================== */
+.gu-scroll { display: flex; flex-direction: column; }
+.gu-scroll-axle { height: 16px; border-radius: 8px; background: var(--gu-wood); position: relative; }
+.gu-scroll-axle::before, .gu-scroll-axle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gu-wood);
+  transform: translateY(-50%);
+}
+.gu-scroll-axle::before { left: -4px; }
+.gu-scroll-axle::after { right: -4px; }
+.gu-scroll-paper {
+  background: var(--gu-paper);
+  color: var(--gu-paper-ink);
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: var(--gu-sp-5);
+  width: 100%;
+}
+.gu-scroll-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--gu-sp-4); }
+.gu-scroll-beat { display: flex; flex-direction: column; gap: var(--gu-sp-1); }
+.gu-scroll-beat[data-new] { animation: gu-beat-in var(--gu-dur-base) var(--gu-ease); }
+@keyframes gu-beat-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.gu-scroll-time { font-size: 18px; color: var(--gu-paper-accent); }
+.gu-scroll-text { font-size: 19px; line-height: 1.75; margin: 0; font-family: var(--gu-font-read); }
+
+/* ============================================================================
+ * §5-20 SealStamp
+ * ========================================================================== */
+.gu-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 4px double var(--gu-red-fill);
+  color: var(--gu-red-fill);
+  box-shadow: var(--gu-shadow-seal);
+}
+.gu-stamp[data-broken] {
+  border-color: color-mix(in srgb, var(--gu-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gu-ink) 60%, transparent);
+  border-style: dashed;
+}
+.gu-stamp-text { line-height: 1; }
+
+/* ============================================================================
+ * §5-22 ScoreRow
+ * ========================================================================== */
+.gu-scorerow { padding: var(--gu-sp-3) 0; border-bottom: 1px solid var(--gu-line); display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-scorerow-top { display: flex; align-items: center; gap: var(--gu-sp-2); }
+.gu-scorerow-rank { min-width: 20px; font-size: 20px; color: var(--gu-muted); }
+.gu-scorerow-who { flex: 1; display: flex; align-items: center; gap: var(--gu-sp-1); font-weight: 600; }
+.gu-scorerow-culprit-chip { font-size: 12px; color: var(--gu-red-ink); border: 1px solid var(--gu-red-fill); border-radius: var(--gu-radius-pill); padding: 1px 6px; margin-left: var(--gu-sp-1); }
+.gu-scorerow-score { font-size: 28px; }
+.gu-scorerow-bottom { display: flex; align-items: center; gap: var(--gu-sp-3); flex-wrap: wrap; }
+.gu-scorerow-vote { font-size: var(--gu-fs-small); color: var(--gu-muted); }
+.gu-scorerow-vote[data-correct] { color: var(--gu-green-ink); }
+.gu-scorerow-outcome { font-size: var(--gu-fs-small); font-weight: 700; }
+.gu-scorerow-outcome[data-outcome='caught'] { color: var(--gu-green-ink); }
+.gu-scorerow-outcome[data-outcome='escaped'] { color: var(--gu-muted); }
+.gu-scorerow-mission { display: flex; align-items: center; gap: var(--gu-sp-2); font-size: var(--gu-fs-small); color: var(--gu-muted); margin-left: auto; }
+.gu-scorerow-mission-seg { min-height: 48px; min-width: 56px; /* QA BUG-26 */ padding: 0 var(--gu-sp-3); border: 1.5px solid var(--gu-line-2); border-radius: var(--gu-radius-md); color: var(--gu-body); }
+.gu-scorerow-mission-seg[data-active] { background: var(--gu-green-fill); color: var(--gu-ink); border-color: transparent; }
+
+/* ============================================================================
+ * §5-23 RoomCode / §5-24 CodeInput
+ * ========================================================================== */
+.gu-roomcode { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-1); width: 100%; }
+.gu-roomcode-code { font-size: 44px; letter-spacing: 0.12em; }
+.gu-roomcode[data-compact] .gu-roomcode-code { font-size: 22px; }
+.gu-roomcode-meta { font-size: var(--gu-fs-caption); color: var(--gu-muted); }
+
+.gu-codeinput-row { display: flex; align-items: center; justify-content: center; gap: var(--gu-sp-2); }
+.gu-codeinput-cell {
+  width: 56px;
+  height: 64px;
+  text-align: center;
+  font-family: var(--gu-font-mono);
+  font-size: 32px;
+  background: var(--gu-surface);
+  border: 1.5px solid var(--gu-line-2);
+  border-radius: var(--gu-radius-md);
+  color: var(--gu-ink);
+}
+.gu-codeinput-cell:nth-child(4) { margin-right: var(--gu-sp-3); }
+.gu-codeinput[data-invalid] .gu-codeinput-cell { border-color: var(--gu-red-fill); }
+.gu-codeinput-error { color: var(--gu-red-ink); font-size: var(--gu-fs-small); text-align: center; margin-top: var(--gu-sp-2); }
+
+/* ============================================================================
+ * §5-25 BottomSheet
+ * ========================================================================== */
+.gu-sheet { position: fixed; inset: 0; z-index: var(--gu-z-sheet); display: flex; align-items: flex-end; justify-content: center; }
+.gu-sheet-scrim { position: absolute; inset: 0; background: var(--gu-scrim); border: none; }
+.gu-sheet-body {
+  position: relative;
+  width: 100%;
+  max-width: var(--gu-maxw);
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--gu-bg-2);
+  border-radius: var(--gu-radius-xl) var(--gu-radius-xl) 0 0;
+  padding: var(--gu-sp-2) var(--gu-gutter) calc(var(--gu-sp-6) + env(safe-area-inset-bottom));
+  animation: gu-sheet-up 280ms var(--gu-ease);
+}
+@keyframes gu-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.gu-sheet-handle { display: block; width: 36px; height: 4px; border-radius: var(--gu-radius-pill); background: var(--gu-line-3); margin: var(--gu-sp-2) auto; }
+.gu-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--gu-sp-3); }
+.gu-sheet-head h2 { font-size: var(--gu-fs-display); margin: 0; }
+.gu-sheet-content { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-sheet-actions { display: flex; gap: var(--gu-tap-gap-opposed); margin-top: var(--gu-sp-5); }
+.gu-sheet-actions > * { flex: 1; }
+
+/* ============================================================================
+ * §5-26 Toast / §5-27 Banner / §5-28 HostCue
+ * ========================================================================== */
+.gu-toast {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gu-sp-3);
+  padding: 0 var(--gu-sp-4);
+  margin-bottom: var(--gu-sp-2);
+  background: var(--gu-surface-2);
+  border: 1px solid var(--gu-line-2);
+  border-radius: var(--gu-radius-lg);
+}
+.gu-toast-text { font-size: var(--gu-fs-small); color: var(--gu-body); }
+.gu-toast-action { color: var(--gu-gold-ink); font-weight: 700; height: 48px; padding: 0 var(--gu-sp-3); }
+
+.gu-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gu-sp-3);
+  padding: var(--gu-sp-3) var(--gu-sp-4);
+  background: var(--gu-surface);
+  border-left: 4px solid var(--gu-blue-fill);
+  border-radius: var(--gu-radius-md);
+}
+.gu-banner[data-tone='warn'] { border-left-color: var(--gu-red-fill); }
+.gu-banner-icon { flex-shrink: 0; color: var(--gu-blue-ink); }
+.gu-banner[data-tone='warn'] .gu-banner-icon { color: var(--gu-red-ink); }
+.gu-banner-body { flex: 1; }
+.gu-banner-text { font-size: var(--gu-fs-small); color: var(--gu-body); margin: 0; }
+.gu-banner-action { margin-top: var(--gu-sp-2); }
+.gu-banner-close { width: 48px; height: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--gu-muted); }
+
+.gu-hostcue {
+  font-size: var(--gu-fs-cue);
+  color: var(--gu-gold-ink);
+  line-height: 1.5;
+  padding-left: var(--gu-sp-3);
+  border-left: 2px solid var(--gu-cta);
+  margin: 0;
+}
+
+/* ============================================================================
+ * §5-29 ShareActions / §5-30 ResultImageModal
+ * ========================================================================== */
+.gu-share { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-share-row { display: flex; gap: var(--gu-tap-gap); }
+.gu-share-row > * { flex: 1; }
+
+.gu-resultmodal { position: fixed; inset: 0; z-index: var(--gu-z-overlay); display: flex; align-items: center; justify-content: center; }
+.gu-resultmodal-body {
+  position: relative;
+  width: min(92vw, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gu-sp-4);
+  padding: var(--gu-sp-5);
+  background: var(--gu-bg-2);
+  border-radius: var(--gu-radius-xl);
+}
+.gu-resultmodal-img { width: 100%; border-radius: var(--gu-radius-md); }
+.gu-resultmodal-hint { text-align: center; font-size: var(--gu-fs-small); color: var(--gu-muted); margin: 0; }
+.gu-resultmodal-actions { display: flex; gap: var(--gu-tap-gap-opposed); }
+.gu-resultmodal-actions > * { flex: 1; }
+
+/* ============================================================================
+ * 아이콘 기본값
+ * ========================================================================== */
+.gu-icon { flex-shrink: 0; }
+
+/* ============================================================================
+ * 375px 우선 · 최소 320px 지원(§12-7)
+ * ========================================================================== */
+@media (max-width: 360px) {
+  .gu-chips { grid-template-columns: repeat(4, 1fr); gap: var(--gu-sp-1); }
+  .gu-codeinput-cell { width: 48px; height: 56px; font-size: 26px; }
+}
+
+/* ============================================================================
+ * 페이지개발자 추가 — 화면 조립(screens/) 전용 유틸리티 + 레이아웃
+ * 컴포넌트(§5)는 전부 위에서 스타일을 받으니, 여기는 화면이 직접 쓰는 범용 타이포·레이아웃 클래스와
+ * 셋업·오버레이·개별 화면의 구조 클래스만 담는다. 토큰은 §4-1 변수를 그대로 쓴다.
+ * ========================================================================== */
+
+/* ── 범용 타이포 유틸(여러 화면이 공유) ── */
+.gu-body { font-size: var(--gu-fs-body); line-height: 1.6; color: var(--gu-body); margin: 0; }
+.gu-stagebody { font-size: var(--gu-fs-stage); line-height: 1.6; color: var(--gu-body); margin: 0; }
+.gu-briefing-p { font-family: var(--gu-font-read); line-height: 1.75; max-width: 34em; }
+.gu-micro { font-size: var(--gu-fs-micro); color: var(--gu-muted); margin: 0; }
+.gu-muted { font-size: var(--gu-fs-small); color: var(--gu-muted); margin: 0; }
+.gu-h2 { font-size: var(--gu-fs-h2); font-weight: 700; margin: 0; }
+.gu-h3 { font-size: var(--gu-fs-h3); font-weight: 700; margin: 0; }
+.gu-display-xl { font-family: var(--gu-font-display); font-size: var(--gu-fs-display-xl); font-synthesis: none; margin: 0; }
+.gu-text-danger { color: var(--gu-red-ink); }
+.gu-plainlist { display: flex; flex-direction: column; gap: var(--gu-sp-3); margin: 0; padding: 0; list-style: none; font-size: var(--gu-fs-body); color: var(--gu-body); }
+.gu-ghostlink {
+  align-self: flex-start;
+  background: none; border: none; padding: var(--gu-sp-2) 0;
+  font-size: var(--gu-fs-small); color: var(--gu-muted); text-decoration: underline;
+  text-underline-offset: 3px; cursor: pointer; min-height: 48px; /* QA BUG-26: 최소 터치 48px */
+}
+.gu-boot { min-height: 100dvh; background: var(--gu-bg); }
+.gu-private-label { color: var(--gu-purple-ink); border-left: 2px solid var(--gu-purple-fill); padding-left: var(--gu-sp-3); margin-top: var(--gu-sp-2); }
+
+/* ── 셋업 화면 공통(S1~S6, O9, 코드 오류) ── */
+.gu-setup {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gu-sp-5);
+  max-width: var(--gu-maxw);
+  margin: 0 auto;
+  padding: calc(var(--gu-sp-7) + env(safe-area-inset-top)) var(--gu-gutter) calc(var(--gu-sp-7) + env(safe-area-inset-bottom));
+}
+.gu-setup-back {
+  position: absolute; left: var(--gu-gutter); top: var(--gu-sp-5);
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; /* QA BUG-26 */
+  background: none; border: none; color: var(--gu-ink); font-size: 24px; cursor: pointer;
+}
+
+/* S1 홈 */
+.gu-home { align-items: stretch; text-align: left; }
+.gu-seal {
+  align-self: center;
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 3px solid var(--gu-red-fill);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--gu-font-display); font-size: 36px; color: var(--gu-red-ink);
+  margin-bottom: var(--gu-sp-2);
+}
+.gu-home-tagline { text-align: center; color: var(--gu-body); }
+.gu-home-chips { display: flex; gap: var(--gu-sp-2); justify-content: center; flex-wrap: wrap; }
+.gu-infochip {
+  padding: var(--gu-sp-2) var(--gu-sp-4); border-radius: var(--gu-radius-pill);
+  background: var(--gu-surface); border: 1px solid var(--gu-line); font-size: var(--gu-fs-small); color: var(--gu-body);
+}
+.gu-home-resume {
+  display: flex; flex-direction: column; gap: var(--gu-sp-3);
+  padding: var(--gu-sp-4); border-radius: var(--gu-radius-lg); background: var(--gu-surface); border: 1px solid var(--gu-line-2);
+}
+.gu-home-resume-label { font-size: var(--gu-fs-small); color: var(--gu-muted); margin: 0; }
+.gu-home-disclaimer { text-align: center; margin-top: auto; }
+
+/* S2 방 만들기 */
+.gu-counttiles { display: flex; gap: var(--gu-sp-3); }
+.gu-counttile {
+  flex: 1; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  background: var(--gu-surface); border: 1.5px solid var(--gu-line-2); border-radius: var(--gu-radius-lg);
+  color: var(--gu-body); font-size: var(--gu-fs-body); cursor: pointer;
+}
+.gu-counttile[data-selected] { background: var(--gu-cta); border-color: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-counttile-num { font-family: var(--gu-font-mono); font-size: 40px; font-variant-numeric: tabular-nums; }
+.gu-castlist { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-castlist-row { display: flex; gap: var(--gu-sp-2); flex-wrap: wrap; }
+.gu-castchip {
+  display: inline-flex; align-items: center; gap: 6px; padding: var(--gu-sp-1) var(--gu-sp-3);
+  border-radius: var(--gu-radius-pill); background: var(--gu-surface-2); font-size: var(--gu-fs-small); color: var(--gu-body);
+}
+
+/* S3 초대 / S5 랜딩 */
+.gu-invitecard {
+  display: flex; flex-direction: column; gap: var(--gu-sp-2); align-items: center;
+  padding: var(--gu-sp-5) var(--gu-sp-4); border-radius: var(--gu-radius-lg); background: var(--gu-surface); border: 1px solid var(--gu-line-2);
+}
+.gu-invite-note { color: var(--gu-body); }
+
+/* ── 오버레이(O1·O2·O3·O8) 공통 ── */
+.gu-sheet-hint { font-size: var(--gu-fs-small); color: var(--gu-muted); margin: 0 0 var(--gu-sp-3); }
+.gu-sheet-warn { font-size: var(--gu-fs-small); color: var(--gu-red-ink); margin: var(--gu-sp-3) 0; }
+.gu-sheet-body-text { font-size: var(--gu-fs-body); color: var(--gu-body); margin: 0 0 var(--gu-sp-4); }
+.gu-sheet-actions-row { display: flex; gap: var(--gu-tap-gap-opposed); }
+.gu-sheet-actions-row > * { flex: 1; }
+
+.gu-synclist { display: flex; flex-direction: column; max-height: 50vh; overflow-y: auto; }
+.gu-synclist-row {
+  display: flex; align-items: center; gap: var(--gu-sp-3); min-height: 56px; width: 100%;
+  background: none; border: none; border-bottom: 1px solid var(--gu-line); padding: 0; text-align: left; cursor: pointer;
+}
+.gu-synclist-dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--gu-line-3); flex-shrink: 0; }
+.gu-synclist-dot[data-picked] { border-color: var(--gu-cta); background: var(--gu-cta); }
+.gu-synclist-label { flex: 1; font-size: var(--gu-fs-body); color: var(--gu-ink); }
+.gu-synclist-current { font-size: var(--gu-fs-micro); color: var(--gu-gold-ink); border: 1px solid var(--gu-cta); border-radius: var(--gu-radius-pill); padding: 2px 8px; }
+
+.gu-menulist { display: flex; flex-direction: column; }
+.gu-menulist-row {
+  min-height: 56px; width: 100%; display: flex; align-items: center;
+  background: none; border: none; border-bottom: 1px solid var(--gu-line); padding: 0; text-align: left;
+  font-size: var(--gu-fs-body); color: var(--gu-ink); cursor: pointer;
+}
+.gu-menulist-row[data-tone='danger'] { color: var(--gu-red-ink); }
+
+.gu-seatchip-row { display: flex; gap: var(--gu-sp-2); flex-wrap: wrap; margin-bottom: var(--gu-sp-4); }
+.gu-seatchip {
+  width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--gu-surface); border: 1.5px solid var(--gu-line-2); color: var(--gu-ink); font-family: var(--gu-font-mono); cursor: pointer;
+}
+.gu-seatchip[data-picked] { background: var(--gu-cta); border-color: var(--gu-cta); color: var(--gu-cta-ink); }
+
+/* ── 방장 화면 보조 ── */
+.gu-defense-chips { display: flex; gap: var(--gu-sp-2); justify-content: center; }
+.gu-defense-chip {
+  min-width: 40px; height: 40px; padding: 0 10px; border-radius: var(--gu-radius-pill); /* QA BUG-26: 표시용(누르는 칩 아님) — 멀리서 읽히게 */
+  display: flex; align-items: center; justify-content: center; font-family: var(--gu-font-mono); font-size: var(--gu-fs-small);
+  background: var(--gu-surface); color: var(--gu-muted);
+}
+.gu-defense-chip[data-state='current'] { background: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-defense-chip[data-state='done'] { background: var(--gu-green-fill); color: var(--gu-ink); }
+
+.gu-publicclue { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-publicclue-label { font-size: var(--gu-fs-small); color: var(--gu-blue-ink); margin: 0; }
+.gu-publicclue-card { padding: var(--gu-sp-4); border-radius: var(--gu-radius-lg); background: var(--gu-blue-fill); }
+.gu-publicclue-title { color: var(--gu-ink); margin: 0 0 var(--gu-sp-2); }
+.gu-publicclue-body { color: var(--gu-ink); margin: 0; line-height: 1.6; }
+
+.gu-result-head { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-2); text-align: center; }
+.gu-result-footer-links { display: flex; justify-content: center; gap: var(--gu-sp-5); margin-top: var(--gu-sp-3); }
+.gu-mvp { text-align: center; color: var(--gu-gold-ink); margin: var(--gu-sp-3) 0; }
+
+/* H9 진상 공개 */
+.gu-reveal-dark, .gu-reveal-line { text-align: center; font-size: var(--gu-fs-display); color: var(--gu-ink); margin: auto 0; }
+.gu-reveal-culprit { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-3); text-align: center; }
+.gu-reveal-confession { font-family: var(--gu-font-read); font-size: var(--gu-fs-stage); color: var(--gu-body); line-height: 1.7; }
+.gu-reveal-verdict { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-4); text-align: center; }
+.gu-reveal-stats { color: var(--gu-body); margin: 0; }
+.gu-reveal-summary { font-family: var(--gu-font-read); color: var(--gu-body); line-height: 1.7; max-width: 34em; }
+
+/* P4 자기소개 */
+.gu-introcard { display: flex; }
+.gu-introcard .gu-sealed { width: 100%; min-height: 220px; }
+
+/* P8 지목 확정 */
+.gu-myvote { display: flex; flex-direction: column; align-items: center; gap: var(--gu-sp-2); text-align: center; }
+.gu-myvote-seat { font-size: 72px; margin: 0; }
+
+/* P9/H9 진상(개인 열람) */
+.gu-ptruth { display: flex; flex-direction: column; gap: var(--gu-sp-3); }
+.gu-ptruth-beat { color: var(--gu-body); line-height: 1.7; margin: 0; }
+.gu-ptruth-time { color: var(--gu-paper-accent); font-family: var(--gu-font-display); margin-right: var(--gu-sp-2); }
+.gu-ptruth-confession { font-family: var(--gu-font-read); color: var(--gu-ink); line-height: 1.7; }
+.gu-ptruth-summary { color: var(--gu-muted); line-height: 1.7; }
+
+/* T2 단서함 */
+.gu-cluestab { display: flex; flex-direction: column; gap: var(--gu-sp-4); }
+.gu-cluestab-empty {
+  display: flex; flex-direction: column; gap: var(--gu-sp-3); padding: var(--gu-sp-4);
+  border: 1px dashed var(--gu-line-2); border-radius: var(--gu-radius-lg);
+}
+.gu-cluestab-empty-label { font-size: var(--gu-fs-small); color: var(--gu-muted); margin: 0; }
+.gu-cluestab-public { padding-top: var(--gu-sp-3); border-top: 1px solid var(--gu-line); }
+.gu-cluestab-public-label { font-size: var(--gu-fs-small); color: var(--gu-blue-ink); margin: 0 0 var(--gu-sp-2); }
+.gu-cluestab-public-item { font-size: var(--gu-fs-small); color: var(--gu-body); margin: 0 0 var(--gu-sp-2); }
+
+/* 에러 경계(error.tsx) — rewind 선례와 동일 구조 */
+.gu-errorpage { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: var(--gu-gutter); background: var(--gu-bg); }
+.gu-errorpage-inner { display: flex; flex-direction: column; gap: var(--gu-sp-4); max-width: 360px; text-align: center; }
+.gu-errorpage-kicker { color: var(--gu-muted); font-size: var(--gu-fs-small); margin: 0; }
+.gu-errorpage-title { font-size: var(--gu-fs-display-xl); margin: 0; }
+.gu-errorpage-body { color: var(--gu-body); margin: 0; }
+.gu-errorpage-btn { margin-top: var(--gu-sp-3); }
+
+/* ============================================================================
+ * 프론트팀장 리뷰 보강(2026-10-02) — 스펙 누락 화면·상태 + 버그 수정에 딸린 스타일
+ * 전부 gu- 접두사(전역 무영향). 위 규칙을 덮어쓰는 것은 같은 특이도 + 뒤 순서로만.
+ * ========================================================================== */
+
+/* '가 크게'(stageScale 1.2) — 공용 낭독 본문만 키운다 */
+.gu-frame--large { --gu-stage-scale: 1.2; }
+.gu-frame[data-surface='stage'] .gu-frame-content { font-size: calc(var(--gu-fs-stage) * var(--gu-stage-scale)); }
+.gu-frame .gu-stagebody { font-size: calc(var(--gu-fs-stage) * var(--gu-stage-scale)); line-height: 1.75; }
+.gu-briefing-p--private { font-size: 18px; line-height: 1.75; color: var(--gu-body); margin: 0; }
+
+/* 공통 유틸 */
+.gu-center { text-align: center; }
+.gu-center-self { align-self: center; }
+.gu-text-right { text-align: right; }
+.gu-gold { color: var(--gu-gold-ink); font-family: var(--gu-font-display); }
+.gu-hero-icon { align-self: center; color: var(--gu-gold-ink); }
+.gu-hostcue--lg { font-size: var(--gu-fs-display); line-height: 1.4; }
+.gu-row2 { display: flex; gap: var(--gu-tap-gap); }
+.gu-row2 > * { flex: 1; }
+.gu-linkrow { display: flex; justify-content: center; gap: var(--gu-sp-5); flex-wrap: wrap; }
+.gu-steps li { color: var(--gu-body); }
+.gu-cue-row { display: flex; align-items: flex-start; gap: var(--gu-sp-3); }
+.gu-cue-row .gu-hostcue { flex: 1; }
+.gu-scale-toggle {
+  flex: none; min-width: 64px; height: 48px; padding: 0 var(--gu-sp-3); /* QA BUG-26 */
+  border: 1.5px solid var(--gu-line-3); border-radius: var(--gu-radius-pill);
+  font-family: var(--gu-font-read); font-size: var(--gu-fs-small); color: var(--gu-ink);
+}
+.gu-scale-toggle[aria-pressed='true'] { border-color: var(--gu-cta); color: var(--gu-gold-ink); }
+.gu-banner-inline {
+  margin: 0; padding: var(--gu-sp-3) var(--gu-sp-4); border-radius: var(--gu-radius-md);
+  background: var(--gu-surface); border-left: 4px solid var(--gu-blue-fill); color: var(--gu-body); font-size: var(--gu-fs-small);
+}
+.gu-banner-inline--red { border-left-color: var(--gu-red-fill); color: var(--gu-red-ink); }
+
+/* 토스트 — 셋업 화면(액션바 없음)에서 하단 고정 */
+.gu-floating-toast {
+  position: fixed; left: 0; right: 0; bottom: calc(var(--gu-sp-4) + env(safe-area-inset-bottom));
+  z-index: var(--gu-z-toast); max-width: var(--gu-maxw); margin: 0 auto; padding: 0 var(--gu-gutter);
+}
+
+/* H5 방장의 조사 — 비밀·개인 영역(보라 라인) */
+.gu-private-zone { display: flex; flex-direction: column; gap: var(--gu-sp-3); padding-left: var(--gu-sp-3); border-left: 2px solid var(--gu-purple-fill); }
+.gu-private-zone .gu-private-label { border-left: none; padding-left: 0; margin-top: 0; }
+
+/* H8 집계 — 표 목록(탭 = 수정) */
+.gu-ballotlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.gu-ballotlist-row {
+  width: 100%; min-height: 48px; display: flex; align-items: center; gap: var(--gu-sp-3);
+  border-bottom: 1px solid var(--gu-line); font-size: var(--gu-fs-body); color: var(--gu-ink); text-align: left;
+}
+.gu-ballotlist-edit { margin-left: auto; color: var(--gu-muted); }
+
+/* H8 보너스 문항(원고 8-1) */
+.gu-bonus { border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); padding: var(--gu-sp-3) var(--gu-sp-4); background: var(--gu-surface); }
+.gu-bonus-summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: var(--gu-ink); }
+.gu-bonus[open] .gu-bonus-summary { margin-bottom: var(--gu-sp-2); }
+.gu-bonus-q { border: none; margin: var(--gu-sp-4) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-bonus-prompt { font-size: var(--gu-fs-h2); color: var(--gu-gold-ink); padding: 0; }
+.gu-bonus-legend { list-style: none; margin: 0 0 var(--gu-sp-2); padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px var(--gu-sp-3); font-size: var(--gu-fs-small); color: var(--gu-body); }
+.gu-bonus-row { display: flex; align-items: center; gap: 6px; }
+.gu-bonus-who { flex: 1; min-width: 0; font-size: var(--gu-fs-small); color: var(--gu-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gu-bonus-opt {
+  flex: none; width: 48px; height: 48px; border-radius: var(--gu-radius-md);
+  border: 1.5px solid var(--gu-line-3); color: var(--gu-ink); font-size: 18px;
+}
+.gu-bonus-opt[data-active] { background: var(--gu-cta); border-color: var(--gu-cta); color: var(--gu-cta-ink); }
+
+/* H9 판결 비트 — 진상 전체 다시 보기 */
+.gu-reveal-all { width: 100%; text-align: left; }
+.gu-reveal-all > summary { min-height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gu-muted); font-size: var(--gu-fs-small); text-decoration: underline; text-underline-offset: 3px; }
+
+/* H10 결과 — 미션 여러 개 + 결과 카드 미리보기 */
+.gu-scorelist { display: flex; flex-direction: column; }
+.gu-scorerow-mission { margin-left: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--gu-sp-3); color: var(--gu-body); }
+.gu-scorerow-mission-label { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: var(--gu-fs-caption); color: var(--gu-body); line-height: 1.4; }
+.gu-scorerow-mission-detail { font-size: var(--gu-fs-caption); color: var(--gu-muted); }
+.gu-scorerow-mission-segs { flex: none; display: flex; gap: var(--gu-sp-2); }
+.gu-scorerow-mission-seg { height: 52px; min-width: 60px; font-size: var(--gu-fs-small); font-weight: 600; }
+.gu-scorerow-mission-seg[data-tone='fail'][data-active] { background: var(--gu-surface-2); color: var(--gu-red-ink); border-color: var(--gu-red-fill); }
+.gu-scorerow-mission-chip { flex: none; font-size: var(--gu-fs-caption); padding: 6px 10px; border-radius: var(--gu-radius-pill); border: 1px solid var(--gu-line-2); color: var(--gu-muted); }
+.gu-scorerow-mission-chip[data-result='ok'] { color: var(--gu-green-ink); border-color: var(--gu-green-fill); }
+.gu-scorerow-mission-chip[data-result='fail'] { color: var(--gu-red-ink); border-color: var(--gu-red-fill); }
+.gu-resultpreview { margin: 0; display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-resultpreview img { width: 100%; height: auto; aspect-ratio: 1200 / 630; border-radius: var(--gu-radius-md); background: var(--gu-surface); border: 1px solid var(--gu-line); }
+
+/* P8 지목 확정 */
+.gu-myvote-role { display: inline-flex; align-items: center; gap: var(--gu-sp-2); margin: 0; font-size: 32px; }
+
+/* P9 진상(개인 열람) */
+.gu-ptruth-head { display: flex; align-items: center; gap: var(--gu-sp-3); }
+.gu-ptruth-head .gu-display-xl { font-size: var(--gu-fs-display); }
+.gu-ptruth-line { font-size: var(--gu-fs-h2); color: var(--gu-gold-ink); margin: 0; }
+.gu-ptruth-time { color: var(--gu-gold-ink); }
+.gu-votechip {
+  align-self: flex-start; margin: 0; padding: var(--gu-sp-2) var(--gu-sp-4); border-radius: var(--gu-radius-pill);
+  border: 1px solid var(--gu-line-2); color: var(--gu-muted); font-size: var(--gu-fs-small);
+}
+.gu-votechip[data-hit] { color: var(--gu-green-ink); border-color: var(--gu-green-fill); }
+
+/* P4 자기소개 카드 — 말투 메모 */
+.gu-speech-memo { font-size: 22px; line-height: 1.35; color: var(--gu-paper-ink); transform: rotate(-2deg); margin: var(--gu-sp-2) 0 0; }
+
+/* P10 모두의 패 */
+.gu-allsheets { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
+.gu-allsheets-item { border: 1px solid var(--gu-line); border-radius: var(--gu-radius-lg); overflow: hidden; }
+.gu-allsheets-item[data-culprit] { border-color: var(--gu-red-fill); }
+.gu-allsheets-head { width: 100%; min-height: 56px; display: flex; align-items: center; gap: var(--gu-sp-2); padding: 0 var(--gu-sp-4); text-align: left; color: var(--gu-ink); }
+.gu-allsheets-name { font-family: var(--gu-font-read); font-weight: 700; }
+.gu-allsheets-body { padding: var(--gu-sp-4); display: flex; flex-direction: column; gap: var(--gu-sp-4); background: var(--gu-paper); color: var(--gu-paper-ink); }
+.gu-allsheets-block { display: flex; flex-direction: column; gap: var(--gu-sp-1); }
+.gu-allsheets-title { margin: 0; font-family: var(--gu-font-display); font-size: 20px; color: var(--gu-paper-accent); }
+.gu-allsheets-body .gu-hopae-body { white-space: pre-line; margin: 0; }
+
+/* T2 단서함 공용 단서 라벨 */
+.gu-cluestab-public-round { color: var(--gu-blue-ink); font-weight: 600; margin-right: var(--gu-sp-1); }
+
+/* O5 하는 법 — 점수표 */
+.gu-ruletable { width: 100%; border-collapse: collapse; margin: var(--gu-sp-4) 0; font-size: var(--gu-fs-small); }
+.gu-ruletable th { text-align: left; font-weight: 400; color: var(--gu-body); padding: var(--gu-sp-2) 0; border-bottom: 1px solid var(--gu-line); }
+.gu-ruletable td { text-align: right; color: var(--gu-gold-ink); padding: var(--gu-sp-2) 0; border-bottom: 1px solid var(--gu-line); }
+
+/* ActionBar 와 BottomTabs 가 둘 다 sticky bottom:0 이라, 본문이 화면보다 길면 진행 버튼이 탭바 밑에 깔려 안 보였다.
+ * 탭바가 있는 화면에선 액션바를 탭바 높이만큼 띄운다. 탭바 높이는 safe-area 를 더한 값(border-box 에서 아이콘이 눌리지 않게). */
+.gu-tabbar { height: calc(60px + env(safe-area-inset-bottom)); }
+.gu-frame[data-has-tabs] .gu-actionbar-wrap { bottom: calc(60px + env(safe-area-inset-bottom)); }
+.gu-frame[data-has-tabs] .gu-actionbar { padding-bottom: var(--gu-sp-3); }
+
+/* T1 호패 — SealedCard 루트(.gu-sealed)가 flex 자식인데 늘어나지 않아 봉인면이 호패 폭의 절반만 차지했다 */
+.gu-hopae > .gu-sealed { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.gu-hopae > .gu-sealed > .gu-sealed-surface { flex: 1; width: 100%; }
+.gu-hopae .gu-sealed-closed, .gu-hopae .gu-sealed-open { width: 100%; }
+.gu-actionbar .gu-btn--secondary, .gu-actionbar .gu-btn--danger { background: var(--gu-bg); }
+/* §5-5 ActionBar 배경 — 위쪽 14px 만 페이드, 나머지는 먹색(게이트 캡션이 스크롤된 본문 위에 겹쳐 읽히지 않게) */
+.gu-actionbar { background: linear-gradient(to bottom, transparent 0, var(--gu-bg) 14px); }
+/* 공개 단서 도장 — 본문 위에 겹치지 않게 오른쪽으로 띄워 글을 두르게 */
+.gu-cluecard-opened .gu-cluecard-stamp { position: static; float: right; margin: 0 0 var(--gu-sp-2) var(--gu-sp-3); }
+/* 한지 위 텍스트 대비 — blue-ink(#86B4DA)는 한지에서 1.8:1. 한지 위에선 어두운 채움색을 글자색으로(≈5.6:1) */
+.gu-cluecard-opened .gu-cluecard-readout { color: var(--gu-blue-fill); font-weight: 600; clear: both; }
+/* color-mix() 는 iOS 16.2 미만(구형 카톡 인앱)에서 무시돼 헤더 배경이 투명해진다 → 같은 값의 rgba 로 고정 */
+.gu-header { background: rgba(19, 18, 26, 0.92); }
+.gu-sealed-watermark { color: rgba(94, 80, 64, 0.6); }
+.gu-stamp[data-broken] { border-color: rgba(246, 240, 226, 0.6); color: rgba(246, 240, 226, 0.6); }
+.gu-header { -webkit-backdrop-filter: blur(8px); }
+
+/* ── 라운드 잠금(원고 3판) — 「R2부터」「R3부터」 배지 · 「R3에 떠오르는 기억」 블록 ──
+ * 배지 글자는 원문 그대로(텍스트를 바꾸지 않는다). 한지 위 대비: paper-accent 7.7:1, paper-muted 6.3:1.
+ * open = 이 폰이 그 라운드에 들어섬(지금 적용) · locked = 아직 전(침묵만 허용) — 색 + 실선/점선 두 갈래로 구분. */
+.gu-rtag-seg { display: block; margin-top: var(--gu-sp-1); }
+.gu-rtag {
+  display: inline-block; margin-right: 6px; padding: 0 7px; border-radius: var(--gu-radius-pill);
+  border: 1.5px solid var(--gu-paper-accent); color: var(--gu-paper-accent); background: transparent;
+  font-family: var(--gu-font-body); font-size: 0.78em; font-weight: 700; line-height: 1.55; white-space: nowrap; vertical-align: 0.06em;
+}
+.gu-rtag[data-state='open'] { background: var(--gu-paper-accent); color: var(--gu-paper); }
+.gu-rtag[data-state='locked'] { border-style: dashed; border-color: var(--gu-paper-muted); color: var(--gu-paper-muted); }
+
+.gu-memory {
+  padding: var(--gu-sp-3) var(--gu-sp-4); border-radius: var(--gu-radius-md);
+  background: rgba(242, 163, 59, 0.16); border-left: 4px solid var(--gu-candle); color: var(--gu-paper-ink);
+}
+.gu-memory[data-locked] { background: transparent; border: 1.5px dashed var(--gu-paper-muted); color: var(--gu-paper-muted); }
+.gu-memory-head { display: flex; align-items: center; gap: var(--gu-sp-2); margin: 0 0 var(--gu-sp-2); font-family: var(--gu-font-display); font-size: 19px; color: var(--gu-paper-accent); }
+.gu-memory-head .gu-rtag { margin-right: 0; font-size: 13px; }
+.gu-memory[data-locked] .gu-memory-head { margin-bottom: var(--gu-sp-1); color: var(--gu-paper-muted); }
+.gu-memory-lines { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: var(--gu-sp-2); font-size: var(--gu-fs-body); line-height: 1.6; }
+.gu-memory-locked { margin: 0; font-size: var(--gu-fs-small); line-height: 1.5; }
+.gu-banner--round { border-left-color: var(--gu-candle); }
+.gu-banner--round .gu-banner-text { color: var(--gu-ink); font-weight: 600; }
+
+/* ── H6~H8 방장 상단 「내문 출입 타임라인」(원고 1-8 앱 구현 메모, 3판) ──
+ * 술시~축시 × 초·정·말 = 12눈금. 공용(파랑) 정보라 blue 계열. 入 = 채움, 出 = 빈 원(글자 자체로도 구분). */
+.gu-gatetl { border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2); padding: var(--gu-sp-2) var(--gu-sp-2) var(--gu-sp-1); }
+.gu-gatetl-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gu-sp-2); min-height: 48px; cursor: pointer; list-style: none; }
+.gu-gatetl-head::-webkit-details-marker { display: none; }
+.gu-gatetl-title { font-family: var(--gu-font-display); font-size: 16px; color: var(--gu-ink); }
+.gu-gatetl-title::before { content: '▸ '; color: var(--gu-blue-ink); }
+.gu-gatetl[open] .gu-gatetl-title::before { content: '▾ '; }
+.gu-gatetl-legend { display: inline-flex; align-items: center; gap: var(--gu-sp-1); font-size: 13px; color: var(--gu-muted); white-space: nowrap; }
+.gu-gatetl-legend .gu-gatetl-dot { margin-left: var(--gu-sp-1); }
+.gu-gatetl-grid { margin-top: var(--gu-sp-2); display: flex; flex-direction: column; gap: 2px; }
+.gu-gatetl-row { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 4px; }
+.gu-gatetl-lane { font-size: 13px; letter-spacing: -0.3px; color: var(--gu-body); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gu-gatetl-track { position: relative; height: 22px; }
+.gu-gatetl-band { position: absolute; top: 2px; bottom: 2px; background: var(--gu-surface); }
+.gu-gatetl-band[data-alt] { background: var(--gu-surface-2); }
+.gu-gatetl-span { position: absolute; top: 8px; height: 6px; border-radius: 3px; background: rgba(46, 92, 130, 0.9); }
+.gu-gatetl-dot {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 15px; height: 15px; padding: 0 1px;
+  border-radius: var(--gu-radius-pill); border: 1.5px solid var(--gu-blue-ink);
+  font-family: var(--gu-font-read); font-size: 11px; font-weight: 700; line-height: 1;
+}
+.gu-gatetl-dot[data-dir='in'] { background: var(--gu-blue-fill); color: var(--gu-ink); }
+.gu-gatetl-dot[data-dir='out'] { background: var(--gu-bg); color: var(--gu-blue-ink); }
+.gu-gatetl-dot[data-dir='both'] { background: var(--gu-surface-2); color: var(--gu-ink); letter-spacing: -0.5px; }
+.gu-gatetl-mark { position: absolute; top: 3.5px; transform: translateX(-50%); z-index: 1; }
+.gu-gatetl-axis { height: 30px; }
+.gu-gatetl-tick { position: absolute; top: 1px; transform: translateX(-50%); font-size: 11px; line-height: 1; color: var(--gu-muted); }
+.gu-gatetl-watch { position: absolute; top: 14px; transform: translateX(-50%); font-family: var(--gu-font-display); font-size: 13px; line-height: 1; color: var(--gu-ink); white-space: nowrap; }
+
+/* ── 용어 풀이 「?」·시각표(원고 1-5·1-6) ── */
+.gu-terms { display: flex; flex-direction: column; gap: var(--gu-sp-2); margin: 0; }
+.gu-terms-row { display: flex; flex-direction: column; gap: 2px; }
+.gu-terms-term { font-family: var(--gu-font-read); font-weight: 700; color: var(--gu-ink); font-size: var(--gu-fs-small); }
+.gu-terms-desc { margin: 0; color: var(--gu-body); font-size: var(--gu-fs-small); line-height: 1.55; }
+.gu-terms[data-variant='card'] { margin-top: var(--gu-sp-3); padding-top: var(--gu-sp-2); border-top: 1px dashed var(--gu-line-2); }
+.gu-terms[data-variant='card'] .gu-terms-term { color: var(--gu-blue-ink); }
+.gu-timetable { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2); }
+.gu-timetable-title { margin: 0; font-family: var(--gu-font-display); font-size: 16px; color: var(--gu-ink); }
+.gu-timetable-table { width: 100%; border-collapse: collapse; font-size: var(--gu-fs-small); color: var(--gu-body); }
+.gu-timetable-table th { text-align: left; font-weight: 700; color: var(--gu-ink); white-space: nowrap; padding: 4px 8px 4px 0; vertical-align: top; }
+.gu-timetable-table td { padding: 4px 8px 4px 0; vertical-align: top; }
+.gu-timetable-table td.gu-num { white-space: nowrap; }
+.gu-timetable-hanja { color: var(--gu-muted); font-weight: 400; }
+.gu-timetable-parts { color: var(--gu-muted); }
+
+/* ── 동률자 추가 변론(원고 8-1) ── */
+.gu-tiedefense { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border: 1px solid var(--gu-red-fill); border-radius: var(--gu-radius-lg); }
