@@ -135,9 +135,10 @@ describe('6판 글 분량 — 사건 데이터(원고 → case-data.ts)', () => 
     }
   });
 
-  it('6인 개요 낭독 ≤ 450자(약 1.4분) — 4·5인은 증언자 한 줄만큼 넘는다(기록됨)', () => {
+  it('6인 개요 낭독 약 1.4분 — 7판 규칙 「셋」으로 450자를 조금 넘는다(기록됨), 4·5인은 증언자 한 줄만큼 더', () => {
     const six = rows.find((r) => r.id === 'briefingRead:6')!;
-    expect(six.len).toBeLessThanOrEqual(DATA_BUDGET.briefingRead);
+    expect(six.len).toBeLessThanOrEqual(DATA_OVER_BUDGET['briefingRead:6'] ?? DATA_BUDGET.briefingRead);
+    expect(six.len - DATA_BUDGET.briefingRead).toBeLessThanOrEqual(25); // 넘더라도 한 문장(약 5초) 안
     expect(readMinutes(six.len)).toBeLessThanOrEqual(1.4);
   });
 

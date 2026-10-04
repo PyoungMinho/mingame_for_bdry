@@ -22,11 +22,12 @@
  *  - R5 인장 키패드(오답 3회 → 10초 잠금은 여기서 쥔다 — 시트를 닫았다 열어도 안 풀리게) · 공개 토스트에 인장 번호
  *  - R1 P1 한 번 연 칩의 점(UI 상태, 저장 안 함, 새 판이면 지움)
  *
- * 통합(현장 보기 · 프론트팀장)
- *  - 「현장 다시 보기」 시트(sheet='scene') — 방장·플레이어 공용. 이 폰이 들어선 라운드까지의 현장만(reachedRound).
- *    SceneView 는 역할 무관(사건·라운드·방 코드·공개 배치도만). 시트가 열리면 기존 규칙대로 모든 봉인이 즉시 다시 닫힌다.
+ * 현장(7판 조사 따로 · 프론트팀장)
+ *  - 공용 「현장 다시 보기」 시트는 없앴다 — 관찰은 이제 살펴본 사람만 본다. 방장 무대는 이동 연출(SceneMove)뿐.
+ *  - 살펴보기 기록은 게임 저장(GameState.examined)에 — 새로고침에도 남고, 결과·공유·초대 링크엔 실리지 않는다.
+ *  - 단서함 「지금 고르기」 시트 = 살펴보기(ExaminePanel) + 장소 고르기 — 방장 본인 조사와 늦참·복구가 같이 쓴다.
  *  - 큰 화면(노트북·TV) 주소 시트(sheet='bigscreen') — 방장 ⋮ 메뉴와 S3 초대 화면. 주소 = /gung/scene?code=…
- *  - '처음으로'·새 방에서 본 물건 기록(gu:scene:v1)도 지운다(수첩과 같은 자리).
+ *  - '처음으로'·새 방에서 큰 화면 조사 칩 기록(gu:scene:v2, 옛 v1 포함)도 지운다(수첩과 같은 자리).
  */
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -42,6 +43,7 @@ import {
   clueBySeal,
   clueSeal,
   displayCardId,
+  examineLeft,
   gateRoundsShown,
   gateTimeline,
   GUIDE,
@@ -116,7 +118,8 @@ import { PlayerPlayArea, type TruthView } from './PlayerScreens';
 import { advanceToast, hostSignal, roundSignal } from './signals';
 import { BadCodeScreen, ConflictScreen, CreateRoom, EnterCode, Home, Invite, SeatPick, type SeatPickStep } from './Setup';
 import { CluesTab } from './Tabs';
-import { clearSceneStore, SceneView } from './SceneView';
+import { ExaminePanel } from './ExaminePanel';
+import { clearSceneStore } from '../lib/sceneStore';
 
 interface ToastState {
   key: number;
@@ -130,7 +133,7 @@ interface ToastState {
   tag?: string;
 }
 
-type SheetKind = 'sync' | 'menu' | 'absent' | 'rules' | 'seat' | 'wake' | 'terms' | 'map' | 'seal' | 'scene' | 'bigscreen';
+type SheetKind = 'sync' | 'menu' | 'absent' | 'rules' | 'seat' | 'wake' | 'terms' | 'map' | 'seal' | 'bigscreen';
 
 /** R4 수첩 탭 — 이 시간 동안 입력이 없으면 진행 탭으로(모든 기기 같음). 봉인(꾹)은 쓰지 않는다 */
 export const NOTES_IDLE_MS = 60_000;
@@ -292,10 +295,10 @@ export function GungApp() {
     if (g.mode === 'seatPick') setSeatStep('landing');
   }, [g.mode]);
 
-  // 시트·확인창이 열리면 즉시 재봉인(§10-1)
+  // 시트·확인창이 열리면 즉시 재봉인(§10-1) — 7판: 「지금 고르기」(살펴보기) 시트도
   useEffect(() => {
-    if (sheet || confirmReq || resultImageOpen) setSealEpoch((n) => n + 1);
-  }, [sheet, confirmReq, resultImageOpen]);
+    if (sheet || confirmReq || resultImageOpen || catchUpRound !== null) setSealEpoch((n) => n + 1);
+  }, [sheet, confirmReq, resultImageOpen, catchUpRound]);
 
   const pushToast = useCallback((text: string, action?: { label: string; onClick: () => void }, duration = 2500, tag?: string) => {
     toastSeq.current += 1;
@@ -430,7 +433,7 @@ export function GungApp() {
 
   const resetAll = () => {
     notes.clear(); // R4: '처음으로'·새 방 — 수첩도(메모리 폴백까지) 비운다
-    clearSceneStore(); // 통합: 현장 본 물건(✓) 기록도 같은 자리에서
+    clearSceneStore(); // 큰 화면 조사 칩 기록도 같은 자리에서
     g.resetToHome();
   };
   const confirmReset = () =>
@@ -709,7 +712,6 @@ export function GungApp() {
         onOpenMap: () => setSheet('map'),
         onOpenHelp: () => setSheet('terms'),
         onOpenSealPad: () => setSheet('seal'),
-        onOpenScene: () => setSheet('scene'),
         seenSections,
         onSeenSection,
       })
@@ -735,7 +737,6 @@ export function GungApp() {
         map: MAP_PROPS,
         onOpenMap: () => setSheet('map'),
         sealOf: (id) => clueSeal(c, a.n, state.code, id),
-        onOpenScene: () => setSheet('scene'),
         seenSections,
         onSeenSection,
       });
@@ -789,6 +790,7 @@ export function GungApp() {
         seat={state.seat}
         reachedRound={reached}
         rounds={state.rounds}
+        examined={state.examined}
         publicUpTo={publicUpTo}
         sealEpoch={sealEpoch}
         revealMode={g.prefs.revealMode}
@@ -956,6 +958,18 @@ export function GungApp() {
       <BottomSheet title={`조사 ${catchUpRound ?? ''} · 지금 고르기`} open={catchUpRound !== null} onClose={() => setCatchUpRound(null)}>
         {catchUpRound !== null && (
           <CatchUpPicker
+            examine={
+              <ExaminePanel
+                c={c}
+                round={catchUpRound}
+                log={state.examined}
+                closed={Boolean(state.rounds[catchUpRound])}
+                onExamine={(objectId) => dispatch({ type: 'examine', round: catchUpRound, objectId })}
+                sealEpoch={sealEpoch}
+                idScope="catchup"
+              />
+            }
+            closeNote={!state.rounds[catchUpRound] && examineLeft(c, state.examined, catchUpRound) > 0}
             places={roundPlaces(c, catchUpRound).map((p) => placeToSummary(c, p.id))}
             tags={(() => {
               const tags: Record<string, string> = {};
@@ -982,10 +996,6 @@ export function GungApp() {
         )}
       </BottomSheet>
       <MapSheet open={sheet === 'map'} onClose={() => setSheet(null)} map={MAP_PROPS} />
-      {/* 통합: 현장 다시 보기 — 이 폰이 들어선 라운드까지만(라운드 잠금). idScope='sheet' — 무대의 현장 그림과 SVG id 가 겹치지 않게 */}
-      <BottomSheet title={GUIDE.sceneLabel} open={sheet === 'scene'} onClose={() => setSheet(null)} className="gu-scene-sheet">
-        {sheet === 'scene' && <SceneView c={c} upTo={reachedRound(state.phase)} code={state.code} idScope="sheet" map={MAP_PROPS} startAtNew />}
-      </BottomSheet>
       {isHost && bigScreenSheet}
       {isHost && (
         <SealKeypadSheet
@@ -1044,14 +1054,21 @@ export function GungApp() {
 
 /**
  * 단서함 '지금 고르기'(늦참·복구·**방장 본인 조사** — G2 로 무대에서 옮겨 옴) — 2탭(선택 → 확정).
+ * 7판: 맨 위가 그 조사 살펴보기(ExaminePanel — 이동 장소 물건 둘), 그 아래 흩어져 한 곳 고르기. 고르면 남은 살펴보기는 마감.
  * R2 「🗺 궁 배치도 보기」 · R5 고르기 위 안내 + 내 지난 방문 꼬리표.
  */
 function CatchUpPicker({
+  examine,
+  closeNote = false,
   places,
   tags,
   onPick,
   onOpenMap,
 }: {
+  /** 그 조사 살펴보기 패널(없으면 고르기만) */
+  examine?: React.ReactNode;
+  /** 살펴보기가 남았으면 「장소를 정하면 남은 살펴보기는 사라지오」 */
+  closeNote?: boolean;
   places: ReturnType<typeof placeToSummary>[];
   tags?: Record<string, string>;
   onPick: (id: string, name: string) => void;
@@ -1061,11 +1078,13 @@ function CatchUpPicker({
   const place = places.find((p) => p.id === selected);
   return (
     <>
+      {examine}
       <p className="gu-placehint">{GUIDE.placeHint}</p>
       <button type="button" className="gu-ghostlink gu-maplink" onClick={onOpenMap}>
         {GUIDE.mapLink}
       </button>
       <PlaceGrid places={places} selected={selected} onSelect={setSelected} tags={tags} />
+      {closeNote && <p className="gu-micro gu-examine-closenote">{GUIDE.examineCloseNote}</p>}
       <GuButton variant="primary" disabled={!place} disabledReason="장소를 고르시오" onClick={() => place && onPick(place.id, place.name)}>
         {place ? `${place.name} 조사하기` : '장소를 고르시오'}
       </GuButton>

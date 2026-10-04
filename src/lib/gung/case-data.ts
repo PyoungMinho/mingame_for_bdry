@@ -10,15 +10,17 @@
  * fromRound 전엔 본문을 내리지 않는다. 공용 카드의 `gateLog`는 그 카드 본문 '· 시각: 누구 入/出' 줄만
  * 기계적으로 옮긴 출입 기록(방장 화면 내문 출입 타임라인용)이다.
  * `briefing`은 원고 §7-1 을 그대로 읽는다(호명 → {{cast}}, 4·5인 증언자 → {{npcs}}).
- * `scenes`는 원고 §10-3 현장 관찰 표(장소 그림 7장·물건·라운드별 관찰 한 줄) — 인원·역할 무관 공용 정보이고,
- * 라운드 잠금은 scene.ts(sceneAt/scenesFor)가 fromRound 로 건다. 설계 메모 칸은 넣지 않는다.
+ * 현장(7판 조사 따로): `sceneRoute`(원고 §10-2 이동 표)는 공용 — 방장 화면·큰 화면은 이것과 그림만 읽는다.
+ * `scenes`(원고 §10-3 관찰 표, 이동 장소 두 곳의 물건·라운드별 관찰 한 줄)는 살펴본 사람만 — 그 사람의 폰
+ * 단서함에만 뜬다(scene.ts observe/myObservations, 라운드 잠금 fromRound). 인원·역할과 무관하고 설계 메모 칸은 넣지 않는다.
+ * 큰 화면(/gung/scene)은 이 파일을 import 하지 않는다 — 같은 표에서 만든 scene-route-data.ts(관찰 글 없음)만 쓴다.
  * `validateCase`(src/lib/gung/validate.ts)로 무결성을 검사한다.
  */
 import type { GungCase } from './types';
 
 export const sejaCase: GungCase = {
   "id": "seja-poison",
-  "version": 2,
+  "version": 3,
   "title": "세자 독살 사건",
   "rolesPublicAfterIntro": true,
   "briefing": {
@@ -29,7 +31,7 @@ export const sejaCase: GungCase = {
       "그리고 이 자리에 없으나, 증언을 남긴 이: {{npcs}}.",
       "하나. 범인은 독을 넣은 단 한 사람. 독살인 줄 모르고 거든 자는 범인이 아니다.",
       "둘. 범인만 무엇이든 거짓말한다. 나머지는 패가 허락한 것만 둘러대되 남에게 죄를 씌울 순 없고, 「물으면 사실대로」는 답해야 한다.",
-      "셋. 조사는 세 번. 현장을 함께 보고 각자 한 곳을 뒤진다. 간 곳은 밝히되 단서는 숨겨도 된다.",
+      "셋. 조사는 세 번. 다 같이 한 곳에 가 각자 물건 둘을 살핀 뒤, 흩어져 한 곳씩 뒤진다. 살핀 물건과 뒤진 곳은 밝히되, 본 것은 숨겨도 된다.",
       "넷. 누구나 비밀이 있다. 수상하다고 범인은 아니니, 물증으로 가려라.",
       "각자 패를 확인하라. 남에게 보이지 말고.",
       "※ 카드 속 「사흘 전」「이틀 전」은 모두 그믐날 기준이고, 「간밤」은 그믐날 밤이다."
@@ -943,7 +945,7 @@ export const sejaCase: GungCase = {
           "id": "NPC-6C",
           "roleId": "crownPrincess",
           "title": "빈궁의 진술 ③",
-          "body": "「사흘 전 내의원에서 숙의 회임이 거짓이란 말을 엿들었소. 간밤 덮어 달라 비는 숙의에게 〈아침에 중전마마께 아뢰겠소〉 했지. 저하 기침에 동온돌로 건너간 차 한 잔 식을 동안, 숙의 혼자 내 꿀단지 곁에 있었소. 연분홍 노리개를 차고서. 그 눈빛이 무서워 그 밤으로 중궁전에 갔소. 술시에 저하와 다툰 것도 이 일 때문이오.」"
+          "body": "「간밤 덮어 달라 비는 숙의에게 〈아침에 중전마마께 아뢰겠소〉 했지. 저하 기침에 동온돌로 건너간 차 한 잔 식을 동안, 숙의 혼자 내 꿀단지 곁에 있었소. 연분홍 노리개를 차고서. 그 눈빛이 무서워 그 밤으로 중궁전에 갔소.」"
         }
       ]
     }
@@ -1148,6 +1150,26 @@ export const sejaCase: GungCase = {
       "말"
     ]
   },
+  "sceneRoute": [
+    {
+      "round": 1,
+      "placeId": "dg",
+      "examine": 2,
+      "cue": "모두 동궁전으로. 저하께서 쓰러지신 침전이오."
+    },
+    {
+      "round": 2,
+      "placeId": "ny",
+      "examine": 2,
+      "cue": "모두 내의원으로. 그 탕약을 달인 곳이오."
+    },
+    {
+      "round": 3,
+      "placeId": "dg",
+      "examine": 2,
+      "cue": "다시 동궁전으로. 날이 밝기 전 마지막으로 보시오."
+    }
+  ],
   "scenes": [
     {
       "placeId": "dg",
@@ -1235,129 +1257,11 @@ export const sejaCase: GungCase = {
           "lines": [
             {
               "fromRound": 1,
-              "text": "대청 끝에 엎드려 떠는 번 나인 둘"
+              "text": "「술시 초 저하 내외가 〈빈궁은 그만하시오!〉 하며 다투셨어요」"
             },
             {
               "fromRound": 3,
               "text": "「숙의마마가 빈궁마마께 독대를 청해 저희랑 조상궁마마님은 대청 끝에」"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "placeId": "sg",
-      "art": "scene-sg",
-      "objects": [
-        {
-          "id": "OB-SG1",
-          "name": "서안 서랍",
-          "pos": [
-            46,
-            58
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "자물통이 비틀려 서랍이 반쯤 열렸다"
-            }
-          ]
-        },
-        {
-          "id": "OB-SG2",
-          "name": "마룻바닥",
-          "pos": [
-            38,
-            84
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "마룻바닥에 촛농 몇 방울이 떨어져 굳었다"
-            }
-          ]
-        },
-        {
-          "id": "OB-SG3",
-          "name": "서안 위 일기책",
-          "pos": [
-            58,
-            46
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "저하의 손때 묻은 강학 일기 한 권"
-            }
-          ]
-        },
-        {
-          "id": "OB-SG4",
-          "name": "문간 너머 내문",
-          "pos": [
-            88,
-            40
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "문간 너머로 동궁 내문과 수문 내관이 보인다"
-            },
-            {
-              "fromRound": 3,
-              "text": "수문 내관: 해시 말 조상궁이 등불 들고 들렀다 중궁전 쪽으로"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "placeId": "sr",
-      "art": "scene-sr",
-      "objects": [
-        {
-          "id": "OB-SR1",
-          "name": "석청 항아리",
-          "pos": [
-            20,
-            62
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "뚜껑을 덮은 큰 석청 항아리"
-            }
-          ]
-        },
-        {
-          "id": "OB-SR2",
-          "name": "다과 발기",
-          "pos": [
-            48,
-            30
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "벽에 붙은 동궁 다과 발기(목록)"
-            }
-          ]
-        },
-        {
-          "id": "OB-SR3",
-          "name": "생과방 나인들",
-          "pos": [
-            76,
-            60
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "수군대다 입을 꾹 다무는 생과방 나인들"
-            },
-            {
-              "fromRound": 2,
-              "text": "「술시 초엔 저하 내외가 〈빈궁은 그만하시오!〉 다투셨대요」"
             }
           ]
         }
@@ -1376,8 +1280,8 @@ export const sejaCase: GungCase = {
           ],
           "lines": [
             {
-              "fromRound": 1,
-              "text": "화로 위에 식어 버린 약탕관"
+              "fromRound": 2,
+              "text": "식은 약탕관. 찌꺼기는 혀가 오그라들게 쓰나, 저리진 않다"
             }
           ]
         },
@@ -1390,12 +1294,8 @@ export const sejaCase: GungCase = {
           ],
           "lines": [
             {
-              "fromRound": 1,
-              "text": "서안 위에 펼쳐진 약재 출납 장부"
-            },
-            {
               "fromRound": 2,
-              "text": "장부 한 줄에 번진 먹물이 아직 덜 말랐다"
+              "text": "펼쳐진 출납 장부. 한 줄에 번진 먹물이 아직 덜 말랐다"
             }
           ]
         },
@@ -1408,8 +1308,8 @@ export const sejaCase: GungCase = {
           ],
           "lines": [
             {
-              "fromRound": 1,
-              "text": "이름표 붙은 서랍이 빼곡한 약장"
+              "fromRound": 2,
+              "text": "「부자」 서랍에 꽂힌 쪽지: 닷새 전 중궁전 부자이중탕 세 첩"
             }
           ]
         },
@@ -1422,210 +1322,22 @@ export const sejaCase: GungCase = {
           ],
           "lines": [
             {
-              "fromRound": 1,
-              "text": "구석에서 눈치를 보는 의녀 달래"
-            },
-            {
-              "fromRound": 3,
+              "fromRound": 2,
               "text": "달래: 영감은 술시 정~자시 정, 내관님은 해시 정~자시 초 여기"
             }
           ]
-        }
-      ]
-    },
-    {
-      "placeId": "hw",
-      "art": "scene-hw",
-      "objects": [
-        {
-          "id": "OB-HW1",
-          "name": "석등",
-          "pos": [
-            16,
-            52
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "그믐이라 불이 꺼진 석등"
-            }
-          ]
         },
         {
-          "id": "OB-HW2",
-          "name": "연잎·징검돌",
+          "id": "OB-NY5",
+          "name": "약절구",
           "pos": [
-            46,
-            72
+            30,
+            78
           ],
           "lines": [
-            {
-              "fromRound": 1,
-              "text": "징검돌 옆으로 연잎이 빽빽하다"
-            },
             {
               "fromRound": 2,
-              "text": "연잎 하나에 하얀 것이 걸려 있다"
-            }
-          ]
-        },
-        {
-          "id": "OB-HW3",
-          "name": "오솔길",
-          "pos": [
-            80,
-            56
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "큰길에서 비껴 난 오솔길, 일부러 돌아야 닿는다"
-            }
-          ]
-        },
-        {
-          "id": "OB-HW4",
-          "name": "물낯",
-          "pos": [
-            58,
-            40
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "달 없는 그믐밤, 물빛이 먹처럼 검다"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "placeId": "jg",
-      "art": "scene-jg",
-      "objects": [
-        {
-          "id": "OB-JG1",
-          "name": "차 화로",
-          "pos": [
-            34,
-            62
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "늦여름인데 차 화로에 재가 수북하다"
-            },
-            {
-              "fromRound": 2,
-              "text": "재 속에 타다 만 종잇조각이 비친다"
-            }
-          ]
-        },
-        {
-          "id": "OB-JG2",
-          "name": "마주 놓인 방석 둘",
-          "pos": [
-            56,
-            66
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "밤새 누가 마주 앉았던 비단 방석 둘"
-            }
-          ]
-        },
-        {
-          "id": "OB-JG3",
-          "name": "자개 문갑",
-          "pos": [
-            78,
-            40
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "굳게 닫힌 자개 문갑"
-            }
-          ]
-        },
-        {
-          "id": "OB-JG4",
-          "name": "나인 은월",
-          "pos": [
-            90,
-            70
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "문 앞을 지키는 중궁전 나인 은월"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "placeId": "ng",
-      "art": "scene-ng",
-      "objects": [
-        {
-          "id": "OB-NG1",
-          "name": "베개",
-          "pos": [
-            26,
-            66
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "속이 불룩한 오 내관의 베개"
-            }
-          ]
-        },
-        {
-          "id": "OB-NG2",
-          "name": "이불장",
-          "pos": [
-            70,
-            48
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "문이 꼭 닫힌 이불장"
-            },
-            {
-              "fromRound": 2,
-              "text": "문틈으로 비단 보퉁이 끝이 보인다"
-            }
-          ]
-        },
-        {
-          "id": "OB-NG3",
-          "name": "문간",
-          "pos": [
-            50,
-            30
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "문을 나서면 바로 곁이 내의원"
-            }
-          ]
-        },
-        {
-          "id": "OB-NG4",
-          "name": "장 별감",
-          "pos": [
-            88,
-            72
-          ],
-          "lines": [
-            {
-              "fromRound": 1,
-              "text": "툇마루에 버티고 앉은 장 별감"
+              "text": "약절구 홈에 잿빛 가루가 조금 끼어 있다"
             }
           ]
         }

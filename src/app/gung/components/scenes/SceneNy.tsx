@@ -1,7 +1,8 @@
 /**
- * 내의원(원고 10-2) — 벽 한 면을 채운 약장(이름표 붙은 서랍, 글자 없이), 가운데 서안 위 펼쳐진 출납 장부(글자 없이),
- * 왼쪽 화로 위 식은 약탕관, 구석에 고개 숙인 의녀 달래. 천장에 매달린 약초 다발, 쌉싸름한 공기.
- * R2 관찰(「장부 한 줄에 번진 먹물」)의 겉모습은 조사 2부터만 그린다. 장부 글자·약봉지는 그리지 않는다.
+ * 내의원(원고 10-5) — 벽 한 면을 채운 약장(이름표 붙은 서랍, 서랍 하나에 글자 없는 쪽지), 가운데 서안 위 펼쳐진 출납 장부(글자 없이),
+ * 왼쪽 화로 위 식은 약탕관, 화로와 서안 사이 바닥에 돌 약절구, 구석에 고개 숙인 의녀 달래. 천장에 매달린 약초 다발.
+ * 7판: 이 그림은 방장 화면·큰 화면(공용)에도 뜬다 — 관찰 줄의 겉모습(장부 먹물·약절구 가루·쪽지 글자)은 그리지 않는다.
+ * 본 것은 살펴본 사람만 안다(원고 10-1 「그림 금지」 · 10-5).
  */
 import type { SceneArtDef, SceneArtProps } from './types';
 import { C, CommonDefs, Glow, LadyCrouch, OilLamp, SceneSvg, useSvgIds, Vignette } from './parts';
@@ -16,7 +17,7 @@ const HERBS = [
   { x: 816, len: 66, c: '#3F4F30' },
 ];
 
-function SceneNyArt({ round, idScope }: SceneArtProps) {
+function SceneNyArt({ idScope }: SceneArtProps) {
   const ids = useSvgIds('ny', idScope);
   const cols = 9;
   const rows = 7;
@@ -67,6 +68,8 @@ function SceneNyArt({ round, idScope }: SceneArtProps) {
         }),
       )}
       <rect x={cx0 - 18} y={cy0 + rows * dh + 18} width={cols * dw + 36} height="26" fill={C.wood0} />
+      {/* 서랍 하나(4째 줄 5째 칸)에 꽂힌 글자 없는 쪽지 */}
+      <rect x={cx0 + 4 * dw + 40} y={cy0 + 3 * dh - 12} width="20" height="30" fill="#EDE4CC" transform={`rotate(-9 ${cx0 + 4 * dw + 50} ${cy0 + 3 * dh + 3})`} />
 
       {/* 마룻바닥 */}
       <rect x="0" y="640" width="1600" height="360" fill="#2E2116" />
@@ -102,13 +105,17 @@ function SceneNyArt({ round, idScope }: SceneArtProps) {
           <line x1={808} y1={478 + i * 9} x2={894 - i * 0.5} y2={474 + i * 9} />
         </g>
       ))}
-      {round >= 2 && (
-        <g data-detail="r2">
-          <path d="M 836 494 C 848 486 872 488 878 496 C 884 504 866 508 852 506 C 840 505 828 502 836 494 Z" fill="#0B0A10" opacity="0.88" />
-          <circle cx="886" cy="500" r="3" fill="#0B0A10" opacity="0.8" />
-        </g>
-      )}
       <OilLamp x={594} y={520} h={104} scale={0.9} />
+
+      {/* 화로와 서안 사이 바닥의 돌 약절구 + 공이(가루는 그리지 않는다) */}
+      <ellipse cx="474" cy="738" rx="74" ry="13" fill="#000" opacity="0.4" />
+      <path d="M 410 668 C 412 712 432 736 474 738 C 516 736 536 712 538 668 Z" fill="#5E5A54" />
+      <path d="M 420 690 C 430 718 448 730 474 731" stroke="#7E7A72" strokeWidth="4" fill="none" opacity="0.6" />
+      <ellipse cx="474" cy="668" rx="64" ry="16" fill="#8A857D" />
+      <ellipse cx="474" cy="668" rx="50" ry="11" fill="#26221E" />
+      <path d="M 494 664 L 566 598" stroke="#2A1E14" strokeWidth="20" strokeLinecap="round" opacity="0.35" transform="translate(4 6)" />
+      <path d="M 494 664 L 566 598" stroke="#7A6248" strokeWidth="18" strokeLinecap="round" />
+      <path d="M 498 656 L 562 598" stroke="#A88A64" strokeWidth="5" strokeLinecap="round" opacity="0.5" />
 
       {/* 구석의 의녀 달래 */}
       <Glow ids={ids} cx={1380} cy={560} r={240} soft />
@@ -122,11 +129,14 @@ function SceneNyArt({ round, idScope }: SceneArtProps) {
 export const sceneNy: SceneArtDef = {
   key: 'scene-ny',
   Art: SceneNyArt,
+  // QA 7판 BUG-V7-02: 약탕관·약절구 이름표가 위아래로 붙어 약절구 56px 터치 칸이 약탕관 이름표 아래쪽을 덮었다(폰 폭 전부에서
+  // 약탕관을 눌러도 약절구가 골리는 자리 11~35%). 약탕관은 탕관 바로 밑(61), 약절구는 절구 바로 밑(84)으로 벌렸다.
   anchors: {
-    'OB-NY1': [18, 64],
+    'OB-NY1': [18, 61],
     'OB-NY2': [50, 60],
     'OB-NY3': [74, 34],
     'OB-NY4': [86, 71],
+    'OB-NY5': [30, 84],
   },
   labels: {
     'OB-NY2': '출납 장부',

@@ -12,6 +12,7 @@
 import { assignSeats, seatOfRole, type Assignment } from './assign';
 import { isPlaceInRound } from './deck';
 import { parseRoomCode } from './room';
+import { canExamine, type ExamineLog } from './scene';
 import { placeCardById } from './seal';
 import {
   DEFAULT_SCORING,
@@ -226,6 +227,11 @@ export interface GameState {
   createdAt: number;
   updatedAt: number;
   rounds: Partial<Record<RoundNo, RoundPick>>;
+  /**
+   * 7판 살펴보기(개인 기록) — 조사 → 그 조사에 살펴본 물건 id(고른 순). 이 폰에만 있고 결과·공유·초대 링크엔 실리지 않는다.
+   * 한 번 본 건 되돌릴 수 없다(되돌리기 액션이 없다). 장소를 확정하면(rounds[r]) 그 조사의 남은 살펴보기는 마감.
+   */
+  examined?: ExamineLog;
   /** P8 확정 지목(개인 기록) */
   myVote?: { seat: number; at: number };
   host?: HostState;
@@ -538,6 +544,8 @@ export type GameAction =
   /** 패 확인 → 1라운드 직행(자기소개 건너뛰기) */
   | { type: 'skipIntro' }
   // ── 플레이(방장 포함)
+  /** 7판: 이동 장소 물건 하나 살펴보기 — 라운드당 횟수 제한·같은 물건 두 번 금지·장소 확정 뒤 마감. 되돌리기 없음 */
+  | { type: 'examine'; round: RoundNo; objectId: string }
   | { type: 'pickPlace'; round: RoundNo; placeId: string }
   | { type: 'unpickPlace'; round: RoundNo }
   | { type: 'openClue'; round: RoundNo }
@@ -917,6 +925,14 @@ export function applyAction(s: GameState, action: GameAction, ctx: GameContext):
       }
       return touch(s, now, { phase: 'r1' });
     }
+    case 'examine': {
+      const { round, objectId } = action;
+      // 들어선 조사만(미래 라운드 금지) · 장소를 확정했으면 마감 · 물건·횟수·중복은 scene.canExamine(역할 무관)
+      if (!ROUND_NOS.includes(round) || reachedRound(s.phase) < round || s.rounds[round]) return s;
+      if (typeof objectId !== 'string' || !canExamine(c, s.examined, round, objectId)) return s;
+      const prev = s.examined?.[round] ?? [];
+      return touch(s, now, { examined: { ...(s.examined ?? {}), [round]: [...prev, objectId] } });
+    }
     case 'pickPlace': {
       const { round, placeId } = action;
       if (reachedRound(s.phase) < round || s.rounds[round] || !isPlaceInRound(c, round, placeId)) return s;
@@ -970,6 +986,7 @@ export function applyAction(s: GameState, action: GameAction, ctx: GameContext):
       if (s.role !== 'player' || !Number.isInteger(seat) || seat < 2 || seat > n || seat === s.seat) return s;
       const next = touch(s, now, { seat, rounds: {} });
       delete next.myVote;
+      delete next.examined; // 7판: 살펴본 기록도 그 자리의 것이 아니다
       return next;
     }
     default:

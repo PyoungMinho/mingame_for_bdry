@@ -1,61 +1,47 @@
 /**
- * 현장 관찰(원고 6판 10장) — 다 같이 보는 장소 그림 · 그림 속 물건 · 라운드별 관찰 한 줄.
+ * 현장 — 이동은 다 같이, 살펴보기는 각자(원고 7판 10장 · PM 결정 「조사 따로」).
  *
- *  - 공용 정보다: 인원(4·5·6)·역할·자리와 무관하게 같다(원고 10-1 「중립」). 그래서 이 모듈은 **types 만** import 한다 —
- *    assign·seal·getSheet·getClue 를 쓰지 않으므로, 방 코드만 가진 큰 화면 기기도 범인을 계산할 수 없다(UX 스펙 S5).
- *  - 라운드 잠금: 관찰 줄은 fromRound 조사부터 보인다. 인자는 이 기기가 들어선 조사 라운드(reachedRound(phase), 0..3).
- *    0(조사 전)이면 아무것도 없다. 미래 라운드 줄의 글자는 결과 어디에도 실리지 않는다.
- *  - 「새」 표시: 이번 조사(upTo)에 새 줄이 열린 물건. R1 은 모두 처음이라 표시하지 않는다(원고 10-1 — R2 5줄·R3 7줄).
- *  - 본 물건 기록 키(seenKey)는 `물건id@마지막 줄 라운드` — 새 라운드에 새 줄이 붙으면 키가 바뀌어 다시 「새」가 된다.
- *  - 장소 카드(몰래·숨기기 가능)와는 별개다: 여기서 본 것은 단서함에 들어가지 않고, 장소 카드 본문은 여기 없다.
+ *  - **이동(공용)**: 조사마다 모두 sceneRoute 의 한 장소로 옮겨 간다. 공용 화면(방장 무대·큰 화면)은 sceneStop() 만 쓴다 —
+ *    장소 이름·그림 키·살펴보기 수·이동 한 줄뿐, 관찰 글은 결과 어디에도 없다.
+ *  - **살펴보기(개인)**: 각자 폰에서 그 장소 물건을 라운드당 examine 번(7판: 2) 고른다. 고른 물건엔 그 조사까지 열린 줄이 모두
+ *    뜬다(R3 동궁전 물건 = R1 줄 + R3 줄). 기록(ExamineLog)은 그 폰 게임 저장에만 있다(game.ts 'examine').
+ *    한 번 본 건 되돌릴 수 없고, 한 조사에 같은 물건을 두 번 고를 수 없다. 앞 조사에서 본 물건은 다시 골라도 된다.
+ *    장소 고르기를 확정하면 그 조사의 남은 살펴보기는 사라진다(마감 판정은 game.ts — 이 모듈은 횟수·물건만 본다).
+ *  - **역할 무관**: 이 모듈은 **types 만** import 한다 — 인원·자리·역할을 받지 않으므로 같은 기록이면 누구에게나 같은 결과다.
+ *  - **라운드 잠금**: 조사 r 의 관찰은 fromRound ≤ r 줄만. 미래 라운드 줄의 글자는 결과 어디에도 실리지 않는다.
  */
-import type { GungCase, ObservationLineDef, PlaceId, RoundNo, SceneDef, SceneObjectDef } from './types';
+import type { GungCase, ObservationLineDef, PlaceId, PublicSceneStop, RoundNo, SceneObjectDef } from './types';
 
-/** 화면에 내리는 관찰 한 줄 */
-export interface SceneLine {
-  fromRound: RoundNo;
-  text: string;
-  /** 이번 조사(upTo)에 열린 줄 */
-  isNew: boolean;
-}
+/** 이동 한 곳(공용) — 장소 이름·그림 키·살펴보기 수·이동 한 줄. 관찰 글 없음 */
+export type SceneStop = PublicSceneStop;
 
-/** 화면에 내리는 물건(핫스팟) 하나 — upTo 까지 열린 줄이 하나라도 있는 물건만 */
-export interface SceneObject {
+/** 살펴볼 수 있는 물건(핫스팟) — 이름·자리만(관찰 글 없음) */
+export interface ExamineObject {
   id: string;
-  placeId: PlaceId;
   name: string;
   /** 그림 안 핫스팟 중심 [가로 %, 세로 %] */
   pos: [number, number];
-  /** upTo 까지 열린 줄(오래된 것부터) */
-  lines: SceneLine[];
-  /** 「새」 표시 — upTo ≥ 2 이고 이번 조사에 새 줄이 열렸다 */
-  isNew: boolean;
-  /** 본 물건 기록 키 `OB-DG1@3` */
-  seenKey: string;
 }
 
-/** 장소 그림 한 장(그 라운드 기준) */
-export interface SceneView {
-  placeId: PlaceId;
-  /** 장소 이름('동궁전') */
-  placeName: string;
-  /** 배경 그림 키('scene-dg') */
-  art: string;
-  round: RoundNo;
-  objects: SceneObject[];
-  /** 「새」 표시가 붙은 물건 수 */
-  newCount: number;
-}
-
-/** 이번 조사에 새로 열린 관찰(방장이 소리 내어 읽는 목록 — 원고 10-1 「놓치지 않게」) */
-export interface NewObservation {
+/** 살펴본 물건 하나의 관찰(그 사람 폰에만) */
+export interface ObservationView {
   objectId: string;
+  /** 살펴본 조사 */
+  round: RoundNo;
   placeId: PlaceId;
   placeName: string;
   name: string;
-  text: string;
-  round: RoundNo;
+  /** 그 조사까지 열린 줄(오래된 것부터) */
+  lines: { fromRound: RoundNo; text: string }[];
 }
+
+/** 조사 → 그 조사에 살펴본 물건 id(고른 순서). 게임 저장 GameState.examined 와 같은 꼴 */
+export type ExamineLog = Partial<Record<RoundNo, string[]>>;
+
+/** 한 조사 살펴보기 최대 횟수(원고 10-2 검사 ⓑ) — 저장 검증 상한 */
+export const EXAMINE_MAX = 3;
+/** 물건 id 형식('OB-DG1') — 저장 검증 */
+export const OBJECT_ID_RE = /^OB-[A-Z]{2}\d{1,2}$/;
 
 /** 0..3 밖·소수는 잘라 조사 라운드로(0 = 조사 전) */
 export function sceneRound(upTo: number): 0 | RoundNo {
@@ -63,91 +49,94 @@ export function sceneRound(upTo: number): 0 | RoundNo {
   return Math.min(3, Math.floor(upTo)) as RoundNo;
 }
 
-/** 본 물건 기록 키 — 물건 id + 그 물건에 마지막으로 열린 줄의 라운드 */
-export function observationSeenKey(objectId: string, lastLineRound: RoundNo): string {
-  return `${objectId}@${lastLineRound}`;
+function placeName(c: GungCase, placeId: PlaceId): string {
+  return c.places.find((p) => p.id === placeId)?.name ?? placeId;
 }
 
-/** 이 라운드에 열린 장소 순서(원고 배치 순). 라운드 정의가 없으면 장소 목록 순 */
-function placeOrder(c: GungCase, round: RoundNo): PlaceId[] {
-  const r = c.rounds.find((x) => x.no === round);
-  return r ? r.placeIds.slice() : c.places.map((p) => p.id);
+function artOf(c: GungCase, placeId: PlaceId): string {
+  return (c.scenes ?? []).find((s) => s.placeId === placeId)?.art ?? `scene-${placeId}`;
 }
 
-function visibleLines(lines: readonly ObservationLineDef[], round: RoundNo): SceneLine[] {
+// ─────────────────────────────── 이동(공용) ───────────────────────────────
+
+/** 그 조사의 이동 한 곳 — 조사 전이거나 이동 표가 없으면 null. 공용 화면은 이것만 쓴다 */
+export function sceneStop(c: GungCase, upTo: number): SceneStop | null {
+  const round = sceneRound(upTo);
+  if (!round) return null;
+  const r = (c.sceneRoute ?? []).find((x) => x.round === round);
+  if (!r) return null;
+  return { round, placeId: r.placeId, placeName: placeName(c, r.placeId), art: artOf(c, r.placeId), examine: r.examine, cue: r.cue };
+}
+
+/** 이동 표 전부(조사 순) — 큰 화면 공개 모듈(scene-route-data.ts) 대조용 */
+export function sceneStops(c: GungCase): SceneStop[] {
+  return ([1, 2, 3] as RoundNo[]).map((r) => sceneStop(c, r)).filter((s): s is SceneStop => s !== null);
+}
+
+// ─────────────────────────────── 살펴보기(개인) ───────────────────────────────
+
+function hasLineBy(o: SceneObjectDef, round: RoundNo): boolean {
+  return o.lines.some((l) => l.fromRound <= round);
+}
+
+function linesBy(lines: readonly ObservationLineDef[], round: RoundNo): { fromRound: RoundNo; text: string }[] {
   return lines
     .filter((l) => l.fromRound <= round)
     .sort((x, y) => x.fromRound - y.fromRound)
-    .map((l) => ({ fromRound: l.fromRound, text: l.text, isNew: l.fromRound === round }));
+    .map((l) => ({ fromRound: l.fromRound, text: l.text }));
 }
 
-function viewObject(placeId: PlaceId, o: SceneObjectDef, round: RoundNo): SceneObject | null {
-  const lines = visibleLines(o.lines, round);
-  if (!lines.length) return null;
-  const last = lines[lines.length - 1].fromRound;
-  return {
-    id: o.id,
-    placeId,
-    name: o.name,
-    pos: [o.pos[0], o.pos[1]],
-    lines,
-    isNew: round >= 2 && lines.some((l) => l.isNew),
-    seenKey: observationSeenKey(o.id, last),
-  };
+/** 조사 round 에 살펴볼 수 있는 물건 — 그 조사 이동 장소의 물건 가운데 그 조사까지 열린 줄이 있는 것(이름·자리만) */
+export function examineObjects(c: GungCase, round: number): ExamineObject[] {
+  const stop = sceneStop(c, round);
+  if (!stop || stop.round !== round) return [];
+  const def = (c.scenes ?? []).find((s) => s.placeId === stop.placeId);
+  if (!def) return [];
+  return def.objects.filter((o) => hasLineBy(o, stop.round)).map((o): ExamineObject => ({ id: o.id, name: o.name, pos: [o.pos[0], o.pos[1]] }));
 }
 
-function viewScene(c: GungCase, def: SceneDef, round: RoundNo): SceneView {
-  const objects = def.objects.map((o) => viewObject(def.placeId, o, round)).filter((o): o is SceneObject => o !== null);
-  return {
-    placeId: def.placeId,
-    placeName: c.places.find((p) => p.id === def.placeId)?.name ?? def.placeId,
-    art: def.art,
-    round,
-    objects,
-    newCount: objects.filter((o) => o.isNew).length,
-  };
+/** 조사 round 에 그 물건을 살펴본 결과 — 그 조사 이동 장소의 물건이 아니면 null. 줄은 fromRound ≤ round 만 */
+export function observe(c: GungCase, round: number, objectId: string): ObservationView | null {
+  const stop = sceneStop(c, round);
+  if (!stop || stop.round !== round) return null;
+  const def = (c.scenes ?? []).find((s) => s.placeId === stop.placeId);
+  const o = def?.objects.find((x) => x.id === objectId);
+  if (!o || !hasLineBy(o, stop.round)) return null;
+  return { objectId: o.id, round: stop.round, placeId: stop.placeId, placeName: stop.placeName, name: o.name, lines: linesBy(o.lines, stop.round) };
 }
 
-/** 장소 그림 한 장 — 조사 전이거나 그 라운드에 열리지 않은 장소·그림이 없는 장소면 null */
-export function sceneAt(c: GungCase, upTo: number, placeId: PlaceId): SceneView | null {
-  const round = sceneRound(upTo);
-  if (!round || !placeOrder(c, round).includes(placeId)) return null;
-  const def = (c.scenes ?? []).find((s) => s.placeId === placeId);
-  return def ? viewScene(c, def, round) : null;
+/** 그 조사에 살펴본 물건 id(기록에 있는 그대로, 고른 순) */
+export function examinedIn(log: ExamineLog | undefined, round: RoundNo): string[] {
+  return log?.[round]?.slice() ?? [];
 }
 
-/** 이 라운드의 장소 그림 전부(그 라운드 장소 순 — 동궁전부터). 조사 전이면 빈 배열 */
-export function scenesFor(c: GungCase, upTo: number): SceneView[] {
-  const round = sceneRound(upTo);
-  if (!round) return [];
-  return placeOrder(c, round)
-    .map((pid) => sceneAt(c, round, pid))
-    .filter((v): v is SceneView => v !== null && v.objects.length > 0);
+/** 그 조사에 남은 살펴보기 횟수(0 이상). 이동 표가 없는 조사는 0 */
+export function examineLeft(c: GungCase, log: ExamineLog | undefined, round: number): number {
+  const stop = sceneStop(c, round);
+  if (!stop || stop.round !== round) return 0;
+  const valid = new Set(examineObjects(c, round).map((o) => o.id));
+  const used = examinedIn(log, stop.round).filter((id) => valid.has(id)).length;
+  return Math.max(0, stop.examine - used);
 }
 
-/**
- * 이번 조사에 새로 열린 관찰 줄(장소·물건 순). R1 은 전부 처음이라 빈 배열 — 방장은 R2·R3 에 이 목록을 PB 에 이어 읽는다.
- */
-export function newObservations(c: GungCase, upTo: number): NewObservation[] {
+/** 이 물건을 지금 살펴볼 수 있나 — 그 조사 물건이고, 그 조사에 아직 안 골랐고, 횟수가 남았다(장소 확정 마감은 game.ts) */
+export function canExamine(c: GungCase, log: ExamineLog | undefined, round: number, objectId: string): boolean {
+  const r = sceneRound(round);
+  if (!r || r !== round) return false;
+  if (!examineObjects(c, r).some((o) => o.id === objectId)) return false;
+  if (examinedIn(log, r).includes(objectId)) return false;
+  return examineLeft(c, log, r) > 0;
+}
+
+/** 그 조사에 내가 본 관찰(고른 순) — 모르는 id 는 건너뛴다 */
+export function observationsIn(c: GungCase, log: ExamineLog | undefined, round: RoundNo): ObservationView[] {
+  return examinedIn(log, round)
+    .map((id) => observe(c, round, id))
+    .filter((v): v is ObservationView => v !== null);
+}
+
+/** 단서함 「내가 본 관찰」 — 이 폰이 들어선 조사(upTo)까지, 조사 순 · 고른 순 */
+export function myObservations(c: GungCase, log: ExamineLog | undefined, upTo: number): ObservationView[] {
   const reached = sceneRound(upTo);
-  if (reached < 2) return [];
-  const round = reached as RoundNo;
-  const out: NewObservation[] = [];
-  for (const v of scenesFor(c, round)) {
-    for (const o of v.objects) {
-      for (const l of o.lines) {
-        if (l.isNew) out.push({ objectId: o.id, placeId: v.placeId, placeName: v.placeName, name: o.name, text: l.text, round });
-      }
-    }
-  }
-  return out;
-}
-
-/** 물건 id 로 찾기(그 라운드 기준 — 아직 줄이 없으면 null) */
-export function sceneObjectById(c: GungCase, upTo: number, objectId: string): SceneObject | null {
-  for (const v of scenesFor(c, upTo)) {
-    const o = v.objects.find((x) => x.id === objectId);
-    if (o) return o;
-  }
-  return null;
+  return ([1, 2, 3] as RoundNo[]).filter((r) => r <= reached).flatMap((r) => observationsIn(c, log, r));
 }

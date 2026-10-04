@@ -13,6 +13,8 @@
  *  - 6판(현장 보기): 방장 roundSub 에 'scene', 타이머 kind 에 'scene' 이 늘었다. 허용 값이 **넓어지기만** 했으므로
  *    옛 저장(select·discuss)은 그대로 읽힌다(마이그레이션 불필요, v 올리지 않음). 목록 밖 값은 예전처럼 깨진 저장 → 폐기.
  *    현장에서 본 물건 기록은 게임 저장에 넣지 않는다(스키마에 자리가 없다).
+ *  - 7판(조사 따로): 살펴본 물건 기록 `examined`(조사 → 물건 id 목록)를 **선택 필드**로 더했다 — 보드와 같은 방식(없으면 빈 기록,
+ *    깨진 줄은 그 줄만 버림, 예전 번들은 화이트리스트라 조용히 버림 → v 올리지 않음). 관찰 본문은 저장하지 않는다(언제나 사건 데이터에서).
  */
 import {
   BOARD_ID_RE,
@@ -33,6 +35,7 @@ import {
   type VoteState,
 } from './game';
 import { parseRoomCode, type EntryParams, type RoomCode } from './room';
+import { EXAMINE_MAX, OBJECT_ID_RE, type ExamineLog } from './scene';
 import type { RoundNo } from './types';
 
 export const STORAGE_KEYS = {
@@ -189,6 +192,26 @@ function parseBoard(v: unknown, n: number): BoardEntry[] {
   return out;
 }
 
+/**
+ * 살펴본 물건 기록(7판) — 부가 정보라 관대하게: 없거나 깨졌으면 빈 기록, 조사 키 1~3·물건 id 형식·중복 제거·조사당 EXAMINE_MAX 개.
+ * 그 사건에 있는 물건인지·횟수는 엔진(scene.ts)이 사건 데이터로 다시 거른다.
+ */
+function parseExamined(v: unknown): ExamineLog | undefined {
+  if (!isObj(v)) return undefined;
+  const out: ExamineLog = {};
+  for (const k of ROUND_KEYS) {
+    const list = v[k];
+    if (!Array.isArray(list)) continue;
+    const ids: string[] = [];
+    for (const id of list) {
+      if (ids.length >= EXAMINE_MAX) break;
+      if (typeof id === 'string' && OBJECT_ID_RE.test(id) && !ids.includes(id)) ids.push(id);
+    }
+    if (ids.length) out[Number(k) as RoundNo] = ids;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function parseHostCore(v: unknown, n: number): HostCore | null {
   if (!isObj(v)) return null;
   const rollCall = seatList(v.rollCall, n);
@@ -314,6 +337,8 @@ export function sanitizeGame(raw: unknown): GameState | null {
     updatedAt: raw.updatedAt,
     rounds,
   };
+  const examined = parseExamined(raw.examined);
+  if (examined) s.examined = examined;
   if (raw.myVote !== undefined) {
     const mv = raw.myVote;
     if (!isObj(mv) || !isSeat(mv.seat, n) || mv.seat === s.seat || !isFin(mv.at)) return null;

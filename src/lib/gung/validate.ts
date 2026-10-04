@@ -40,6 +40,8 @@ export const TEXT_LIMITS = {
   observationChars: 40,
   /** 장소 그림 한 장의 물건 수(UX 스펙 §1-6 「장소당 최대 8개」) */
   sceneObjects: 8,
+  /** 이동 한 줄(원고 10-2 「40자 이내」) */
+  sceneCueChars: 40,
 } as const;
 
 export function validateCase(c: GungCase): CaseIssue[] {
@@ -223,7 +225,18 @@ export function validateCase(c: GungCase): CaseIssue[] {
     });
   }
 
-  // ── 현장 관찰(원고 10장) — 공용 화면이라 조건 필드가 없다. 라운드 잠금은 fromRound 로만 건다
+  // ── 현장(원고 7판 10장) — 이동(sceneRoute, 공용)·관찰(scenes, 살펴본 사람만). 조건 필드가 없다. 라운드 잠금은 fromRound 로만 건다
+  const routeByRound = new Map<number, { placeId: string; examine: number }>();
+  for (const r of c.sceneRoute ?? []) {
+    const rw = `sceneRoute.R${String(r.round)}`;
+    if (!ROUND_NOS.includes(r.round)) err(rw, `round ${String(r.round)}`);
+    else if (routeByRound.has(r.round)) err(rw, '조사 중복');
+    if (!placeIds.has(r.placeId)) err(rw, `없는 장소 "${r.placeId}"`);
+    if (!Number.isInteger(r.examine) || r.examine < 1 || r.examine > 3) err(rw, `살펴보기 ${String(r.examine)} (1~3)`);
+    if (!r.cue?.trim()) err(rw, '이동 한 줄 없음');
+    else if (Array.from(r.cue).length > TEXT_LIMITS.sceneCueChars) warn(rw, `이동 한 줄 ${Array.from(r.cue).length}자 > ${TEXT_LIMITS.sceneCueChars}`);
+    if (ROUND_NOS.includes(r.round)) routeByRound.set(r.round, { placeId: r.placeId, examine: r.examine });
+  }
   const sceneIds = new Set<string>();
   const scenePlaces = new Set<string>();
   for (const sc of c.scenes ?? []) {
@@ -243,17 +256,26 @@ export function validateCase(c: GungCase): CaseIssue[] {
       const [x, y] = o.pos ?? [];
       if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > 100 || y < 0 || y > 100) err(ow, `위치 ${JSON.stringify(o.pos)} (0~100 %)`);
       if (!o.lines.length) err(ow, '관찰 줄 없음');
-      if (o.lines.length && o.lines[0].fromRound !== 1) warn(ow, `R1 관찰이 없음 — R${o.lines[0].fromRound} 전엔 그림에 물건이 안 보임`);
       let prev = 0;
       for (const l of o.lines) {
         if (!ROUND_NOS.includes(l.fromRound)) err(ow, `fromRound ${String(l.fromRound)}`);
         else if (l.fromRound <= prev) err(ow, `fromRound ${l.fromRound} — 오름차순·라운드당 1줄이어야 함`);
         prev = l.fromRound;
+        // 7판(원고 10-3): 그 줄 라운드의 이동 장소가 아닌 물건엔 그 라운드 줄이 없어야 한다(아무도 살펴볼 수 없는 줄)
+        const stop = routeByRound.get(l.fromRound);
+        if (c.sceneRoute && stop && stop.placeId !== sc.placeId) err(ow, `R${l.fromRound} 줄 — 그 조사 이동 장소(${stop.placeId})가 아님`);
         if (!l.text.trim()) err(ow, '빈 관찰 줄');
         const n = Array.from(l.text).length;
         if (n > TEXT_LIMITS.observationChars) warn(ow, `R${l.fromRound} 관찰 ${n}자 > ${TEXT_LIMITS.observationChars}`);
       }
     }
+  }
+
+  // 이동 장소마다 고를 거리(원고 10-2 검사 ⓓ: 그 조사까지 열린 줄이 있는 물건 수 > 살펴보기 수)
+  for (const [round, stop] of routeByRound) {
+    const objs = (c.scenes ?? []).find((sc) => sc.placeId === stop.placeId)?.objects ?? [];
+    const n = objs.filter((o) => o.lines.some((l) => l.fromRound <= round)).length;
+    if (n <= stop.examine) err(`sceneRoute.R${round}`, `살펴볼 물건 ${n}개 ≤ 살펴보기 ${stop.examine} — 고를 거리 없음`);
   }
 
   // ── 보너스 문항

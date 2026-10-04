@@ -12,7 +12,7 @@ import { describe, expect, it } from 'vitest';
 import { assignFromCode, getAllSheets, getSheet, memoriesUnlockedBetween, memoryRounds, recheckRoundBetween, roleAtSeat, seatOfRole } from './assign';
 import { sejaCase } from './case-data';
 import { gateTimeline } from './deck';
-import { newObservations, scenesFor } from './scene';
+import { examineObjects, myObservations, sceneStop, type ExamineLog } from './scene';
 import { emptyHost, gateRoundsShown, PHASES, reachedRound, type GameState, type Phase } from './game';
 import { SEED_ALPHABET } from './room';
 import { PLAYER_COUNTS, type GungCase, type PlayerCount, type RoundNo } from './types';
@@ -317,22 +317,26 @@ describe('내문 출입 타임라인 — 데이터·엔진', () => {
   });
 });
 
-describe('라운드 잠금 — 현장 관찰(6판 10장, 방장 진행 단계 기준)', () => {
-  const lines = (sejaCase.scenes ?? []).flatMap((sc) => sc.objects.flatMap((o) => o.lines));
+describe('라운드 잠금 — 현장(7판 10장 조사 따로, 방장 진행 단계 기준)', () => {
+  const objs = (sejaCase.scenes ?? []).flatMap((sc) => sc.objects);
+  const lines = objs.flatMap((o) => o.lines);
+  /** 모든 조사에 모든 물건을 본 위조 기록 — 그래도 들어선 라운드 뒤 줄은 안 나와야 한다 */
+  const all: ExamineLog = { 1: objs.map((o) => o.id), 2: objs.map((o) => o.id), 3: objs.map((o) => o.id) };
 
-  it('모든 단계에서 그 단계가 들어선 라운드 뒤의 관찰 줄은 현장·새 관찰 목록 어디에도 없다', () => {
+  it('모든 단계에서 그 단계가 들어선 라운드 뒤의 관찰 줄은 이동·살펴보기·내 관찰 어디에도 없다', () => {
     for (const phase of PHASES) {
       const reached = reachedRound(phase);
-      const json = JSON.stringify([scenesFor(sejaCase, reached), newObservations(sejaCase, reached)]);
+      const json = JSON.stringify([sceneStop(sejaCase, reached), examineObjects(sejaCase, reached), myObservations(sejaCase, all, reached)]);
       for (const l of lines) {
-        expect(json.includes(l.text), `${phase}(R${reached}) ← R${l.fromRound} ${l.text.slice(0, 12)}`).toBe(l.fromRound <= reached);
+        if (l.fromRound > reached) expect(json.includes(l.text), `${phase}(R${reached}) ← R${l.fromRound} ${l.text.slice(0, 12)}`).toBe(false);
       }
     }
   });
 
-  it('PB-3 에서 현장으로 옮긴 증언(번 나인·의관·수문 내관)은 R3 줄 — 조사 3 전엔 공용 카드에도 현장에도 없다', () => {
+  it('6판 R3 공용 관찰(의관·번 나인)은 7판 R3 동궁전 살펴보기 줄 — 조사 3 전엔 어떤 기록으로도 나오지 않는다', () => {
     const moved = lines.filter((l) => l.fromRound === 3);
-    expect(moved.length).toBe(7);
-    for (const l of moved) expect(scenesFor(sejaCase, 2).some((v) => v.objects.some((o) => o.lines.some((x) => x.text === l.text)))).toBe(false);
+    expect(moved.length).toBe(5);
+    const json = JSON.stringify(myObservations(sejaCase, all, 2));
+    for (const l of moved) expect(json.includes(l.text), l.text.slice(0, 12)).toBe(false);
   });
 });

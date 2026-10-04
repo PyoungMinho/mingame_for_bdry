@@ -20,9 +20,9 @@
  *  - M1: 결과 화면 「같은 사건으로 새 방」(6판 문구 압축).
  *
  * 6판(엔진 단계): 조사 라운드 = 현장 보기(scene, 조용한 1분) → 장소 고르기 → 토론.
- *  통합(프론트팀장): hostScene 무대 맨 위가 현장 그림(SceneView — 장소 그림 + 물건 단추 + 다 같이 보는 관찰 카드), 그 아래 공용 단서.
- *  SceneView 에는 사건·들어선 라운드·방 코드(본 물건 기록을 판마다 나누는 데만)·공개 배치도만 넘긴다 — 인원·자리·역할은 넘기지 않는다.
- *  고르기·토론에선 「현장 다시 보기」 시트(GungApp)로 언제든 다시 본다.
+ *  7판(조사 따로 — PM 결정): hostScene 무대 맨 위는 **이동 연출**(SceneMove — 옮겨 간 장소 그림·이름·이동 한 줄·「각자 폰에서 물건 둘을
+ *  살펴보시오」)뿐이다. 물건 단추·관찰 글은 공용 무대에 없다(방장은 관찰을 읽지 않는다). SceneMove 엔 공개 이동 데이터(sceneStop)만 넘긴다.
+ *  방장 본인의 살펴보기·장소 고르기는 단서함 「지금 고르기」 시트에서(OwnClueLink — 현장 보기부터 보인다).
  *
  * 6판 진행 압축(UX 스펙 §2-2) — 누르기·확인 시트·안내 문구 줄이기
  *  - H1 대기실: 자리별 롤콜 → 표식 한 번에 외치기(자리 칩은 선택), 「사건을 시작하겠소?」 확인 시트 삭제, 진행표(FlowStrip).
@@ -67,6 +67,7 @@ import {
   roleById,
   roundDef,
   rolesVisible,
+  sceneStop,
   timeHint,
 } from '@/lib/gung';
 import {
@@ -91,7 +92,7 @@ import type { ConfirmRequest } from './Overlays';
 import { DefenseFrame, GameFlow, isNoteLine, PublicCardList, PublicFold, TimeHintLine } from './Shared';
 import { hostCaption, hostSignal, type HostSignalSub } from './signals';
 import { MyCardTab } from './Tabs';
-import { SceneView } from './SceneView';
+import { SceneMove } from './SceneMove';
 
 /** §13 기본 진행 대본 — 사건 데이터 hostCue 가 있으면 그쪽이 이긴다(6판: 한 줄 ≤ 40자) */
 export const HOST_CUE = {
@@ -154,8 +155,6 @@ export interface HostAreaProps {
   onOpenHelp?: () => void;
   /** R5 인장 키패드 시트 열기 */
   onOpenSealPad: () => void;
-  /** 통합: 「현장 다시 보기」 시트(고르기·토론 중 언제든) */
-  onOpenScene?: () => void;
   /** R1 P1 — 한 번 연 칩 점(UI 상태) */
   seenSections?: Partial<Record<SectionKey, boolean>>;
   onSeenSection?: (section: SectionKey) => void;
@@ -490,7 +489,6 @@ function hostSelect(props: HostAreaProps): HostAreaResult {
         <OwnClueLink onGoTab={onGoTab} />
         <ThisRoundPublicFold c={c} a={a} round={round} />
         <PastPublic c={c} a={a} round={round} />
-        <SceneAgainLink onOpenScene={props.onOpenScene} />
         {round > 1 && <BoardPanel {...props} fold />}
       </>
     ),
@@ -510,27 +508,29 @@ function durationLabel(ms: number): string {
 // ─────────────────────────────── H5a 조사 — 현장 보기(6판) ───────────────────────────────
 
 /**
- * 현장 보기 무대 — 맨 위가 다 같이 보는 현장 그림(SceneView), 그 아래 이번 조사 공용 단서(낭독), 접힘 1곳(지난 공용 단서·시각 어림).
- * SceneView 는 역할 무관(사건·라운드·방 코드·공개 배치도만). idScope='host' — 그림 SVG id 가 렌더마다 같다(역할 무관 DOM 비교).
- * 방 코드는 본 물건(✓) 기록을 판마다 나누는 데만 쓰고 화면엔 그리지 않는다.
+ * 현장 보기 무대(7판) — 맨 위가 이동 연출(SceneMove: 그림·장소 이름·이동 한 줄·살펴보기 안내), 그 아래 이번 조사 공용 단서(낭독),
+ * 방장 본인 살펴보기·조사(단서함), 접힘 1곳(지난 공용 단서·시각 어림). 관찰 글·물건 단추는 없다(공용 무대 — 원고 10-1).
+ * SceneMove 엔 공개 이동 데이터만(인원·자리·역할 무관). idScope='host' — 그림 SVG id 가 렌더마다 같다(역할 무관 DOM 비교).
  */
 function hostScene(props: HostAreaProps): HostAreaResult {
-  const { c, state, a, dispatch, timerValue, onTimer, map } = props;
+  const { c, state, a, dispatch, timerValue, onTimer, onGoTab } = props;
   const round = roundOf(state);
   const timeUp = Boolean(timerValue && timerValue.remainingMs <= 0);
   return {
     body: (
       <>
         <HostRoundSteps c={c} current="scene" />
-        {/* 통합: 그림·관찰 카드가 첫 화면에 들도록 — 큐 한 줄 + 한 줄 타이머(현장 타이머는 조용한 조연) */}
+        {/* 그림이 첫 화면에 들도록 — 큐 한 줄 + 한 줄 타이머(현장 타이머는 조용한 조연) */}
         <HostCue className="gu-hostcue--line">{GUIDE.sceneCue}</HostCue>
         <TimerSlot timerValue={timerValue} onTimer={onTimer} size="mini" label={GUIDE.sceneLabel} />
         {/* 현장 타이머는 조용히 끝난다(징 없음) — 0:00 엔 이 한 줄만 */}
         {timeUp && <p className="gu-micro gu-center">{GUIDE.sceneTimerDone}</p>}
         <section className="gu-scene-slot" data-scene-slot="host" aria-label={GUIDE.sceneLabel}>
-          <SceneView c={c} upTo={round} code={state.code} idScope="host" map={map} startAtNew />
+          <SceneMove stop={sceneStop(c, round)} idScope="host" />
         </section>
         <PublicBoard c={c} a={a} round={round} />
+        {/* 방장도 자리 1 플레이어 — 살펴보기·장소 고르기는 단서함에서(고정 문구: 살펴봤는지·골랐는지 드러내지 않는다) */}
+        <OwnClueLink onGoTab={onGoTab} />
         {hostGateTimeline(c, a, state)}
         <PastAndTimeFold c={c} a={a} round={round} />
       </>
@@ -541,16 +541,6 @@ function hostScene(props: HostAreaProps): HostAreaResult {
       </GuButton>
     ),
   };
-}
-
-/** 고르기·토론 화면 — 「현장 다시 보기」 시트 링크(현장은 공용 정보라 언제 다시 봐도 된다) */
-function SceneAgainLink({ onOpenScene }: { onOpenScene?: () => void }) {
-  if (!onOpenScene) return null;
-  return (
-    <button type="button" className="gu-ghostlink gu-center-self gu-scene-againlink" onClick={onOpenScene}>
-      {GUIDE.sceneAgainLink}
-    </button>
-  );
 }
 
 /**
@@ -674,7 +664,6 @@ function hostDiscuss(props: HostAreaProps): HostAreaResult {
         <BoardPanel {...props} />
         <ThisRoundPublicFold c={c} a={a} round={round} />
         <PastPublic c={c} a={a} round={round} />
-        <SceneAgainLink onOpenScene={props.onOpenScene} />
         <OwnClueLink onGoTab={onGoTab} />
       </>
     ),

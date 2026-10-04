@@ -7,7 +7,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, createEvent, fireEvent, render, screen, within } from '@testing-library/react';
-import { assignFromCode, getSheet, roleAtSeat, SEED_ALPHABET, seatOfRole, type PlayerCount } from '@/lib/gung';
+import { assignFromCode, getSheet, GUIDE, roleAtSeat, SEED_ALPHABET, seatOfRole, type PlayerCount } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
 import { circledNum } from '../components';
 import { useWakeLock } from '../lib/useWakeLock';
@@ -869,7 +869,7 @@ describe('CLUE — 장소·단서', () => {
     await tap(btn(/조사하기/));
     await tap(document.querySelector('.gu-toast-action') as HTMLElement);
     expect(saved().rounds['1']).toBeUndefined();
-    expect(screen.getByText('한 곳만 고르시오 · 같은 곳은 같은 단서요')).toBeInTheDocument();
+    expect(screen.getByText(GUIDE.placeHint)).toBeInTheDocument(); // 7판: 「흩어져 한 곳만 뒤지시오 · …」
     await tap(tiles('gu-place-tile')[1]);
     await tap(btn(/조사하기/));
     expect(document.querySelector('.gu-toast-action')).not.toBeNull();

@@ -24,7 +24,7 @@ import {
 } from './game';
 import { publicBoardUpTo } from './deck';
 import { GUIDE } from './guide-data';
-import { newObservations } from './scene';
+import { examineObjects, sceneStop } from './scene';
 import { genericPayload } from './share';
 import { STORAGE_KEYS, loadGame, memoryStorage, saveGame } from './storage';
 import { DEFAULT_TIMERS, PLAYER_COUNTS } from './types';
@@ -85,14 +85,15 @@ describe('조사 라운드 = 현장 보기 → 장소 고르기 → 토론(방�
     expect(s.phase).toBe('defense');
   });
 
-  it('현장 보기에 들어선 순간 그 라운드는 「들어선 라운드」다 — 공용 단서·출입 기록·현장 관찰이 그 라운드 기준으로 열린다', () => {
+  it('현장 보기에 들어선 순간 그 라운드는 「들어선 라운드」다 — 공용 단서·출입 기록·이동 장소(7판)가 그 라운드 기준으로 열린다', () => {
     const s = run(newHostGame(c, '7F3K6', T0)!, adv(7)); // 조사 1 현장·고르기·토론 → 조사 2 현장
     expect([s.phase, s.host!.roundSub]).toEqual(['r2', 'scene']);
     const reached = reachedRound(s.phase);
     expect(reached).toBe(2);
     expect(gateRoundsShown(s)).toEqual([1, 2]);
     expect(publicBoardUpTo(c, 6, reached).map((x) => x.id)).toContain('PB-2');
-    expect(newObservations(c, reached)).toHaveLength(5);
+    expect(sceneStop(c, reached)?.placeName).toBe('내의원'); // 7판: 조사 2 = 모두 내의원으로
+    expect(examineObjects(c, reached)).toHaveLength(5);
   });
 
   it('플레이어 게이트는 그대로 단계 하나씩(하위 단계 없음)', () => {

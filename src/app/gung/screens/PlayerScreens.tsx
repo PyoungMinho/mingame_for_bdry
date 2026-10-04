@@ -20,6 +20,12 @@
  *  - 조사 게이트 확인 시트는 **잠금 기억이 풀리는 라운드(데이터 memories.fromRound — 이 사건은 조사 3)** 에만. 조사 1·2는 1탭.
  *  - P5 장소 고르기 안내 한 줄. P7 변론 「변론 준비」·「내 차례」 줄 삭제. P8 지목 → 진상 게이트·지목 바꾸기·보너스 열기 확인 시트 삭제.
  *  - P9 진상: 결론(≤ 200자) + 「진상 전문 ▸」 접힘. 말투 예시는 게임 뒤 '모두의 패'에서만.
+ *
+ * 7판(조사 따로 — PM 결정 「이동만 같이, 조사는 각자」)
+ *  - 조사 화면(장소를 고르기 전) 맨 위 = 살펴보기(ExaminePanel): 그 조사 이동 장소 그림 + 물건 이름표, 라운드당 2번. 본 것은 이 폰에만.
+ *  - 그 아래 「흩어져 한 곳만 뒤지시오」 장소 고르기. 장소를 확정하면 남은 살펴보기는 사라진다(6초 되돌리기 안에선 되살아난다).
+ *  - 장소를 고른 뒤엔 단서 카드 아래 「내가 본 관찰 · 조사 N」(탭해 보기 + 자동 가림). 단서함에도 같은 목록.
+ *  - 역할과 무관하게 같은 구조 — 사건·조사·이 폰의 살펴본 기록만 쓴다.
  */
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
@@ -37,6 +43,8 @@ import {
   getSheet,
   GUIDE,
   guideText,
+  examineLeft,
+  observationsIn,
   parseRoomCode,
   publicSeat,
   publicSeats,
@@ -73,6 +81,7 @@ import {
 } from "./Shared";
 import { gateCaption, gateSignal } from "./signals";
 import { MyCardTab } from "./Tabs";
+import { ExaminePanel, ObservationList } from "./ExaminePanel";
 
 /** G5: 'wait' = 진상 대기(범인 없음) · 'truth' = 진상 전문 · 'all' = 모두의 패 */
 export type TruthView = "wait" | "truth" | "all";
@@ -119,8 +128,6 @@ export interface PlayerAreaProps {
   onOpenMap: () => void;
   /** R5 장소 카드 id → 인장 */
   sealOf: (cardId: string) => number | null;
-  /** 통합: 내 폰으로 현장 보기 시트(현장 그림은 공용 — 방장 화면과 같은 그림) */
-  onOpenScene?: () => void;
   /** R1 P1 — 한 번 연 칩 점(UI 상태) */
   seenSections?: Partial<Record<SectionKey, boolean>>;
   onSeenSection?: (section: SectionKey) => void;
@@ -510,11 +517,20 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
   if (!pick) {
     const places = roundPlaces(c, round).map((p) => placeToSummary(c, p.id));
     const chosen = places.find((p) => p.id === draftPlace);
+    const left = examineLeft(c, state.examined, round);
     return {
       body: (
         <>
-          {/* 통합: 라운드 첫 1분은 방장 화면(또는 큰 화면)의 현장 그림을 다 같이 본다. 내 폰으로도 같은 그림을 볼 수 있다 */}
-          <ScenePrompt onOpenScene={props.onOpenScene} />
+          {/* 7판: 다 같이 옮겨 온 장소의 물건을 각자 살펴본다(이 폰에만). 방장 화면엔 그림·장소 이름만 */}
+          <ExaminePanel
+            c={c}
+            round={round}
+            log={state.examined}
+            closed={false}
+            onExamine={(objectId) => dispatch({ type: "examine", round, objectId })}
+            sealEpoch={props.sealEpoch}
+            idScope="player"
+          />
           <ThisRoundPublic c={c} a={a} round={round} />
           <p className="gu-placehint">{GUIDE.placeHint}</p>
           <button
@@ -530,6 +546,7 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
             onSelect={(id) => setDraftPlace(id)}
             tags={visitedTags(state, round)}
           />
+          {left > 0 && <p className="gu-micro gu-examine-closenote">{GUIDE.examineCloseNote}</p>}
         </>
       ),
       actionBar: (
@@ -574,11 +591,12 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
           sealOf={props.sealOf}
         />
         <p className="gu-micro">{GUIDE.clueMicro}</p>
-        {props.onOpenScene && (
-          <button type="button" className="gu-ghostlink gu-center-self gu-scene-againlink" onClick={props.onOpenScene}>
-            {GUIDE.sceneAgainLink}
-          </button>
-        )}
+        {/* 7판: 이번 조사에 내가 본 관찰(탭해 보기 + 자동 가림) — 단서함에도 같은 목록 */}
+        <ObservationList
+          observations={observationsIn(c, state.examined, round)}
+          sealEpoch={props.sealEpoch}
+          heading={`${GUIDE.obsHead} · 조사 ${round}`}
+        />
       </>
     ),
     actionBar: (
@@ -588,20 +606,6 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
     ),
     gateCaption: gate(state.phase),
   };
-}
-
-/** 장소 고르기 위 — 「현장 그림은 방장 화면에서 다 같이」 + 내 폰으로 보기(모든 역할에 같은 문구) */
-function ScenePrompt({ onOpenScene }: { onOpenScene?: () => void }) {
-  return (
-    <div className="gu-scene-prompt">
-      <p className="gu-scene-prompt-text">{GUIDE.scenePlayerHint}</p>
-      {onOpenScene && (
-        <button type="button" className="gu-ghostlink gu-scene-prompt-link" onClick={onOpenScene}>
-          {GUIDE.sceneOpenLink}
-        </button>
-      )}
-    </div>
-  );
 }
 
 /** R5 — 내 지난 방문 꼬리표(이 폰 기록만. 남이 많이 간 곳 같은 집계는 없다) */

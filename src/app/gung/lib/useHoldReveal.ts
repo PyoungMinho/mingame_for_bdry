@@ -10,6 +10,8 @@
  *  - 키보드: Space/Enter keydown(반복 무시) = 열림, keyup = 봉인
  *  - visibilitychange(hidden)/blur/pagehide → 즉시 봉인
  *  - `sealEpoch` 가 바뀌면(탭 전환·phase 전환·시트 열림 등 상위가 올리는 신호) 즉시 재봉인
+ *  - 7판 관찰 카드: `opts.tapMs` 로 탭 열림 시간을 줄인다(짧은 한 줄 — 탭해 보기 + 자동 가림). `show()` = 닫혀 있으면 탭처럼 연다
+ *    (방금 살펴본 물건을 바로 보여 줄 때). hold 모드에선 show 가 아무것도 하지 않는다.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
@@ -26,9 +28,17 @@ export interface UseHoldReveal {
   tapRemainingMs?: number;
   tapTotalMs?: number;
   reseal: () => void;
+  /** tap 모드: 닫혀 있으면 연다(자동 가림 타이머 포함). hold 모드: 무시 */
+  show: () => void;
 }
 
-export function useHoldReveal(mode: SealMode, sealEpoch: unknown): UseHoldReveal {
+export interface UseHoldRevealOptions {
+  /** tap 모드 열림 시간(기본 TAP_OPEN_MS) */
+  tapMs?: number;
+}
+
+export function useHoldReveal(mode: SealMode, sealEpoch: unknown, opts?: UseHoldRevealOptions): UseHoldReveal {
+  const tapMs = opts?.tapMs ?? TAP_OPEN_MS;
   const [open, setOpen] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [tapRemainingMs, setTapRemainingMs] = useState<number | undefined>(undefined);
@@ -119,19 +129,28 @@ export function useHoldReveal(mode: SealMode, sealEpoch: unknown): UseHoldReveal
     setOpen(false);
   }, [clearHold]);
 
+  const openTap = useCallback(() => {
+    clearTap();
+    setOpen(true);
+    setTapRemainingMs(tapMs);
+    const endsAt = Date.now() + tapMs;
+    tapInterval.current = window.setInterval(() => {
+      setTapRemainingMs(Math.max(0, endsAt - Date.now()));
+    }, 250);
+    tapTimeout.current = window.setTimeout(reseal, tapMs);
+  }, [clearTap, reseal, tapMs]);
+
   const toggleTap = useCallback(() => {
     if (open) {
       reseal();
       return;
     }
-    setOpen(true);
-    setTapRemainingMs(TAP_OPEN_MS);
-    const endsAt = Date.now() + TAP_OPEN_MS;
-    tapInterval.current = window.setInterval(() => {
-      setTapRemainingMs(Math.max(0, endsAt - Date.now()));
-    }, 250);
-    tapTimeout.current = window.setTimeout(reseal, TAP_OPEN_MS);
-  }, [open, reseal]);
+    openTap();
+  }, [open, reseal, openTap]);
+
+  const show = useCallback(() => {
+    if (mode === 'tap' && !open) openTap();
+  }, [mode, open, openTap]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent<HTMLElement>) => {
@@ -174,5 +193,5 @@ export function useHoldReveal(mode: SealMode, sealEpoch: unknown): UseHoldReveal
           onContextMenu: (e) => e.preventDefault(),
         };
 
-  return { open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs: mode === 'tap' ? TAP_OPEN_MS : undefined, reseal };
+  return { open, mode, pressBind, holdProgress, tapRemainingMs, tapTotalMs: mode === 'tap' ? tapMs : undefined, reseal, show };
 }

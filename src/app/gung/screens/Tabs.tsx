@@ -8,14 +8,18 @@
  *  - R1: 패 확인 단계엔 칩 위 「꼭 볼 3칸」(모든 역할 같은 문구), 한 번 연 칩엔 점(onSeen → 상위 UI 상태, 저장 안 함).
  *  - R3: 단서함 '공용 단서' 위에 내문 출입 타임라인(방장과 같은 gateTimeline·gateRoundsShown), 목록 아래 시각 어림 한 줄.
  *  - R5: 공개한 장소 카드에만 인장 번호.
+ *
+ * 7판(조사 따로): 단서함 조사마다 「내가 본 관찰 · 조사 N」(이 폰이 살펴본 물건만, 탭해 보기 + 자동 가림).
+ *  아직 고르지 않은 조사엔 남은 살펴보기 횟수 — 「지금 고르기」 시트에서 살펴보고 고른다(방장 본인 조사도 여기서).
  */
-import { useEffect, useState } from 'react';
-import { getClue, type Assignment, type GungCase, type ResolvedSheet, type RoundNo } from '@/lib/gung';
+import { Fragment, useEffect, useState } from 'react';
+import { examineLeft, getClue, GUIDE, guideText, observationsIn, sceneStop, type Assignment, type ExamineLog, type GungCase, type ResolvedSheet, type RoundNo } from '@/lib/gung';
 import { ClueCard, GateTimelineBar, RoleCard } from '../components';
 import type { GateTimelineView } from '../components';
 import type { Disclosure, SectionKey, TermItem } from '../components/types';
 import { useHoldReveal } from '../lib/useHoldReveal';
 import { placeToSummary, sheetToContent } from './adapters';
+import { ObservationList } from './ExaminePanel';
 
 export function MyCardTab({
   sheet,
@@ -85,6 +89,7 @@ export function CluesTab({
   seat,
   reachedRound,
   rounds,
+  examined,
   publicUpTo,
   sealEpoch,
   revealMode,
@@ -100,6 +105,8 @@ export function CluesTab({
   seat: number;
   reachedRound: 0 | RoundNo;
   rounds: Partial<Record<RoundNo, RoundClueState>>;
+  /** 7판: 이 폰이 살펴본 물건 기록(GameState.examined) */
+  examined?: ExamineLog;
   /** 이 폰이 들어선 라운드까지의 공용·NPC 단서(지금 라운드 포함 — 원고 1-7: 라운드 시작 때 공개, QA BUG-04 결정) */
   publicUpTo: { id: string; round: RoundNo; title: string; body: string }[];
   /** R3 — 방장과 같은 내문 출입 타임라인(이 폰이 들어선 라운드의 공용 카드 출입 기록만) */
@@ -122,34 +129,53 @@ export function CluesTab({
         .filter((r) => r <= reachedRound)
         .map((r) => {
           const pick = rounds[r];
+          // 7판: 그 조사에 내가 본 관찰 — 장소 카드 아래(고르기 전이면 「지금 고르기」 아래)
+          const mine = (
+            <ObservationList observations={observationsIn(c, examined, r)} sealEpoch={sealEpoch} heading={`${GUIDE.obsHead} · 조사 ${r}`} />
+          );
           if (!pick?.placeId) {
+            const stop = sceneStop(c, r);
+            const left = examineLeft(c, examined, r);
             return (
-              <div key={r} className="gu-cluestab-empty">
-                <p className="gu-cluestab-empty-label">조사 {r} · 아직 고르지 않음</p>
-                <button type="button" className="gu-btn gu-btn--secondary gu-btn--full" onClick={() => onPickNow(r)}>
-                  <span className="gu-btn-label">지금 고르기</span>
-                </button>
-              </div>
+              <Fragment key={r}>
+                <div className="gu-cluestab-empty">
+                  <p className="gu-cluestab-empty-label">
+                    조사 {r} · 아직 고르지 않음
+                    {stop && left > 0 && (
+                      <span className="gu-cluestab-examine">
+                        {' '}
+                        · {GUIDE.examineHead} {guideText.examineLeft(left, stop.examine)}
+                      </span>
+                    )}
+                  </p>
+                  <button type="button" className="gu-btn gu-btn--secondary gu-btn--full" onClick={() => onPickNow(r)}>
+                    <span className="gu-btn-label">지금 고르기</span>
+                  </button>
+                </div>
+                {mine}
+              </Fragment>
             );
           }
           const clue = getClue(c, a, r, pick.placeId, seat);
           return (
-            <ClueTabCard
-              key={r}
-              round={r}
-              placeId={pick.placeId}
-              c={c}
-              text={clue?.body ?? ''}
-              clueId={clue?.id ?? ''}
-              terms={(clue?.terms ?? []).map((t) => ({ term: t.term, desc: t.desc }))}
-              disclosure={pick.disclosure}
-              opened={pick.opened}
-              sealEpoch={sealEpoch}
-              revealMode={revealMode}
-              onDisclose={(v) => onDisclose(r, v)}
-              onOpened={() => onOpened(r)}
-              seal={pick.disclosure === 'public' && clue ? sealOf?.(clue.id) ?? null : null}
-            />
+            <Fragment key={r}>
+              <ClueTabCard
+                round={r}
+                placeId={pick.placeId}
+                c={c}
+                text={clue?.body ?? ''}
+                clueId={clue?.id ?? ''}
+                terms={(clue?.terms ?? []).map((t) => ({ term: t.term, desc: t.desc }))}
+                disclosure={pick.disclosure}
+                opened={pick.opened}
+                sealEpoch={sealEpoch}
+                revealMode={revealMode}
+                onDisclose={(v) => onDisclose(r, v)}
+                onOpened={() => onOpened(r)}
+                seal={pick.disclosure === 'public' && clue ? sealOf?.(clue.id) ?? null : null}
+              />
+              {mine}
+            </Fragment>
           );
         })}
       {timeline && <GateTimelineBar data={timeline} />}

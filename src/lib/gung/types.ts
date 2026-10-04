@@ -12,7 +12,8 @@
  *  - 인원별 변형: 카드의 forCount / onlyWhen(플레이어·NPC 여부) 로 교체 카드를 표현한다.
  *  - NPC 증언 카드: 그 역할이 NPC 인 판에서만 라운드 시작 때 공용 공개.
  *  - 라운드 잠금(원고 3판): 역할의 memories 블록은 fromRound 조사가 시작되기 전엔 플레이어 화면에 내리지 않는다.
- *  - 현장 관찰(원고 6판 10장): scenes 는 인원·역할 무관 공용 정보. 관찰 줄은 fromRound 조사부터 보인다(scene.ts).
+ *  - 현장(원고 7판 10장 「조사 따로」): sceneRoute(이동)는 공용 — 조사마다 모두 한 장소로 옮겨 간다. scenes(관찰)는 개인 —
+ *    각자 폰에서 그 장소 물건을 라운드당 examine 번 살펴보고, 본 줄은 그 사람 단서함에만 남는다. 둘 다 인원·역할과 무관(scene.ts).
  *  - 설계자 메모(memo)는 앱 데이터에 넣지 않는다.
  */
 
@@ -241,11 +242,31 @@ export interface RoundDef {
   hostCue?: { select?: string; discuss?: string };
 }
 
-// ─────────────────────────────── 현장 관찰(원고 6판 10장) ───────────────────────────────
+// ─────────────────────────────── 현장 — 이동(공용)·살펴보기(개인) (원고 7판 10장) ───────────────────────────────
+
+/**
+ * 이동 한 곳(원고 10-2 이동 표 한 행) — 조사 round 에 모두 placeId 로 옮겨 간다. 공용 정보:
+ * 방장 화면·큰 화면은 이것(과 장소 그림)만 그린다. 관찰 글은 여기 없다.
+ */
+export interface SceneRouteStop {
+  round: RoundNo;
+  placeId: PlaceId;
+  /** 그 조사에 한 사람이 살펴볼 물건 수(1~3) */
+  examine: number;
+  /** 이동 한 줄 — 방장 화면·큰 화면 연출 문구(40자 이내, 관찰 내용·범인 호칭 금지) */
+  cue: string;
+}
+
+/** 공용 화면에 내리는 이동 한 곳(장소 이름·그림 키 동봉) — scene-route-data.ts(큰 화면 전용 공개 모듈)와 같은 꼴 */
+export interface PublicSceneStop extends SceneRouteStop {
+  placeName: string;
+  /** 배경 그림 키('scene-dg') */
+  art: string;
+}
 
 /**
  * 관찰 한 줄 — 그 라운드에 **새로** 열리는 줄(원고 10-3 R1~R3 칸). 앞 라운드 줄은 남고 새 줄이 아래에 붙는다.
- * 숨길 수 없는 공용 정보(다 같이 보는 화면)라 조건 필드가 없다 — 인원(4·5·6)·역할과 무관하게 같다(원고 10-1 「중립」).
+ * 7판: 그 물건을 살펴본 사람의 폰에만 뜬다(개인 정보). 조건 필드가 없다 — 인원(4·5·6)·역할과 무관하게 같다(원고 10-1 「중립」).
  */
 export interface ObservationLineDef {
   fromRound: RoundNo;
@@ -389,7 +410,9 @@ export interface GungCase {
   npcHeading?: string;
   /** 공용 카드 gateLog 를 그릴 눈금. 없으면 타임라인을 그리지 않는다 */
   gateAxis?: GateAxisDef;
-  /** 현장 관찰(원고 10장) — 장소 그림별 물건·관찰 줄. 없으면 현장 화면에 그릴 것이 없다 */
+  /** 현장 이동(원고 10-2) — 조사마다 모두 옮겨 가는 한 곳. 없으면 이동·살펴보기가 없다 */
+  sceneRoute?: SceneRouteStop[];
+  /** 현장 관찰(원고 10-3) — 이동 장소 그림별 물건·관찰 줄(살펴본 사람만 본다) */
   scenes?: SceneDef[];
 }
 

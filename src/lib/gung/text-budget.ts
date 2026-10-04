@@ -62,14 +62,18 @@ export const GUIDE_COPY_KIND: Record<keyof typeof GUIDE, UiCopyKind> = {
   selectTimerStart: 'button',
   publicAlsoInPhones: 'micro',
   sceneCue: 'cue',
-  sceneNewHead: 'head',
   sceneTimerDone: 'micro',
   sceneLabel: 'head',
-  sceneMapToggle: 'button',
-  sceneMapHint: 'micro',
-  scenePlayerHint: 'cue',
-  sceneOpenLink: 'button',
-  sceneAgainLink: 'button',
+  moveTag: 'head',
+  examineHead: 'head',
+  examineHint: 'cue',
+  examineOnce: 'micro',
+  examineSpent: 'cue',
+  examineClosed: 'cue',
+  examineCloseNote: 'micro',
+  obsHead: 'head',
+  obsSealed: 'micro',
+  obsShowNote: 'micro',
   bigScreenMenu: 'button',
   bigScreenBody: 'cue',
   bigScreenNote: 'micro',
@@ -199,7 +203,10 @@ export const DATA_BUDGET = {
 } as const;
 
 /**
- * 아직 상한을 넘는 사건 데이터(6판 보정 원고 실측, 2026-10-04) — 원고팀 압축 대기.
+ * 아직 상한을 넘는 사건 데이터(6판 보정 원고 실측, 2026-10-04 · 7판 보정 재측정) — 원고팀 압축 대기.
+ *  - 7판(조사 따로): 브리핑 「셋」이 「다 같이 한 곳에 가 각자 물건 둘을 살핀 뒤, 흩어져 한 곳씩 뒤진다 … 증거로 내밀려면 …」로
+ *    늘어 개요 낭독이 4·5인 467 → 495, 6인 443 → 471(상한 450 초과, 낭독 1.4분 그대로). 대신 공용 관찰 낭독(6판 40줄)이 없어져
+ *    플레이어가 읽는 글 합계는 3,951 → 3,721자로 줄었다(원고 9-10). NPC-6C 183 → 127(7판 보정 압축).
  * 키 = 측정 항목 id(text-budget.test.ts 의 measureCaseData 와 같은 꼴), 값 = 지금 길이(이보다 늘면 실패).
  * 상한 안으로 들어오면 테스트가 「목록에서 지우시오」로 실패한다.
  */
@@ -207,9 +214,10 @@ export const DATA_OVER_BUDGET: Readonly<Record<string, number>> = {
   'publicCard:PB-1': 158,
   'publicCard:PB-2': 179,
   'npcCard:NPC-5B': 132,
-  'npcCard:NPC-6C': 183,
-  'briefingRead:4': 467,
-  'briefingRead:5': 467,
+  'npcCard:NPC-6C': 127,
+  'briefingRead:4': 495,
+  'briefingRead:5': 495,
+  'briefingRead:6': 471,
   truthTotal: 713,
   'sheet.secret:queen': 311,
   'sheet.secret:physician': 355,

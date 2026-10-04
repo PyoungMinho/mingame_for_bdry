@@ -14,27 +14,34 @@ export const GUIDE_BANNED_WORDS = ['꿀', '석청', '탕약', '매듭', '부자'
 export const GUIDE = {
   // ── G2 낭독 먼저 · 방장 조사는 단서함에서 ──
   // 6판: 낭독은 현장 보기 1분이 맡고, 고르기 타이머는 현장 → 고르기 전진 때 저절로 돈다. 분 숫자는 DEFAULT_TIMERS 와 같아야 한다(테스트).
-  selectCue: '각자 한 곳만 고르시오. 같은 곳은 같은 단서요',
+  /** 7판: 살펴보기 뒤 흩어져 장소 고르기(원고 1-7 규칙 3 「이어 흩어져 한 곳씩 뒤져」) */
+  selectCue: '살펴봤으면 흩어져 한 곳씩 뒤지시오. 같은 곳은 같은 단서요',
   /** 단계 맞추기·방장 복구로 고르기에 들어와 타이머가 없을 때만(보통은 현장 → 고르기 전진 때 저절로 돈다) */
   selectTimerStart: '⏱ 고르기 1분 시작',
   publicAlsoInPhones: '이 단서는 각자 폰 단서함에도 있소',
 
-  // ── 6판 현장 보기(조사 첫 1분, 다 같이 보는 그림) ──
-  // 통합(프론트팀장): 그림이 무대 맨 위(큐 한 줄), 공용 단서는 그 아래 「소리 내어 읽으시오」 머리가 맡는다
-  sceneCue: '그림 속 물건을 눌러 다 같이 보시오',
-  sceneNewHead: '이번 조사 새 관찰 — 소리 내어 읽으시오',
-  sceneTimerDone: '다 봤으면 넘어가시오',
+  // ── 현장(조사 첫 1분) — 7판 「조사 따로」: 이동은 다 같이(공용 화면엔 그림·장소 이름·이동 한 줄만), 살펴보기는 각자 폰 ──
+  // 방장 무대 맨 위가 이동 연출(그림), 공용 단서는 그 아래 「소리 내어 읽으시오」 머리가 맡는다. 방장은 관찰을 읽지 않는다
+  sceneCue: '공용 단서를 먼저 읽고, 이동 한 줄을 외치시오',
+  sceneTimerDone: '다 살펴봤으면 넘어가시오',
   sceneLabel: '현장 보기',
-  /** 장소 이름을 누르면 펼치는 궁 배치도(장소를 누르면 그 현장으로) */
-  sceneMapToggle: '배치도로 장소 고르기',
-  sceneMapHint: '장소를 누르면 그 현장으로 가오',
-  /** 플레이어 장소 고르기 위 — 현장 단계엔 방장 화면을 함께 본다 */
-  scenePlayerHint: '현장 그림은 방장 화면에서 다 같이 보시오',
-  sceneOpenLink: '📜 내 폰으로 현장 보기 ›',
-  sceneAgainLink: '📜 현장 다시 보기 ›',
+  /** 이동 연출 머리(「조사 1 · 이동」의 뒷말) */
+  moveTag: '이동',
+  /** 살펴보기(각자 폰) — 그림 속 물건을 골라 살펴본다. 본 것은 그 폰에만 */
+  examineHead: '살펴보기',
+  examineHint: '물건을 골라 살펴보시오. 본 것은 나만 아오',
+  examineOnce: '한 번 살펴보면 되돌릴 수 없소',
+  examineSpent: '살펴보기를 다 썼소. 흩어져 한 곳을 뒤지시오',
+  examineClosed: '장소를 정해 살펴보기가 끝났소',
+  /** 장소 고르기 아래 — 확정하면 그 조사의 남은 살펴보기는 사라진다 */
+  examineCloseNote: '장소를 정하면 남은 살펴보기는 사라지오',
+  /** 내가 본 관찰(단서함·조사 화면) — 탭해 보기 + 자동 가림 */
+  obsHead: '내가 본 관찰',
+  obsSealed: '탭하면 잠시 보여요',
+  obsShowNote: '증거로 내밀려면 이 화면을 보여 주시오',
   /** 큰 화면(노트북·TV) — /gung/scene */
   bigScreenMenu: '노트북·TV로 현장 보기',
-  bigScreenBody: '노트북·TV 브라우저에 이 주소를 열면 현장 그림만 크게 뜨오',
+  bigScreenBody: '노트북·TV 브라우저에 이 주소를 열면 이동한 곳 그림만 크게 뜨오',
   bigScreenNote: '비밀은 없소. 조사 번호는 그 화면에서 고르시오',
   bigScreenMirror: '폰 화면을 TV에 비추는 중이면 필요 없소',
   bigScreenCopy: '주소 복사',
@@ -67,7 +74,7 @@ export const GUIDE = {
   lieRules: [
     '범인은 이 판의 플레이어 가운데 독을 넣은 단 한 사람. 독살인 줄 모르고 거든 자는 범인이 아니다.',
     '범인만 무엇이든 거짓말한다. 나머지는 패의 「둘러대도 되는 것」만 둘러대되 남에게 죄를 씌울 순 없고, 그 밖엔 입을 다물 뿐 지어내지 못하며, 「물으면 사실대로」는 물으면 답해야 한다.',
-    '조사는 세 번. 매번 공용 단서와 현장 그림을 함께 본 뒤, 각자 장소 한 곳을 골라 그 장소 카드를 얻는다(겹쳐도 된다). 간 곳은 밝히되, 카드는 공개하든 숨기든 자유다.',
+    '조사는 세 번. 매번 공용 단서를 들은 뒤 다 같이 한 장소로 옮겨 가 각자 그곳 물건 두 개를 살펴보고, 이어 흩어져 한 곳씩 뒤져 그 장소 카드를 얻는다(7곳 중, 겹쳐도 된다). 살핀 물건과 뒤진 곳은 밝힌다. 본 것은 숨겨도 되고, 증거로 내밀려면 폰을 보여 주거나 카드 인장을 방장에게 불러 준다.',
     '누구나 숨길 비밀이 있다. 거짓말이 들통났다고 곧 범인은 아니다. 범인은 물증으로 가려라.',
     '※ 패에 「R2부터」「R3부터」가 붙은 일은 그 조사 전엔 입을 다물어도 된다(부인·지어내기는 금지). 판에 따라 라운드 시작 때 추가 증언 카드가 함께 열릴 수 있다. 카드·관찰·증언은 본 대로 들은 대로다.',
   ],
@@ -134,8 +141,8 @@ export const GUIDE = {
   /** 6판: 내리기 확인 시트 대신 5초 되돌리기 토스트 */
   unpostToast: '보드에서 내렸소',
   boardFooter: '보드엔 스스로 밝힌 단서만 오르오',
-  /** 장소 고르기 안내 한 줄(UX 스펙 §2-2 다) */
-  placeHint: '한 곳만 고르시오 · 같은 곳은 같은 단서요',
+  /** 장소 고르기 안내 한 줄(UX 스펙 §2-2 다) — 7판: 살펴본 뒤 흩어져 한 곳을 뒤진다 */
+  placeHint: '흩어져 한 곳만 뒤지시오 · 같은 곳은 같은 단서요',
 
   // ── R6 최종 변론 3칸 틀 ──
   defenseCue: '한 사람씩 45초. 아래 셋만 말하시오',
@@ -222,7 +229,20 @@ export const guideText = {
   defenseHead: (duration: string) => `최종 변론 · 1번부터 ${duration}씩`,
   /** G5 대기 화면 내 지목 칩(적중 표시 없음) */
   myVoteChip: (seat: number) => `내 지목: ${seat}번`,
+  /** 7판 이동 연출 안내(방장 무대·큰 화면) — 살펴보기 수는 사건 데이터(원고 10-2)에서 */
+  examineCue: (n: number) => `각자 폰에서 물건 ${countWord(n)} 살펴보시오`,
+  /** 살펴보기 남은 횟수 「2/2」 */
+  examineLeft: (left: number, total: number) => `${left}/${total}번 남음`,
+  /** 살펴보기 단추 */
+  examineButton: (left: number) => `살펴보기 (${left}번 남음)`,
+  /** 관찰 카드 머리 「조사 1 · 동궁전」 */
+  obsWhere: (round: number, place: string) => `조사 ${round} · ${place}`,
 } as const;
+
+/** 1 → '하나를' · 2 → '둘을' · 3 → '셋을'(그 밖은 숫자 + 개를) */
+function countWord(n: number): string {
+  return n === 1 ? '하나를' : n === 2 ? '둘을' : n === 3 ? '셋을' : `${n}개를`;
+}
 
 /** 금칙어 검사 대상 — 새 안내 문구 전부(자리표시자는 예시 값으로 채운다) */
 export const GUIDE_COPY: readonly string[] = (() => {
@@ -246,6 +266,10 @@ export const GUIDE_COPY: readonly string[] = (() => {
     guideText.pastAndTime(1),
     guideText.pastAndTime(2),
     guideText.defenseHead('45초'),
+    guideText.examineCue(2),
+    guideText.examineLeft(2, 2),
+    guideText.examineButton(2),
+    guideText.obsWhere(1, '장소'),
   );
   return out;
 })();

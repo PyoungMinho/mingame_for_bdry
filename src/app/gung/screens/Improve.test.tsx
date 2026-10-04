@@ -324,10 +324,10 @@ describe('G2 방장 무대 — 봉인 카드 0 · 고르기 타이머 수동 · 
     expect(JSON.parse(window.localStorage.getItem('gu:game:v1')!).host.timer).toMatchObject({ kind: 'scene', running: true });
     // 하위 단계 표시 — 지금 단계만 aria-current
     expect(screen.getByRole('list', { name: GUIDE.roundStepsLabel }).querySelector('[aria-current="step"]')?.textContent).toContain(GUIDE.sceneLabel);
-    // 현장 그림 자리(다른 담당이 SceneView 로 채운다) — 그 라운드 관찰만
-    expect(document.querySelector('[data-scene-slot="host"]')).not.toBeNull();
-    // 방장 본인 조사 링크는 고르기부터
-    expect(qbtn(GUIDE.hostOwnClueLink)).toBeNull();
+    // 현장 자리 = 이동 연출(7판 SceneMove — 그림·장소 이름·이동 한 줄만, 관찰 없음)
+    expect(document.querySelector('[data-scene-slot="host"] section.gu-move')).not.toBeNull();
+    // 7판: 방장도 현장 보기부터 자기 폰으로 살펴본다 — 본인 조사(살펴보기·장소) 링크는 현장 보기부터
+    expect(btn(GUIDE.hostOwnClueLink)).toBeInTheDocument();
     await tap(btn(/고르기 1분 시작/));
     expect(screen.getByRole('heading', { name: /조사 1 · 장소 고르기/ })).toBeInTheDocument();
     expect(qbtn(GUIDE.selectTimerStart)).toBeNull();

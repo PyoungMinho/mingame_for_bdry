@@ -12,6 +12,7 @@ import { describe, expect, it } from 'vitest';
 import { castFor, culpritCandidates, isPlayerRole, sortedRoles } from './assign';
 import { sejaCase } from './case-data';
 import { cardsAtPlace } from './deck';
+import { GUIDE } from './guide-data';
 import { PLAYER_COUNTS, type RoundNo } from './types';
 import { caseErrors, validateCase } from './validate';
 
@@ -166,8 +167,8 @@ describe('6판 — 브리핑(§7-1)·진상(§7-2) ↔ 원고', () => {
     return doc.slice(s, e);
   };
 
-  it('사건 버전 2(6판 — 본문이 바뀌어 초대 링크 &v=·저장 caseVersion 대조로 「버전이 달라요」를 띄운다)', () => {
-    expect(sejaCase.version).toBe(2);
+  it('사건 버전 3(7판 조사 따로 — 관찰이 공용 → 개인이라 저장 기록과 호환되지 않는다. 초대 링크 &v=·저장 caseVersion 대조로 「버전이 달라요」)', () => {
+    expect(sejaCase.version).toBe(3);
   });
 
   it('브리핑: §7-1 문단이 순서·글자 그대로 — 호명 줄 → {{cast}}, 4·5인 줄 → {{npcs}}, 날짜 안내 ※ 는 맨 끝(낭독 안 함)', () => {
@@ -213,5 +214,22 @@ describe('6판 — 브리핑(§7-1)·진상(§7-2) ↔ 원고', () => {
     for (const t of [...sejaCase.truth.beats.map((b) => b.text), sejaCase.truth.culpritLine]) {
       for (const w of terms) expect(t.includes(w), `${w} ← ${t}`).toBe(false);
     }
+  });
+});
+
+describe('7판 — 규칙 화면(하는 법) ↔ 원고 §1-7', () => {
+  it('GUIDE.lieRules = 원고 1-7 규칙 1~4 + ※ 줄, 글자 그대로(굵게 표시만 뺀다) — 규칙 3 「다 같이 한 장소로 … 흩어져 …」', () => {
+    const s = doc.indexOf('### 1-7.');
+    const e = doc.indexOf('\n### 1-8.', s);
+    expect(s).toBeGreaterThan(0);
+    const lines = doc
+      .slice(s, e)
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => /^([1-4]\. |※ )/.test(l))
+      .map((l) => l.replace(/^[1-4]\. /, '').replace(/\*\*(.+?)\*\*/g, '$1'));
+    expect(lines).toHaveLength(5);
+    expect([...GUIDE.lieRules]).toEqual(lines);
+    expect(GUIDE.lieRules[2]).toContain('다 같이 한 장소로 옮겨 가 각자 그곳 물건 두 개를 살펴보고');
   });
 });

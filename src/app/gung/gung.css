@@ -1549,9 +1549,6 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
 .gu-roundsteps-item[data-state='current'] .gu-roundsteps-label { text-decoration: underline; text-underline-offset: 3px; }
 .gu-roundsteps-sep { color: var(--gu-muted); margin-right: 2px; }
 
-/* 현장 그림 자리(다른 담당이 SceneView 로 바꾼다) */
-.gu-scene-slot { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
-
 /* P2 개요 — 규칙 넷 카드 · ※ 날짜 안내 작은 글씨 */
 .gu-rulecard { display: flex; flex-direction: column; gap: 6px; padding: var(--gu-sp-3); border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-surface); }
 .gu-rulecard-title { margin: 0; font-family: var(--gu-font-display); font-size: var(--gu-fs-h3); color: var(--gu-gold-ink); }
@@ -1582,41 +1579,19 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
 .gu-sealpad-posted { margin: 0; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-green-ink); }
 
 /* ============================================================================
- * 현장 — 6판 현장 보기(원고 10장 · docs/design/gung-compact-scene-spec.md §1)
- * screens/SceneView.tsx · components/scenes/* · scene/(큰 화면 /gung/scene) 전용. 기존 규칙은 건드리지 않는다.
- * 그림 위 이름표는 캔버스 폭(cqw)에 비례 — 폰에서 맞으면 큰 화면에서도 같은 자리에 맞는다.
+ * 현장 — 7판 「조사 따로」(원고 10장: 이동은 다 같이, 살펴보기는 각자)
+ *  - 공용 이동 연출: screens/SceneMove.tsx(방장 무대 · 큰 화면 /gung/scene) — 그림 · 장소 이름 · 이동 한 줄 · 살펴보기 안내뿐
+ *  - 개인 살펴보기: screens/ExaminePanel.tsx(각자 폰) — 그림 + 물건 이름표 + 「내가 본 관찰」(탭해 보기 + 자동 가림)
+ *  - 그림: components/scenes/*. 그림 위 이름표는 캔버스 폭(cqw)에 비례 — 폰에서 맞으면 큰 화면에서도 같은 자리에 맞는다.
  * ========================================================================== */
 .gu-scene { display: flex; flex-direction: column; gap: var(--gu-sp-3); min-width: 0; }
-.gu-scene-main, .gu-scene-side { display: flex; flex-direction: column; gap: var(--gu-sp-3); min-width: 0; }
 .gu-scene--empty { padding: var(--gu-sp-6) var(--gu-sp-4); border: 1.5px dashed var(--gu-line-3); border-radius: var(--gu-radius-lg); text-align: center; }
 .gu-scene-emptytext { margin: 0; font-size: var(--gu-fs-small); color: var(--gu-muted); }
 
-/* 장소 넘기기 ‹ 동궁전 › */
-/* QA6-02: ‹ › 는 배치도(작은 상자)의 대안 — 술자리 터치 56px */
-.gu-scene-pager { display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; align-items: center; gap: var(--gu-sp-2); }
-.gu-scene-pagebtn {
-  width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: var(--gu-radius-md); border: 1px solid var(--gu-line-2); background: var(--gu-surface); color: var(--gu-ink); cursor: pointer;
-}
-.gu-scene-pagebtn:active { background: var(--gu-surface-2); }
-.gu-scene-pagebtn:focus-visible, .gu-scene-tab:focus-visible, .gu-scene-card-close:focus-visible, .gu-scene-new-item:focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
-.gu-scene-pagecur { margin: 0; display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.2; min-width: 0; }
-.gu-scene-pagename { font-size: 24px; color: var(--gu-ink); }
-.gu-scene-pagemeta { margin-top: 2px; font-size: var(--gu-fs-caption); color: var(--gu-muted); }
-.gu-scene-pagenew { color: var(--gu-gold-ink); }
-
-/* 큰 화면 장소 탭(900px 이상에서만) */
-.gu-scene-tabs { display: none; }
-.gu-scene-tab {
-  position: relative; min-height: 48px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px;
-  border-radius: var(--gu-radius-pill); border: 1px solid var(--gu-line-2); background: var(--gu-surface); color: var(--gu-body);
-  font: inherit; font-size: 17px; font-weight: 700; white-space: nowrap; cursor: pointer;
-}
-.gu-scene-tab[aria-pressed='true'] { background: var(--gu-paper); color: var(--gu-paper-ink); border-color: var(--gu-paper); }
-.gu-scene-tab-new { width: 10px; height: 10px; border-radius: 50%; background: var(--gu-cta); box-shadow: 0 0 8px rgba(227, 182, 85, 0.9); }
+/* 방장 무대의 현장 자리 */
+.gu-scene-slot { display: flex; flex-direction: column; gap: var(--gu-sp-2); }
 
 /* 그림(16:10) + 핫스팟 */
-.gu-scene-stage { min-width: 0; scroll-margin-top: 72px; }
 .gu-scene-canvas {
   position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; container-type: inline-size;
   border-radius: var(--gu-radius-lg); border: 1px solid var(--gu-line-2); background: #0B0A11; box-shadow: var(--gu-shadow-card);
@@ -1633,8 +1608,9 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
   font-size: 13px; font-size: clamp(12px, 3.8cqw, 26px);
   -webkit-tap-highlight-color: transparent;
 }
-/* QA6-02: 이름표 14px 바닥 — 캔버스 320px 이상(폰 360·375). 그보다 좁은 폰(320 기기 · 캔버스 288)만 12px 까지(동궁전 이름표 겹침 방지) */
-@container (min-width: 320px) {
+/* 이름표 14px 바닥 — 캔버스 300px 이상. 7판 살펴보기 캔버스는 카드 안쪽이라 폰 폭 − 58px(360 → 302 · 375 → 317 · 390 → 332).
+   QA 7판 BUG-V7-01: 문턱이 320px 이라 360·375 폰에서 이름표가 12px 로 떨어졌다. 그보다 좁은 폰(320 기기 · 캔버스 262)만 12px 까지 */
+@container (min-width: 300px) {
   .gu-scene-spot { font-size: clamp(14px, 3.8cqw, 26px); }
 }
 .gu-scene-tag {
@@ -1642,7 +1618,7 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
   padding: 0.34em 0.64em; border-radius: var(--gu-radius-pill);
   background: var(--gu-paper); color: var(--gu-paper-ink);
   box-shadow: 0 0.15em 0.7em rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(36, 27, 19, 0.35);
-  transition: transform var(--gu-dur-fast) var(--gu-ease), background-color var(--gu-dur-fast) linear;
+  transition: transform var(--gu-dur-fast) var(--gu-ease), background-color var(--gu-dur-fast) linear, opacity var(--gu-dur-fast) linear;
 }
 /* 위로 향한 꼬리 — 이름표 위가 그 물건 */
 .gu-scene-tag::before {
@@ -1652,90 +1628,101 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
 .gu-scene-spot:active .gu-scene-tag { transform: scale(0.95); }
 .gu-scene-spot:focus-visible { outline: none; }
 .gu-scene-spot:focus-visible .gu-scene-tag { outline: 3px solid var(--gu-cta); outline-offset: 3px; }
-.gu-scene-spot[aria-pressed='true'] .gu-scene-tag { background: var(--gu-cta); color: var(--gu-cta-ink); }
+.gu-scene-spot[aria-pressed='true'] .gu-scene-tag { background: var(--gu-cta); color: var(--gu-cta-ink); box-shadow: 0 0 0 0.2em var(--gu-cta), 0 0 1.2em rgba(227, 182, 85, 0.85); }
 .gu-scene-spot[aria-pressed='true'] .gu-scene-tag::before { border-bottom-color: var(--gu-cta); }
-.gu-scene-spot[data-new] .gu-scene-tag { box-shadow: 0 0 0 0.2em var(--gu-cta), 0 0 1.2em rgba(227, 182, 85, 0.85); animation: gu-scene-pulse 1.8s ease-in-out infinite; }
-.gu-scene-tag-new {
-  position: absolute; left: -0.55em; top: -0.95em; padding: 0.12em 0.42em; border-radius: var(--gu-radius-pill);
-  background: var(--gu-cta); color: var(--gu-cta-ink); font-size: max(12px, 0.86em); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-}
+/* 살펴본 물건 ✓ — 다시 누르면 그 관찰 카드를 연다 */
 .gu-scene-tag-seen {
   position: absolute; right: -0.6em; top: -0.8em; width: 1.4em; height: 1.4em; display: flex; align-items: center; justify-content: center;
   border-radius: 50%; background: var(--gu-green-fill); color: var(--gu-ink); font-size: 0.78em; box-shadow: 0 0 0 2px var(--gu-bg);
 }
-@keyframes gu-scene-pulse {
-  0%, 100% { box-shadow: 0 0 0 0.2em var(--gu-cta), 0 0 0.6em rgba(227, 182, 85, 0.5); }
-  50% { box-shadow: 0 0 0 0.2em var(--gu-cta), 0 0 1.6em rgba(227, 182, 85, 0.95); }
-}
-
-/* 관찰 카드 — 한지 위 낭독체(모두 같이 읽는 한 줄) */
-.gu-scene-card {
-  position: relative; min-height: 132px; padding: 12px 16px 14px; border-radius: var(--gu-radius-lg);
-  background: var(--gu-paper); color: var(--gu-paper-ink); box-shadow: var(--gu-shadow-card);
-}
-.gu-scene-card[data-empty] {
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  background: transparent; color: var(--gu-muted); border: 1.5px dashed var(--gu-line-3); box-shadow: none;
-}
-.gu-scene-card-hint { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 17px; font-weight: 700; color: var(--gu-body); }
-.gu-scene-card-subhint { font-size: var(--gu-fs-caption); font-weight: 400; color: var(--gu-muted); }
-.gu-scene-card-head { display: grid; grid-template-columns: minmax(0, 1fr) 44px; column-gap: var(--gu-sp-2); align-items: start; }
-.gu-scene-card-place { grid-column: 1; margin: 0; font-size: 14px; font-weight: 700; color: var(--gu-paper-muted); }
-.gu-scene-card-name { grid-column: 1; margin: 0; font-size: 23px; line-height: 1.25; color: var(--gu-paper-accent); }
-.gu-scene-card-close {
-  grid-column: 2; grid-row: 1 / span 2; width: 44px; height: 44px; margin: -6px -8px 0 0;
-  display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: var(--gu-radius-md);
-  background: transparent; color: var(--gu-paper-muted); cursor: pointer;
-}
-.gu-scene-lines { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.gu-scene-line { display: flex; flex-direction: column; gap: 2px; }
-.gu-scene-line[data-new] { padding-left: 10px; border-left: 4px solid var(--gu-paper-accent); }
-.gu-scene-line-round { font-size: 14px; font-weight: 700; color: var(--gu-paper-accent); }
-.gu-scene-line[data-old] .gu-scene-line-round { color: var(--gu-paper-muted); }
-.gu-scene-line-text { margin: 0; font-family: var(--gu-font-read); font-size: calc(20px * var(--gu-stage-scale, 1)); line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
-.gu-scene-line[data-old] .gu-scene-line-text { font-size: 16px; color: var(--gu-paper-muted); }
+/* 횟수를 다 썼거나 장소를 정해 마감 — 안 본 물건은 흐리게(누를 수는 있으나 아무 일 없음) */
+.gu-scene-spot[data-locked] { cursor: default; }
+.gu-scene-spot[data-locked] .gu-scene-tag { opacity: 0.42; }
+.gu-scene-spot[data-locked]:active .gu-scene-tag { transform: none; }
 .gu-scene-who { color: var(--gu-paper-accent); }
 
-/* 이번 조사 새 관찰 — 방장이 소리 내어 읽는 목록(R2·R3) */
-.gu-scene-new { display: flex; flex-direction: column; gap: var(--gu-sp-2); padding: var(--gu-sp-3); border: 1px solid var(--gu-cta); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2); }
-.gu-scene-new-head { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-gold-ink); }
-.gu-scene-new-count { font-size: var(--gu-fs-caption); padding: 1px 8px; border-radius: var(--gu-radius-pill); background: var(--gu-cta); color: var(--gu-cta-ink); }
-.gu-scene-new-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.gu-scene-new-item {
-  width: 100%; min-height: 52px; padding: 6px 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left;
-  border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-md); background: var(--gu-surface); color: var(--gu-ink); font: inherit; cursor: pointer;
+/* ── 이동 연출(공용) — 방장 무대 · 큰 화면. 관찰 글 없음 ── */
+.gu-move { display: flex; flex-direction: column; gap: var(--gu-sp-3); min-width: 0; }
+.gu-move-canvas, .gu-move-plate { animation: gu-move-in 420ms var(--gu-ease) both; }
+.gu-move-plate { animation-delay: 120ms; }
+@keyframes gu-move-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.gu-move-plate {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  padding: var(--gu-sp-3) var(--gu-sp-4) var(--gu-sp-4); border-radius: var(--gu-radius-lg);
+  background: var(--gu-paper); color: var(--gu-paper-ink); box-shadow: var(--gu-shadow-card);
 }
-.gu-scene-new-item:active { background: var(--gu-surface-2); }
-.gu-scene-new-where { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--gu-blue-ink); }
-.gu-scene-new-check { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--gu-green-fill); color: var(--gu-ink); font-size: 12px; }
-.gu-scene-new-text { font-family: var(--gu-font-read); font-size: calc(16px * var(--gu-stage-scale, 1)); line-height: 1.45; color: var(--gu-ink); word-break: keep-all; overflow-wrap: anywhere; }
-.gu-scene-new-text .gu-scene-who { color: var(--gu-gold-ink); }
+.gu-move-kicker { margin: 0; font-size: var(--gu-fs-caption); font-weight: 700; color: var(--gu-paper-accent); letter-spacing: 0.04em; }
+.gu-move-place { margin: 0; font-size: clamp(30px, 9vw, 40px); line-height: 1.15; color: var(--gu-paper-ink); }
+.gu-move-cue { margin: 2px 0 0; font-family: var(--gu-font-read); font-size: calc(19px * var(--gu-stage-scale, 1)); line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; }
+.gu-move-examine {
+  margin: 8px 0 0; padding: 6px 14px; border-radius: var(--gu-radius-pill);
+  background: var(--gu-purple-fill); color: var(--gu-ink); font-size: var(--gu-fs-small); font-weight: 700; line-height: 1.35;
+}
+
+/* ── 살펴보기(개인) — 각자 폰 ── */
+.gu-examine {
+  display: flex; flex-direction: column; gap: var(--gu-sp-2); min-width: 0;
+  padding: var(--gu-sp-3); border: 1px solid var(--gu-line-2); border-radius: var(--gu-radius-lg); background: var(--gu-bg-2);
+}
+.gu-examine-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--gu-sp-2); }
+.gu-examine-title { margin: 0; display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.gu-examine-kicker { font-size: var(--gu-fs-caption); font-weight: 700; color: var(--gu-purple-ink); }
+.gu-examine-place { font-size: 24px; color: var(--gu-ink); }
+.gu-examine-left {
+  margin: 0; flex: none; padding: 4px 12px; border-radius: var(--gu-radius-pill);
+  background: var(--gu-purple-fill); color: var(--gu-ink); font-size: var(--gu-fs-small); font-weight: 700; white-space: nowrap;
+}
+.gu-examine-left[data-spent] { background: var(--gu-surface-2); color: var(--gu-muted); }
+/* 고른 물건 한 줄(이름 · 되돌릴 수 없음) 위, 넓은 「살펴보기」 단추 아래 — 술자리 터치 56px */
+.gu-examine-act { min-height: 56px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.gu-examine-chosen { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; line-height: 1.3; word-break: keep-all; }
+.gu-examine-chosen-name { font-size: var(--gu-fs-body); color: var(--gu-ink); }
+.gu-examine-once { font-size: var(--gu-fs-caption); color: var(--gu-muted); }
+.gu-examine-hint { margin: 0; font-size: var(--gu-fs-small); color: var(--gu-body); }
+.gu-examine-closenote { margin: 0; text-align: center; color: var(--gu-muted); }
+.gu-cluestab-examine { color: var(--gu-purple-ink); font-weight: 700; }
+
+/* 내가 본 관찰 — 탭해 보기 + 10초 뒤 자동 가림(가려진 동안 글은 DOM 에 없다) */
+.gu-obslist { display: flex; flex-direction: column; gap: var(--gu-sp-2); min-width: 0; }
+.gu-obslist-head { margin: 0; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-purple-ink); }
+.gu-obs {
+  display: flex; flex-direction: column; gap: 4px; min-height: 64px; padding: 10px 14px;
+  border-radius: var(--gu-radius-lg); border: 1.5px dashed var(--gu-line-3); background: var(--gu-surface); color: var(--gu-ink);
+  cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  scroll-margin-top: 80px; scroll-margin-bottom: 150px;
+}
+.gu-obs[data-open] {
+  border: 1.5px solid var(--gu-paper-2); background: var(--gu-paper); color: var(--gu-paper-ink); box-shadow: var(--gu-shadow-card);
+  animation: gu-seal-open var(--gu-dur-fast) var(--gu-ease);
+}
+.gu-obs:focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
+.gu-obs-head { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.gu-obs-where { font-size: var(--gu-fs-caption); color: var(--gu-muted); }
+.gu-obs-name { font-size: var(--gu-fs-body); }
+.gu-obs[data-open] .gu-obs-where { color: var(--gu-paper-muted); }
+.gu-obs[data-open] .gu-obs-name { color: var(--gu-paper-accent); }
+.gu-obs-sealed { margin: 0; font-size: var(--gu-fs-small); color: var(--gu-body); }
+.gu-obs-lines { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.gu-obs-line { display: flex; flex-direction: column; gap: 1px; }
+.gu-obs-line-round { font-size: var(--gu-fs-caption); font-weight: 700; color: var(--gu-paper-muted); }
+.gu-obs-line-text { margin: 0; font-family: var(--gu-font-read); font-size: 18px; line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
+.gu-obs-foot { margin: 4px 0 0; font-size: var(--gu-fs-caption); color: var(--gu-paper-muted); word-break: keep-all; }
+.gu-obs-secs { white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gu-scene-spot[data-new] .gu-scene-tag { animation: none; }
   .gu-scene-tag { transition: none; }
+  .gu-move-canvas, .gu-move-plate, .gu-obs[data-open] { animation: none; }
 }
 
-/* 큰 화면 두 단(그림 | 카드) — /gung/scene, 가로 900px 이상 */
+/* 큰 화면 두 단(그림 | 이동 글) — /gung/scene, 가로 900px 이상 */
 @media (min-width: 900px) {
-  .gu-scene--wide { display: grid; grid-template-columns: minmax(0, 1fr) clamp(340px, 30vw, 540px); gap: var(--gu-sp-6); align-items: start; }
-  .gu-scene--wide .gu-scene-pager { display: none; }
-  .gu-scene--wide .gu-scene-tabs { display: flex; flex-wrap: wrap; gap: var(--gu-sp-2); }
-  .gu-scene--wide .gu-scene-canvas { max-width: calc((100dvh - 220px) * 1.6); margin: 0 auto; }
-  .gu-scene--wide .gu-scene-card { min-height: 220px; padding: 20px 24px; }
-  .gu-scene--wide .gu-scene-card-hint { font-size: clamp(22px, 1.8vw, 30px); }
-  .gu-scene--wide .gu-scene-card-place { font-size: clamp(16px, 1.2vw, 22px); }
-  .gu-scene--wide .gu-scene-card-name { font-size: clamp(30px, 2.6vw, 48px); }
-  .gu-scene--wide .gu-scene-card-close { width: 52px; height: 52px; }
-  .gu-scene--wide .gu-scene-line-round { font-size: clamp(14px, 1vw, 18px); }
-  .gu-scene--wide .gu-scene-line-text { font-size: clamp(28px, 2.3vw, 44px); line-height: 1.45; }
-  .gu-scene--wide .gu-scene-line[data-old] .gu-scene-line-text { font-size: clamp(20px, 1.5vw, 28px); }
-  .gu-scene--wide .gu-scene-new-head { font-size: clamp(16px, 1.2vw, 22px); }
-  /* 큰 화면: 새 관찰은 눌러 크게 띄우는 단추 줄(글은 카드에서). 방장 폰엔 전문 목록이 그대로 있다 */
-  .gu-scene--wide .gu-scene-new-list { flex-direction: row; flex-wrap: wrap; gap: var(--gu-sp-2); }
-  .gu-scene--wide .gu-scene-new-item { width: auto; min-height: 48px; justify-content: center; padding: 6px 14px; }
-  .gu-scene--wide .gu-scene-new-where { font-size: clamp(15px, 1.1vw, 20px); color: var(--gu-ink); }
-  .gu-scene--wide .gu-scene-new-text { display: none; }
+  .gu-move--wide { display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 28vw, 520px); gap: var(--gu-sp-6); align-items: center; }
+  .gu-move--wide .gu-move-canvas { max-width: calc((100dvh - 200px) * 1.6); margin: 0 auto; }
+  .gu-move--wide .gu-move-plate { padding: 32px 28px; gap: 10px; }
+  .gu-move--wide .gu-move-kicker { font-size: clamp(16px, 1.2vw, 22px); }
+  .gu-move--wide .gu-move-place { font-size: clamp(48px, 4.4vw, 84px); }
+  .gu-move--wide .gu-move-cue { font-size: clamp(24px, 2vw, 38px); }
+  .gu-move--wide .gu-move-examine { font-size: clamp(18px, 1.4vw, 26px); padding: 10px 22px; }
 }
 
 /* 큰 화면 페이지 틀(/gung/scene) — 노트북·TV. 비밀 없음: 사건 표식·조사 칩만 */
@@ -1750,12 +1737,11 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
 .gu-scenebig-rounds { display: flex; align-items: center; gap: var(--gu-sp-2); margin-left: auto; }
 .gu-scenebig-roundlabel { font-size: var(--gu-fs-small); color: var(--gu-muted); }
 .gu-scenebig-chip {
-  min-width: 56px; height: 52px; padding: 0 14px; border-radius: var(--gu-radius-pill); border: 1.5px solid var(--gu-line-3);
+  min-width: 56px; height: 56px; padding: 0 14px; border-radius: var(--gu-radius-pill); border: 1.5px solid var(--gu-line-3);
   background: var(--gu-surface); color: var(--gu-ink); font: inherit; font-size: 20px; font-weight: 700; cursor: pointer;
 }
 .gu-scenebig-chip[aria-pressed='true'] { background: var(--gu-cta); border-color: var(--gu-cta); color: var(--gu-cta-ink); }
-.gu-scenebig-chip:focus-visible, .gu-scenebig-clear:focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
-.gu-scenebig-clear { min-height: 48px; padding: 0 12px; border: 0; background: none; color: var(--gu-muted); font: inherit; font-size: var(--gu-fs-caption); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.gu-scenebig-chip:focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
 .gu-scenebig-body { flex: 1; width: 100%; max-width: 1920px; margin: 0 auto; padding: var(--gu-sp-4) var(--gu-gutter) var(--gu-sp-6); box-sizing: border-box; }
 .gu-scenebig-note { margin: 0 0 var(--gu-sp-3); font-size: var(--gu-fs-caption); color: var(--gu-muted); }
 @media (max-width: 899px) {
@@ -1763,45 +1749,13 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
   .gu-scenebig-rounds { margin-left: 0; }
 }
 
-/* ============================================================================
- * 현장 통합(프론트팀장) — 방장 무대·현장 시트·플레이어 안내·큰 화면 주소·배치도로 장소 고르기
- * ========================================================================== */
-/* 가운데 장소 이름 = 배치도 펼치기 단추(배치도를 넘긴 SceneView 만) */
-.gu-scene-pagecur--btn {
-  min-height: 52px; padding: 2px 6px; border: 1px solid transparent; border-radius: var(--gu-radius-md);
-  background: none; color: inherit; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.gu-scene-pagecur--btn:active { background: var(--gu-surface); }
-.gu-scene-pagecur--btn:focus-visible { outline: 3px solid var(--gu-cta); outline-offset: 2px; }
-.gu-scene-pagecur--btn .gu-scene-pagename { display: inline-flex; align-items: center; gap: 2px; }
-.gu-scene-pagecaret { color: var(--gu-gold-ink); transition: transform var(--gu-dur-fast) var(--gu-ease); }
-.gu-scene-pagecur--btn[aria-expanded='true'] { border-color: var(--gu-line-2); background: var(--gu-surface); }
-.gu-scene-pagecur--btn[aria-expanded='true'] .gu-scene-pagecaret { transform: rotate(180deg); }
-@media (prefers-reduced-motion: reduce) { .gu-scene-pagecaret { transition: none; } }
-
-/* 배치도 패널 — 궁 전체 한 장, 장소 상자가 단추 */
-.gu-scene-mappanel { min-width: 0; }
-.gu-map--scene { gap: var(--gu-sp-2); padding: var(--gu-sp-2) var(--gu-sp-3); }
-.gu-map--scene .gu-map-title { display: none; }
-.gu-map--scene .gu-map-note { text-align: center; font-size: var(--gu-fs-caption); font-weight: 700; color: var(--gu-paper-accent); }
+/* 배치도 장소 상자 단추(PalaceMap onPick) */
 .gu-map-node--tap { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
 .gu-map-hit { fill: transparent; stroke: none; }
 .gu-map-node--tap .gu-map-box { fill: var(--gu-paper); stroke-width: 1.6; }
 .gu-map-node--tap:active .gu-map-box, .gu-map-node--tap:hover .gu-map-box { fill: color-mix(in srgb, var(--gu-cta) 30%, var(--gu-paper)); }
 .gu-map-node--tap[data-active] .gu-map-box { fill: var(--gu-cta); stroke: var(--gu-paper-ink); stroke-width: 2.4; }
 .gu-map-node--tap:focus-visible .gu-map-hit { stroke: var(--gu-paper-accent); stroke-width: 3; stroke-dasharray: none; }
-
-/* 현장 다시 보기 시트 — 그림 + 카드가 한 화면에 들도록 높게 */
-.gu-scene-sheet .gu-sheet-body { max-height: 96dvh; }
-.gu-scene-againlink { color: var(--gu-gold-ink); text-decoration-color: color-mix(in srgb, var(--gu-gold-ink) 60%, transparent); }
-
-/* 플레이어 장소 고르기 위 — 현장은 방장 화면에서 다 같이 */
-.gu-scene-prompt {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: var(--gu-sp-2) var(--gu-sp-3);
-  border-left: 4px solid var(--gu-cta); border-radius: var(--gu-radius-md); background: var(--gu-bg-2);
-}
-.gu-scene-prompt-text { margin: 0; font-size: var(--gu-fs-small); font-weight: 700; color: var(--gu-ink); }
-.gu-scene-prompt-link { padding: 6px 0 2px; min-height: 40px; color: var(--gu-gold-ink); text-decoration-color: color-mix(in srgb, var(--gu-gold-ink) 60%, transparent); }
 
 /* 큰 화면 주소 시트 */
 .gu-bigscreen-url {
@@ -1821,5 +1775,3 @@ details.gu-board[open] > *:not(summary) + * { margin-top: var(--gu-sp-3); }
 .gu-timer[data-size='mini'] .gu-timer-controls .gu-btn { padding: 0 10px; font-size: var(--gu-fs-small); }
 /* 큐 한 줄(현장 보기) */
 .gu-hostcue--line { font-size: 18px; line-height: 1.4; }
-/* 물건을 누르면 카드가 보일 만큼만 올라온다 — 아래 액션바(+토스트)·위 헤더 높이만큼 비운다 */
-.gu-scene-card { scroll-margin-top: 80px; scroll-margin-bottom: 150px; }

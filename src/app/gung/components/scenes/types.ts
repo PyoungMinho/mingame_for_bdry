@@ -6,7 +6,10 @@
 import type { ComponentType } from 'react';
 
 export interface SceneArtProps {
-  /** 이 기기가 들어선 조사 라운드(1..3). R2 관찰 줄의 겉모습(연잎 위 하얀 것 등)은 2부터만 그린다 */
+  /**
+   * 그 조사 라운드(1..3). 7판: 그림은 공용 화면에도 뜨므로 관찰 줄의 겉모습을 라운드 따라 그리지 않는다 — 지금 그림들은 쓰지 않는다
+   * (새 그림이 공용으로 보여도 되는 라운드 변화를 그릴 때만 쓴다).
+   */
   round: number;
   /** SVG id 고정 범위(같은 화면에 그림이 둘이면 서로 다른 값). 없으면 useId */
   idScope?: string;

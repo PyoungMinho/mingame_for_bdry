@@ -9,10 +9,13 @@
  *  - 조사 3 진입 알림·용어 시트·봉인된 내 패도 역할과 무관하게 같다.
  *  - 플레이어 폰(자리 2)도 역할만 바꿔 같은 비교를 한다.
  * 예전 버그: 방장이 조상궁·세자빈이면 조사 3 진입 때 공용 무대에 「새 기억이 떠올랐소」 배너가 떠 역할이 드러났다.
+ *
+ * 7판(조사 따로): 방장 공용 무대엔 **관찰 글이 하나도 없다**(이동 연출뿐 — 어느 라운드 줄도, 물건 이름표도). 플레이어 폰의
+ * 살펴보기(전·하나 본 뒤·소진·장소 고른 뒤)는 역할과 무관하게 같은 구조·같은 글이다.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { assignFromCode, castFor, formatRoomCode, GUIDE, parseRoomCode, placeCardsFor, publicSeats, roleAtSeat, sealTable, SEED_ALPHABET, type PlayerCount } from '@/lib/gung';
+import { assignFromCode, castFor, formatRoomCode, GUIDE, parseRoomCode, placeCardsFor, publicSeats, roleAtSeat, sceneStop, sealTable, SEED_ALPHABET, type PlayerCount } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
 import { GungApp } from './GungApp';
 
@@ -111,6 +114,13 @@ const textOf = (html: string) => {
   return d.textContent ?? '';
 };
 
+/** 7판: 관찰 줄 탐침(말한 이를 뗀 앞 10자) — 공용 무대엔 하나도 없어야 한다 */
+const OBS_PROBES = (c.scenes ?? []).flatMap((s) => s.objects.flatMap((o) => o.lines.map((l) => l.text.replace(/^[가-힣 ]{1,6}:\s*/, '').slice(0, 10))));
+function expectNoObservation(html: string, where: string) {
+  for (const p of OBS_PROBES) expect(html.includes(p), `${where}: 관찰 「${p}」`).toBe(false);
+  expect(/gu-scene-spot|gu-obs|gu-examine/.test(html), `${where}: 물건 이름표·관찰 카드`).toBe(false);
+}
+
 /** 방장(자리 1)으로 대기실부터 지목 준비까지 같은 탭 순서로 밟으며 단계마다 공용 무대 DOM 을 찍는다 */
 async function hostRun(code: string): Promise<{ steps: Record<string, string>; sealed: string; terms: string }> {
   search = `code=${code}&as=host`;
@@ -185,7 +195,11 @@ describe('공용 화면 역할 독립성 — 방장 역할만 바꾼 같은 판'
       expect(textOf(base.steps['r1-select'])).toContain(c.rounds[0].publicCards![0].title); // 접힘(닫혀 있어도 DOM 엔 있다)
       // 조사 3 진입 알림은 모든 역할에 같은 문구 — 역할별 '새 기억' 표시는 없다
       expect(textOf(base.steps['r3-scene'])).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
+      // 7판: 현장 보기 무대 = 이동 연출(그림·장소 이름·이동 한 줄)
+      expect(textOf(base.steps['r1-scene'])).toContain(sceneStop(c, 1)!.cue);
+      expect(textOf(base.steps['r2-scene'])).toContain(sceneStop(c, 2)!.cue);
       for (const r of runs) {
+        for (const [k, html] of Object.entries(r.steps)) expectNoObservation(html, `${n}인 방장=${r.role} ${k}`);
         for (const html of Object.values(r.steps)) expect(textOf(html)).not.toMatch(/새 기억|떠오르는 기억|떠올랐소/);
         expect(r.terms).not.toContain('활맥');
         // 봉인 상태: 기억 본문·잠김 안내·쪽 수가 DOM 에 없다
@@ -320,4 +334,73 @@ describe('개선 묶음 1 — 새 화면 역할 독립성(방장 역할만 바�
       }
     }, 90_000);
   }
+});
+
+/**
+ * 7판 살펴보기 — 플레이어 폰(자리 2), 역할만 바꾼 같은 판. 같은 물건을 같은 순서로 고르면 조사 화면 전체 DOM 이 같다:
+ * 살펴보기 전 · 하나 본 뒤(카드 열림) · 소진(나머지 잠금) · 장소 고른 뒤(단서 + 「내가 본 관찰」 가려짐).
+ * 범인이든 아니든 살펴볼 수 있는 물건·횟수·보이는 글이 같다(원고 10-1 「중립」).
+ */
+async function playerExamineRun(code: string): Promise<Record<string, string>> {
+  search = `code=${code}`;
+  render(<GungApp />);
+  await flush();
+  await tap(btn(/입장하기/));
+  await tap(screen.getAllByRole('button').find((b) => b.className.includes('gu-seat-node') && b.textContent?.startsWith('2'))!);
+  await tap(btn(/자리에 앉기/));
+  await tap(screen.getByRole('button', { name: /진행 단계/ }));
+  await tap(screen.getByRole('radio', { name: /^조사 1/ }));
+  await tap(btn(/^이동/));
+  await tap(within(dialog()).getByRole('button', { name: /가겠소/ }));
+  const tip = qbtn('알겠소');
+  if (tip) await tap(tip);
+  // 실시간 인터벌(관찰 카드 남은 초)·토스트는 역할과 무관한 타이밍 — 가린다
+  const shot = () => {
+    const html = normalize(code, true).replace(/\d+초 뒤 가려져요/g, '‹N›초 뒤 가려져요');
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    d.querySelectorAll('.gu-toast').forEach((e) => e.remove());
+    return d.innerHTML;
+  };
+  const steps: Record<string, string> = {};
+  const panel = () => document.querySelector<HTMLElement>('section.gu-examine')!;
+  const examine = async (id: string) => {
+    await tap(panel().querySelector<HTMLElement>(`button.gu-scene-spot[data-obj="${id}"]`)!);
+    await tap(within(panel()).getByRole('button', { name: /^살펴보기 \(\d번 남음\)/ }));
+  };
+  steps.before = shot();
+  await examine('OB-DG4');
+  steps.one = shot();
+  await examine('OB-DG5');
+  steps.spent = shot();
+  await tap(screen.getAllByRole('button').find((b) => b.className.includes('gu-place-tile'))!);
+  await tap(btn(/조사하기/));
+  steps.picked = shot();
+  return steps;
+}
+
+describe('7판 살펴보기 — 플레이어 폰(자리 2), 역할만 바꾼 같은 판', () => {
+  it('6인: 자리 2가 어느 역할이든 살펴보기 전·하나 본 뒤·소진·장소 고른 뒤 조사 화면 DOM 이 같다', async () => {
+    const runs: { role: string; steps: Record<string, string> }[] = [];
+    for (const role of castFor(c, 6)) {
+      runs.push({ role, steps: await playerExamineRun(codeWith(6, role, 2)) });
+      cleanup();
+      window.localStorage.clear();
+      vi.setSystemTime(START);
+    }
+    const [base, ...rest] = runs;
+    expect(runs).toHaveLength(6);
+    // 탐침 유효성 — 살펴보기 패널을 실제로 찍었고, 본 뒤엔 관찰이 보인다
+    expect(base.steps.before).toContain('gu-examine');
+    expect(textOf(base.steps.before)).toContain('2/2번 남음');
+    expect(OBS_PROBES.some((p) => base.steps.one.includes(p))).toBe(true);
+    expect(textOf(base.steps.spent)).toContain('0/2번 남음');
+    expect(base.steps.picked).toContain(`${GUIDE.obsHead} · 조사 1`);
+    for (const r of rest) {
+      for (const k of Object.keys(base.steps)) {
+        expect(textOf(r.steps[k]), `자리 2=${r.role} vs ${base.role} · ${k} 텍스트`).toBe(textOf(base.steps[k]));
+        expect(r.steps[k], `자리 2=${r.role} vs ${base.role} · ${k} DOM`).toBe(base.steps[k]);
+      }
+    }
+  }, 60_000);
 });

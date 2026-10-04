@@ -150,6 +150,15 @@ function canon(code: string, opts: { roles?: boolean; seats?: boolean } = {}): O
   const toastEls = [...clone.querySelectorAll('.gu-toast')];
   const toast = toastEls.map((e) => e.textContent ?? '').join(' | ') || null;
   for (const e of toastEls) e.remove();
+  // 향 타이머 표시(남은 시간·막대·낭독 상태)는 1초 실시간 인터벌이 다시 그릴 때만 바뀐다 — 병렬 부하에 따라 찍히는 시점이 갈린다
+  // (역할과 무관). 7판: 「지금 고르기」 시트에 살펴보기 그림이 들어 탭 사이 시간이 늘며 드러났다 — RoleNeutral·QaScene 과 같은 규약으로 그 값만 가린다
+  clone.querySelectorAll('.gu-timer-num, .gu-timer-mini-num').forEach((e) => (e.textContent = '‹TIMER›'));
+  clone.querySelectorAll('.gu-timer-stick-fill, .gu-timer-ember').forEach((e) => e.removeAttribute('style'));
+  clone.querySelectorAll('.gu-sr[role="status"]').forEach((e) => (e.textContent = '‹ANNOUNCE›'));
+  clone.querySelectorAll('[data-low], [data-critical]').forEach((e) => {
+    e.removeAttribute('data-low');
+    e.removeAttribute('data-critical');
+  });
   const codeSubs: [string, string][] = [
     [formatRoomCode(code), '‹CODE›'],
     [room.display, '‹CODE›'],
