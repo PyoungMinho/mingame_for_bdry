@@ -5,7 +5,7 @@
  */
 import { useState, type ReactNode } from 'react';
 import type { GungCase, PlayerCount, RoomCode as RoomCodeT } from '@/lib/gung';
-import { extractRoomCode, formatRoomCode, GUIDE } from '@/lib/gung';
+import { extractRoomCode, formatRoomCode, GUIDE, SCENE_ROUTE_PATH } from '@/lib/gung';
 import { Banner, CodeInput, GuButton, RoomCode, SeatRing, ShareActions } from '../components';
 import { seatRingItems } from './adapters';
 
@@ -67,6 +67,10 @@ export function Home({
       <button type="button" className="gu-ghostlink gu-center-self" onClick={onRules}>
         하는 법 1분 요약 ›
       </button>
+      {/* 통합: 노트북·TV 현장 화면(/gung/scene) — 게임 상태 없이 현장 그림만. 방 코드는 방장 ⋮ › 노트북·TV로 현장 보기 에서 붙여 준다 */}
+      <a className="gu-ghostlink gu-center-self gu-home-biglink" href={SCENE_ROUTE_PATH}>
+        {GUIDE.bigScreenHomeLink}
+      </a>
       <p className="gu-micro gu-home-disclaimer">가상의 왕조 이야기입니다 · 실존 인물·사건과 무관합니다</p>
     </main>
   );
@@ -108,6 +112,7 @@ export function Invite({
   onCopyLink,
   copied,
   banner,
+  onBigScreen,
 }: {
   room: RoomCodeT;
   onContinue: () => void;
@@ -116,6 +121,8 @@ export function Invite({
   copied?: boolean;
   /** §12-5 방장 폰 화면 꺼짐 방지 미지원 경고 */
   banner?: ReactNode;
+  /** 통합: 노트북·TV 현장 주소 시트 */
+  onBigScreen?: () => void;
 }) {
   return (
     <main className="gu-setup">
@@ -129,6 +136,11 @@ export function Invite({
         <br />
         · 방장은 1번. 방장 왼쪽 사람이 2번, 그 왼쪽이 3번… (시계 방향)
       </p>
+      {onBigScreen && (
+        <button type="button" className="gu-ghostlink gu-center-self" onClick={onBigScreen}>
+          {GUIDE.bigScreenMenu} ›
+        </button>
+      )}
       {banner}
       <GuButton variant="primary" onClick={onContinue}>
         대기실로 →

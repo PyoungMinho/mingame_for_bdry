@@ -10,12 +10,17 @@
  *  - 버전 관리(개선 묶음 1): `gu:game:v1` 스키마는 그대로 두고 방장 `board`(공개 단서 보드) 필드만 **선택 필드**로 더했다 —
  *    예전 저장엔 없으면 빈 보드로 읽고, 예전 번들은 화이트리스트라 이 필드를 조용히 버린다(양방향 호환, v 올리지 않음).
  *    개인 추리 수첩은 별도 키 `gu:note:v1`(notes.ts) — 게임 저장과 섞지 않는다.
+ *  - 6판(현장 보기): 방장 roundSub 에 'scene', 타이머 kind 에 'scene' 이 늘었다. 허용 값이 **넓어지기만** 했으므로
+ *    옛 저장(select·discuss)은 그대로 읽힌다(마이그레이션 불필요, v 올리지 않음). 목록 밖 값은 예전처럼 깨진 저장 → 폐기.
+ *    현장에서 본 물건 기록은 게임 저장에 넣지 않는다(스키마에 자리가 없다).
  */
 import {
   BOARD_ID_RE,
   BOARD_LIMIT,
   HISTORY_LIMIT,
+  ROUND_SUBS,
   SAVE_VERSION,
+  TIMER_KINDS,
   isPhase,
   type BoardEntry,
   type Disclosure,
@@ -128,10 +133,10 @@ function seatMap(v: unknown, n: number): Record<number, number> | null {
 function parseTimer(v: unknown): TimerState | null | undefined {
   if (v === null) return null;
   if (!isObj(v)) return undefined;
-  if (v.kind !== 'select' && v.kind !== 'discuss' && v.kind !== 'defense' && v.kind !== 'cards' && v.kind !== 'tie') return undefined;
+  if (!(TIMER_KINDS as readonly unknown[]).includes(v.kind)) return undefined;
   if (!isFin(v.totalMs) || v.totalMs < 0 || typeof v.running !== 'boolean' || !isFin(v.remainingMs)) return undefined;
   if (v.running ? !isFin(v.endsAt) : v.endsAt !== null) return undefined;
-  return { kind: v.kind, totalMs: v.totalMs, running: v.running, endsAt: v.running ? (v.endsAt as number) : null, remainingMs: v.remainingMs };
+  return { kind: v.kind as TimerState['kind'], totalMs: v.totalMs, running: v.running, endsAt: v.running ? (v.endsAt as number) : null, remainingMs: v.remainingMs };
 }
 
 function parseVote(v: unknown, n: number): VoteState | null | undefined {
@@ -189,7 +194,7 @@ function parseHostCore(v: unknown, n: number): HostCore | null {
   const rollCall = seatList(v.rollCall, n);
   const absentSeats = seatList(v.absentSeats, n);
   if (!rollCall || !absentSeats || !isSeat(v.introCurrent, n)) return null;
-  if (v.roundSub !== null && v.roundSub !== 'select' && v.roundSub !== 'discuss') return null;
+  if (v.roundSub !== null && !(ROUND_SUBS as readonly unknown[]).includes(v.roundSub)) return null;
   if (!isObj(v.publicClueOpened)) return null;
   const publicClueOpened: Partial<Record<RoundNo, boolean>> = {};
   for (const [k, b] of Object.entries(v.publicClueOpened)) {

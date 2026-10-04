@@ -234,14 +234,16 @@ describe('라운드 잠금·출입 타임라인 — 방장 폰', () => {
     expect(within(tl()).getByText(gateLine('PB-2', (e) => e.roleId === 'consort' && e.dir === 'in'))).toBeInTheDocument();
     expect(within(tl()).queryByText(/^자시|^축시/)).toBeNull();
 
-    // 셋째 조사 — 알림(모두와 같은 문구) + 장소 고르기부터 PB-3 기록(자시·축시)
+    // 셋째 조사 — 알림(모두와 같은 문구) + 현장 보기부터 PB-3 기록(자시·축시)
     await tap(btn(/셋째 조사 시작/));
+    expect(screen.getByRole('heading', { name: /조사 3 · 현장 보기/ })).toBeInTheDocument();
     expect(screen.getByText(NOTICE)).toBeInTheDocument();
     expect(screen.queryByText(/새 기억|떠오르는 기억/)).toBeNull(); // 공용 무대엔 역할별 표시가 없다
     expect(within(tl()).getByText(gateLine('PB-3', (e) => e.roleId === 'eunuch' && e.dir === 'in'))).toBeInTheDocument();
     // 개선 묶음 1 G2: 방장 본인 장소 고르기는 무대가 아니라 단서함에서 — 무대엔 장소 타일·봉인 카드가 없다
     expect(tiles('gu-place-tile')).toHaveLength(0);
     expect(document.querySelectorAll('.gu-sealed')).toHaveLength(0);
+    await tap(btn(/고르기 \d+분 시작/));
     await tap(btn(/토론 \d+분 시작/));
     const total = sejaCase.rounds.flatMap((r) => r.publicCards ?? []).reduce((n, c) => n + (c.gateLog?.length ?? 0), 0);
     expect(within(tl()).getAllByRole('listitem')).toHaveLength(total);
@@ -253,7 +255,7 @@ describe('라운드 잠금·출입 타임라인 — 방장 폰', () => {
     expect(surface.textContent).toContain(MEMORY.crownPrincess[0]);
   });
 
-  it('4인 방장: 조사 1엔 타임라인 없음, 둘째 조사가 시작되면(장소 고르기부터) 최종 변론까지 상단에 있다', async () => {
+  it('4인 방장: 조사 1엔 타임라인 없음, 둘째 조사가 시작되면(현장 보기부터) 최종 변론까지 상단에 있다', async () => {
     render(<GungApp />);
     await flush();
     await tap(btn(/방 만들기/));
@@ -261,21 +263,23 @@ describe('라운드 잠금·출입 타임라인 — 방장 폰', () => {
     await tap(btn(/방 열기/));
     await tap(btn(/대기실로/));
     await tap(btn(/사건 시작/));
-    await tap(btn(/시작하겠소/));
     await tap(btn(/다 읽었소/));
     await tap(btn(/다 봤소/));
     await tap(btn(/첫째 조사 시작/));
-    expect(screen.getByText(sejaCase.rounds[0].publicCards![0].title)).toBeInTheDocument(); // PB-1 은 라운드 시작 때 공개
+    expect(screen.getByText(sejaCase.rounds[0].publicCards![0].title)).toBeInTheDocument(); // PB-1 은 라운드 시작(현장 보기) 때 공개
+    await tap(btn(/고르기 \d+분 시작/));
     await tap(btn(/토론 \d+분 시작/));
     expect(screen.queryByText(/내문 출입 타임라인/)).toBeNull(); // PB-1 은 출입 기록이 아님
     await tap(btn(/둘째 조사 시작/));
-    expect(screen.getByText(/내문 출입 타임라인/)).toBeInTheDocument(); // 조사 2 장소 고르기부터
+    expect(screen.getByText(/내문 출입 타임라인/)).toBeInTheDocument(); // 조사 2 현장 보기부터
+    await tap(btn(/고르기 \d+분 시작/));
     await tap(btn(/토론 \d+분 시작/));
     expect(screen.getByText(/내문 출입 타임라인/)).toBeInTheDocument();
     // 막대 위 레인: 기록에 나온 사람(역할 짧은 이름)
     const grid = document.querySelector('.gu-gatetl-grid')!;
     expect(Array.from(grid.querySelectorAll('.gu-gatetl-lane')).map((l) => l.textContent).filter(Boolean)).toEqual(['어의', '내관', '숙의', '세자빈', '조상궁']);
     await tap(btn(/셋째 조사 시작/));
+    await tap(btn(/고르기 \d+분 시작/));
     await tap(btn(/토론 \d+분 시작/));
     await tap(btn(/최종 변론으로/));
     expect(screen.getByText(/내문 출입 타임라인/)).toBeInTheDocument();

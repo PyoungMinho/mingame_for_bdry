@@ -53,29 +53,29 @@ function findCode(n: PlayerCount, pred: (code: string) => boolean): string {
 }
 const asg = (code: string) => assignFromCode(c, code)!;
 
-describe('BUG-28 결정 — 패 확인 3분 · 동률 변론 30초', () => {
-  it('기본값: 패 확인 3분, 동률 1인 30초(원고 1-8 ②·8-1)', () => {
-    expect(DEFAULT_TIMERS.cardsMs).toBe(180_000);
+describe('BUG-28 결정(6판 압축으로 갱신) — 패 확인 2분 · 동률 변론 30초', () => {
+  it('기본값: 패 확인 2분(UX 스펙 §2-3 — 6판 압축, BUG-28 의 3분을 대체), 동률 1인 30초(원고 8-1)', () => {
+    expect(DEFAULT_TIMERS.cardsMs).toBe(120_000);
     expect(DEFAULT_TIMERS.tieMs).toBe(30_000);
   });
 
-  it('브리핑 → 패 확인에 들어서면 3분 카운트다운이 돌고, 자기소개로 넘어가면 멈춘다 · 단계 맞추기로 왔으면 restart 로 켠다', () => {
+  it('브리핑 → 패 확인에 들어서면 2분 카운트다운이 돌고, 자기소개로 넘어가면 멈춘다 · 단계 맞추기로 왔으면 restart 로 켠다', () => {
     let s = run(newHostGame(c, '7F3K5', T0)!, [{ type: 'advance' }]); // lobby → briefing
     expect(s.host!.timer).toBeNull();
     s = applyAction(s, { type: 'advance' }, { c, now: T0 + 10_000 });
     expect(s.phase).toBe('cards');
-    expect(s.host!.timer).toMatchObject({ kind: 'cards', totalMs: 180_000, running: true, endsAt: T0 + 190_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'cards', totalMs: 120_000, running: true, endsAt: T0 + 130_000 });
     s = applyAction(s, { type: 'advance' }, { c, now: T0 + 20_000 });
     expect(s.phase).toBe('intro');
     expect(s.host!.timer).toBeNull();
     // ↶ 하면 멈춘 채로 복원
     const back = applyAction(s, { type: 'undo' }, { c, now: T0 + 30_000 });
     expect(back.host!.timer).toMatchObject({ kind: 'cards', running: false });
-    // 단계 맞추기로 패 확인에 오면 타이머 없음 → restart 로 3분
+    // 단계 맞추기로 패 확인에 오면 타이머 없음 → restart 로 2분
     let t = run(newHostGame(c, '7F3K5', T0)!, [{ type: 'syncPhase', phase: 'cards' }]);
     expect(t.host!.timer).toBeNull();
     t = applyAction(t, { type: 'timer', op: 'restart' }, { c, now: T0 + 5_000 });
-    expect(t.host!.timer).toMatchObject({ kind: 'cards', totalMs: 180_000 });
+    expect(t.host!.timer).toMatchObject({ kind: 'cards', totalMs: 120_000 });
   });
 
   it('동률 변론 타이머는 1차 집계가 동률일 때만 켜지고(30초, 다시 누르면 다음 사람 30초), 재지목에 들어서면 꺼진다', () => {
@@ -133,9 +133,9 @@ describe('BUG-04 결정 — 공용 카드는 라운드 시작 때 공개', () =>
     let s = run(newHostGame(c, '7F3K6', T0)!, [{ type: 'syncPhase', phase: 'intro' }, { type: 'advance' }]);
     expect(s.phase).toBe('r1');
     expect(gateRoundsShown(s)).toEqual([1]);
-    s = run(s, [{ type: 'advance' }, { type: 'advance' }]); // 토론 → 조사 2 장소 고르기
+    s = run(s, [{ type: 'advance' }, { type: 'advance' }, { type: 'advance' }]); // 현장 → 고르기 → 토론 → 조사 2 현장 보기
     expect(s.phase).toBe('r2');
-    expect(s.host!.roundSub).toBe('select');
+    expect(s.host!.roundSub).toBe('scene');
     expect(gateRoundsShown(s)).toEqual([1, 2]);
   });
 });

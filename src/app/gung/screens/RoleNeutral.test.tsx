@@ -124,23 +124,26 @@ async function hostRun(code: string): Promise<{ steps: Record<string, string>; s
     steps[k] = normalize(code, roles);
   };
   shot('lobby');
-  await tap(btn(/사건 시작/));
-  await tap(within(dialog()).getByRole('button', { name: /시작하겠소/ }));
+  await tap(btn(/사건 시작/)); // 6판: 확인 시트 없음
   shot('briefing');
   await tap(btn(/다 읽었소/));
   shot('cards');
   await tap(btn(/다 봤소/));
   shot('intro');
   await tap(btn(/첫째 조사 시작/));
+  shot('r1-scene'); // 6판 현장 보기(공용 화면 — 인원·라운드만으로 정해진다)
+  await tap(btn(/고르기 \d+분 시작/));
   shot('r1-select');
   await tap(btn(/토론 \d+분 시작/));
   shot('r1-discuss');
   await tap(btn(/둘째 조사 시작/));
+  shot('r2-scene');
+  await tap(btn(/고르기 \d+분 시작/));
   shot('r2-select');
   await tap(btn(/토론 \d+분 시작/));
   shot('r2-discuss');
   await tap(btn(/셋째 조사 시작/));
-  shot('r3-select'); // ← 예전엔 방장이 조상궁·세자빈이면 여기 「새 기억이 떠올랐소」
+  shot('r3-scene'); // ← 예전엔 방장이 조상궁·세자빈이면 여기 「새 기억이 떠올랐소」
   // 용어 시트(「?」) — 역할 전용 용어(활맥)가 끼면 목록으로 역할이 드러난다
   await tap(btn('궁 배치도·시각표·인물·용어'));
   const terms = helpSheetSignature(dialog());
@@ -151,6 +154,8 @@ async function hostRun(code: string): Promise<{ steps: Record<string, string>; s
   if (ok) await tap(ok);
   const sealed = (document.querySelector('.gu-rolecard')?.outerHTML ?? '').replaceAll(code, '‹CODE›');
   await tap(btn('진행'));
+  await tap(btn(/고르기 \d+분 시작/));
+  shot('r3-select');
   await tap(btn(/토론 \d+분 시작/));
   shot('r3-discuss');
   await tap(btn(/최종 변론으로/));
@@ -176,9 +181,10 @@ describe('공용 화면 역할 독립성 — 방장 역할만 바꾼 같은 판'
       const [base, ...rest] = runs;
       expect(runs).toHaveLength(n);
       expect(base.sealed).toContain('gu-sealed-surface'); // 탐침 유효성 — 봉인 카드를 실제로 찍었다
-      expect(textOf(base.steps['r1-select'])).toContain(c.rounds[0].publicCards![0].title);
+      expect(textOf(base.steps['r1-scene'])).toContain(c.rounds[0].publicCards![0].title);
+      expect(textOf(base.steps['r1-select'])).toContain(c.rounds[0].publicCards![0].title); // 접힘(닫혀 있어도 DOM 엔 있다)
       // 조사 3 진입 알림은 모든 역할에 같은 문구 — 역할별 '새 기억' 표시는 없다
-      expect(textOf(base.steps['r3-select'])).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
+      expect(textOf(base.steps['r3-scene'])).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
       for (const r of runs) {
         for (const html of Object.values(r.steps)) expect(textOf(html)).not.toMatch(/새 기억|떠오르는 기억|떠올랐소/);
         expect(r.terms).not.toContain('활맥');
@@ -198,7 +204,7 @@ describe('공용 화면 역할 독립성 — 방장 역할만 바꾼 같은 판'
   }
 });
 
-/** 플레이어(자리 2): 조사 2 → 조사 3(게이트 확인) → 알림 → 봉인된 내 패 7섹션 */
+/** 플레이어(자리 2): 조사 2 → 조사 3(게이트 확인) → 알림 → 봉인된 내 패 6섹션 */
 async function playerRun(code: string): Promise<{ progress: string; sealed: string[] }> {
   search = `code=${code}`;
   render(<GungApp />);
@@ -215,7 +221,7 @@ async function playerRun(code: string): Promise<{ progress: string; sealed: stri
   await tap(screen.getAllByRole('button').find((b) => b.className.includes('gu-place-tile'))!); // 모두 같은 장소
   await tap(btn(/조사하기/));
   await tap(btn(/3라운드 시작됐어요/));
-  await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+  await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ })); // 잠금 기억이 풀리는 조사 3만 확인 시트(6판)
   const progress = normalize(code);
   await tap(btn(/지금 확인하기/));
   const tip2 = qbtn('알겠소');
@@ -230,7 +236,7 @@ async function playerRun(code: string): Promise<{ progress: string; sealed: stri
 }
 
 describe('조사 3 진입 알림·봉인 화면 — 플레이어 폰(자리 2), 역할만 바꾼 같은 판', () => {
-  it('6인: 자리 2가 어느 역할이든 조사 3 진입 직후 화면 DOM 과 봉인된 내 패(7섹션 × 쪽 넘김)가 같다', async () => {
+  it('6인: 자리 2가 어느 역할이든 조사 3 진입 직후 화면 DOM 과 봉인된 내 패(6섹션)가 같다', async () => {
     const runs: { role: string; progress: string; sealed: string[] }[] = [];
     for (const role of castFor(c, 6)) {
       const code = codeWith(6, role, 2);
@@ -241,7 +247,7 @@ describe('조사 3 진입 알림·봉인 화면 — 플레이어 폰(자리 2), 
     }
     const [base, ...rest] = runs;
     expect(runs).toHaveLength(6);
-    expect(base.sealed.length).toBeGreaterThanOrEqual(7);
+    expect(base.sealed.length).toBe(6); // 6판: 내 패 칩 6개(말투 삭제)
     expect(base.sealed.every((h) => h.includes('gu-sealed-surface'))).toBe(true);
     expect(textOf(base.progress)).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
     for (const r of rest) {
@@ -287,8 +293,10 @@ describe('개선 묶음 1 — 새 화면 역할 독립성(방장 역할만 바�
         for (const card of picks) {
           await tap(btn(GUIDE.boardAdd));
           for (const d of String(seals.get(card.id))) await tap(within(dialog()).getByRole('button', { name: d }));
+          // 6판: 4자리를 다 넣으면 바로 오른다 — '누가'는 올린 뒤 자리 칩으로
+          expect(dialog().textContent).toContain(GUIDE.sealPosted);
           await tap(within(dialog()).getByRole('button', { name: '2' }));
-          await tap(within(dialog()).getByRole('button', { name: GUIDE.sealPost }));
+          await tap(within(dialog()).getByRole('button', { name: GUIDE.sealClose }));
         }
         expect(screen.queryByRole('dialog')).toBeNull();
         const board = normalize(code, true);

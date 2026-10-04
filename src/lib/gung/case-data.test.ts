@@ -156,3 +156,62 @@ describe('엔진 규칙이 실제 데이터로도 성립한다', () => {
     }
   });
 });
+
+describe('6판 — 브리핑(§7-1)·진상(§7-2) ↔ 원고', () => {
+  const section = (from: string, to: string) => {
+    const s = doc.indexOf(from);
+    const e = doc.indexOf(to, s + from.length);
+    expect(s, from).toBeGreaterThan(0);
+    expect(e, to).toBeGreaterThan(s);
+    return doc.slice(s, e);
+  };
+
+  it('사건 버전 2(6판 — 본문이 바뀌어 초대 링크 &v=·저장 caseVersion 대조로 「버전이 달라요」를 띄운다)', () => {
+    expect(sejaCase.version).toBe(2);
+  });
+
+  it('브리핑: §7-1 문단이 순서·글자 그대로 — 호명 줄 → {{cast}}, 4·5인 줄 → {{npcs}}, 날짜 안내 ※ 는 맨 끝(낭독 안 함)', () => {
+    const lines = section('### 7-1.', '### 7-2.')
+      .split('\n')
+      .slice(1)
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('>'));
+    const want: string[] = [];
+    for (const l of lines) {
+      if (/^\*\*\{[^}]*호명[^}]*\}\*\*$/.test(l)) want[want.length - 1] += ' {{cast}}';
+      else if (/^\{[^:]*판에만:/.test(l)) want.push(l.replace(/^\{[^:]*판에만:\s*「(.+)」\}$/, '$1').replace('{NPC 역할 이름}', '{{npcs}}'));
+      else want.push(cleanDocText(l));
+    }
+    const got = sejaCase.briefing.paragraphs;
+    expect(got.slice(0, -1)).toEqual(want);
+    expect(got[got.length - 1]).toMatch(/^※ /);
+    expect(got.filter((p) => p.includes('{{cast}}'))).toHaveLength(1);
+    expect(got.filter((p) => p.includes('{{npcs}}'))).toHaveLength(1);
+    // 규칙 「하나~넷」 4줄
+    expect(got.filter((p) => /^(하나|둘|셋|넷)\. /.test(p))).toHaveLength(4);
+  });
+
+  it('진상: §7-2 정황 비트 표 = truth.beats(7개, 비트당 공백 포함 50자 이내) · 자백·결말·요약도 원고 문장 그대로', () => {
+    const sec = section('### 7-2.', '\n## 8.');
+    const rows = sec
+      .split('\n')
+      .map((l) => /^\| *(\d+) *\| *([^|]*?) *\| *(.+?) *\|$/.exec(l))
+      .filter((m): m is RegExpExecArray => m !== null)
+      .map((m) => (m[2] ? { time: m[2], text: cleanDocText(m[3]) } : { text: cleanDocText(m[3]) }));
+    expect(rows).toHaveLength(7);
+    expect(sejaCase.truth.beats).toEqual(rows);
+    for (const b of sejaCase.truth.beats) expect(Array.from(b.text).length, b.text).toBeLessThanOrEqual(50);
+    expect(sec).toContain(`방장 낭독: 「${sejaCase.truth.culpritLine}」`);
+    expect(sec).toContain(sejaCase.truth.confession);
+    expect(sec).toContain(`**${sejaCase.truth.summary}**`);
+    for (const part of sejaCase.truth.epilogue!.split(/(?<=다\.) /)) expect(cleanDocText(sec), part).toContain(part);
+  });
+
+  it('범인 공개 비트 전(정황 비트·culpritLine)엔 범인 이름·호칭이 없다', () => {
+    const culprit = sejaCase.roles.find((r) => r.id === sejaCase.culprit)!;
+    const terms = [culprit.name, culprit.shortName!, '숙의', '연씨', '후궁', '숙의방', '꽃님'];
+    for (const t of [...sejaCase.truth.beats.map((b) => b.text), sejaCase.truth.culpritLine]) {
+      for (const w of terms) expect(t.includes(w), `${w} ← ${t}`).toBe(false);
+    }
+  });
+});

@@ -12,6 +12,7 @@
  *  - 인원별 변형: 카드의 forCount / onlyWhen(플레이어·NPC 여부) 로 교체 카드를 표현한다.
  *  - NPC 증언 카드: 그 역할이 NPC 인 판에서만 라운드 시작 때 공용 공개.
  *  - 라운드 잠금(원고 3판): 역할의 memories 블록은 fromRound 조사가 시작되기 전엔 플레이어 화면에 내리지 않는다.
+ *  - 현장 관찰(원고 6판 10장): scenes 는 인원·역할 무관 공용 정보. 관찰 줄은 fromRound 조사부터 보인다(scene.ts).
  *  - 설계자 메모(memo)는 앱 데이터에 넣지 않는다.
  */
 
@@ -240,6 +241,38 @@ export interface RoundDef {
   hostCue?: { select?: string; discuss?: string };
 }
 
+// ─────────────────────────────── 현장 관찰(원고 6판 10장) ───────────────────────────────
+
+/**
+ * 관찰 한 줄 — 그 라운드에 **새로** 열리는 줄(원고 10-3 R1~R3 칸). 앞 라운드 줄은 남고 새 줄이 아래에 붙는다.
+ * 숨길 수 없는 공용 정보(다 같이 보는 화면)라 조건 필드가 없다 — 인원(4·5·6)·역할과 무관하게 같다(원고 10-1 「중립」).
+ */
+export interface ObservationLineDef {
+  fromRound: RoundNo;
+  /** 40자 이내(공백 포함) — 원고 10-3 */
+  text: string;
+}
+
+/** 그림 속 물건(핫스팟) 하나 */
+export interface SceneObjectDef {
+  /** 'OB-DG1' — 핫스팟·본 물건 기록의 키 */
+  id: string;
+  /** '탕약 사발' */
+  name: string;
+  /** 그림 안 핫스팟 중심 [가로 %, 세로 %] (0~100) */
+  pos: [number, number];
+  /** fromRound 오름차순, 라운드당 최대 1줄 */
+  lines: ObservationLineDef[];
+}
+
+/** 장소 그림 한 장 */
+export interface SceneDef {
+  placeId: PlaceId;
+  /** 배경 그림 키('scene-dg') — UI 가 그림 자산에 매핑한다 */
+  art: string;
+  objects: SceneObjectDef[];
+}
+
 // ─────────────────────────────── 브리핑·진상·점수 ───────────────────────────────
 
 /**
@@ -298,20 +331,28 @@ export interface BonusQuestion {
 }
 
 export interface TimerConfig {
+  /** 현장 보기(조사 라운드 첫 하위 단계) — 0초에도 징 없이 조용히 끝난다(UX 스펙 §2-3) */
+  sceneMs: number;
   selectMs: number;
   discussMs: number;
+  /** 최종 변론 1인분 */
   defenseMs: number;
-  /** 패 확인 카운트다운(원고 1-8 ② 「각자 폰을 가리고 확인하세요」 3분) */
+  /** 패 확인 카운트다운(「각자 폰을 가리고 확인하세요」) */
   cardsMs: number;
   /** 동률자 추가 변론 1인분(원고 8-1 「동률자만 30초씩 추가 변론 → 재투표」) */
   tieMs: number;
 }
 
+/**
+ * 6판 압축 흐름(docs/design/gung-compact-scene-spec.md §2-3) — 조사 1라운드 = 현장 1 + 고르기 1 + 토론 5 = 7분.
+ * 실측 뒤 숫자만 여기서 고친다(UI 문구·진행표는 이 값에서 계산할 것).
+ */
 export const DEFAULT_TIMERS: TimerConfig = {
-  selectMs: 2 * 60_000,
-  discussMs: 7 * 60_000,
-  defenseMs: 60_000,
-  cardsMs: 3 * 60_000,
+  sceneMs: 60_000,
+  selectMs: 60_000,
+  discussMs: 5 * 60_000,
+  defenseMs: 45_000,
+  cardsMs: 2 * 60_000,
   tieMs: 30_000,
 };
 
@@ -348,6 +389,8 @@ export interface GungCase {
   npcHeading?: string;
   /** 공용 카드 gateLog 를 그릴 눈금. 없으면 타임라인을 그리지 않는다 */
   gateAxis?: GateAxisDef;
+  /** 현장 관찰(원고 10장) — 장소 그림별 물건·관찰 줄. 없으면 현장 화면에 그릴 것이 없다 */
+  scenes?: SceneDef[];
 }
 
 export const DEFAULT_INNOCENT_IDENTITY = '당신은 범인이 아니오. 진범을 찾으시오.';

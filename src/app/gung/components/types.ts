@@ -9,10 +9,12 @@ import type { KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 export type RoleIconKey = 'crown' | 'flower' | 'scroll' | 'pill' | 'key' | 'sword' | 'person';
 export type PlaceIconKey = 'bed' | 'pot' | 'flask' | 'trees' | 'hall' | 'door' | 'flame' | 'waves' | 'book' | 'warehouse' | 'pin';
 
-// ── 내 패 섹션 (D3: 7칩 고정 — 범인·무고 화면이 픽셀 단위로 동일) ──────────
+// ── 내 패 섹션 (D3: 칩 고정 — 범인·무고 화면이 픽셀 단위로 동일) ──────────
+// 6판 압축(UX 스펙 §2-2 다): 내 패 칩 7 → 6. '말투'는 자기소개에서 읽지 않기로 했으므로(G3) 칩에서 빼고,
+// 게임이 끝난 뒤 '모두의 패'에서만 보인다. SectionKey 에는 남겨 둔다(모두의 패·옛 상태 호환).
 export type SectionKey = 'identity' | 'profile' | 'secret' | 'night' | 'lies' | 'mission' | 'speech';
 
-export const SECTION_ORDER: readonly SectionKey[] = ['identity', 'profile', 'secret', 'night', 'lies', 'mission', 'speech'];
+export const SECTION_ORDER: readonly SectionKey[] = ['identity', 'profile', 'secret', 'night', 'lies', 'mission'];
 
 export const SECTION_LABEL: Record<SectionKey, string> = {
   identity: '정체',

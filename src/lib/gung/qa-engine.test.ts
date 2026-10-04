@@ -334,9 +334,9 @@ describe('FLOW — 되돌리기·단계 맞추기(엔진)', () => {
     let s = run(newHostGame(c, '7F3K5', T0)!, [{ type: 'syncPhase', phase: 'r2' }]);
     expect(s.host!.timer).toBeNull();
     s = run(s, [{ type: 'timer', op: 'restart' }]);
-    expect(s.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 120_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 60_000 });
     s = run(s, [{ type: 'syncPhase', phase: 'defense' }, { type: 'timer', op: 'restart' }]);
-    expect(s.host!.timer).toMatchObject({ kind: 'defense', totalMs: 60_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'defense', totalMs: 45_000 });
   });
 
   it('RVL-04 [BUG-15] "전체 한 번에 보기"는 범인 도장(자백) 비트까지만 — 판결로 바로 건너뛰지 않는다', () => {

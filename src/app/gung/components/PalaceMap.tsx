@@ -41,6 +41,13 @@ export interface PalaceMapProps {
   tapLabel?: string;
   /** 큰 지도(시트) — 1.4배로 그리고 좌우로 밀어 본다(가장 작은 글자 14px) */
   zoom?: boolean;
+  /**
+   * 통합(현장 보기): 있으면 장소 상자(placeId 있는 것)가 누를 수 있는 단추가 된다 — 누르면 그 장소 id.
+   * 누르는 자리는 상자보다 조금 넓다(서쪽 세 곳은 서로 붙어 있어 겹치지 않는 만큼만). onTap 과 같이 쓰지 않는다.
+   */
+  onPlace?: (placeId: string) => void;
+  /** onPlace 와 함께 — 지금 보고 있는 장소(금색 테) */
+  activePlace?: string;
   className?: string;
 }
 
@@ -77,14 +84,48 @@ function Gate({ cx, cy, barred }: { cx: number; cy: number; barred?: boolean }) 
   );
 }
 
-function Box({ it, icon }: { it: Extract<PalaceMapItemView, { kind: 'box' }>; icon?: PlaceIconKey }) {
+/** 누르는 자리 여유(viewBox 단위) — 서쪽 세 곳(높이 22, 간격 26)이 서로 겹치지 않는 만큼 */
+const HIT_PAD_X = 4;
+const HIT_PAD_Y = 2;
+
+function Box({
+  it,
+  icon,
+  onPlace,
+  active,
+}: {
+  it: Extract<PalaceMapItemView, { kind: 'box' }>;
+  icon?: PlaceIconKey;
+  onPlace?: (placeId: string) => void;
+  active?: boolean;
+}) {
   const left = it.cx - it.w / 2;
   const top = it.cy - it.h / 2;
   const Icon = icon ? placeIconComponent(icon) : null;
   const textX = Icon ? (left + 20 + left + it.w) / 2 : it.cx;
   const two = it.lines.length > 1;
+  const placeId = it.placeId;
+  const tap =
+    onPlace && placeId
+      ? {
+          role: 'button' as const,
+          tabIndex: 0,
+          'aria-label': `${it.lines[0]} 현장`,
+          'aria-pressed': Boolean(active),
+          onClick: () => onPlace(placeId),
+          onKeyDown: (e: KeyboardEvent<SVGGElement>) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onPlace(placeId);
+            }
+          },
+        }
+      : {};
   return (
-    <g className="gu-map-node" data-place={it.placeId} data-icon={icon}>
+    <g className={onPlace && placeId ? 'gu-map-node gu-map-node--tap' : 'gu-map-node'} data-place={it.placeId} data-icon={icon} data-active={active || undefined} {...tap}>
+      {onPlace && placeId && (
+        <rect x={left - HIT_PAD_X} y={top - HIT_PAD_Y} width={it.w + HIT_PAD_X * 2} height={it.h + HIT_PAD_Y * 2} rx={8} className="gu-map-hit" />
+      )}
       <rect x={left} y={top} width={it.w} height={it.h} rx={6} className="gu-map-box" data-place={it.placeId ? '' : undefined} />
       {Icon && <Icon x={left + 6} y={it.cy - 7} size={14} strokeWidth={2} className="gu-map-icon" aria-hidden focusable={false} />}
       {two ? (
@@ -106,10 +147,22 @@ function Box({ it, icon }: { it: Extract<PalaceMapItemView, { kind: 'box' }>; ic
   );
 }
 
-function MapSvg({ m, placeIcons }: { m: PalaceMapView; placeIcons: Record<string, PlaceIconKey> }) {
+function MapSvg({
+  m,
+  placeIcons,
+  onPlace,
+  activePlace,
+}: {
+  m: PalaceMapView;
+  placeIcons: Record<string, PlaceIconKey>;
+  onPlace?: (placeId: string) => void;
+  activePlace?: string;
+}) {
   const [w, h] = m.size;
+  // 장소 단추가 있으면 그림(img)이 아니라 묶음(group) — img 안의 단추는 보조기기에서 안 보인다
+  const a11y = onPlace ? { role: 'group' as const, 'aria-label': m.title } : { role: 'img' as const, 'aria-label': `${m.title}: ${labelsOf(m)}` };
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="gu-map-svg" role="img" aria-label={`${m.title}: ${labelsOf(m)}`} data-map={m.key}>
+    <svg viewBox={`0 0 ${w} ${h}`} className="gu-map-svg" {...a11y} data-map={m.key}>
       {m.items.map((it) => {
         switch (it.kind) {
           case 'fence':
@@ -119,7 +172,15 @@ function MapSvg({ m, placeIcons }: { m: PalaceMapView; placeIcons: Record<string
           case 'gate':
             return <Gate key={it.key} cx={it.cx} cy={it.cy} barred={it.barred} />;
           case 'box':
-            return <Box key={it.key} it={it} icon={it.placeId ? placeIcons[it.placeId] : undefined} />;
+            return (
+              <Box
+                key={it.key}
+                it={it}
+                icon={it.placeId ? placeIcons[it.placeId] : undefined}
+                onPlace={onPlace}
+                active={Boolean(onPlace && it.placeId && it.placeId === activePlace)}
+              />
+            );
           case 'text':
             return (
               <text
@@ -140,8 +201,8 @@ function MapSvg({ m, placeIcons }: { m: PalaceMapView; placeIcons: Record<string
   );
 }
 
-export function PalaceMap({ maps, placeIcons, note, onTap, tapLabel, zoom, className }: PalaceMapProps) {
-  const tappable = Boolean(onTap);
+export function PalaceMap({ maps, placeIcons, note, onTap, tapLabel, zoom, onPlace, activePlace, className }: PalaceMapProps) {
+  const tappable = Boolean(onTap) && !onPlace;
   const onKey = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -160,10 +221,10 @@ export function PalaceMap({ maps, placeIcons, note, onTap, tapLabel, zoom, class
           <p className="gu-map-title">{m.title}</p>
           {zoom ? (
             <PanBox>
-              <MapSvg m={m} placeIcons={placeIcons} />
+              <MapSvg m={m} placeIcons={placeIcons} onPlace={onPlace} activePlace={activePlace} />
             </PanBox>
           ) : (
-            <MapSvg m={m} placeIcons={placeIcons} />
+            <MapSvg m={m} placeIcons={placeIcons} onPlace={onPlace} activePlace={activePlace} />
           )}
         </div>
       ))}

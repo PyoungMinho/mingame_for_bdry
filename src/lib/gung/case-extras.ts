@@ -173,7 +173,8 @@ export interface AliasRow {
 export const ALIAS_TABLE: readonly AliasRow[] = [
   { who: '세자', aliases: ['저하'] },
   { who: '세자빈 남씨', aliases: ['빈궁', '빈궁마마', '남씨'] },
-  { who: '주상', aliases: ['전하', '상감마마', '부왕'] },
+  // 6판 보정: SR-3 「상감마마가 내리신」이 빠져 공개 텍스트에 '상감마마'가 없다 → 호칭표에서도 뺐다
+  { who: '주상', aliases: ['전하', '부왕'] },
   { who: '중전 서씨', aliases: ['중전마마', '중궁'] },
   { who: '가원대군', aliases: ['대군'] },
   { who: '숙의 연씨', aliases: ['숙의마마', '연씨'] },

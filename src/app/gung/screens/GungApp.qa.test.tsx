@@ -161,12 +161,13 @@ function probesOf(code: string, seat: number, round = 3): string[] {
   ];
   return texts.filter((t) => t.length >= 6).map((t) => t.slice(0, 12));
 }
-const SECTION_TABS = ['정체', '신분', '비밀', '그날 밤', '거짓말', '미션', '말투'];
+/** 6판: 내 패 칩 6개('말투'는 게임 뒤 모두의 패에서만) */
+const SECTION_TABS = ['정체', '신분', '비밀', '그날 밤', '거짓말', '미션'];
 
 // ═══════════════════════════════ 3-D SEAL ═══════════════════════════════
 
 describe('SEAL — 비밀 카드 봉인', () => {
-  it('SEAL-01 봉인 상태: 6역할 × 7섹션 — DOM(aria-label 포함)에 그 역할 패의 글이 한 조각도 없다 / 열면 보인다', async () => {
+  it('SEAL-01 봉인 상태: 6역할 × 6섹션 — DOM(aria-label 포함)에 그 역할 패의 글이 한 조각도 없다 / 열면 보인다', async () => {
     for (const role of ['queen', 'consort', 'eunuch', 'physician', 'courtLady', 'crownPrincess']) {
       const code = findCode(6, (k) => (seatOfRole(asg(k), role) ?? 1) >= 2);
       const seat = seatOfRole(asg(code), role)!;
@@ -188,7 +189,7 @@ describe('SEAL — 비밀 카드 봉인', () => {
     }
   }, 60_000);
 
-  it('SEAL-09 [BUG-01] D3: 같은 판 자리 2~6(범인 포함) — 7섹션 봉인 화면 DOM 이 자리 번호만 빼고 완전히 같다(쪽 나눔 없음)', async () => {
+  it('SEAL-09 [BUG-01] D3: 같은 판 자리 2~6(범인 포함) — 6섹션 봉인 화면 DOM 이 자리 번호만 빼고 완전히 같다(쪽 나눔 없음)', async () => {
     const code = findCode(6, (k) => asg(k).culpritSeat >= 2);
     const snaps: Record<number, string[]> = {};
     for (let seat = 2; seat <= 6; seat++) {
@@ -423,7 +424,6 @@ describe('RVL — 진상 공개 순서·스포일러', () => {
     for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
     expect(screen.getByText(/최다 지목:/)).toBeInTheDocument();
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
 
     const seen: string[] = [];
     for (let i = 0; i < 20; i++) {
@@ -459,8 +459,8 @@ describe('RVL — 진상 공개 순서·스포일러', () => {
     await hostRecover(code);
     await syncTo(/^진상 공개/, false);
     await tap(btn(/전체 한 번에 보기/));
-    expect(within(dialog()).getByText(/정황을 건너뛰고 범인을 밝히겠소/)).toBeInTheDocument();
-    await tap(within(dialog()).getByRole('button', { name: /범인을 밝히겠소/ }));
+    expect(within(dialog()).getByText(/범인을 바로 밝히겠소/)).toBeInTheDocument();
+    await tap(within(dialog()).getByRole('button', { name: '밝히겠소' }));
     expect(screen.getByRole('img', { name: '도장: 범인' })).toBeInTheDocument();
     expect(bodyText()).toContain(c.truth.confession.slice(0, 20));
     expect(qbtn(/전체 한 번에 보기/)).toBeNull();
@@ -473,7 +473,7 @@ describe('RVL — 진상 공개 순서·스포일러', () => {
     await hostRecover(code);
     await syncTo(/^진상 공개/, false);
     await tap(btn(/전체 한 번에 보기/));
-    await tap(within(dialog()).getByRole('button', { name: /범인을 밝히겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: '밝히겠소' }));
     await tap(btn(/^다음/));
     expect(screen.getByRole('img', { name: '도장: 미결' })).toBeInTheDocument();
     expect(screen.queryByRole('img', { name: '도장: 도주' })).toBeNull();
@@ -559,7 +559,7 @@ describe('LOCK — R3 기억 조기 해제', () => {
     await tap(btn(/^이동/));
     // 게이트(「3라운드 시작됐어요」)와 같은 제목·같은 본문
     expect(within(dialog()).getByText(/셋째 조사로 넘어가겠소/)).toBeInTheDocument();
-    expect(within(dialog()).getByText(/방장이 '셋째 조사를 시작하오'라고 외쳤을 때만 누르시오/)).toBeInTheDocument();
+    expect(within(dialog()).getByText(/방장이 '셋째 조사를 시작하오'라고 외친 뒤에만 누르시오/)).toBeInTheDocument();
     await tap(within(dialog()).getByRole('button', { name: /아직이오/ }));
     expect(saved().phase).toBe('r2');
     expect(bodyText()).not.toContain(memory);
@@ -573,19 +573,25 @@ describe('LOCK — R3 기억 조기 해제', () => {
     expect(screen.getByText(RECHECK)).toBeInTheDocument();
   });
 
-  it('LOCK-06d 조사 1 진입(자기소개 게이트)도 같은 확인 — 1탭이면 그대로 자기소개', async () => {
+  it('LOCK-06d 6판: 조사 1 진입(자기소개 게이트)은 1탭 — 풀리는 잠금 기억이 없다(데이터 판정) · 단계 맞추기 점프는 그대로 확인', async () => {
     const code = findCode(5, (k) => asg(k).culpritSeat !== 2);
     await joinAsPlayer(code, 2);
     await syncTo(/^자기소개/);
     await dismissPeekTip();
     await tap(btn(/1라운드 시작됐어요/));
-    expect(saved().phase).toBe('intro');
+    expect(screen.queryByRole('dialog', { name: /넘어가겠소/ })).toBeNull();
+    expect(saved().phase).toBe('r1');
+    // 진행 단계 맞추기(드문 복구 경로)는 예전처럼 조사 진입마다 같은 확인
+    await syncTo(/^자기소개/);
+    await tap(screen.getByRole('button', { name: /진행 단계/ }));
+    await tap(screen.getByRole('radio', { name: /^조사 1/ }));
+    await tap(btn(/^이동/));
     expect(within(dialog()).getByText(/첫째 조사로 넘어가겠소/)).toBeInTheDocument();
     await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
     expect(saved().phase).toBe('r1');
   });
 
-  it('LOCK-06b 확인 시트 문구는 모든 역할에 같다(기억 보유 역할만 다른 시트를 띄우면 역할이 드러난다) · 조사 1→2 도 같은 확인', async () => {
+  it('LOCK-06b 확인 시트는 모든 역할에 같다(기억 없는 역할도 조사 3 시트를 받는다 — 역할 비노출) · 6판: 조사 1→2 는 1탭', async () => {
     const code = findCode(6, (k) => asg(k).seats.indexOf('queen') + 1 >= 2);
     const seat = seatOfRole(asg(code), 'queen')!;
     await joinAsPlayer(code, seat);
@@ -594,7 +600,13 @@ describe('LOCK — R3 기억 조기 해제', () => {
     await tap(tiles('gu-place-tile')[0]);
     await tap(btn(/조사하기/));
     await tap(btn(/2라운드 시작됐어요/));
-    expect(within(dialog()).getByText(/둘째 조사로 넘어가겠소/)).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /넘어가겠소/ })).toBeNull();
+    expect(saved().phase).toBe('r2');
+    await dismissPeekTip();
+    await tap(tiles('gu-place-tile')[0]);
+    await tap(btn(/조사하기/));
+    await tap(btn(/3라운드 시작됐어요/));
+    expect(within(dialog()).getByText(/셋째 조사로 넘어가겠소/)).toBeInTheDocument();
     expect(within(dialog()).queryByText(/기억/)).toBeNull();
   });
 
@@ -740,23 +752,24 @@ describe('FLOW — 진행·되돌리기·새로고침', () => {
     expect(saved().phase).toBe('briefing');
   });
 
-  it('FLOW-08·TMR-10 [BUG-07] 방장 복구 → O1 조사 2: 타이머 시작 버튼 → 2:00 / 최종 변론도 같은 방식', async () => {
+  it('FLOW-08·TMR-10 [BUG-07] 방장 복구 → O1 조사 2: 타이머 시작 버튼 → 1:00 / 최종 변론도 같은 방식(0:45)', async () => {
     await hostRecover('7F3K5');
     await syncTo(/^조사 2/, false);
     expect(screen.queryByText(/^\d\d:\d\d$/)).toBeNull();
-    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
-    expect(screen.getByText('02:00')).toBeInTheDocument();
+    await tap(btn(/⏱ 고르기 1분 시작/)); // 단계 맞추기로 왔을 때만 시작 버튼(보통은 현장 → 고르기 전진 때 저절로)
+    expect(screen.getByText('01:00')).toBeInTheDocument();
     await syncTo(/^최종 변론/);
     await tap(btn(/변론 타이머 시작/));
-    expect(screen.getByText('01:00')).toBeInTheDocument();
+    expect(screen.getByText('00:45')).toBeInTheDocument();
   });
 
-  it('FLOW-12 [BUG-09] 전진 토스트 뒤에 다른 기록(다음 사람)이 쌓이면 토스트의 되돌리기가 사라진다 — 엉뚱한 기록을 되돌리지 않는다', async () => {
+  it('FLOW-12 [BUG-09] 전진 토스트 뒤에 다른 기록(자기소개 자리 링 탭)이 쌓이면 토스트의 되돌리기가 사라진다 — 엉뚱한 기록을 되돌리지 않는다', async () => {
     await hostRecover('7F3K5');
     await syncTo(/^패 확인/, false);
     await tap(btn(/다 봤소/));
     expect(document.querySelector('.gu-toast-action')).not.toBeNull();
-    await tap(btn(/다음 사람/));
+    expect(qbtn(/다음 사람/)).toBeNull(); // 6판: 「다음 사람」 삭제 — 링 탭은 선택
+    await tap(tiles('gu-seat-node').find((b) => b.textContent?.startsWith('2')) as HTMLElement);
     expect(document.querySelector('.gu-toast-action')).toBeNull();
     expect(saved()).toMatchObject({ phase: 'intro' });
     expect(saved().host.introCurrent).toBe(2);
@@ -774,7 +787,6 @@ describe('FLOW — 진행·되돌리기·새로고침', () => {
     await tap(btn('건너뛰기'));
     for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
     const ok = screen.getAllByRole('button', { name: '성공' });
     await tap(ok[0]);
@@ -857,7 +869,7 @@ describe('CLUE — 장소·단서', () => {
     await tap(btn(/조사하기/));
     await tap(document.querySelector('.gu-toast-action') as HTMLElement);
     expect(saved().rounds['1']).toBeUndefined();
-    expect(screen.getByText('어디를 조사하겠소?')).toBeInTheDocument();
+    expect(screen.getByText('한 곳만 고르시오 · 같은 곳은 같은 단서요')).toBeInTheDocument();
     await tap(tiles('gu-place-tile')[1]);
     await tap(btn(/조사하기/));
     expect(document.querySelector('.gu-toast-action')).not.toBeNull();
@@ -903,8 +915,8 @@ describe('TMR — 타이머·화면 꺼짐 방지', () => {
     Object.defineProperty(navigator, 'vibrate', { value: vib, configurable: true });
     await hostRecover('7F3K5');
     await syncTo(/^조사 1/, false);
-    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
-    await advance(119_000);
+    await tap(btn(/⏱ 고르기 1분 시작/)); // 단계 맞추기로 왔을 때만 시작 버튼
+    await advance(59_000);
     expect(vib).not.toHaveBeenCalledWith([200, 100, 200]);
     await advance(2_000);
     expect(screen.getByText('끝!')).toBeInTheDocument();
@@ -992,8 +1004,8 @@ describe('VOTE·SCR — 지목 입력·집계·판정 화면', () => {
     expect(saved().host.vote.first).toEqual({});
     for (const t of [4, 4, 4, 1, 4]) await tap(btn(new RegExp(`^${t}번`)));
     expect(saved().host.vote.sub).toBe('tally');
-    // 집계 화면에 범인 여부 표시가 없다(보너스 머리의 일반 문장 "범인의 답은 셈하지 않소"만 예외 — R7)
-    expect(bodyText().replace('범인의 답은 셈하지 않소', '')).not.toMatch(/범인/);
+    // 집계 화면에 범인 여부 표시가 없다(보너스 머리의 일반 문장 "범인 답은 빼오"만 예외 — R7)
+    expect(bodyText().replace('범인 답은 빼오', '')).not.toMatch(/범인/);
     expect(screen.queryByRole('img', { name: /도장/ })).toBeNull();
     await tap(btn('3번의 지목 고치기'));
     expect(saved().host.vote.sub).toBe('input');
@@ -1019,7 +1031,6 @@ describe('VOTE·SCR — 지목 입력·집계·판정 화면', () => {
     await tap(btn('건너뛰기'));
     for (const t of [2, 1, 2, 2]) await tap(btn(new RegExp(`^${t}번`)));
     await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
     for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
     const order = () => Array.from(document.querySelectorAll('.gu-scorerow-who')).map((e) => Number(/(\d+)번/.exec(e.textContent ?? '')![1]));
     expect(order()).toEqual([1, 2, 3, 4]);
@@ -1103,7 +1114,7 @@ describe('O8 자리 비우기', () => {
     await tap(within(dialog()).getByRole('button', { name: '알겠소' }));
     await syncTo(/^진상 공개/);
     await tap(btn(/전체 한 번에 보기/));
-    await tap(within(dialog()).getByRole('button', { name: /범인을 밝히겠소/ }));
+    await tap(within(dialog()).getByRole('button', { name: '밝히겠소' }));
     await tap(btn(/^다음/));
     expect(screen.getByRole('img', { name: '도장: 미결' })).toBeInTheDocument();
     expect(bodyText()).toMatch(/범인\(3번\)이 자리를 비워 판결이 없소/);
@@ -1235,13 +1246,13 @@ describe('셋업·저장·기타', () => {
     Object.defineProperty(navigator, 'vibrate', { value: vib, configurable: true });
     await hostRecover('7F3K5');
     await syncTo(/^조사 1/, false);
-    await tap(btn(/다 읽었소 → 고르기 2분 시작/)); // G2: 낭독 뒤 방장이 시작
+    await tap(btn(/⏱ 고르기 1분 시작/)); // 단계 맞추기로 왔을 때만 시작 버튼
     cleanup();
     vi.setSystemTime(new Date(Date.now() + 45_000));
     search = 'code=7F3K5';
     render(<GungApp />);
     await flush();
-    expect(screen.getByText('01:15')).toBeInTheDocument();
+    expect(screen.getByText('00:15')).toBeInTheDocument();
     cleanup();
     vi.setSystemTime(new Date(Date.now() + 10 * 60_000));
     render(<GungApp />);
@@ -1257,8 +1268,7 @@ describe('셋업·저장·기타', () => {
     await syncTo(/^지목/);
     await tap(tiles('gu-seatgrid-tile')[0]);
     await tap(btn(/지목 확정/));
-    await tap(btn(/진상 공개 시작됐어요/));
-    await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+    await tap(btn(/진상 공개 시작됐어요/)); // 6판: 1탭
     // G5: 대기 화면엔 범인 배너가 없다 → 방장 「범인이 밝혀졌소」 뒤 확인 시트를 거쳐야 보인다
     expect(screen.queryByText(/당신이 범인이었소/)).toBeNull();
     await tap(btn(/범인이 밝혀졌어요/));
@@ -1271,8 +1281,7 @@ describe('셋업·저장·기타', () => {
     await syncTo(/^지목/);
     await tap(btn(new RegExp(`^${culprit}번`)));
     await tap(btn(/지목 확정/));
-    await tap(btn(/진상 공개 시작됐어요/));
-    await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+    await tap(btn(/진상 공개 시작됐어요/)); // 6판: 1탭
     expect(screen.queryByText(/✓ 적중/)).toBeNull(); // G5 대기 화면 — 적중 표시 없음
     await tap(btn(/범인이 밝혀졌어요/));
     await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
@@ -1296,8 +1305,7 @@ describe('셋업·저장·기타', () => {
       await tap(btn('건너뛰기'));
       for (const t of [3, 3, 1, 3]) await tap(btn(new RegExp(`^${t}번`))); // 3번(무고) 지목 → 도주
       await tap(btn(/진상 공개/));
-      await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
-      for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
+        for (let i = 0; i < 30 && qbtn(/^(다음|점수 보기)/); i++) await tap(btn(/^(다음|점수 보기)/));
       expect(screen.getByText(/오늘의 주인공: 범인/)).toBeInTheDocument();
       expect(screen.getByText(/범인 도주 · 2번 숙의/)).toBeInTheDocument();
       const og = images.filter((u) => u.includes('/gung/og/result?'));

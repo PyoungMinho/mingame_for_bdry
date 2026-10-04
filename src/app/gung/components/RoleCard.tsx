@@ -1,7 +1,7 @@
 /**
  * §5-8 RoleCard — 호패(끈 구멍 + 나무결 프레임) + SectionChips + SealedCard.
  * 섹션별 렌더: 정체(범인이면 '정체' 섹션이 **열린 상태에서만** SealStamp "범인"), 신분(역할명+프로필),
- * 비밀, 그날 밤(시각 리스트), 거짓말(불릿), 미션(손글씨 메모), 말투(손글씨 ×2~3).
+ * 비밀, 그날 밤(시각 리스트), 거짓말(불릿), 미션(손글씨 메모). 6판: '말투' 칩 삭제(모두의 패에서만 보인다).
  * 비밀 섹션 끝엔 라운드 잠금 블록(「R3에 떠오르는 기억」)이 따로 붙는다.
  * 「R2부터」「R3부터」 표기는 글자 그대로 두고 배지(RoundTagText)로만 꾸민다.
  *
@@ -105,20 +105,7 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
                 </ol>
               )}
               {activeSection === 'lies' && <LieRulesBox compact />}
-              {activeSection === 'speech' && <p className="gu-hopae-speech-head">{GUIDE.speechHead}</p>}
-              {full.list && activeSection === 'speech' && (
-                <ol className="gu-hopae-speech gu-numlist">
-                  {full.list.map((s, i) => (
-                    <li key={i} className="gu-font-hand">
-                      <span className="gu-numitem-mark" aria-hidden>
-                        {circledNum(i + 1)}
-                      </span>
-                      “{s}”
-                    </li>
-                  ))}
-                </ol>
-              )}
-              {full.list && activeSection !== 'speech' && (
+              {full.list && (
                 <ol className="gu-hopae-list gu-numlist">
                   {full.list.map((s, i) => (
                     <li key={i}>
@@ -141,8 +128,8 @@ export function RoleCard({ content, activeSection, onSectionChange, open, mode, 
 }
 
 /**
- * R1 「거짓말 규칙」 상자 — 하는 법 시트 맨 위와 내 패 '거짓말' 섹션 맨 위에 **같은 문자열**로 들어간다.
- * 출처: 브리핑 '둘.'(원고 7-1) · 공통 규칙 2(원고 1-7 = 플레이어 뷰 2-4). 질문 주제는 제안하지 않는다.
+ * R1 규칙 상자 — 전문(하는 법 시트 맨 위) = 원고 1-7 공통 규칙 4줄 + ※(6판), compact(내 패 '거짓말' 섹션 맨 위) = 거짓말 규칙 한 줄 요약.
+ * 출처: 브리핑 '하나~넷'(원고 7-1) · 공통 규칙(원고 1-7 = 플레이어 뷰 2-4). 질문 주제는 제안하지 않는다.
  */
 export function LieRulesBox({ className, compact }: { className?: string; compact?: boolean }) {
   if (compact) {
@@ -154,17 +141,23 @@ export function LieRulesBox({ className, compact }: { className?: string; compac
     );
   }
   return (
-    <section className={['gu-lierules', className ?? ''].filter(Boolean).join(' ')} aria-label={GUIDE.lieRulesTitle}>
-      <p className="gu-lierules-title">{GUIDE.lieRulesTitle}</p>
+    <section className={['gu-lierules', className ?? ''].filter(Boolean).join(' ')} aria-label={GUIDE.rulesTitle}>
+      <p className="gu-lierules-title">{GUIDE.rulesTitle}</p>
       <ol className="gu-lierules-list">
-        {GUIDE.lieRules.map((line, i) => (
-          <li key={i}>
-            <span className="gu-numitem-mark" aria-hidden>
-              {circledNum(i + 1)}
-            </span>
-            <span>{line}</span>
-          </li>
-        ))}
+        {GUIDE.lieRules.map((line, i) =>
+          line.startsWith('※') ? (
+            <li key={i} className="gu-lierules-note">
+              <span>{line}</span>
+            </li>
+          ) : (
+            <li key={i}>
+              <span className="gu-numitem-mark" aria-hidden>
+                {circledNum(i + 1)}
+              </span>
+              <span>{line}</span>
+            </li>
+          ),
+        )}
       </ol>
     </section>
   );

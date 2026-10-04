@@ -7,7 +7,7 @@
  *
  * 개선 묶음 1
  *  - G1: 단계 전진 버튼 위 캡션 「누르고 외치시오: '…'」 — 신호는 signals.ts(플레이어 게이트와 같은 함수).
- *  - G2: 조사 라운드에 들어서면 고르기 타이머는 멈춰 있다(낭독 먼저 → 「다 읽었소 → 고르기 2분 시작」).
+ *  - G2: (6판에서 바뀜) 낭독은 현장 보기가 맡고, 고르기 타이머는 현장 → 고르기 전진 때 돈다. 단계 맞추기로 오면 「다 읽었소 → 고르기 1분 시작」.
  *        방장 본인의 조사(장소 고르기·봉인 단서)는 **무대에서 뺐다** — 공용 무대에 봉인 카드가 하나도 없다(.gu-sealed 0개).
  *        방장은 단서함 탭의 「지금 고르기」로 고른다. 무대 버튼 문구는 '골랐는지'조차 드러내지 않는 고정 문구.
  *  - G3: 자기소개 큐에서 '사극 말투 필수' 삭제(말투 예시가 검증 밖 정보 경로라).
@@ -17,7 +17,22 @@
  *  - R5: 공개 단서 보드(인장으로만 올림) — 토론에선 펼침, 다음 라운드 고르기·변론·지목 준비에선 접힘.
  *  - R6: 최종 변론 3칸 틀 + 변론 칩 역할 아이콘(자기소개 뒤).
  *  - R7: 보너스 문항을 집계 아래 펼친 단계로, 0개 입력이면 진상 공개 확인 문구가 바뀐다.
- *  - M1: 결과 화면 「같은 사건, 다른 모임용 새 방」.
+ *  - M1: 결과 화면 「같은 사건으로 새 방」(6판 문구 압축).
+ *
+ * 6판(엔진 단계): 조사 라운드 = 현장 보기(scene, 조용한 1분) → 장소 고르기 → 토론.
+ *  통합(프론트팀장): hostScene 무대 맨 위가 현장 그림(SceneView — 장소 그림 + 물건 단추 + 다 같이 보는 관찰 카드), 그 아래 공용 단서.
+ *  SceneView 에는 사건·들어선 라운드·방 코드(본 물건 기록을 판마다 나누는 데만)·공개 배치도만 넘긴다 — 인원·자리·역할은 넘기지 않는다.
+ *  고르기·토론에선 「현장 다시 보기」 시트(GungApp)로 언제든 다시 본다.
+ *
+ * 6판 진행 압축(UX 스펙 §2-2) — 누르기·확인 시트·안내 문구 줄이기
+ *  - H1 대기실: 자리별 롤콜 → 표식 한 번에 외치기(자리 칩은 선택), 「사건을 시작하겠소?」 확인 시트 삭제, 진행표(FlowStrip).
+ *  - H2 개요: 시각표·배치도 상시 노출 → 「배치도 · 시각표 ›」 링크(「?」 시트). ※ 날짜 안내는 작은 글씨(낭독 안 함).
+ *  - H3 패 확인: 큐 1줄 + 타이머. 「자기소개 건너뛰기」는 ⋮ 메뉴로.
+ *  - H4 자기소개: 「다음 사람 →」 삭제(자리 링 탭은 선택), 이름·직함만.
+ *  - H5a·H5b·H6: 맨 위 하위 단계 표시(현장 → 고르기 → 토론), 시각 어림은 현장 화면 접힘 1곳, 고르기·토론의 공용 단서는 접힘.
+ *  - H8: 지목 준비 불릿 삭제, 「진상을 공개하겠소?」·보너스 0개 확인 시트 삭제(판결 확정 전엔 버튼 비활성 + 인라인 경고),
+ *        보너스는 자리당 한 줄에 Q1·Q2 나란히.
+ *  - R5 보드 내리기: 확인 시트 → 5초 되돌리기 토스트. H10: 결과 카드 미리보기 상시 노출 삭제(이미지 저장에서만).
  */
 import type { ReactNode } from 'react';
 import { Hand } from 'lucide-react';
@@ -36,6 +51,8 @@ import {
   getRoundBoard,
   getSheet,
   GUIDE,
+  timerMs,
+  timerMinutes,
   guideText,
   parseRoomCode,
   placeCardById,
@@ -51,41 +68,39 @@ import {
   roundDef,
   rolesVisible,
   timeHint,
-  timeTable,
-  TIME_TABLE_NOTE,
 } from '@/lib/gung';
 import {
   GateTimelineBar,
   GuButton,
   HostCue,
   IncenseTimer,
-  PalaceMap,
   RevealScroll,
   RoleIcon,
   RoomCode,
+  RoundSteps,
   ScoreRow,
   SealStamp,
   SeatRing,
   ShareActions,
   TallyBars,
-  TimeTable,
   VoteStepper,
 } from '../components';
 import type { GuTabKey, IncenseTimerValue, PalaceMapProps, ScoreMission, SectionKey } from '../components';
 import { gateToView, seatRingItems } from './adapters';
 import type { ConfirmRequest } from './Overlays';
-import { DefenseFrame, PublicFold, TimeHintLine } from './Shared';
-import { hostCaption, hostSignal, SKIP_INTRO_NOTE, type HostSignalSub } from './signals';
+import { DefenseFrame, GameFlow, isNoteLine, PublicCardList, PublicFold, TimeHintLine } from './Shared';
+import { hostCaption, hostSignal, type HostSignalSub } from './signals';
 import { MyCardTab } from './Tabs';
+import { SceneView } from './SceneView';
 
-/** §13 기본 진행 대본 — 사건 데이터 hostCue 가 있으면 그쪽이 이긴다 */
+/** §13 기본 진행 대본 — 사건 데이터 hostCue 가 있으면 그쪽이 이긴다(6판: 한 줄 ≤ 40자) */
 export const HOST_CUE = {
-  lobby: '2번부터 차례로 번호와 사건 표식을 외치시오',
+  lobby: GUIDE.lobbyCue,
   briefing: '모두 귀를 기울이시오. 소리 내어 읽어주시오',
   cards: '각자 자기 패를 몰래 확인하시오. 남의 패를 엿보면 곤장이오',
   intro: GUIDE.introCue,
   select: GUIDE.selectCue,
-  discuss: '찾은 단서를 밝힐지 숨길지는 각자의 몫. 밝힌다면 소리 내어 읽으시오',
+  discuss: '밝힐 단서는 소리 내어 읽고 인장을 불러 주시오',
   defense: GUIDE.defenseCue,
   vote: '셋을 세면, 범인이라 생각하는 자를 동시에 손가락으로 가리키시오',
   reveal: '이제 그날 밤의 진상을 밝히겠소',
@@ -135,8 +150,12 @@ export interface HostAreaProps {
   map: Pick<PalaceMapProps, 'maps' | 'placeIcons' | 'note'>;
   /** R2 배치도만 담은 시트 열기 */
   onOpenMap: () => void;
+  /** 6판 H2 — 「배치도 · 시각표 ›」 = 「?」 시트(없으면 배치도 시트) */
+  onOpenHelp?: () => void;
   /** R5 인장 키패드 시트 열기 */
   onOpenSealPad: () => void;
+  /** 통합: 「현장 다시 보기」 시트(고르기·토론 중 언제든) */
+  onOpenScene?: () => void;
   /** R1 P1 — 한 번 연 칩 점(UI 상태) */
   seenSections?: Partial<Record<SectionKey, boolean>>;
   onSeenSection?: (section: SectionKey) => void;
@@ -155,7 +174,7 @@ function TimerSlot({
 }: {
   timerValue: IncenseTimerValue | null;
   onTimer: HostAreaProps['onTimer'];
-  size: 'stage' | 'compact';
+  size: 'stage' | 'compact' | 'mini';
   label: string;
   /** 시작 버튼 문구를 통째로(G2 「다 읽었소 → 고르기 2분 시작」) */
   startLabel?: string;
@@ -208,8 +227,14 @@ export function HostPlayArea(props: HostAreaProps): HostAreaResult {
   // G1: 그 단계의 전진 버튼에만 「누르고 외치시오」 — 신호표는 플레이어 게이트와 같은 함수(signals.ts)
   const signal = hostSignal(state.phase, hostSignalSub(c, a, state));
   const withCaption = signal && res.actionBar ? { ...res, gateCaption: hostCaption(signal) } : res;
+  // 통합: 현장 보기 하위 단계는 그림이 첫 화면에 들도록 타임라인을 맨 위가 아니라 공용 단서(출입 기록) 바로 아래에 둔다(hostScene)
+  if (isSceneStep(state)) return withCaption;
   const timeline = hostGateTimeline(c, a, state);
   return timeline ? { ...withCaption, body: <>{timeline}{withCaption.body}</> } : withCaption;
+}
+
+function isSceneStep(state: GameState): boolean {
+  return (state.phase === 'r1' || state.phase === 'r2' || state.phase === 'r3') && state.host?.roundSub === 'scene';
 }
 
 /** 방장 하위 상태 → 신호가 붙는 전진인가(signals.hostSignal) */
@@ -254,7 +279,7 @@ function hostPhaseArea(props: HostAreaProps): HostAreaResult {
     case 'r1':
     case 'r2':
     case 'r3':
-      return host.roundSub === 'discuss' ? hostDiscuss(props) : hostSelect(props);
+      return host.roundSub === 'discuss' ? hostDiscuss(props) : host.roundSub === 'scene' ? hostScene(props) : hostSelect(props);
     case 'defense':
       return hostDefense(props);
     case 'vote':
@@ -280,57 +305,26 @@ function seatName(c: GungCase, a: Assignment, state: GameState, seat: number): s
 
 // ─────────────────────────────── H1 대기실 ───────────────────────────────
 
-function hostLobby({ state, a, dispatch, onConfirm, onShareInvite, onNewRoom }: HostAreaProps): HostAreaResult {
+function hostLobby({ c, state, a, dispatch, onShareInvite }: HostAreaProps): HostAreaResult {
   const host = state.host!;
   const n = a.n;
   const room = parseRoomCode(state.code);
-  const unchecked = n - host.rollCall.length;
   const items = seatRingItems(n, { mode: 'rollcall', rollCall: host.rollCall });
   return {
     body: (
       <>
         <RoomCode code={state.code} compact n={n} tag={room?.tag} />
         <HostCue>{HOST_CUE.lobby}</HostCue>
+        {/* 6판: 자리 칩은 선택(눌러 표시만) — 시작을 막지 않는다(「사건을 시작하겠소?」 확인 시트 삭제) */}
         <SeatRing n={n} mode="rollcall" items={items} onTapSeat={(seat) => seat !== 1 && dispatch({ type: 'rollCall', seat })} />
-        <p className="gu-h2">
-          확인 {host.rollCall.length} / {n}
-        </p>
+        <GameFlow c={c} n={n} />
         <GuButton variant="secondary" onClick={onShareInvite}>
           💬 초대 다시 보내기
         </GuButton>
-        <button
-          type="button"
-          className="gu-ghostlink gu-text-danger"
-          onClick={() =>
-            onConfirm({
-              title: '인원을 바꾸겠소?',
-              body: '인원을 바꾸면 새 방이 되오. 방 코드가 바뀌니 모두에게 다시 초대를 보내야 하오.',
-              confirmLabel: '새 방 만들기',
-              danger: true,
-              onConfirm: onNewRoom,
-            })
-          }
-        >
-          인원 바꾸기(새 방) ›
-        </button>
       </>
     ),
     actionBar: (
-      <GuButton
-        variant="primary"
-        onClick={() => {
-          if (unchecked > 0) {
-            onConfirm({
-              title: '사건을 시작하겠소?',
-              body: `${unchecked}명 확인 안 됐소. 그래도 시작?`,
-              confirmLabel: '시작하겠소',
-              onConfirm: () => dispatch({ type: 'advance' }),
-            });
-          } else {
-            dispatch({ type: 'advance' });
-          }
-        }}
-      >
+      <GuButton variant="primary" onClick={() => dispatch({ type: 'advance' })}>
         사건 시작 →
       </GuButton>
     ),
@@ -339,7 +333,7 @@ function hostLobby({ state, a, dispatch, onConfirm, onShareInvite, onNewRoom }: 
 
 // ─────────────────────────────── H2 브리핑 ───────────────────────────────
 
-function hostBriefing({ c, a, dispatch, stageScale, onToggleScale, map, onOpenMap }: HostAreaProps): HostAreaResult {
+function hostBriefing({ c, a, dispatch, stageScale, onToggleScale, onOpenMap, onOpenHelp }: HostAreaProps): HostAreaResult {
   const b = resolveBriefing(c, a.n);
   return {
     body: (
@@ -350,17 +344,23 @@ function hostBriefing({ c, a, dispatch, stageScale, onToggleScale, map, onOpenMa
             {stageScale > 1 ? '가 보통' : '가 크게'}
           </button>
         </div>
-        {b.paragraphs.map((p, i) => (
-          <p key={i} className="gu-stagebody gu-briefing-p">
-            {p}
-          </p>
-        ))}
+        {b.paragraphs.map((p, i) =>
+          // 원고 6판 7-1: ※ 날짜 안내는 낭독하지 않고 화면 작은 글씨로
+          isNoteLine(p) ? (
+            <p key={i} className="gu-micro gu-briefing-note">
+              {p}
+            </p>
+          ) : (
+            <p key={i} className="gu-stagebody gu-briefing-p">
+              {p}
+            </p>
+          ),
+        )}
         <p className="gu-micro gu-text-right">약 {b.readMinutes}분 낭독</p>
-        {/* 원고 1-8 ① 브리핑 = 낭독문 + 시각표. 조사 중엔 헤더 「?」(용어 풀이·시각표)에서 다시 본다 */}
-        <TimeTable rows={timeTable(c)} note={TIME_TABLE_NOTE} />
-        {/* R2: 원고 1-8 ① 브리핑 = 낭독문 + 시각표 + 장소 지도. 누르면 큰 시트 */}
-        <PalaceMap {...map} onTap={onOpenMap} tapLabel={GUIDE.mapTapHint} />
-        <p className="gu-micro gu-center">{GUIDE.mapTapHint}</p>
+        {/* 6판: 시각표·배치도 상시 노출 → 링크 한 줄(「?」 시트에 배치도·시각표·인물·용어가 다 있다) */}
+        <button type="button" className="gu-ghostlink gu-center-self" onClick={onOpenHelp ?? onOpenMap}>
+          {GUIDE.helpLink}
+        </button>
       </>
     ),
     actionBar: (
@@ -373,19 +373,14 @@ function hostBriefing({ c, a, dispatch, stageScale, onToggleScale, map, onOpenMa
 
 // ─────────────────────────────── H3 패 확인 안내 ───────────────────────────────
 
-function hostCards({ dispatch, onGoTab, timerValue, onTimer }: HostAreaProps): HostAreaResult {
+function hostCards({ c, dispatch, onGoTab, timerValue, onTimer }: HostAreaProps): HostAreaResult {
   return {
     body: (
       <>
         <Hand aria-hidden size={64} className="gu-hero-icon" />
         <HostCue className="gu-hostcue--lg">{HOST_CUE.cards}</HostCue>
-        {/* 원고 1-8 ② 「각자 폰을 가리고 확인하세요」 카운트다운 3분 */}
-        <TimerSlot timerValue={timerValue} onTimer={onTimer} size="stage" label="패 확인 3분" />
-        <ul className="gu-plainlist">
-          <li>· 아래 &apos;내 패&apos; 탭에서 꾹 눌러 보기</li>
-          <li>· 손으로 화면을 가리고 보시오</li>
-          <li>· 방장도 자기 패를 확인하시오</li>
-        </ul>
+        {/* 6판: 큐 1줄 + 타이머. 안내 불릿·「자기소개 건너뛰기」(⋮ 메뉴로 옮김) 삭제 */}
+        <TimerSlot timerValue={timerValue} onTimer={onTimer} size="stage" label={`패 확인 ${durationLabel(timerMs(c, 'cards'))}`} />
         <GuButton variant="secondary" onClick={() => onGoTab('cards')}>
           🪪 내 패 보러 가기
         </GuButton>
@@ -395,14 +390,6 @@ function hostCards({ dispatch, onGoTab, timerValue, onTimer }: HostAreaProps): H
       <GuButton variant="primary" onClick={() => dispatch({ type: 'advance' })}>
         다 봤소 → 자기소개
       </GuButton>
-    ),
-    actionSecondary: (
-      <>
-        <button type="button" className="gu-ghostlink" onClick={() => dispatch({ type: 'skipIntro' })}>
-          자기소개 건너뛰기 ›
-        </button>
-        <p className="gu-micro gu-skipnote">{SKIP_INTRO_NOTE}</p>
-      </>
     ),
   };
 }
@@ -414,20 +401,14 @@ function hostIntro({ a, state, dispatch }: HostAreaProps): HostAreaResult {
   const active = activeSeats(a.n, host.absentSeats);
   const curIdx = active.indexOf(host.introCurrent);
   const done = curIdx > 0 ? active.slice(0, curIdx) : [];
-  const isLast = curIdx >= active.length - 1;
   const items = seatRingItems(a.n, { mode: 'progress', current: host.introCurrent, done, absentSeats: host.absentSeats });
   return {
     body: (
       <>
         <HostCue>{HOST_CUE.intro}</HostCue>
-        <p className="gu-display gu-center">
-          지금: {host.introCurrent}번
-        </p>
+        {/* 6판: 「다음 사람 →」 삭제 — 차례 표시는 원하면 자리 링을 눌러서(선택) */}
         <SeatRing n={a.n} mode="progress" items={items} onTapSeat={(seat) => dispatch({ type: 'introSet', seat })} />
-        <p className="gu-micro gu-center">방장 차례엔 &apos;내 패 › 신분&apos;을 꾹</p>
-        <GuButton variant="secondary" disabled={isLast} disabledReason="마지막 사람이오" onClick={() => dispatch({ type: 'introNext' })}>
-          다음 사람 →
-        </GuButton>
+        <p className="gu-micro gu-center">{GUIDE.introProfileLink}</p>
       </>
     ),
     actionBar: (
@@ -457,10 +438,43 @@ function PastPublic({ c, a, round }: { c: GungCase; a: Assignment; round: RoundN
   return <PublicFold summary={summary} cards={cards} npcHeading={c.npcHeading ?? '추가 증언'} className="gu-fold--past" />;
 }
 
+/** 6판: 이번 조사 공용 단서(접힘) — 현장 보기에서 이미 읽었으니 고르기·토론에선 접어 둔다 */
+function ThisRoundPublicFold({ c, a, round }: { c: GungCase; a: Assignment; round: RoundNo }) {
+  const b = getRoundBoard(c, a.n, round);
+  return <PublicFold summary={GUIDE.publicThisRound} cards={[...b.publicCards, ...b.npcCards]} npcHeading={b.npcHeading} className="gu-fold--round" />;
+}
+
+/** 6판 현장 화면 접힘 1곳 — 지난 공용 단서 + 시각 어림(고르기·토론 화면의 시각 어림 줄은 뺐다. 「?」 시각표에도 있다) */
+function PastAndTimeFold({ c, a, round }: { c: GungCase; a: Assignment; round: RoundNo }) {
+  const cards = round > 1 ? publicBoardUpTo(c, a.n, round - 1) : [];
+  return (
+    <details className="gu-fold gu-fold--past">
+      <summary className="gu-fold-summary">{guideText.pastAndTime(round)}</summary>
+      {cards.length > 0 && <PublicCardList cards={cards} npcHeading={c.npcHeading ?? '추가 증언'} />}
+      <TimeHintLine text={timeHint(c)} />
+    </details>
+  );
+}
+
 /** R3 공용 단서 전체(접힘) — 변론·지목 준비 */
 function AllPublic({ c, a, state }: { c: GungCase; a: Assignment; state: GameState }) {
   const cards = publicBoardUpTo(c, a.n, reachedRound(state.phase));
   return <PublicFold summary={GUIDE.publicAll} cards={cards} npcHeading={c.npcHeading ?? '추가 증언'} className="gu-fold--all" />;
+}
+
+/** 6판 조사 라운드 하위 단계 표시 — 현장 보기 → 장소 고르기 → 토론(분은 타이머 값) */
+function HostRoundSteps({ c, current }: { c: GungCase; current: 'scene' | 'select' | 'discuss' }) {
+  return (
+    <RoundSteps
+      label={GUIDE.roundStepsLabel}
+      current={current}
+      steps={[
+        { key: 'scene', label: GUIDE.sceneLabel, minutes: timerMinutes(c, 'scene') },
+        { key: 'select', label: '고르기', minutes: timerMinutes(c, 'select') },
+        { key: 'discuss', label: '토론', minutes: timerMinutes(c, 'discuss') },
+      ]}
+    />
+  );
 }
 
 function hostSelect(props: HostAreaProps): HostAreaResult {
@@ -470,21 +484,73 @@ function hostSelect(props: HostAreaProps): HostAreaResult {
   return {
     body: (
       <>
+        <HostRoundSteps c={c} current="select" />
         <HostCue>{cue}</HostCue>
-        <PublicBoard c={c} a={a} round={round} />
-        <PastPublic c={c} a={a} round={round} />
-        <TimeHintLine text={timeHint(c)} />
         <TimerSlot timerValue={timerValue} onTimer={onTimer} size="compact" label="장소 고르기" startLabel={timerValue ? undefined : GUIDE.selectTimerStart} />
         <OwnClueLink onGoTab={onGoTab} />
+        <ThisRoundPublicFold c={c} a={a} round={round} />
+        <PastPublic c={c} a={a} round={round} />
+        <SceneAgainLink onOpenScene={props.onOpenScene} />
         {round > 1 && <BoardPanel {...props} fold />}
       </>
     ),
     actionBar: (
       <GuButton variant="primary" onClick={() => dispatch({ type: 'advance' })}>
-        토론 {Math.round((c.timers?.discussMs ?? 7 * 60_000) / 60_000)}분 시작 →
+        토론 {durationLabel(timerMs(c, 'discuss'))} 시작 →
       </GuButton>
     ),
   };
+}
+
+/** 60_000 → '1분', 45_000 → '45초' */
+function durationLabel(ms: number): string {
+  return ms % 60_000 === 0 ? `${ms / 60_000}분` : `${Math.round(ms / 1000)}초`;
+}
+
+// ─────────────────────────────── H5a 조사 — 현장 보기(6판) ───────────────────────────────
+
+/**
+ * 현장 보기 무대 — 맨 위가 다 같이 보는 현장 그림(SceneView), 그 아래 이번 조사 공용 단서(낭독), 접힘 1곳(지난 공용 단서·시각 어림).
+ * SceneView 는 역할 무관(사건·라운드·방 코드·공개 배치도만). idScope='host' — 그림 SVG id 가 렌더마다 같다(역할 무관 DOM 비교).
+ * 방 코드는 본 물건(✓) 기록을 판마다 나누는 데만 쓰고 화면엔 그리지 않는다.
+ */
+function hostScene(props: HostAreaProps): HostAreaResult {
+  const { c, state, a, dispatch, timerValue, onTimer, map } = props;
+  const round = roundOf(state);
+  const timeUp = Boolean(timerValue && timerValue.remainingMs <= 0);
+  return {
+    body: (
+      <>
+        <HostRoundSteps c={c} current="scene" />
+        {/* 통합: 그림·관찰 카드가 첫 화면에 들도록 — 큐 한 줄 + 한 줄 타이머(현장 타이머는 조용한 조연) */}
+        <HostCue className="gu-hostcue--line">{GUIDE.sceneCue}</HostCue>
+        <TimerSlot timerValue={timerValue} onTimer={onTimer} size="mini" label={GUIDE.sceneLabel} />
+        {/* 현장 타이머는 조용히 끝난다(징 없음) — 0:00 엔 이 한 줄만 */}
+        {timeUp && <p className="gu-micro gu-center">{GUIDE.sceneTimerDone}</p>}
+        <section className="gu-scene-slot" data-scene-slot="host" aria-label={GUIDE.sceneLabel}>
+          <SceneView c={c} upTo={round} code={state.code} idScope="host" map={map} startAtNew />
+        </section>
+        <PublicBoard c={c} a={a} round={round} />
+        {hostGateTimeline(c, a, state)}
+        <PastAndTimeFold c={c} a={a} round={round} />
+      </>
+    ),
+    actionBar: (
+      <GuButton variant="primary" onClick={() => dispatch({ type: 'advance' })}>
+        고르기 {durationLabel(timerMs(c, 'select'))} 시작 →
+      </GuButton>
+    ),
+  };
+}
+
+/** 고르기·토론 화면 — 「현장 다시 보기」 시트 링크(현장은 공용 정보라 언제 다시 봐도 된다) */
+function SceneAgainLink({ onOpenScene }: { onOpenScene?: () => void }) {
+  if (!onOpenScene) return null;
+  return (
+    <button type="button" className="gu-ghostlink gu-center-self gu-scene-againlink" onClick={onOpenScene}>
+      {GUIDE.sceneAgainLink}
+    </button>
+  );
 }
 
 /**
@@ -521,7 +587,7 @@ function PublicBoard({ c, a, round }: { c: GungCase; a: Assignment; round: Round
  * 이 폰이 들어선 라운드까지만 그린다(되돌리기·단계 맞추기로 뒤로 가면 그 뒤 라운드 항목은 숨는다).
  * 내용은 입력된 인장 순서로만 정해진다 — 방장 역할과 무관(불변 1). 숨김 표시는 어디에도 없다.
  */
-function BoardPanel({ c, a, state, onConfirm, onOpenSealPad, dispatch, fold }: HostAreaProps & { fold?: boolean }) {
+function BoardPanel({ c, a, state, onToast, onOpenSealPad, dispatch, fold }: HostAreaProps & { fold?: boolean }) {
   const reached = reachedRound(state.phase);
   const entries: BoardEntry[] = (state.host?.board ?? []).filter((e) => e.round <= reached);
   const rounds = Array.from(new Set(entries.map((e) => e.round))).sort((x, y) => x - y);
@@ -557,15 +623,12 @@ function BoardPanel({ c, a, state, onConfirm, onOpenSealPad, dispatch, fold }: H
                     <button
                       type="button"
                       className="gu-ghostlink gu-board-unpost"
-                      onClick={() =>
-                        onConfirm({
-                          title: GUIDE.unpostTitle,
-                          body: GUIDE.unpostBody,
-                          confirmLabel: GUIDE.unpostOk,
-                          danger: true,
-                          onConfirm: () => dispatch({ type: 'unpostClue', id: e.id }),
-                        })
-                      }
+                      onClick={() => {
+                        // 6판: 확인 시트 대신 5초 되돌리기(같은 자리 기록으로 다시 올린다)
+                        const seats = e.seats.slice();
+                        dispatch({ type: 'unpostClue', id: e.id });
+                        onToast(GUIDE.unpostToast, { label: '되돌리기', onClick: () => dispatch({ type: 'postClue', id: e.id, seats }) }, 5000);
+                      }}
                     >
                       {GUIDE.unpost}
                     </button>
@@ -603,14 +666,15 @@ function hostDiscuss(props: HostAreaProps): HostAreaResult {
   return {
     body: (
       <>
+        <HostRoundSteps c={c} current="discuss" />
         <TimerSlot timerValue={timerValue} onTimer={onTimer} size="stage" label="토론" />
         <HostCue>{cue}</HostCue>
         {/* R1: 규칙만 상기 — 질문 주제는 제안하지 않는다 */}
         <p className="gu-askline">{GUIDE.discussAskLine}</p>
-        <PublicBoard c={c} a={a} round={round} />
-        <PastPublic c={c} a={a} round={round} />
-        <TimeHintLine text={timeHint(c)} />
         <BoardPanel {...props} />
+        <ThisRoundPublicFold c={c} a={a} round={round} />
+        <PastPublic c={c} a={a} round={round} />
+        <SceneAgainLink onOpenScene={props.onOpenScene} />
         <OwnClueLink onGoTab={onGoTab} />
       </>
     ),
@@ -667,7 +731,7 @@ function hostDefense(props: HostAreaProps): HostAreaResult {
 // ─────────────────────────────── H8 지목 ───────────────────────────────
 
 function hostVote(props: HostAreaProps): HostAreaResult {
-  const { c, a, state, dispatch, onStartCountdown, onConfirm, timerValue, onTimer } = props;
+  const { c, a, state, dispatch, onStartCountdown, timerValue, onTimer } = props;
   const host = state.host!;
   // 저장 정합성은 storage 가 맞추지만(QA BUG-19), 화면도 null 로 죽지 않게 지목 준비 상태로 본다
   const vote = host.vote ?? { sub: 'ready' as const, first: {} };
@@ -684,10 +748,6 @@ function hostVote(props: HostAreaProps): HostAreaResult {
       body: (
         <>
           <HostCue>{HOST_CUE.vote}</HostCue>
-          <ul className="gu-plainlist">
-            <li>· 폰으로 고른 사람은 화면을 드시오</li>
-            <li>· 방장이 다 적을 때까지 손을 내리지 마시오</li>
-          </ul>
           <AllPublic c={c} a={a} state={state} />
           <BoardPanel {...props} fold />
         </>
@@ -782,6 +842,12 @@ function hostVote(props: HostAreaProps): HostAreaResult {
           </section>
         )}
         {!needsRevote && hasBonus && <BonusInput c={c} state={state} active={active} dispatch={dispatch} nameOf={nameOf} />}
+        {/* 6판: 보너스 0개 확인 시트 대신 버튼 위 인라인 경고(막지 않는다) */}
+        {decided && hasBonus && bonusFilled === 0 && (
+          <p className="gu-sheet-warn gu-bonus-zero" role="status">
+            {GUIDE.bonusZeroInline}
+          </p>
+        )}
       </>
     ),
     actionBar: needsRevote ? (
@@ -789,22 +855,8 @@ function hostVote(props: HostAreaProps): HostAreaResult {
         재지목 시작 →
       </GuButton>
     ) : (
-      <GuButton
-        variant="primary"
-        onClick={() =>
-          onConfirm(
-            // R7: 보너스 입력이 0개면 확인 문구가 바뀐다(그대로 가면 보너스 점수 없이 셈한다)
-            hasBonus && bonusFilled === 0
-              ? { title: GUIDE.bonusZeroTitle, body: GUIDE.bonusZeroBody, confirmLabel: GUIDE.bonusZeroOk, onConfirm: () => dispatch({ type: 'advance' }) }
-              : {
-                  title: '진상을 공개하겠소?',
-                  body: '공개하면 모두의 비밀이 드러나오. 지목 집계는 끝났소?',
-                  confirmLabel: '공개하겠소',
-                  onConfirm: () => dispatch({ type: 'advance' }),
-                },
-          )
-        }
-      >
+      // 6판: 「진상을 공개하겠소?」 확인 시트 삭제 — 판결 확정 전엔 비활성, 잘못 넘겼으면 ↶
+      <GuButton variant="primary" disabled={!decided} disabledReason="지목 집계를 마치시오" onClick={() => dispatch({ type: 'advance' })}>
         진상 공개 →
       </GuButton>
     ),
@@ -837,47 +889,60 @@ function BonusInput({
 }) {
   const answers = state.host?.vote?.bonus ?? {};
   const filled = bonusFilledCount(c, state, active);
+  const questions = c.bonusQuestions ?? [];
+  // 6판: 문항별 자리 행(자리 × 문항 줄) → 문항 머리는 위에 한 번, 자리당 한 줄에 Q1·Q2 나란히(읽기·스크롤 1회)
   return (
     <section className="gu-bonus" aria-label={GUIDE.bonusHostHead}>
       <p className="gu-bonus-summary">
         {GUIDE.bonusHostHead} · <span className="gu-num">{filled}</span>개 입력됨
       </p>
       <p className="gu-micro">{GUIDE.bonusHostGuide}</p>
-      {(c.bonusQuestions ?? []).map((q, qi) => (
-        <fieldset key={q.id} className="gu-bonus-q">
-          <legend className="gu-bonus-prompt gu-display">
-            <span className="gu-num">Q{qi + 1}</span> {q.prompt}
-          </legend>
-          <ol className="gu-bonus-legend">
-            {q.options.map((o, i) => (
-              <li key={i}>
-                <span className="gu-num">{i + 1}</span> {o}
-              </li>
-            ))}
-          </ol>
-          {active.map((seat) => {
-            const cur = answers[seat]?.[q.id];
-            return (
-              <div key={seat} className="gu-bonus-row" role="group" aria-label={`${nameOf(seat)} — ${q.prompt}`}>
-                <span className="gu-bonus-who">{nameOf(seat)}</span>
-                {q.options.map((o, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="gu-bonus-opt gu-num"
-                    data-active={cur === i || undefined}
-                    aria-pressed={cur === i}
-                    aria-label={`${i + 1}번 ${o}`}
-                    onClick={() => dispatch({ type: 'bonusAnswer', seat, questionId: q.id, option: cur === i ? null : i })}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            );
-          })}
-        </fieldset>
-      ))}
+      <div className="gu-bonus-qheads">
+        {questions.map((q, qi) => (
+          <div key={q.id} className="gu-bonus-qhead">
+            <p className="gu-bonus-prompt gu-display">
+              <span className="gu-num">Q{qi + 1}</span> {q.prompt}
+            </p>
+            <ol className="gu-bonus-legend">
+              {q.options.map((o, i) => (
+                <li key={i}>
+                  <span className="gu-num">{i + 1}</span> {o}
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+      <div className="gu-bonus-rows">
+        {active.map((seat) => (
+          <div key={seat} className="gu-bonus-row gu-bonus-row--compact">
+            <span className="gu-bonus-who">{nameOf(seat)}</span>
+            {questions.map((q, qi) => {
+              const cur = answers[seat]?.[q.id];
+              return (
+                <span key={q.id} className="gu-bonus-opts" role="group" aria-label={`${nameOf(seat)} — ${q.prompt}`}>
+                  <span className="gu-bonus-qtag gu-num" aria-hidden>
+                    Q{qi + 1}
+                  </span>
+                  {q.options.map((o, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className="gu-bonus-opt gu-num"
+                      data-active={cur === i || undefined}
+                      aria-pressed={cur === i}
+                      aria-label={`${i + 1}번 ${o}`}
+                      onClick={() => dispatch({ type: 'bonusAnswer', seat, questionId: q.id, option: cur === i ? null : i })}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -971,9 +1036,9 @@ function hostReveal(props: HostAreaProps): HostAreaResult {
           className="gu-ghostlink"
           onClick={() =>
             props.onConfirm({
-              title: '정황을 건너뛰고 범인을 밝히겠소?',
-              body: '남은 정황 낭독을 건너뛰고 범인 도장(자백)으로 바로 가오. 판결은 그다음이오.',
-              confirmLabel: '범인을 밝히겠소',
+              title: '범인을 바로 밝히겠소?',
+              body: '남은 정황을 건너뛰고 범인 도장(자백)으로 가오. 판결은 그다음이오.',
+              confirmLabel: '밝히겠소',
               onConfirm: () => dispatch({ type: 'revealAll' }),
             })
           }
@@ -987,7 +1052,7 @@ function hostReveal(props: HostAreaProps): HostAreaResult {
 // ─────────────────────────────── H10 결과 ───────────────────────────────
 
 function hostResult(props: HostAreaProps): HostAreaResult {
-  const { c, a, state, dispatch, onShareResult, onCopyResult, resultCopied, onSaveImage, ogPreviewUrl } = props;
+  const { c, a, state, dispatch, onShareResult, onCopyResult, resultCopied, onSaveImage } = props;
   const result = resultOf(c, state);
   if (!result) return { body: null };
   const seats = publicSeats(c, a);
@@ -1050,15 +1115,12 @@ function hostResult(props: HostAreaProps): HostAreaResult {
             {result.caught ? '오늘의 명판관' : '오늘의 주인공: 범인'} — {mvp.map((m) => `${m.seat}번 · ${m.shortName}`).join(', ')}
           </p>
         )}
-        {ogPreviewUrl && (
-          <figure className="gu-resultpreview">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ogPreviewUrl} alt="결과 카드 미리보기 — 범인이 누구인지는 적혀 있지 않소" width={1200} height={630} loading="lazy" />
-            <figcaption className="gu-micro">결과 카드엔 범인이 누구인지 적히지 않소(스포일러 없음)</figcaption>
-          </figure>
-        )}
+        {/* 6판: 결과 카드 미리보기 상시 노출 삭제 — 「이미지 저장」(ResultImageModal)에서만 본다 */}
         {result.decided ? (
-          <ShareActions kind="result" onShare={onShareResult} onSaveImage={onSaveImage} onCopyLink={onCopyResult} copied={resultCopied} />
+          <>
+            <ShareActions kind="result" onShare={onShareResult} onSaveImage={onSaveImage} onCopyLink={onCopyResult} copied={resultCopied} />
+            <p className="gu-micro gu-center">{GUIDE.resultNoSpoiler}</p>
+          </>
         ) : (
           // QA BUG-06: 판결 없는 판을 "범인 도주 · 완전범죄"로 공유하지 않는다
           <p className="gu-sheet-warn" role="status">

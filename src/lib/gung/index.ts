@@ -7,6 +7,8 @@ export * from './rng';
 export * from './room';
 export * from './assign';
 export * from './deck';
+// 6판 현장 관찰(원고 10장) — 역할 무관 공용 화면
+export * from './scene';
 export * from './game';
 export * from './validate';
 export * from './storage';

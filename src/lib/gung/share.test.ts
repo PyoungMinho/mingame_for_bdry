@@ -242,7 +242,7 @@ describe('share — 결과 카드(§8-3, §9) 스포일러 프리', () => {
   it('일반 추천 카드(§8-4) — 코드 없음', () => {
     const p = genericPayload();
     expect(p.kakao.content.title).toBe('세자 독살 사건 — 술자리 추리 게임');
-    expect(p.kakao.content.description).toBe('4~6명 · 폰 하나씩 · 약 60분. 범인은 이 자리에 있다.');
+    expect(p.kakao.content.description).toBe('4~6명 · 폰 하나씩 · 약 35분. 범인은 이 자리에 있다.');
     expect(p.kakao.buttons[0].title).toBe('방 만들러 가기');
     expect(p.url).toBe('https://project-orsrw.vercel.app/gung');
   });
@@ -323,5 +323,18 @@ describe('share — 인앱 브라우저', () => {
     const loc2 = { href: 'a' };
     expect(openExternal('https://x.app/gung', { ua: UA.safari, location: loc2 })).toBe(false);
     expect(loc2.href).toBe('a');
+  });
+});
+
+describe('큰 화면 현장 주소 보내기(통합)', () => {
+  it('scenePayload — 주소만(관찰 문구·결과·역할 없음), 카톡 링크·복사 텍스트 = /gung/scene?code=…', async () => {
+    const { scenePayload } = await import('./share');
+    const p = scenePayload({ code: '7F3K5', origin: 'https://x.app' });
+    expect(p.url).toBe('https://x.app/gung/scene?code=7F3K5');
+    expect(p.copyText).toBe(p.url);
+    expect(p.kakao.content.link.webUrl).toBe(p.url);
+    expect(p.kakao.buttons?.[0].link.mobileWebUrl).toBe(p.url);
+    const all = JSON.stringify(p);
+    for (const w of ['범인', '탕약', '꿀', '은숟가락', '번 나인']) expect(all).not.toContain(w);
   });
 });

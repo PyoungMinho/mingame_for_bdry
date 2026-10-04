@@ -5,9 +5,11 @@
  *  - R3 공용 단서 접힘 블록(지난 공용 단서 / 공용 단서 전체 / 이번 조사 공용 단서) — 목록은 인원·이 폰의 단계로만 정해진다.
  *  - R6 최종 변론 3칸 틀 — 무대·플레이어 같은 문자열(입력칸 없음).
  *  - R7 보너스 문항 참조 카드(플레이어, 지목 확정 뒤에만).
+ *  - 6판 진행표(FlowStrip) — 방장 대기실·플레이어 대기·하는 법 시트. 분은 타이머 상수에서(flowPlan, 인원만 받는다).
  * 역할을 받지 않는다(불변 1).
  */
-import { GUIDE, type BonusQuestion, type VisibleCard } from '@/lib/gung';
+import { flowPlan, GUIDE, guideText, type BonusQuestion, type GungCase, type PlayerCount, type VisibleCard } from '@/lib/gung';
+import { FlowStrip } from '../components';
 
 /** 공용 카드(PB)·추가 증언 목록 — 조사 번호를 머리에 붙인다 */
 export function PublicCardList({ cards, npcHeading }: { cards: VisibleCard[]; npcHeading: string }) {
@@ -88,4 +90,15 @@ export function BonusReference({ questions }: { questions: readonly BonusQuestio
       ))}
     </section>
   );
+}
+
+/** 6판 진행표 — 분은 타이머 상수에서(flowPlan). 인원만 받는다(변론 분만 인원에 따라 다르다) */
+export function GameFlow({ c, n, current }: { c: GungCase; n: PlayerCount; current?: string }) {
+  const plan = flowPlan(c, n);
+  return <FlowStrip title={GUIDE.flowTitle} steps={plan.steps} totalLabel={guideText.flowTotal(plan.total)} note={GUIDE.flowRoundsNote} current={current} />;
+}
+
+/** 낭독하지 않는 안내 줄(브리핑 ※ 날짜 안내 — 원고 6판 7-1: 화면 작은 글씨로) */
+export function isNoteLine(p: string): boolean {
+  return p.trimStart().startsWith('※');
 }

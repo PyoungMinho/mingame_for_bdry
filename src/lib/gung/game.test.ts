@@ -58,7 +58,7 @@ describe('game — 생성', () => {
 });
 
 describe('game — 방장 단계 머신 전체 흐름', () => {
-  it('대기→브리핑→패 확인→자기소개→R1~R3(선택·토론)→변론→지목→진상→결과', () => {
+  it('대기→브리핑→패 확인→자기소개→R1~R3(현장·선택·토론)→변론→지목→진상→결과', () => {
     let s = host();
     s = run(s, [{ type: 'rollCall', seat: 2 }, { type: 'rollCall', seat: 3 }]);
     expect(s.host!.rollCall).toEqual([1, 2, 3]);
@@ -76,25 +76,27 @@ describe('game — 방장 단계 머신 전체 흐름', () => {
 
     s = applyAction(s, { type: 'advance' }, { c, now: T0 + 60_000 });
     expect(s.phase).toBe('r1');
+    // 6판: 조사 라운드는 현장 보기부터 — 현장 타이머(1분, 조용함)가 바로 돈다
+    expect(s.host!.roundSub).toBe('scene');
+    expect(s.host!.timer).toMatchObject({ kind: 'scene', running: true, totalMs: 60_000, endsAt: T0 + 60_000 + 60_000 });
+    // 현장 → 고르기: 고르기 1분 타이머가 이 전진과 함께 돈다(별도 시작 버튼 없음)
+    s = applyAction(s, { type: 'advance' }, { c, now: T0 + 90_000 });
     expect(s.host!.roundSub).toBe('select');
-    // 개선 묶음 1 G2: 낭독 먼저 — 조사 라운드에 들어서면 고르기 타이머는 멈춰 있고, 방장이 「고르기 2분 시작」으로 연다
-    expect(s.host!.timer).toBeNull();
-    s = applyAction(s, { type: 'timer', op: 'restart' }, { c, now: T0 + 90_000 });
-    expect(s.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 120_000, endsAt: T0 + 90_000 + 120_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 60_000, endsAt: T0 + 90_000 + 60_000 });
 
     s = run(s, adv(1));
     expect(s.host!.roundSub).toBe('discuss');
-    expect(s.host!.timer).toMatchObject({ kind: 'discuss', totalMs: 420_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'discuss', totalMs: 300_000 });
     s = run(s, adv(1));
-    expect([s.phase, s.host!.roundSub]).toEqual(['r2', 'select']);
-    expect(s.host!.timer).toBeNull(); // G2: 토론 → 다음 조사도 멈춘 채로
-    s = run(s, adv(3));
+    expect([s.phase, s.host!.roundSub]).toEqual(['r2', 'scene']);
+    expect(s.host!.timer).toMatchObject({ kind: 'scene', running: true }); // 토론 → 다음 조사도 현장부터
+    s = run(s, adv(5)); // r2 고르기 · 토론 → r3 현장 · 고르기 · 토론
     expect([s.phase, s.host!.roundSub]).toEqual(['r3', 'discuss']);
 
     s = run(s, adv(1));
     expect(s.phase).toBe('defense');
     expect(s.host!.defense).toEqual({ order: [1, 2, 3, 4, 5], index: 0 });
-    expect(s.host!.timer).toMatchObject({ kind: 'defense', totalMs: 60_000, running: true });
+    expect(s.host!.timer).toMatchObject({ kind: 'defense', totalMs: 45_000, running: true });
     s = run(s, adv(4));
     expect(s.host!.defense!.index).toBe(4);
     s = run(s, adv(1));
@@ -136,13 +138,13 @@ describe('game — 방장 단계 머신 전체 흐름', () => {
     expect(r.minutes).toBe(52 - 0); // startedAt=T0+10s → 51.8분 → 52
   });
 
-  it('자기소개 건너뛰기: 패 확인 → 1라운드 직행(고르기 타이머는 멈춘 채 — G2)', () => {
+  it('자기소개 건너뛰기: 패 확인 → 1라운드 직행(자기소개 → 조사 1 과 같은 진입: 현장 보기 + 현장 타이머)', () => {
     let s = run(host(), adv(2));
     expect(s.phase).toBe('cards');
     s = applyAction(s, { type: 'skipIntro' }, { c, now: T0 });
     expect(s.phase).toBe('r1');
-    expect(s.host!.roundSub).toBe('select');
-    expect(s.host!.timer).toBeNull();
+    expect(s.host!.roundSub).toBe('scene');
+    expect(s.host!.timer).toMatchObject({ kind: 'scene', running: true, totalMs: 60_000, endsAt: T0 + 60_000 });
     expect(applyAction(s, { type: 'skipIntro' }, { c, now: T0 })).toBe(s);
   });
 });
@@ -164,19 +166,23 @@ describe('game — 플레이어 게이트', () => {
 
 describe('game — 되돌리기', () => {
   it('직전 단계·하위 단계로, 타이머는 멈춤 상태로 복원', () => {
-    let s = run(host(), [...adv(4), { type: 'timer', op: 'restart' }], T0 - 1000); // → r1 select, G2: 방장이 타이머 시작(T0+3000)
-    expect(s.phase).toBe('r1');
+    let s = run(host(), adv(5), T0 - 2000); // → r1 현장 → 고르기(5번째 전진 T0+2000 에 고르기 1분 시작)
+    expect([s.phase, s.host!.roundSub]).toEqual(['r1', 'select']);
     const before = s;
-    s = applyAction(s, { type: 'advance' }, { c, now: T0 + 3000 + 50_000 }); // 50초 뒤 토론으로
+    s = applyAction(s, { type: 'advance' }, { c, now: T0 + 2000 + 20_000 }); // 20초 뒤 토론으로
     expect(s.host!.roundSub).toBe('discuss');
-    s = applyAction(s, { type: 'undo' }, { c, now: T0 + 3000 + 90_000 });
+    s = applyAction(s, { type: 'undo' }, { c, now: T0 + 2000 + 90_000 });
     expect(s.phase).toBe('r1');
     expect(s.host!.roundSub).toBe('select');
-    expect(s.host!.timer).toMatchObject({ kind: 'select', running: false, endsAt: null, remainingMs: 70_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'select', running: false, endsAt: null, remainingMs: 40_000 });
     expect(s.host!.history).toHaveLength(before.host!.history.length);
     // 재개는 방장이
     s = applyAction(s, { type: 'timer', op: 'resume' }, { c, now: T0 + 200_000 });
-    expect(timerRemaining(s.host!.timer!, T0 + 210_000)).toBe(60_000);
+    expect(timerRemaining(s.host!.timer!, T0 + 210_000)).toBe(30_000);
+    // 한 번 더 되돌리면 현장 보기(현장 타이머도 멈춘 채)
+    s = applyAction(s, { type: 'undo' }, { c, now: T0 + 220_000 });
+    expect([s.phase, s.host!.roundSub]).toEqual(['r1', 'scene']);
+    expect(s.host!.timer).toMatchObject({ kind: 'scene', running: false });
   });
 
   it('단계 전진·롤콜·지목 입력은 스택에 쌓이고, 타이머 조작은 쌓이지 않는다', () => {
@@ -212,18 +218,26 @@ describe('game — 되돌리기', () => {
 
 describe('game — 타이머', () => {
   it('멈춤·재개·+30초·다시 시작', () => {
-    let s = run(host(), [...adv(4), { type: 'timer', op: 'restart' }], T0 - 1000); // r1 select, G2: 방장이 시작(T0+3000)
-    const t0 = T0 + 3000;
+    let s = run(host(), adv(5), T0 - 2000); // r1 고르기 — 현장 → 고르기 전진(T0+2000)에 고르기 1분 시작
+    const t0 = T0 + 2000;
+    expect(s.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 60_000, endsAt: t0 + 60_000 });
     s = applyAction(s, { type: 'timer', op: 'pause' }, { c, now: t0 + 20_000 });
-    expect(s.host!.timer).toMatchObject({ running: false, remainingMs: 100_000 });
+    expect(s.host!.timer).toMatchObject({ running: false, remainingMs: 40_000 });
     expect(applyAction(s, { type: 'timer', op: 'pause' }, { c, now: t0 })).toBe(s);
     s = applyAction(s, { type: 'timer', op: 'add30' }, { c, now: t0 + 25_000 });
-    expect(s.host!.timer).toMatchObject({ remainingMs: 130_000, totalMs: 150_000 });
+    expect(s.host!.timer).toMatchObject({ remainingMs: 70_000, totalMs: 90_000 });
     s = applyAction(s, { type: 'timer', op: 'resume' }, { c, now: t0 + 30_000 });
-    expect(timerRemaining(s.host!.timer!, t0 + 40_000)).toBe(120_000);
+    expect(timerRemaining(s.host!.timer!, t0 + 40_000)).toBe(60_000);
     expect(timerRemaining(s.host!.timer!, t0 + 999_999)).toBe(0);
     s = applyAction(s, { type: 'timer', op: 'restart' }, { c, now: t0 + 50_000 });
-    expect(s.host!.timer).toMatchObject({ kind: 'select', totalMs: 120_000, running: true, endsAt: t0 + 170_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'select', totalMs: 60_000, running: true, endsAt: t0 + 110_000 });
+  });
+
+  it('현장 보기에서 다시 시작하면 현장 타이머(1분)를 다시 건다', () => {
+    let s = run(host(), adv(4), T0 - 2000); // r1 현장(T0+1000 진입)
+    expect(s.host!.roundSub).toBe('scene');
+    s = applyAction(s, { type: 'timer', op: 'restart' }, { c, now: T0 + 30_000 });
+    expect(s.host!.timer).toMatchObject({ kind: 'scene', totalMs: 60_000, running: true, endsAt: T0 + 90_000 });
   });
 });
 

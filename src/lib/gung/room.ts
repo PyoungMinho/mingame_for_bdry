@@ -180,6 +180,19 @@ export function buildHostRecoveryUrl(origin: string, code: string): string {
   return `${trimOrigin(origin)}${ROUTE_PATH}?${q.toString()}`;
 }
 
+/** 큰 화면(노트북·TV) 현장 보기 경로 — 게임 상태 없이 현장 그림만 뜬다(scene/page.tsx) */
+export const SCENE_ROUTE_PATH = `${ROUTE_PATH}/scene`;
+
+/**
+ * 큰 화면 현장 링크 — `${origin}/gung/scene?code=7F3K5`. 코드가 없으면 `${origin}/gung/scene`.
+ * 방 코드는 이미 초대 링크로 모두가 가진 값이다(새 정보 아님). 큰 화면은 코드를 화면에 그리지 않고 사건 표식만 보인다.
+ */
+export function buildSceneUrl(origin: string, code?: string | null): string {
+  const base = `${trimOrigin(origin)}${SCENE_ROUTE_PATH}`;
+  if (!code) return base;
+  return `${base}?${new URLSearchParams({ code: normalizeCode(code) }).toString()}`;
+}
+
 export interface EntryParams {
   /** 유효한 코드면 파싱 결과 */
   room: RoomCode | null;

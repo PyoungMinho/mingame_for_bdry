@@ -4,7 +4,7 @@
  * 기존 RoleNeutral·GungApp.qa 테스트의 코드 탐색식·탭 순서를 쓰지 않는다(시드 난수 코드, 롤콜 전원·자기소개 전원·↶·O1 왕복·
  * 동률 → 재지목 경로). 엔진 레벨 짝: src/lib/gung/final-regression.test.ts
  *
- *  (a) 4·5·6인 × 방장 역할 전부 — 조사 1 ~ 진상 직전(「진상을 공개하겠소?」)까지 방장 공용 화면 텍스트·DOM 이 역할과 무관하게 같다
+ *  (a) 4·5·6인 × 방장 역할 전부 — 조사 1 ~ 진상 직전(재지목 집계 · 「진상 공개 →」 — 6판: 확인 시트 없음)까지 방장 공용 화면 텍스트·DOM 이 역할과 무관하게 같다
  *  (b) 봉인 화면 — 범인 자리와 무고 자리가 같다(4·5·6인 × 플레이어 전 자리, 꾹/탭 두 방식, 패 확인·자기소개·단서·조사 3 알림 뒤 / 방장 자리)
  *  (c) 자리 비우기 → 결과 → ↶ 반복 — 범인을 비운 판과 무고를 비운 판이 진상 전까지 화면이 같다(진상 뒤에만 '판결 없음(범인 자리 비움)')
  *  (d) R3 전 기억 비노출 · R3 후 노출 — 4·5·6인(5·6인 기억 보유 역할 플레이어·방장, 4·5인 NPC 진술 ③), O1 앞뒤 이동 포함
@@ -21,6 +21,7 @@ import {
   cardsAtPlace,
   castFor,
   formatRoomCode,
+  GUIDE,
   hash32,
   makeRng,
   parseRoomCode,
@@ -268,7 +269,8 @@ const FIRST_TIE: Record<number, number> = { 1: 2, 2: 3, 3: 2, 4: 3, 5: 4, 6: 1 }
 
 /**
  * 방장 한 판 — 롤콜 전원 → 브리핑 → 패 확인 → 자기소개 전원 → 조사 1·2·3(장소 고름·토론) — 조사 3 에선 ↶ 왕복과 O1 왕복(확인 시트)·용어 시트 —
- * 최종 변론 전원 → 셋 세기 → 1차 동률 → 동률 변론 타이머 → 재지목 → 「진상을 공개하겠소?」 확인 시트(진상 직전)까지.
+ * 최종 변론 전원 → 셋 세기 → 1차 동률 → 동률 변론 타이머 → 재지목 집계(진상 직전 — 6판: 「진상 공개 →」 1탭이라 확인 시트 없음)까지.
+ * 6판: 자기소개는 「다음 사람」 대신 자리 링 탭(선택), 조사 라운드는 현장 보기 → 고르기 → 토론.
  */
 async function hostPublicRun(code: string): Promise<{ pre: Shot[]; stage: Shot[] }> {
   const n = asg(code).n;
@@ -288,14 +290,15 @@ async function hostPublicRun(code: string): Promise<{ pre: Shot[]; stage: Shot[]
   snapPre('cards');
   await tap(btn(/다 봤소/));
   snapPre('intro');
+  expect(qbtn(/^다음 사람/)).toBeNull();
   for (let i = 2; i <= n; i++) {
-    await tap(btn(/^다음 사람/));
+    await tap(seatNode(i)); // 6판: 차례 표시는 자리 링 탭(선택)
     snapPre(`intro-${i}`);
   }
   await tap(btn(/첫째 조사 시작/));
 
   for (const r of [1, 2, 3] as RoundNo[]) {
-    snap(`r${r}-select`);
+    snap(`r${r}-scene`);
     if (r === 3) {
       await tap(headerUndo()); // ↶ → 조사 2 토론
       snap('r3-undo');
@@ -306,14 +309,14 @@ async function hostPublicRun(code: string): Promise<{ pre: Shot[]; stage: Shot[]
       await o1(/^조사 3/);
       snap('r3-o1-confirm'); // 조사 진입 확인 시트
       await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
-      snap('r3-o1-again');
+      snap('r3-o1-again'); // 단계 맞추기는 고르기(타이머 없음)로 들어간다
       await tap(btn('궁 배치도·시각표·인물·용어'));
       snap('r3-terms');
       await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     }
-    // 개선 묶음 1 G2: 고르기 타이머는 낭독 뒤 방장이 시작한다(라운드 진입·O1 진입 모두 멈춘 채)
-    await tap(btn(/다 읽었소 → 고르기 2분 시작/));
-    snap(`r${r}-timer`);
+    // 6판: 현장 → 고르기 전진에 고르기 타이머가 저절로 돈다. 단계 맞추기로 고르기에 왔으면 「⏱ 고르기 1분 시작」
+    await tap(qbtn(/⏱ 고르기 \d+분 시작/) ?? btn(/^고르기 \d+분 시작/));
+    snap(`r${r}-select`);
     // G2: 방장 본인 조사는 공용 무대가 아니라 단서함(사적 탭)에서 고른다 — 무대엔 장소 타일·봉인 카드가 없다
     expect(document.querySelectorAll('.gu-sealed, .gu-place-tile')).toHaveLength(0);
     const place = singleCardPlace(n, r);
@@ -352,15 +355,14 @@ async function hostPublicRun(code: string): Promise<{ pre: Shot[]; stage: Shot[]
     await ballot(v === 2 ? 3 : 2);
     snap(`reballot-${v}`);
   }
-  snap('final');
-  await tap(btn(/진상 공개/));
-  snap('reveal-confirm'); // ← 진상 직전
+  snap('final'); // ← 진상 직전(6판: 「진상 공개 →」 1탭 — 확인 시트 없음)
+  expect(btn(/진상 공개/)).not.toBeDisabled();
   return { pre, stage };
 }
 
 describe('(a) 방장 공용 화면 — 4·5·6인 × 방장 역할 전부, 조사 1 ~ 진상 직전 텍스트·DOM 동일', () => {
   for (const n of [4, 5, 6] as PlayerCount[]) {
-    it(`${n}인: 방장(자리 1) 역할 ${n}가지 — 조사 1 ~ 「진상을 공개하겠소?」까지 단계마다 같다 · 자기소개 전엔 역할명이 아예 없다`, async () => {
+    it(`${n}인: 방장(자리 1) 역할 ${n}가지 — 조사 1 ~ 진상 직전(재지목 집계)까지 단계마다 같다 · 자기소개 전엔 역할명이 아예 없다`, async () => {
       const runs: { role: string; pre: Shot[]; stage: Shot[] }[] = [];
       for (const role of castFor(c, n)) {
         const code = findCode(n, `a-${role}`, (a) => a.seats[0] === role);
@@ -371,15 +373,16 @@ describe('(a) 방장 공용 화면 — 4·5·6인 × 방장 역할 전부, 조�
       const [base, ...rest] = runs;
       const at = (key: string) => base.stage.find((s) => s.key === key)!.text;
       // 탐침 유효성 — 실제로 그 화면들을 찍었다
+      expect(at('r1-scene')).toContain(c.rounds[0].publicCards![0].title);
       expect(at('r1-select')).toContain(c.rounds[0].publicCards![0].title);
-      expect(at('r3-select')).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
+      expect(at('r3-scene')).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
       expect(at('r3-undo')).not.toContain('셋째 조사 — 각자');
       expect(at('r3-again')).toContain('셋째 조사 — 각자 내 패를 다시 확인하시오');
       expect(at('r3-o1-confirm')).toContain('셋째 조사로 넘어가겠소?');
       expect(at('tally')).toContain('동률');
       expect(at('final')).toContain('재지목 집계');
-      // R7: 보너스를 하나도 적지 않은 판이라 진상 직전 확인은 「보너스 없이 공개하겠소?」
-      expect(at('reveal-confirm')).toContain('보너스 없이 공개하겠소?');
+      // R7·6판: 보너스를 하나도 적지 않은 판이라 진상 직전 화면에 인라인 경고(확인 시트 없음)
+      expect(at('final')).toContain(GUIDE.bonusZeroInline);
       expect(at('defense-1')).toContain('‹R1›');
       for (const r of runs) {
         // 자기소개 전 방장 무대엔 역할명이 없다(브리핑 낭독문의 {{cast}} 는 인원별 고정 원문이라 제외)
@@ -399,9 +402,10 @@ describe('(a) 방장 공용 화면 — 4·5·6인 × 방장 역할 전부, 조�
 
 // ═══════════════════════════════ (b) 봉인 화면 — 범인 = 무고 ═══════════════════════════════
 
-/** 지금 탭의 내 패 7섹션 봉인 화면(쪽 나눔 폐지 — 섹션마다 한 번 열어 전체를 한 번에 본다) */
+/** 지금 탭의 내 패 6섹션 봉인 화면(쪽 나눔 폐지 — 섹션마다 한 번 열어 전체를 한 번에 본다 · 6판: '말투' 칩 삭제) */
 async function sealedSections(code: string, out: string[], tag: string) {
-  for (const tab of ['정체', '신분', '비밀', '그날 밤', '거짓말', '미션', '말투']) {
+  expect(screen.getAllByRole('tab')).toHaveLength(6);
+  for (const tab of ['정체', '신분', '비밀', '그날 밤', '거짓말', '미션']) {
     await tap(screen.getByRole('tab', { name: tab }));
     out.push(`${tag}/${tab}/0\n${canon(code, { seats: true }).dom}`);
   }
@@ -421,8 +425,7 @@ async function playerSealedRun(code: string, seat: number): Promise<string[]> {
   await sealedSections(code, out, 'cards-tap');
   await tap(btn(/자기소개 시작됐어요/));
   out.push(`intro\n${canon(code, { seats: true }).dom}`);
-  await tap(btn(/1라운드 시작됐어요/));
-  await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+  await tap(btn(/1라운드 시작됐어요/)); // 6판: 조사 1 진입은 1탭
   const place = singleCardPlace(n, 1);
   await tap(placeTile(place.name));
   await tap(btn(new RegExp(`${place.name} 조사하기`)));
@@ -458,7 +461,7 @@ async function hostSealedRun(code: string): Promise<string[]> {
 
 describe('(b) 봉인 화면 — 범인 자리와 무고 자리가 같다', () => {
   for (const n of [4, 5, 6] as PlayerCount[]) {
-    it(`${n}인: 플레이어 자리 2..${n}(범인 포함) — 꾹·탭 두 방식 × 7섹션 × 쪽 넘김, 자기소개 카드, 단서 카드, 조사 3 알림·내 패 이동 뒤까지 자리 번호만 빼고 같다`, async () => {
+    it(`${n}인: 플레이어 자리 2..${n}(범인 포함) — 꾹·탭 두 방식 × 6섹션 × 쪽 넘김, 자기소개 카드, 단서 카드, 조사 3 알림·내 패 이동 뒤까지 자리 번호만 빼고 같다`, async () => {
       const code = findCode(n, 'b-player', (a) => a.culpritSeat >= 2 && a.culpritSeat < n);
       const a = asg(code);
       const runs: { seat: number; shots: string[] }[] = [];
@@ -468,7 +471,7 @@ describe('(b) 봉인 화면 — 범인 자리와 무고 자리가 같다', () =>
       }
       const culprit = runs.find((r) => r.seat === a.culpritSeat)!;
       const innocents = runs.filter((r) => r.seat !== a.culpritSeat);
-      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(7섹션 × cards-hold/cards-tap/r3 = 21) + 자기소개·단서·조사3 알림 등
+      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(6섹션 × cards-hold/cards-tap/r3 = 18) + 자기소개·단서·조사3 알림 등
       expect(culprit.shots.length).toBeGreaterThan(20);
       // 탐침 유효성 — 봉인 카드를 실제로 찍었고, 그 안엔 역할 글이 없다
       const sectionShots = culprit.shots.filter((s) => s.slice(0, s.indexOf('\n')).split('/').length >= 3);
@@ -494,7 +497,7 @@ describe('(b) 봉인 화면 — 범인 자리와 무고 자리가 같다', () =>
       resetBetweenRuns();
       const i = await hostSealedRun(innocent);
       expect(g.length).toBe(i.length);
-      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(7섹션 × host-cards/host-r3 = 14) + r3 알림 포커스
+      // 쪽 나눔 폐지로 섹션당 한 번씩만 찍는다(6섹션 × host-cards/host-r3 = 12) + r3 알림 포커스
       expect(g.length).toBeGreaterThan(10);
       for (let k = 0; k < g.length; k++) expect(i[k], g[k].slice(0, g[k].indexOf('\n'))).toBe(g[k]);
     }, 60_000);
@@ -536,14 +539,17 @@ async function absentRepeatRun(code: string): Promise<{ shots: Shot[]; sheets: s
   };
   await cycleAll('cards');
   await tap(btn(/다 봤소/));
-  await tap(btn(/^다음 사람/));
+  await tap(seatNode(2)); // 6판: 「다음 사람」 대신 자리 링 탭(선택)
   await cycleAll('intro');
   await tap(btn(/첫째 조사 시작/));
+  await tap(btn(/^고르기 \d+분 시작/));
   await tap(btn(/토론 \d+분 시작/));
   await tap(btn(/둘째 조사 시작/));
+  await tap(btn(/^고르기 \d+분 시작/));
   await tap(btn(/토론 \d+분 시작/));
   await cycleAll('r2-discuss');
   await tap(btn(/셋째 조사 시작/));
+  await tap(btn(/^고르기 \d+분 시작/));
   await tap(btn(/토론 \d+분 시작/));
   await tap(btn(/최종 변론으로/));
   await tap(btn(/^다음 사람/));
@@ -580,12 +586,15 @@ async function absentKeepRun(code: string): Promise<{ pre: Shot[]; beats: Shot[]
   snap('absent-result');
   await tap(within(dialog()).getByRole('button', { name: '알겠소' }));
   snap('intro');
-  while (qbtn(/^다음 사람/) && !(qbtn(/^다음 사람/) as HTMLButtonElement).disabled) {
-    await tap(btn(/^다음 사람/));
-    snap(`intro-next-${pre.length}`);
+  // 6판: 「다음 사람」 대신 자리 링 탭(선택) — 비운 3번은 건너뛴다
+  for (const s of [2, 4, 5, 6].filter((x) => x <= n)) {
+    await tap(seatNode(s));
+    snap(`intro-next-${s}`);
   }
   await tap(btn(/첫째 조사 시작/));
   for (const r of [1, 2, 3] as RoundNo[]) {
+    snap(`r${r}-scene`);
+    await tap(btn(/^고르기 \d+분 시작/));
     snap(`r${r}-select`);
     await tap(btn(/토론 \d+분 시작/));
     snap(`r${r}-discuss`);
@@ -603,9 +612,7 @@ async function absentKeepRun(code: string): Promise<{ pre: Shot[]; beats: Shot[]
   // 3번이 빠진 자리들: 모두 2번을, 2번은 4번을
   for (const v of [1, 2, 4, 5, 6].filter((x) => x <= n)) await ballot(v === 2 ? 4 : 2);
   snap('tally');
-  await tap(btn(/진상 공개/));
-  snap('reveal-confirm');
-  await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
+  await tap(btn(/진상 공개/)); // 6판: 1탭(확인 시트 없음)
   // 진상 비트 — 범인 도장 전까지는 범인과 무관해야 한다(역할명 정규화 없이: 낭독문은 원문 그대로)
   for (let i = 0; i < 30 && !document.querySelector('.gu-reveal-culprit'); i++) {
     beats.push({ key: `beat-${i}`, ...canon(code) });
@@ -727,8 +734,7 @@ describe('(d) R3 전 기억 비노출 · R3 후 노출', () => {
       expectNoneIn(lockedHint, allProbes, 'cards DOM');
       await tap(btn(/자기소개 시작됐어요/));
       expectNoneIn(document.body.innerHTML, allProbes, 'intro DOM');
-      await tap(btn(/1라운드 시작됐어요/));
-      await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+      await tap(btn(/1라운드 시작됐어요/)); // 6판: 조사 1 진입은 1탭
       await tap(tabBtn(/^내 패/));
       expectNoneIn(await readSecretPages(), allProbes, 'r1 열람');
       await tap(tabBtn(/^지금/));
@@ -787,6 +793,12 @@ describe('(d) R3 전 기억 비노출 · R3 후 노출', () => {
       await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
       for (const r of [1, 2] as RoundNo[]) {
         expectNoneIn(document.body.innerHTML, [...allProbes, ...npcProbes], `방장 r${r} 무대`);
+        // 6판: 라운드 진입은 현장 보기부터(단계 맞추기로 온 조사 1은 고르기)
+        const sel = qbtn(/^고르기 \d+분 시작/);
+        if (sel) {
+          await tap(sel);
+          expectNoneIn(document.body.innerHTML, [...allProbes, ...npcProbes], `방장 r${r} 고르기`);
+        }
         await tap(btn(/토론 \d+분 시작/));
         expectNoneIn(document.body.innerHTML, [...allProbes, ...npcProbes], `방장 r${r} 토론`);
         await tap(tabBtn(/^내 패/));
@@ -855,8 +867,7 @@ async function hostToResult(code: string, outcome: 'caught' | 'escaped') {
   const other = [2, 3, 4].find((s) => s !== a.culpritSeat && s !== innocent)!;
   const target = outcome === 'caught' ? a.culpritSeat : innocent;
   for (let v = 1; v <= n; v++) await ballot(v === target ? (outcome === 'caught' ? innocent : other) : target);
-  await tap(btn(/진상 공개/));
-  await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
+  await tap(btn(/진상 공개/)); // 6판: 1탭
   for (let i = 0; i < 30 && !qbtn(/점수 보기/); i++) await tap(btn(/^다음 \(/));
   await tap(btn(/점수 보기/));
 }
@@ -887,15 +898,16 @@ describe('(e) 결과 공유 — 범인·방 코드 없음', () => {
         await flush();
         await tap(btn('카톡으로 결과 공유')); // → 클립보드 폴백
         await flush();
-        const preview = document.querySelector<HTMLImageElement>('.gu-resultpreview img')?.getAttribute('src') ?? '';
+        // 6판: 결과 화면엔 카드 미리보기를 상시로 두지 않는다 — 「이미지 저장」 창에서만
+        expect(document.querySelector('.gu-resultpreview')).toBeNull();
         await tap(btn(/이미지 저장/));
         const modalSrcs = [...document.querySelectorAll('img')].map((i) => i.getAttribute('src') ?? '');
         expect(cap.kakao).toHaveLength(1);
         expect(cap.webshare).toHaveLength(1);
         expect(cap.clipboard.length).toBeGreaterThanOrEqual(2);
         expect(cap.images.length).toBeGreaterThanOrEqual(1);
-        expect(preview).toContain('/gung/og/result?');
-        const blob = [JSON.stringify(cap), preview, ...modalSrcs].join(' ');
+        expect(modalSrcs.some((u) => u.includes('/gung/og/result?'))).toBe(true);
+        const blob = [JSON.stringify(cap), ...modalSrcs].join(' ');
         const leaked = forbiddenFor(code).filter((w) => blob.includes(w));
         expect(leaked, `${code} 범인 ${asg(code).culpritSeat}번`).toEqual([]);
         expect(blob).not.toMatch(/\d+\s*번/);
@@ -941,8 +953,7 @@ describe('(e) 결과 공유 — 범인·방 코드 없음', () => {
     const active = [1, 2, 3, 4, 5].filter((s) => s !== a.culpritSeat);
     const t = active.find((s) => s !== 1)!;
     for (const v of active) await ballot(v === t ? 1 : t);
-    await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
+    await tap(btn(/진상 공개/)); // 6판: 1탭
     for (let i = 0; i < 30 && !qbtn(/점수 보기/); i++) await tap(btn(/^다음 \(/));
     await tap(btn(/점수 보기/));
     expect(document.body.textContent).toContain('판결 없음(범인 자리 비움)');

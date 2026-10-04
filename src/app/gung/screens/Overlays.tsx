@@ -6,10 +6,11 @@
  * O4(토스트)·O7(카운트다운)은 Toast/CountdownOverlay 컴포넌트를 GungApp 이 직접 쓴다. O9 는 Setup.tsx.
  */
 import { useEffect, useState } from 'react';
-import { DEFAULT_SCORING, GUIDE, PHASE_LABELS, scoringOf, syncOptions, type GameState, type GungCase, type RoundNo } from '@/lib/gung';
+import { DEFAULT_SCORING, GUIDE, PHASE_LABELS, scoringOf, syncOptions, type GameState, type GungCase, type PlayerCount, type RoundNo } from '@/lib/gung';
 import { BottomSheet, GuButton, LieRulesBox, PalaceMap, RoleIcon, SeatRing, TermList, TimeTable } from '../components';
 import type { PalaceMapProps, RoleIconKey, TermItem, WatchRowView } from '../components';
 import { seatRingItems } from './adapters';
+import { GameFlow } from './Shared';
 import { roundSignal } from './signals';
 
 export { roundSignal };
@@ -26,18 +27,16 @@ export interface ConfirmRequest {
 const ROUND_WORD: Record<RoundNo, string> = { 1: '첫째', 2: '둘째', 3: '셋째' };
 
 /**
- * 조사 라운드 진입 확인 — 플레이어 게이트(「N라운드 시작됐어요」)와 진행 단계 맞추기(O1)가 **같은 시트**를 쓴다(QA BUG-05 와 그 우회로).
+ * 조사 라운드 진입 확인 — 플레이어 게이트(잠금 기억이 풀리는 라운드만 — 6판)와 진행 단계 맞추기(O1)가 **같은 시트**를 쓴다(QA BUG-05).
  * 넘어가면 그 라운드 장소 단서·공용 카드·「R3에 떠오르는 기억」이 풀리고 한 번 본 것은 못 되돌린다.
  * 문구는 역할과 무관하다('기억'이라는 말도 쓰지 않는다) — 기억 보유 역할만 다른 시트를 받으면 역할이 드러난다.
+ * 6판 글 분량: 제목 ≤ 14자 · 본문 ≤ 48자 · 확정 ≤ 6자.
  */
 export function roundEntryConfirm(round: RoundNo, role: GameState['role'], onConfirm: () => void): ConfirmRequest {
   const word = ROUND_WORD[round];
   return {
     title: `${word} 조사로 넘어가겠소?`,
-    body:
-      role === 'host'
-        ? `넘어가면 ${word} 조사의 공용 단서가 열리고 새 장소를 고를 수 있소. 먼저 본 것은 되돌릴 수 없소.`
-        : `방장이 '${roundSignal(round)}'라고 외쳤을 때만 누르시오. 넘어가면 새 장소를 고를 수 있고, 먼저 본 것은 되돌릴 수 없소.`,
+    body: role === 'host' ? `넘어가면 ${word} 조사가 열리오. 먼저 본 것은 되돌릴 수 없소.` : `방장이 '${roundSignal(round)}'라고 외친 뒤에만 누르시오.`,
     confirmLabel: '넘어가겠소',
     onConfirm,
   };
@@ -72,7 +71,7 @@ export function SyncSheet({
     }
     if (chosen.needsConfirm) {
       onConfirm({
-        title: chosen.spoiler ? `${chosen.label}(으)로 가겠소?` : `${chosen.label}(으)로 건너뛰겠소?`,
+        title: `${chosen.label}(으)로 가겠소?`,
         body: chosen.spoiler
           ? '진상·결과는 스포일러요. 방장이 진상을 밝히기 시작했을 때만 가시오.'
           : `지금(${PHASE_LABELS[state.phase]})에서 두 단계 이상 앞으로 가오. 방장 화면 단계명과 같은지 보시오.`,
@@ -307,20 +306,16 @@ export function SeatChangeSheet({ open, onClose, state, n, onChange }: { open: b
   );
 }
 
-/** O5 — 하는 법(R1 거짓말 규칙 상자 맨 위 + 6단계 + 점수 규칙 표 + 안내 2줄, §13) */
-export function RulesSheet({ open, onClose, c }: { open: boolean; onClose: () => void; c: GungCase }) {
+/**
+ * O5 — 하는 법(6판: 진행표 맨 위 + 규칙 상자(원고 1-7 공통 규칙 4줄 + ※) + 점수 규칙 표). 6단계 목록·끝의 안내 2줄 삭제.
+ * n 이 없으면(홈·자리 고르기) 5인 기준 진행표(홈 「약 35분」과 같은 값).
+ */
+export function RulesSheet({ open, onClose, c, n = 5 }: { open: boolean; onClose: () => void; c: GungCase; n?: PlayerCount }) {
   const r = c ? scoringOf(c) : DEFAULT_SCORING;
   return (
     <BottomSheet title="하는 법" open={open} onClose={onClose}>
+      <GameFlow c={c} n={n} />
       <LieRulesBox />
-      <ol className="gu-plainlist gu-steps">
-        <li>① 방장이 사건 개요를 읽는다</li>
-        <li>② 각자 비밀 패를 몰래 본다(꾹 누르는 동안만 보임)</li>
-        <li>{GUIDE.rulesIntroStep}</li>
-        <li>④ 조사 3번 — 장소 1곳 → 단서 → 공개할지 숨길지</li>
-        <li>⑤ 최종 변론 1인 1분</li>
-        <li>⑥ 셋에 동시 지목 → 진상 공개 → 점수</li>
-      </ol>
       <table className="gu-ruletable">
         <tbody>
           <tr>
@@ -349,8 +344,6 @@ export function RulesSheet({ open, onClose, c }: { open: boolean; onClose: () =>
           </tr>
         </tbody>
       </table>
-      <p className="gu-micro">인원이 늘면 다음 판에서 함께(새 방)</p>
-      <p className="gu-micro">캡처해서 돌리면 재미없어지오</p>
     </BottomSheet>
   );
 }
@@ -450,6 +443,46 @@ export function MapSheet({ open, onClose, map }: { open: boolean; onClose: () =>
   return (
     <BottomSheet title={GUIDE.mapSection} open={open} onClose={onClose} className="gu-map-sheet">
       <PalaceMap {...map} zoom />
+    </BottomSheet>
+  );
+}
+
+/**
+ * 통합: 큰 화면(노트북·TV) 현장 주소 — 방장 ⋮ 메뉴 · S3 초대 화면에서 연다.
+ * 주소엔 방 코드가 있지만 초대 링크와 같은 값이다(새 정보 없음). 큰 화면은 코드를 그리지 않고 사건 표식만 보인다.
+ * 「카톡으로 보내기」는 기존 share() 폴백 체인(카톡 → 기본 공유 → 복사), 「주소 복사」는 copyText.
+ */
+export function BigScreenSheet({
+  open,
+  onClose,
+  url,
+  onCopy,
+  onSend,
+  copied,
+}: {
+  open: boolean;
+  onClose: () => void;
+  url: string;
+  onCopy: () => void;
+  onSend: () => void;
+  copied?: boolean;
+}) {
+  return (
+    <BottomSheet title={GUIDE.bigScreenMenu} open={open} onClose={onClose}>
+      <p className="gu-sheet-body-text">{GUIDE.bigScreenBody}</p>
+      <p className="gu-bigscreen-url" data-testid="bigscreen-url">
+        {url}
+      </p>
+      <div className="gu-sheet-actions-row">
+        <GuButton variant="secondary" onClick={onCopy}>
+          {copied ? '복사했소 ✓' : GUIDE.bigScreenCopy}
+        </GuButton>
+        <GuButton variant="primary" onClick={onSend}>
+          {GUIDE.bigScreenSend}
+        </GuButton>
+      </div>
+      <p className="gu-micro gu-bigscreen-note">{GUIDE.bigScreenNote}</p>
+      <p className="gu-micro gu-bigscreen-note">{GUIDE.bigScreenMirror}</p>
     </BottomSheet>
   );
 }

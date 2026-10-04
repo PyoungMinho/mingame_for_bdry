@@ -55,12 +55,21 @@ export const PHASE_LABELS: Record<Phase, string> = {
   result: '결과',
 };
 
-export type RoundSub = 'select' | 'discuss';
+/**
+ * 조사 라운드 하위 단계(6판): scene(현장 보기 1분, 조용한 타이머) → select(장소 고르기) → discuss(토론).
+ * 라운드에 들어서면 scene 부터. 진행 단계 맞추기(hostSync)로 들어오면 select 부터(현장은 시트로 언제든 다시 본다).
+ */
+export type RoundSub = 'scene' | 'select' | 'discuss';
+export const ROUND_SUBS: readonly RoundSub[] = ['scene', 'select', 'discuss'];
 export type VoteSub = 'ready' | 'input' | 'tally' | 'revote' | 'final';
 export type Disclosure = 'undecided' | 'public' | 'private';
 export type GameRole = 'host' | 'player';
-/** select·discuss = 조사 · defense = 최종 변론 · cards = 패 확인 3분(원고 1-8) · tie = 동률자 추가 변론 30초(원고 8-1) */
-export type TimerKind = 'select' | 'discuss' | 'defense' | 'cards' | 'tie';
+/**
+ * scene·select·discuss = 조사(현장 보기 → 장소 고르기 → 토론) · defense = 최종 변론 · cards = 패 확인 ·
+ * tie = 동률자 추가 변론(원고 8-1). scene 은 0초에도 징·진동 없이 조용히 끝난다(UX 스펙 §2-3, isQuietTimer).
+ */
+export type TimerKind = 'scene' | 'select' | 'discuss' | 'defense' | 'cards' | 'tie';
+export const TIMER_KINDS: readonly TimerKind[] = ['scene', 'select', 'discuss', 'defense', 'cards', 'tie'];
 /** 헤더 5기둥 레일(§5-3) */
 export type RailStep = 'prep' | 1 | 2 | 3 | 'defense' | 'vote' | 'done';
 
@@ -347,7 +356,7 @@ export function addTimerTime(t: TimerState, ms: number, now: number): TimerState
 
 /** 지금 단계에 맞는 타이머 종류(없으면 null). 지목 단계 = 동률자 추가 변론(집계에서 동률일 때만 엔진이 받는다) */
 export function timerKindFor(phase: Phase, roundSub: RoundSub | null): TimerKind | null {
-  if (roundOfPhase(phase)) return roundSub === 'discuss' ? 'discuss' : 'select';
+  if (roundOfPhase(phase)) return roundSub === 'discuss' ? 'discuss' : roundSub === 'scene' ? 'scene' : 'select';
   if (phase === 'defense') return 'defense';
   if (phase === 'cards') return 'cards';
   if (phase === 'vote') return 'tie';
@@ -357,6 +366,8 @@ export function timerKindFor(phase: Phase, roundSub: RoundSub | null): TimerKind
 export function timerMs(c: GungCase, kind: TimerKind): number {
   const t = timersOf(c);
   switch (kind) {
+    case 'scene':
+      return t.sceneMs;
     case 'select':
       return t.selectMs;
     case 'discuss':
@@ -368,6 +379,40 @@ export function timerMs(c: GungCase, kind: TimerKind): number {
     case 'tie':
       return t.tieMs;
   }
+}
+
+/** 0초에 징·진동 없이 조용히 끝나는 타이머인가(현장 보기 — 낭독 중 징이 울리지 않게, UX 스펙 §2-3) */
+export function isQuietTimer(kind: TimerKind): boolean {
+  return kind === 'scene';
+}
+
+/** 분 단위 표시(UI 문구 「고르기 1분 시작」 등) — 1분 미만은 소수 없이 초로 쓰는 쪽에서 처리 */
+export function timerMinutes(c: GungCase, kind: TimerKind): number {
+  return timerMs(c, kind) / 60_000;
+}
+
+/**
+ * 진행표(UX 스펙 §2-4 「게임 진행이 어떻게 되는지」) — 타이머 값에서 계산한 단계별 예상 분.
+ * 개요·소개·지목/진상은 타이머가 없는 낭독 구간이라 스펙 §2-1 시간 예산의 어림값을 쓴다. 합계 40분을 넘으면 테스트가 실패한다.
+ */
+export interface FlowStep {
+  key: 'briefing' | 'cards' | 'intro' | 'rounds' | 'defense' | 'finale';
+  label: string;
+  minutes: number;
+}
+export const FLOW_FIXED_MINUTES = { briefing: 2, intro: 2, finale: 4 } as const;
+
+export function flowPlan(c: GungCase, n: PlayerCount): { steps: FlowStep[]; total: number } {
+  const perRound = (timerMs(c, 'scene') + timerMs(c, 'select') + timerMs(c, 'discuss')) / 60_000;
+  const steps: FlowStep[] = [
+    { key: 'briefing', label: '개요', minutes: FLOW_FIXED_MINUTES.briefing },
+    { key: 'cards', label: '패', minutes: Math.ceil(timerMs(c, 'cards') / 60_000) },
+    { key: 'intro', label: '소개', minutes: FLOW_FIXED_MINUTES.intro },
+    { key: 'rounds', label: '조사', minutes: Math.ceil(perRound * ROUND_NOS.length) },
+    { key: 'defense', label: '변론', minutes: Math.ceil((timerMs(c, 'defense') * n) / 60_000) },
+    { key: 'finale', label: '지목·진상', minutes: FLOW_FIXED_MINUTES.finale },
+  ];
+  return { steps, total: steps.reduce((sum, x) => sum + x.minutes, 0) };
 }
 
 // ─────────────────────────────── 지목 ───────────────────────────────
@@ -558,19 +603,28 @@ function initVote(): VoteState {
   return { sub: 'ready', first: {} };
 }
 
+/**
+ * 조사 라운드에 들어선다(자기소개 → 조사 1 · 토론 → 다음 조사 · 자기소개 건너뛰기) — 현장 보기부터, 현장 타이머(조용함) 실행.
+ * 6판 이전(G2)엔 고르기 단계 + 타이머 멈춤으로 들어섰다. 이제 낭독은 현장 보기 1분이 맡고, 고르기 타이머는 현장 → 고르기 전진 때 돈다.
+ */
+function enterRound(h: HostCore, ctx: GameContext): HostCore {
+  return { ...h, roundSub: 'scene', timer: startTimer('scene', timerMs(ctx.c, 'scene'), ctx.now) };
+}
+
 /** 방장 '다음' — 단계·하위 단계 전진 */
 function hostAdvance(h: HostCore, phase: Phase, ctx: GameContext, n: number, culpritSeat: number): HostMutation {
   const { c, now } = ctx;
   const active = activeSeats(n, h.absentSeats);
   const r = roundOfPhase(phase);
   if (r) {
+    if (h.roundSub === 'scene') {
+      // 6판: 현장 보기(공용 단서 낭독 + 새 관찰 확인) → 장소 고르기. 고르기 타이머는 이 전진과 함께 돈다(별도 시작 버튼 없음)
+      return { phase, host: { ...h, roundSub: 'select', timer: startTimer('select', timerMs(c, 'select'), now) } };
+    }
     if (h.roundSub !== 'discuss') {
       return { phase, host: { ...h, roundSub: 'discuss', timer: startTimer('discuss', timerMs(c, 'discuss'), now) } };
     }
-    if (r < 3) {
-      // G2: 조사 라운드에 들어서면 고르기 타이머는 멈춰 둔다 — 방장이 공용 단서를 다 읽은 뒤 「고르기 2분 시작」으로 연다
-      return { phase: phaseOfRound((r + 1) as RoundNo), host: { ...h, roundSub: 'select', timer: null } };
-    }
+    if (r < 3) return { phase: phaseOfRound((r + 1) as RoundNo), host: enterRound(h, ctx) };
     return {
       phase: 'defense',
       host: { ...h, roundSub: null, defense: { order: active, index: 0 }, timer: startTimer('defense', timerMs(c, 'defense'), now) },
@@ -580,13 +634,12 @@ function hostAdvance(h: HostCore, phase: Phase, ctx: GameContext, n: number, cul
     case 'lobby':
       return { phase: 'briefing', host: { ...h, startedAt: h.startedAt ?? now } };
     case 'briefing':
-      // 원고 1-8 ②: 「각자 폰을 가리고 확인하세요」 3분 카운트다운
+      // 「각자 폰을 가리고 확인하세요」 카운트다운(6판 2분 — DEFAULT_TIMERS.cardsMs)
       return { phase: 'cards', host: { ...h, timer: startTimer('cards', timerMs(c, 'cards'), now) } };
     case 'cards':
       return { phase: 'intro', host: { ...h, introCurrent: active[0] ?? 1, timer: null } };
     case 'intro':
-      // G2: 낭독 먼저 — 고르기 타이머는 방장이 수동으로 시작
-      return { phase: 'r1', host: { ...h, roundSub: 'select', timer: null } };
+      return { phase: 'r1', host: enterRound(h, ctx) };
     case 'defense': {
       const d = h.defense ?? { order: active, index: 0 };
       if (d.index < d.order.length - 1) {
@@ -636,6 +689,7 @@ function hostSync(h: HostCore, from: Phase, to: Phase, ctx: GameContext, n: numb
   const base: HostCore = {
     ...h,
     timer: null,
+    // 단계 맞추기는 복구 경로 — 조사 라운드면 장소 고르기부터(현장은 시트로 언제든). 타이머는 방장이 다시 켠다
     roundSub: roundOfPhase(to) ? 'select' : null,
     startedAt: phaseIndex(to) > phaseIndex('lobby') ? h.startedAt ?? ctx.now : h.startedAt,
   };
@@ -858,8 +912,8 @@ export function applyAction(s: GameState, action: GameAction, ctx: GameContext):
     case 'skipIntro': {
       if (s.phase !== 'cards') return s;
       if (s.role === 'host') {
-        // G2: 낭독 먼저 — 고르기 타이머는 방장이 수동으로 시작
-        return hostChange(s, ctx, true, (h) => ({ phase: 'r1', host: { ...h, roundSub: 'select', timer: null } }));
+        // 자기소개 → 조사 1 과 같은 진입(현장 보기부터)
+        return hostChange(s, ctx, true, (h) => ({ phase: 'r1', host: enterRound(h, ctx) }));
       }
       return touch(s, now, { phase: 'r1' });
     }

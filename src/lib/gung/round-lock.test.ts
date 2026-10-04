@@ -12,6 +12,7 @@ import { describe, expect, it } from 'vitest';
 import { assignFromCode, getAllSheets, getSheet, memoriesUnlockedBetween, memoryRounds, recheckRoundBetween, roleAtSeat, seatOfRole } from './assign';
 import { sejaCase } from './case-data';
 import { gateTimeline } from './deck';
+import { newObservations, scenesFor } from './scene';
 import { emptyHost, gateRoundsShown, PHASES, reachedRound, type GameState, type Phase } from './game';
 import { SEED_ALPHABET } from './room';
 import { PLAYER_COUNTS, type GungCase, type PlayerCount, type RoundNo } from './types';
@@ -313,5 +314,25 @@ describe('내문 출입 타임라인 — 데이터·엔진', () => {
     const where = caseErrors(c).map((e) => e.msg);
     expect(where.some((m) => m.includes('눈금 밖 시각'))).toBe(true);
     expect(where.some((m) => m.includes('카드 본문에 없는 출입'))).toBe(true);
+  });
+});
+
+describe('라운드 잠금 — 현장 관찰(6판 10장, 방장 진행 단계 기준)', () => {
+  const lines = (sejaCase.scenes ?? []).flatMap((sc) => sc.objects.flatMap((o) => o.lines));
+
+  it('모든 단계에서 그 단계가 들어선 라운드 뒤의 관찰 줄은 현장·새 관찰 목록 어디에도 없다', () => {
+    for (const phase of PHASES) {
+      const reached = reachedRound(phase);
+      const json = JSON.stringify([scenesFor(sejaCase, reached), newObservations(sejaCase, reached)]);
+      for (const l of lines) {
+        expect(json.includes(l.text), `${phase}(R${reached}) ← R${l.fromRound} ${l.text.slice(0, 12)}`).toBe(l.fromRound <= reached);
+      }
+    }
+  });
+
+  it('PB-3 에서 현장으로 옮긴 증언(번 나인·의관·수문 내관)은 R3 줄 — 조사 3 전엔 공용 카드에도 현장에도 없다', () => {
+    const moved = lines.filter((l) => l.fromRound === 3);
+    expect(moved.length).toBe(7);
+    for (const l of moved) expect(scenesFor(sejaCase, 2).some((v) => v.objects.some((o) => o.lines.some((x) => x.text === l.text)))).toBe(false);
   });
 });

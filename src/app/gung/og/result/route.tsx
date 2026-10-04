@@ -184,7 +184,7 @@ export async function GET(request: NextRequest) {
         headline: '범인은 이 자리에 있다',
         caught: true,
         seal: '궁',
-        cta: '4~6인 · 폰 하나씩 · 약 50분 →',
+        cta: '4~6인 · 폰 하나씩 · 약 35분 →',
       });
 
   // QA BUG-13: 폰트를 못 받으면 한글이 □ 로 깨진 이미지다 — 이걸 1년 immutable 로 박으면 CDN·카톡 스크레이퍼가

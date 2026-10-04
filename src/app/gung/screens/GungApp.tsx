@@ -21,6 +21,12 @@
  *  - R2 「?」 시트(배치도·시각표·인물·용어) + 배치도만 담은 시트 · R4 4번째 탭 '수첩'(60초 무입력 → 진행 탭)
  *  - R5 인장 키패드(오답 3회 → 10초 잠금은 여기서 쥔다 — 시트를 닫았다 열어도 안 풀리게) · 공개 토스트에 인장 번호
  *  - R1 P1 한 번 연 칩의 점(UI 상태, 저장 안 함, 새 판이면 지움)
+ *
+ * 통합(현장 보기 · 프론트팀장)
+ *  - 「현장 다시 보기」 시트(sheet='scene') — 방장·플레이어 공용. 이 폰이 들어선 라운드까지의 현장만(reachedRound).
+ *    SceneView 는 역할 무관(사건·라운드·방 코드·공개 배치도만). 시트가 열리면 기존 규칙대로 모든 봉인이 즉시 다시 닫힌다.
+ *  - 큰 화면(노트북·TV) 주소 시트(sheet='bigscreen') — 방장 ⋮ 메뉴와 S3 초대 화면. 주소 = /gung/scene?code=…
+ *  - '처음으로'·새 방에서 본 물건 기록(gu:scene:v1)도 지운다(수첩과 같은 자리).
  */
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -40,6 +46,7 @@ import {
   gateTimeline,
   GUIDE,
   guideText,
+  isQuietTimer,
   NOTE_FREE_MAX,
   NOTE_LINE_MAX,
   noteRows,
@@ -51,6 +58,7 @@ import {
   rolesVisible,
   timeHint,
   buildHostRecoveryUrl,
+  buildSceneUrl,
   canUndo,
   copyText,
   externalOpenUrl,
@@ -69,6 +77,7 @@ import {
   resultPayload,
   resultShareInput,
   roundPlaces,
+  scenePayload,
   share,
   sharedTerms,
   SITE_ORIGIN,
@@ -102,11 +111,12 @@ import { useTimer } from '../lib/useTimer';
 import { useWakeLock } from '../lib/useWakeLock';
 import { gateToView, placeToSummary, toHeaderRail } from './adapters';
 import { HostPlayArea, hostSignalSub } from './HostScreens';
-import { AbsentSheet, ConfirmSheet, MapSheet, MenuSheet, RulesSheet, SeatChangeSheet, SyncSheet, TermsSheet, WakeSheet, type ConfirmRequest, type MenuRow } from './Overlays';
+import { AbsentSheet, BigScreenSheet, ConfirmSheet, MapSheet, MenuSheet, RulesSheet, SeatChangeSheet, SyncSheet, TermsSheet, WakeSheet, type ConfirmRequest, type MenuRow } from './Overlays';
 import { PlayerPlayArea, type TruthView } from './PlayerScreens';
 import { advanceToast, hostSignal, roundSignal } from './signals';
 import { BadCodeScreen, ConflictScreen, CreateRoom, EnterCode, Home, Invite, SeatPick, type SeatPickStep } from './Setup';
 import { CluesTab } from './Tabs';
+import { clearSceneStore, SceneView } from './SceneView';
 
 interface ToastState {
   key: number;
@@ -120,7 +130,7 @@ interface ToastState {
   tag?: string;
 }
 
-type SheetKind = 'sync' | 'menu' | 'absent' | 'rules' | 'seat' | 'wake' | 'terms' | 'map' | 'seal';
+type SheetKind = 'sync' | 'menu' | 'absent' | 'rules' | 'seat' | 'wake' | 'terms' | 'map' | 'seal' | 'scene' | 'bigscreen';
 
 /** R4 수첩 탭 — 이 시간 동안 입력이 없으면 진행 탭으로(모든 기기 같음). 봉인(꾹)은 쓰지 않는다 */
 export const NOTES_IDLE_MS = 60_000;
@@ -158,7 +168,10 @@ function headerTitle(s: GameState): string {
     case 'r2':
     case 'r3': {
       const r = Number(s.phase[1]) as RoundNo;
-      if (isHost) return `${PHASE_LABELS[s.phase]} · ${s.host?.roundSub === 'discuss' ? '토론' : '장소 고르기'}`;
+      if (isHost) {
+        const sub = s.host?.roundSub;
+        return `${PHASE_LABELS[s.phase]} · ${sub === 'discuss' ? '토론' : sub === 'scene' ? GUIDE.sceneLabel : '장소 고르기'}`;
+      }
       return `${PHASE_LABELS[s.phase]} · ${s.rounds[r] ? '단서' : '장소 고르기'}`;
     }
     case 'vote':
@@ -184,7 +197,7 @@ export function GungApp() {
   const [confirmReq, setConfirmReq] = useState<ConfirmRequest | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [showCountdown, setShowCountdown] = useState(false);
-  const [copied, setCopied] = useState<'invite' | 'result' | null>(null);
+  const [copied, setCopied] = useState<'invite' | 'result' | 'scene' | null>(null);
   const [catchUpRound, setCatchUpRound] = useState<RoundNo | null>(null);
   const [draftPlace, setDraftPlace] = useState<string | null>(null);
   const [draftVote, setDraftVote] = useState<number | null>(null);
@@ -374,6 +387,8 @@ export function GungApp() {
 
   const hostTimer = isHost ? state?.host?.timer ?? null : null;
   const timerValue = useTimer(hostTimer, () => {
+    // 6판: 현장 보기 타이머는 0초에도 조용히(낭독 중 징 금지 — UX 스펙 §2-3)
+    if (hostTimer && isQuietTimer(hostTimer.kind)) return;
     playGong(soundRef.current);
     vibrate([200, 100, 200]);
   });
@@ -393,13 +408,13 @@ export function GungApp() {
 
   const origin = typeof window !== 'undefined' ? window.location.origin : SITE_ORIGIN;
 
-  const flashCopied = (which: 'invite' | 'result') => {
+  const flashCopied = (which: 'invite' | 'result' | 'scene') => {
     setCopied(which);
     window.clearTimeout(copyTimer.current);
     copyTimer.current = window.setTimeout(() => setCopied(null), 2000);
   };
   /** §8-5 폴백 체인 — sendDefault/navigator.share 는 탭 핸들러 안에서 await 전에 동기 호출된다(share() 계약) */
-  const doShare = (payload: SharePayload, which: 'invite' | 'result' | null) => {
+  const doShare = (payload: SharePayload, which: 'invite' | 'result' | 'scene' | null) => {
     void share(payload).then((outcome) => {
       if (outcome === 'copied') {
         if (which) flashCopied(which);
@@ -409,12 +424,13 @@ export function GungApp() {
       }
     });
   };
-  const doCopy = (text: string, which: 'invite' | 'result') => {
+  const doCopy = (text: string, which: 'invite' | 'result' | 'scene') => {
     void copyText(text).then((ok) => (ok ? flashCopied(which) : pushToast('복사하지 못했소')));
   };
 
   const resetAll = () => {
     notes.clear(); // R4: '처음으로'·새 방 — 수첩도(메모리 폴백까지) 비운다
+    clearSceneStore(); // 통합: 현장 본 물건(✓) 기록도 같은 자리에서
     g.resetToHome();
   };
   const confirmReset = () =>
@@ -428,7 +444,7 @@ export function GungApp() {
   const storageBanner =
     !g.storagePersistent && !dismissed.storage ? (
       <Banner tone="warn" onDismiss={() => setDismissed((d) => ({ ...d, storage: true }))}>
-        이 브라우저는 저장이 안 돼요. 새로고침하면 처음부터예요(같은 코드·자리로 다시 들어오면 내용은 같아요).
+        {GUIDE.storageBanner}
       </Banner>
     ) : null;
 
@@ -554,7 +570,7 @@ export function GungApp() {
           ) : undefined
         }
       >
-        🌙 방장 폰은 화면이 꺼지면 타이머 종이 안 울려요. 설정 › 자동 잠금을 늘리시오.
+        {GUIDE.wakeBanner}
       </Banner>
     ) : null;
 
@@ -562,6 +578,24 @@ export function GungApp() {
     if (!room) return;
     doShare(invitePayload({ code: room.code, n: room.n, tag: room.tag, caseVersion: c.version, origin }), 'invite');
   };
+  // 통합: 큰 화면(노트북·TV) 현장 주소 — 방장 ⋮ 메뉴 · S3 초대 화면
+  const sceneUrl = buildSceneUrl(origin, state.code);
+  const bigScreenSheet = (
+    <BigScreenSheet
+      open={sheet === 'bigscreen'}
+      onClose={() => setSheet(null)}
+      url={sceneUrl}
+      copied={copied === 'scene'}
+      onCopy={() => {
+        void copyText(sceneUrl).then((ok) => {
+          if (!ok) return pushToast('복사하지 못했소');
+          flashCopied('scene');
+          pushToast(GUIDE.bigScreenCopied);
+        });
+      }}
+      onSend={() => doShare(scenePayload({ code: state.code, origin }), 'scene')}
+    />
+  );
 
   // S3 초대 — 방 생성 직후(phase 는 이미 'lobby'), 대기실 진입 전 로컬 서브스텝
   if (showInvite && room && isHost) {
@@ -575,7 +609,9 @@ export function GungApp() {
           onCopyLink={() => doCopy(payload.copyText, 'invite')}
           copied={copied === 'invite'}
           banner={wakeBanner}
+          onBigScreen={() => setSheet('bigscreen')}
         />
+        {bigScreenSheet}
         {toast && (
           <div className="gu-floating-toast">
             <Toast key={toast.key} text={toast.text} action={toast.action} duration={toast.duration} onDismiss={() => setToast(null)} />
@@ -604,8 +640,11 @@ export function GungApp() {
     { key: 'wake', label: `화면 꺼짐 방지: ${wake.status === 'on' ? '켜짐 🕯' : wake.status === 'off' ? '안 됨 🌙' : '확인 중'}`, onClick: () => setSheet('wake') },
     ...(isHost
       ? [
+          // 6판: 패 확인 화면의 「자기소개 건너뛰기」 링크를 메뉴로(전진 토스트가 외칠 신호를 알려 준다)
+          ...(state.phase === 'cards' ? [{ key: 'skipIntro', label: GUIDE.skipIntroMenu, onClick: () => dispatch({ type: 'skipIntro' }) }] : []),
           { key: 'sound', label: `소리: ${g.prefs.sound ? '켜짐' : '꺼짐'}`, onClick: () => g.setPrefs({ sound: !g.prefs.sound }) },
           { key: 'invite', label: '초대 다시 보내기', onClick: shareInvite },
+          { key: 'bigscreen', label: GUIDE.bigScreenMenu, onClick: () => setSheet('bigscreen') },
           ...(state.phase !== 'lobby' ? [{ key: 'absent', label: '자리 비우기', onClick: () => setSheet('absent') }] : []),
           ...(state.phase === 'lobby'
             ? [
@@ -668,7 +707,9 @@ export function GungApp() {
         cardFocus,
         map: MAP_PROPS,
         onOpenMap: () => setSheet('map'),
+        onOpenHelp: () => setSheet('terms'),
         onOpenSealPad: () => setSheet('seal'),
+        onOpenScene: () => setSheet('scene'),
         seenSections,
         onSeenSection,
       })
@@ -694,6 +735,7 @@ export function GungApp() {
         map: MAP_PROPS,
         onOpenMap: () => setSheet('map'),
         sealOf: (id) => clueSeal(c, a.n, state.code, id),
+        onOpenScene: () => setSheet('scene'),
         seenSections,
         onSeenSection,
       });
@@ -817,7 +859,7 @@ export function GungApp() {
       {storageBanner}
       {g.saveVersionMismatch && !dismissed.version && (
         <Banner tone="warn" onDismiss={() => setDismissed((d) => ({ ...d, version: true }))}>
-          사건 내용이 갱신됐어요. 새 방을 권해요.
+          {GUIDE.versionBanner}
         </Banner>
       )}
       {state.phase === 'lobby' && wakeBanner}
@@ -887,7 +929,7 @@ export function GungApp() {
           }}
         />
       )}
-      <RulesSheet open={sheet === 'rules'} onClose={() => setSheet(null)} c={c} />
+      <RulesSheet open={sheet === 'rules'} onClose={() => setSheet(null)} c={c} n={a.n} />
       <TermsSheet
         open={sheet === 'terms'}
         onClose={() => setSheet(null)}
@@ -940,6 +982,11 @@ export function GungApp() {
         )}
       </BottomSheet>
       <MapSheet open={sheet === 'map'} onClose={() => setSheet(null)} map={MAP_PROPS} />
+      {/* 통합: 현장 다시 보기 — 이 폰이 들어선 라운드까지만(라운드 잠금). idScope='sheet' — 무대의 현장 그림과 SVG id 가 겹치지 않게 */}
+      <BottomSheet title={GUIDE.sceneLabel} open={sheet === 'scene'} onClose={() => setSheet(null)} className="gu-scene-sheet">
+        {sheet === 'scene' && <SceneView c={c} upTo={reachedRound(state.phase)} code={state.code} idScope="sheet" map={MAP_PROPS} startAtNew />}
+      </BottomSheet>
+      {isHost && bigScreenSheet}
       {isHost && (
         <SealKeypadSheet
           open={sheet === 'seal'}

@@ -28,12 +28,15 @@ import {
   type GameState,
   type PlayerCount,
   type RoundNo,
+  PHASE_LABELS,
 } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
 import { GungApp } from './GungApp';
 import { HOST_CUE } from './HostScreens';
 import { PlayerPlayArea, type PlayerAreaProps } from './PlayerScreens';
-import { gateCaption, hostCaption, hostSignal, PHASE_SIGNAL, SKIP_INTRO_NOTE } from './signals';
+import { gateCaption, hostCaption, hostSignal, PHASE_SIGNAL } from './signals';
+import { roundEntryConfirm } from './Overlays';
+import { labelLength, textLength, UI_BUDGET } from '@/lib/gung/text-budget';
 
 let search = '';
 vi.mock('next/navigation', () => ({
@@ -224,7 +227,8 @@ describe('G1 방장 「외칠 말」 — 신호표 단일 출처', () => {
       expect(hostSignal(phase, sub), `${phase}/${sub}`).toBeNull();
     }
     expect(hostCaption('사건을 시작하겠소')).toBe("누르고 외치시오: '사건을 시작하겠소'");
-    expect(SKIP_INTRO_NOTE).toBe("건너뛰면 외치시오: '첫째 조사를 시작하오' — 모두 두 번 눌러야 하오");
+    // 6판: 현장 보기 → 고르기도 하위 전진(신호 없음)
+    expect(hostSignal('r2', 'select')).toBeNull();
   });
 
   it('방장 진행 탭: 단계 전진 버튼에만 「누르고 외치시오」, 내 패·단서함·수첩 탭엔 없음 · 전진 토스트에 신호', async () => {
@@ -237,17 +241,22 @@ describe('G1 방장 「외칠 말」 — 신호표 단일 출처', () => {
       expect(caption(), tab).toBeNull();
     }
     await tap(tabBtn('진행'));
-    await tap(btn(/사건 시작/));
-    await tap(within(dialog()).getByRole('button', { name: /시작하겠소/ }));
+    await tap(btn(/사건 시작/)); // 6판: 확인 시트 없음
     expect(document.querySelector('.gu-toast')?.textContent).toContain("넘어갔소 → 사건 개요 · 준비 · 📣 '사건을 시작하겠소'");
     expect(caption()).toBe(hostCaption('각자 자기 패를 몰래 보시오'));
     await tap(btn(/다 읽었소/));
     expect(caption()).toBe(hostCaption('1번부터 신분을 밝히시오'));
-    expect(bodyText()).toContain(SKIP_INTRO_NOTE);
+    // 6판: 「자기소개 건너뛰기」는 ⋮ 메뉴 — 누르면 전진 토스트가 외칠 신호(첫째 조사)를 알려 준다
+    expect(qbtn(/자기소개 건너뛰기/)).toBeNull();
+    await tap(btn('메뉴'));
+    expect(within(dialog()).getByRole('button', { name: GUIDE.skipIntroMenu })).toBeInTheDocument();
+    await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     await tap(btn(/다 봤소/));
     expect(caption()).toBe(hostCaption('첫째 조사를 시작하오'));
     await tap(btn(/첫째 조사 시작/));
-    expect(caption()).toBeNull(); // 장소 고르기 → 토론은 하위 전진
+    expect(caption()).toBeNull(); // 현장 보기 → 고르기 → 토론은 하위 전진
+    await tap(btn(/고르기 \d+분 시작/));
+    expect(caption()).toBeNull();
     await tap(btn(/토론 \d+분 시작/));
     expect(caption()).toBe(hostCaption('둘째 조사를 시작하오'));
     await syncTo(/^최종 변론/);
@@ -260,8 +269,7 @@ describe('G1 방장 「외칠 말」 — 신호표 단일 출처', () => {
     await tap(btn('건너뛰기'));
     for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
     expect(caption()).toBe(hostCaption('그날 밤의 진상을 밝히겠소'));
-    await tap(btn(/진상 공개/));
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
+    await tap(btn(/진상 공개/)); // 6판: 1탭
     for (let i = 0; i < 30 && !document.querySelector('.gu-reveal-culprit'); i++) {
       expect(caption()).toBeNull();
       await tap(btn(/^다음 \(/));
@@ -279,7 +287,6 @@ describe('G2 방장 무대 — 봉인 카드 0 · 고르기 타이머 수동 · 
     const check = (where: string) => expect(document.querySelectorAll('.gu-sealed'), where).toHaveLength(0);
     check('lobby');
     await tap(btn(/사건 시작/));
-    await tap(within(dialog()).getByRole('button', { name: /시작하겠소/ }));
     check('briefing');
     await tap(btn(/다 읽었소/));
     check('cards');
@@ -287,6 +294,8 @@ describe('G2 방장 무대 — 봉인 카드 0 · 고르기 타이머 수동 · 
     check('intro');
     await tap(btn(/첫째 조사 시작/));
     for (const r of [1, 2, 3]) {
+      check(`r${r}-scene`);
+      await tap(btn(/고르기 \d+분 시작/));
       check(`r${r}-select`);
       await hostPickInClues();
       await tap(tabBtn('진행'));
@@ -304,19 +313,48 @@ describe('G2 방장 무대 — 봉인 카드 0 · 고르기 타이머 수동 · 
     check('result');
   });
 
-  it('조사 진입 직후 타이머 없음 → 「다 읽었소 → 고르기 2분 시작」 → 2:00 · 무대 문구', async () => {
+  it('6판 조사 진입: 현장 보기(공용 단서 낭독 · 조용한 1분 타이머가 이미 돈다) → 「고르기 1분 시작 →」 → 고르기 01:00 이 바로 돈다', async () => {
+    await hostRecover('7F3K5');
+    await syncTo(/^자기소개/);
+    await tap(btn(/첫째 조사 시작/));
+    expect(screen.getByRole('heading', { name: /조사 1 · 현장 보기/ })).toBeInTheDocument();
+    expect(screen.getByText(`「${GUIDE.sceneCue}」`)).toBeInTheDocument();
+    expect(bodyText()).toContain(GUIDE.publicAlsoInPhones);
+    expect(screen.getByText('01:00')).toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem('gu:game:v1')!).host.timer).toMatchObject({ kind: 'scene', running: true });
+    // 하위 단계 표시 — 지금 단계만 aria-current
+    expect(screen.getByRole('list', { name: GUIDE.roundStepsLabel }).querySelector('[aria-current="step"]')?.textContent).toContain(GUIDE.sceneLabel);
+    // 현장 그림 자리(다른 담당이 SceneView 로 채운다) — 그 라운드 관찰만
+    expect(document.querySelector('[data-scene-slot="host"]')).not.toBeNull();
+    // 방장 본인 조사 링크는 고르기부터
+    expect(qbtn(GUIDE.hostOwnClueLink)).toBeNull();
+    await tap(btn(/고르기 1분 시작/));
+    expect(screen.getByRole('heading', { name: /조사 1 · 장소 고르기/ })).toBeInTheDocument();
+    expect(qbtn(GUIDE.selectTimerStart)).toBeNull();
+    expect(screen.getByText('01:00')).toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem('gu:game:v1')!).host.timer).toMatchObject({ kind: 'select', running: true });
+    expect(screen.getByRole('list', { name: GUIDE.roundStepsLabel }).querySelector('[aria-current="step"]')?.textContent).toContain('고르기');
+  });
+
+  it('단계 맞추기로 고르기에 오면 타이머 없음 → 「⏱ 고르기 1분 시작」 → 01:00 · 무대 순서(큐 → 타이머 → 내 조사 → 공용 단서 접힘)', async () => {
     await hostRecover('7F3K5');
     await syncTo(/^조사 1/);
     expect(screen.getByText(`「${GUIDE.selectCue}」`)).toBeInTheDocument();
-    expect(bodyText()).toContain(GUIDE.publicAlsoInPhones);
     expect(screen.queryByText(/^\d\d:\d\d$/)).toBeNull();
     await tap(btn(GUIDE.selectTimerStart));
-    expect(screen.getByText('02:00')).toBeInTheDocument();
+    expect(screen.getByText('01:00')).toBeInTheDocument();
     expect(btn(GUIDE.hostOwnClueLink)).toBeInTheDocument();
-    // 무대 순서: 공용 단서(낭독) → 타이머 → 내 조사 버튼
+    const fold = screen.getByText(GUIDE.publicThisRound).closest('details')!;
+    expect(fold.hasAttribute('open')).toBe(false);
+    expect(fold.textContent).toContain(c.rounds[0].publicCards![0].title);
     const html = document.body.innerHTML;
-    expect(html.indexOf(c.rounds[0].publicCards![0].title)).toBeLessThan(html.indexOf('02:00'));
-    expect(html.indexOf('02:00')).toBeLessThan(html.indexOf(GUIDE.hostOwnClueLink));
+    expect(html.indexOf(GUIDE.selectCue)).toBeLessThan(html.indexOf('01:00'));
+    expect(html.indexOf('01:00')).toBeLessThan(html.indexOf(GUIDE.hostOwnClueLink));
+    expect(html.indexOf(GUIDE.hostOwnClueLink)).toBeLessThan(html.indexOf(c.rounds[0].publicCards![0].title));
+    // 시각 어림은 현장 화면 접힘 1곳(+ 「?」) — 고르기·토론 무대엔 없다
+    expect(document.querySelector('.gu-timehint')).toBeNull();
+    await tap(btn(/토론 \d+분 시작/));
+    expect(document.querySelector('.gu-timehint')).toBeNull();
   });
 
   it('방장이 단서함에서 고르면 pickPlace 기록 + 6초 되돌리기 토스트, 단서를 열면 토스트를 거둔다(BUG-17)', async () => {
@@ -343,11 +381,15 @@ describe('G3·G4·R1 — 자기소개 카드 · 정체 도장 · 거짓말 규�
       for (let seat = 2; seat <= n; seat++) {
         await joinAsPlayer(code, seat);
         await syncTo(/^자기소개/);
-        const speech = getSheet(c, asg(code), seat, 0)!.speech;
+        const sheet = getSheet(c, asg(code), seat, 0)!;
+        const speech = sheet.speech;
         expect(bodyText()).toContain(GUIDE.introPlayer);
         const card = screen.getByRole('button', { name: /자리의 신분/ });
         await keyOpen(card);
-        expect(bodyText()).toContain(getSheet(c, asg(code), seat, 0)!.profile.slice(0, 20)); // 열렸다
+        // 6판: 이름 + 직함 한 줄만(열렸다) — 공개 프로필 전문은 「?」 › 인물
+        expect(card.textContent).toContain(sheet.name);
+        if (sheet.subtitle) expect(card.textContent).toContain(sheet.subtitle);
+        expect(card.textContent).not.toContain(sheet.profile.slice(0, 20));
         for (const s of speech) expect(document.body.innerHTML, `${n}인 ${seat}번`).not.toContain(s.slice(0, 14));
         await keyClose(card);
         cleanup();
@@ -356,14 +398,19 @@ describe('G3·G4·R1 — 자기소개 카드 · 정체 도장 · 거짓말 규�
     }
   }, 60_000);
 
-  it('하는 법 시트 첫 섹션 = 거짓말 규칙 상자 · ③ 말투 자유 · 방장 자기소개 큐에 「필수」 없음', async () => {
+  it('하는 법 시트 = 진행표 → 규칙 상자(원고 1-7 4줄 + ※) → 점수표 · 6단계 목록·끝 안내 2줄 없음 · 방장 자기소개 큐에 「필수」 없음', async () => {
     await hostRecover('7F3K5');
     await tap(btn('메뉴'));
     await tap(btn('하는 법'));
     const content = dialog().querySelector('.gu-sheet-content')!;
-    expect(content.firstElementChild?.classList.contains('gu-lierules')).toBe(true);
-    expect(content.firstElementChild?.textContent).toContain(GUIDE.lieRules[3]);
-    expect(dialog().textContent).toContain(GUIDE.rulesIntroStep);
+    expect(content.firstElementChild?.classList.contains('gu-flow')).toBe(true);
+    expect(content.firstElementChild?.textContent).toContain(GUIDE.flowTitle);
+    const box = content.children[1];
+    expect(box?.classList.contains('gu-lierules')).toBe(true);
+    expect(box?.textContent).toContain(GUIDE.rulesTitle);
+    for (const line of GUIDE.lieRules) expect(box?.textContent).toContain(line);
+    expect(content.querySelector('.gu-steps')).toBeNull();
+    expect(dialog().textContent).not.toContain('캡처해서 돌리면');
     expect(dialog().textContent).not.toContain('필수');
     await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     await syncTo(/^자기소개/);
@@ -372,7 +419,7 @@ describe('G3·G4·R1 — 자기소개 카드 · 정체 도장 · 거짓말 규�
     expect(bodyText()).not.toContain('필수');
   });
 
-  it('6역할: 정체 도장 1개(범인 「범인」·무고 「결백」 같은 크기·회전·클래스) · 거짓말 첫 블록 동일 · 말투 첫 줄 동일 · 패 확인 칩 위 「꼭 볼 3칸」', async () => {
+  it('6역할: 정체 도장 1개(범인 「범인」·무고 「결백」 같은 크기·회전·클래스) · 거짓말 첫 블록 동일 · 칩 6개(말투 없음) · 패 확인 칩 위 「꼭 볼 3칸」', async () => {
     const stamps: { role: string; label: string; width: string; transform: string; cls: string }[] = [];
     const lieBoxes: string[] = [];
     const speechHeads: string[] = [];
@@ -397,10 +444,10 @@ describe('G3·G4·R1 — 자기소개 카드 · 정체 도장 · 거짓말 규�
       expect(first?.classList.contains('gu-lierules'), role).toBe(true);
       lieBoxes.push(first?.textContent ?? '');
       await keyClose(surface());
-      await tap(screen.getByRole('tab', { name: '말투' }));
-      await keyOpen(surface());
-      speechHeads.push(document.querySelector('.gu-hopae-content > :nth-child(2)')?.textContent ?? '');
-      await keyClose(surface());
+      // 6판: 내 패 칩 6개 — '말투'는 게임 뒤 모두의 패에서만
+      expect(screen.getAllByRole('tab')).toHaveLength(6);
+      expect(screen.queryByRole('tab', { name: '말투' })).toBeNull();
+      speechHeads.push(String(screen.getAllByRole('tab').length));
       // R1 P1: 한 번 연 칩엔 점 — 접근성 이름은 그대로
       expect(screen.getByRole('tab', { name: '정체' }).querySelector('.gu-chip-seen')).not.toBeNull();
       expect(screen.getByRole('tab', { name: '신분' }).querySelector('.gu-chip-seen')).toBeNull();
@@ -416,7 +463,7 @@ describe('G3·G4·R1 — 자기소개 카드 · 정체 도장 · 거짓말 규�
     expect(new Set(lieBoxes).size).toBe(1);
     expect(lieBoxes[0]).toContain(GUIDE.lieRulesTitle);
     expect(lieBoxes[0]).toContain(GUIDE.lieRulesShort); // 봉인 패 안은 한 줄 요약(QA F-1), 전문은 하는 법 시트
-    expect(new Set(speechHeads)).toEqual(new Set([GUIDE.speechHead]));
+    expect(new Set(speechHeads)).toEqual(new Set(['6']));
     expect(new Set(hints)).toEqual(new Set([GUIDE.cardsMustSee]));
   }, 60_000);
 });
@@ -429,8 +476,8 @@ describe('G5 플레이어 진상 2단 공개', () => {
     await syncTo(/^지목/);
     await tap(tiles('gu-seatgrid-tile').find((t) => t.textContent?.startsWith(String(voteFor))));
     await tap(btn(/지목 확정/));
-    await tap(btn(/진상 공개 시작됐어요/));
-    await tap(within(dialog()).getByRole('button', { name: /넘어가겠소/ }));
+    await tap(btn(/진상 공개 시작됐어요/)); // 6판: 1탭(대기 화면은 범인을 안 보인다)
+    expect(qdialog()).toBeNull();
   }
 
   it('4·5·6인 × 범인 자리 조합: 대기 화면에 범인 자리·역할명·도장·「당신이 범인이었소」·적중이 없고, 역할만 바꾼 플레이어끼리 DOM 이 같다', async () => {
@@ -552,12 +599,30 @@ describe('R2 「?」 시트(배치도·시각표·인물·용어) · 장소 고�
     expect(screen.getAllByRole('dialog').some((d) => d.querySelector('svg.gu-map-svg'))).toBe(true);
   });
 
-  it('브리핑(방장·플레이어)에 배치도 — 누르면 큰 시트', async () => {
+  it('6판 브리핑: 방장 = 「배치도 · 시각표 ›」 링크(「?」 시트) · 플레이어 = 규칙 넷 카드 + 낭독문 접힘 + 「🗺 궁 배치도 보기」', async () => {
     await hostRecover('7F3K5');
     await tap(btn(/사건 시작/));
-    await tap(within(dialog()).getByRole('button', { name: /시작하겠소/ }));
-    expect(document.querySelectorAll('.gu-map svg.gu-map-svg')).toHaveLength(2);
-    await tap(screen.getByRole('button', { name: GUIDE.mapTapHint }));
+    expect(document.querySelectorAll('.gu-map svg.gu-map-svg')).toHaveLength(0);
+    await tap(btn(GUIDE.helpLink));
+    expect(within(dialog()).getByRole('heading', { name: GUIDE.helpSheetTitle })).toBeInTheDocument();
+    expect(dialog().querySelectorAll('svg.gu-map-svg')).toHaveLength(2);
+    // ※ 날짜 안내는 낭독문이 아니라 작은 글씨
+    const note = c.briefing.paragraphs.find((p) => p.startsWith('※'))!;
+    await tap(within(dialog()).getByRole('button', { name: '닫기' }));
+    expect(screen.getByText(note).classList.contains('gu-micro')).toBe(true);
+    cleanup();
+    window.localStorage.clear();
+    await joinAsPlayer('7F3K5', 2);
+    await tap(btn(/사건 시작됐어요/));
+    const card = screen.getByRole('region', { name: GUIDE.briefingRulesHead });
+    const rules = c.briefing.paragraphs.filter((p) => /^(하나|둘|셋|넷)\./.test(p));
+    expect(rules).toHaveLength(4);
+    expect(card.querySelectorAll('.gu-rulecard-line')).toHaveLength(4);
+    for (const r of rules) expect(card.textContent).toContain(r);
+    const fold = screen.getByText(GUIDE.briefingFold).closest('details')!;
+    expect(fold.hasAttribute('open')).toBe(false);
+    expect(fold.textContent).toContain(c.briefing.paragraphs[0].slice(0, 20)); // 낭독문 전체는 접힘 안에(정보는 그대로)
+    await tap(btn(GUIDE.mapLink));
     expect(within(dialog()).getByRole('heading', { name: GUIDE.mapSection })).toBeInTheDocument();
   });
 });
@@ -746,7 +811,7 @@ describe('R5 공개 단서 인장 보드', () => {
     expect(tile?.textContent).toContain('조사 1에 감');
   });
 
-  it('방장 r2: R1·R2 인장은 받고(누가 밝혔소 → 보드), R3 인장은 틀린 번호와 같은 문구·DOM 으로 거절 · 중복은 새 자리만', async () => {
+  it('방장 r2: R1·R2 인장은 4자리를 넣는 즉시 보드에(누가는 올린 뒤 선택), R3 인장은 틀린 번호와 같은 문구·DOM 으로 거절 · 중복은 새 자리만 · 내리기는 5초 되돌리기', async () => {
     const code = findCode(6, () => true);
     const n = 6;
     await hostRecover(code);
@@ -770,9 +835,13 @@ describe('R5 공개 단서 인장 보드', () => {
     await typeSeal(String(wrong));
     expect(dialog().innerHTML).toBe(futureDom); // 미래 라운드와 틀린 번호가 같은 DOM
     await typeSeal(String(seals.get(r1.id)));
+    // 6판: 찾는 즉시 올라갔다 — 「누가 밝혔소?」는 올린 뒤(안 눌러도 된다)
+    expect(dialog().textContent).toContain(GUIDE.sealPosted);
     expect(dialog().textContent).toContain(GUIDE.sealWho);
+    expect(JSON.parse(window.localStorage.getItem('gu:game:v1')!).host.board).toEqual([{ id: r1.id, round: 1, seats: [] }]);
     await tap(within(dialog()).getByRole('button', { name: '2' }));
-    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealPost }));
+    expect(within(dialog()).getByRole('button', { name: '2' })).toBeDisabled();
+    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealClose }));
     const board = () => document.querySelector('section.gu-board')!;
     expect(board().textContent).toContain(`조사 1 · ${r1.placeName} · ${r1.id.replace(/[a-z]+$/, '')} ${r1.title}`);
     expect(board().textContent).toContain(r1.body.slice(0, 20));
@@ -785,20 +854,29 @@ describe('R5 공개 단서 인장 보드', () => {
     expect(dialog().textContent).toContain(GUIDE.sealDuplicate);
     expect(within(dialog()).getByRole('button', { name: '2' })).toBeDisabled();
     await tap(within(dialog()).getByRole('button', { name: '4' }));
-    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealPost }));
+    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealClose }));
     expect(board().textContent).toContain('4번 공개');
     expect(bodyText()).toContain('공개 단서 보드 (1장)');
-    // R2 카드 — 건너뛰기(자리 없이)
+    // R2 카드 — 자리 없이(그냥 닫기) · 「다른 인장 넣기」로 이어 넣기
     await tap(btn(GUIDE.boardAdd));
     await typeSeal(String(seals.get(r2.id)));
-    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealSkip }));
+    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealNext }));
+    expect(within(dialog()).getByRole('heading', { name: GUIDE.keypadTitle })).toBeInTheDocument();
+    expect(dialog().textContent).not.toContain(GUIDE.sealPosted);
+    await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     expect(bodyText()).toContain('공개 단서 보드 (2장)');
-    // ↶ 로 되돌리기 → 「내리기」
+    // ↶ 로 되돌리기 → 「내리기」(확인 시트 없이 5초 되돌리기 토스트)
     await tap(document.querySelector<HTMLElement>('.gu-header-iconbtn[aria-label="되돌리기"]'));
     expect(bodyText()).toContain('공개 단서 보드 (1장)');
     await tap(within(board() as HTMLElement).getByRole('button', { name: GUIDE.unpost }));
-    expect(within(dialog()).getByText(GUIDE.unpostTitle)).toBeInTheDocument();
-    await tap(within(dialog()).getByRole('button', { name: GUIDE.unpostOk }));
+    expect(qdialog()).toBeNull();
+    expect(bodyText()).toContain('공개 단서 보드 (0장)');
+    expect(document.querySelector('.gu-toast')?.textContent).toContain(GUIDE.unpostToast);
+    await tap(within(document.querySelector<HTMLElement>('.gu-toast')!).getByRole('button', { name: '되돌리기' }));
+    expect(bodyText()).toContain('공개 단서 보드 (1장)');
+    expect(board().textContent).toContain('2번 공개');
+    expect(board().textContent).toContain('4번 공개');
+    await tap(within(board() as HTMLElement).getByRole('button', { name: GUIDE.unpost }));
     expect(bodyText()).toContain('공개 단서 보드 (0장)');
     // 저장 JSON 엔 본문이 없다
     expect(window.localStorage.getItem('gu:game:v1')).not.toContain(r1.body.slice(0, 12));
@@ -825,7 +903,7 @@ describe('R5 공개 단서 인장 보드', () => {
     expect(within(dialog()).getByRole('button', { name: '1' })).not.toBeDisabled();
     const r1 = placeCardsFor(c, 5).find((x) => x.round === 1)!;
     await typeSeal(String(seals.get(r1.id)));
-    expect(dialog().textContent).toContain(GUIDE.sealWho);
+    expect(dialog().textContent).toContain(GUIDE.sealPosted);
   });
 
   it('인원별 교체 카드 HW-1b 는 보드에 HW-1 로 표시된다(교체 사실 비노출)', async () => {
@@ -837,7 +915,9 @@ describe('R5 공개 단서 인장 보드', () => {
     await tap(btn(/토론 \d+분 시작/));
     await tap(btn(GUIDE.boardAdd));
     await typeSeal(String(clueSeal(c, 4, code, 'HW-1b')));
-    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealSkip }));
+    expect(dialog().textContent).toContain('HW-1 ');
+    expect(dialog().textContent).not.toContain('HW-1b');
+    await tap(within(dialog()).getByRole('button', { name: GUIDE.sealClose }));
     const text = document.querySelector('section.gu-board')!.textContent ?? '';
     expect(text).toContain(`HW-1 ${card.title}`);
     expect(text).not.toContain('HW-1b');
@@ -860,7 +940,8 @@ describe('R6 최종 변론 3칸 틀', () => {
     await syncTo(/^최종 변론/);
     const player = [...document.querySelectorAll('.gu-defframe-item')].map((e) => e.textContent?.replace(/^\d/, ''));
     expect(player).toEqual(stage);
-    expect(bodyText()).toContain('최종 변론 · 1번부터 1분씩');
+    expect(bodyText()).toContain('최종 변론 · 1번부터 45초씩'); // 6판: 변론 45초(타이머 값에서)
+    expect(bodyText()).not.toContain('변론 준비');
   });
 });
 
@@ -879,8 +960,9 @@ describe('R7 보너스 문항 정식 단계', () => {
     await tap(btn(/지목 확정/));
     for (const p of prompts) expect(document.body.innerHTML).not.toContain(p); // 확정만으론 아직 — 「보너스 문항 보기」로 열어야(연 뒤엔 지목 변경 불가)
     expect(btn(/지목 바꾸기/)).toBeTruthy();
+    expect(bodyText()).toContain(GUIDE.bonusOpenNote); // 6판: 확인 시트 대신 버튼 아래 한 줄
     await tap(btn(/보너스 문항 보기/));
-    await tap(within(dialog()).getByRole('button', { name: '열겠소' }));
+    expect(qdialog()).toBeNull();
     for (const p of prompts) expect(bodyText()).toContain(p);
     expect(bodyText()).toContain(GUIDE.bonusPlayerHead);
     expect(screen.queryByRole('button', { name: /지목 바꾸기/ })).toBeNull();
@@ -898,24 +980,27 @@ describe('R7 보너스 문항 정식 단계', () => {
     expect(document.querySelector('section.gu-bonus')).not.toBeNull();
     expect(bodyText()).toContain(GUIDE.bonusHostHead);
     expect(bodyText()).toContain(GUIDE.bonusHostGuide);
-    expect(document.querySelectorAll('.gu-bonus-q')).toHaveLength(2);
+    // 6판: 문항 머리는 위에 한 번, 자리당 한 줄에 Q1·Q2 나란히
+    expect(document.querySelectorAll('.gu-bonus-qhead')).toHaveLength(2);
+    const rows = document.querySelectorAll('.gu-bonus-row--compact');
+    expect(rows).toHaveLength(4);
+    for (const row of rows) expect(row.querySelectorAll('[role="group"]')).toHaveLength(2);
     // Q1 → Q2 순서
     const html = document.body.innerHTML;
     expect(html.indexOf(prompts[0])).toBeLessThan(html.indexOf(prompts[1]));
-    // 0개 → 「보너스 없이 공개하겠소?」
-    await tap(btn(/진상 공개/));
-    expect(within(dialog()).getByText(GUIDE.bonusZeroTitle)).toBeInTheDocument();
-    expect(dialog().textContent).toContain(GUIDE.bonusZeroBody);
-    await tap(within(dialog()).getByRole('button', { name: '아직이오' }));
-    // 하나라도 적으면 원래 확인
+    // 0개 → 확인 시트 대신 인라인 경고(막지 않는다)
+    expect(bodyText()).toContain(GUIDE.bonusZeroInline);
+    // 하나라도 적으면 경고가 사라진다
     await tap(screen.getAllByRole('button', { name: /^2번 / })[0]);
+    expect(bodyText()).not.toContain(GUIDE.bonusZeroInline);
     await tap(btn(/진상 공개/));
-    expect(within(dialog()).getByText('진상을 공개하겠소?')).toBeInTheDocument();
+    expect(qdialog()).toBeNull();
+    expect(document.querySelector('.gu-reveal-dark')).not.toBeNull();
   });
 });
 
 describe('M1 문구 정정', () => {
-  it('홈 「약 60분」 · 결과 「같은 사건, 다른 모임용 새 방 ›」 + 확인 시트', async () => {
+  it('홈 「약 35분」 · 결과 「같은 사건으로 새 방 ›」 + 확인 시트', async () => {
     render(<GungApp />);
     await flush();
     expect(screen.getByText(GUIDE.homeMinutes)).toBeInTheDocument();
@@ -928,5 +1013,56 @@ describe('M1 문구 정정', () => {
     expect(dialog().textContent).toContain(GUIDE.sameCaseBody);
     expect(within(dialog()).getByRole('button', { name: GUIDE.sameCaseOk })).toBeInTheDocument();
     expect(screen.queryByText(/새 사건\(새 방\)/)).toBeNull();
+  });
+});
+
+// ═══════════════════════════════ 6판 글 분량 · 진행 압축(화면 쪽) ═══════════════════════════════
+
+describe('6판 글 분량 — 진행 대본·확인 시트(docs/design/gung-compact-scene-spec.md §3-2)', () => {
+  it('방장 진행 대본(HOST_CUE)은 한 줄 ≤ 40자', () => {
+    for (const [k, v] of Object.entries(HOST_CUE)) expect(textLength(v), k).toBeLessThanOrEqual(UI_BUDGET.cue);
+  });
+
+  it('조사 진입 확인 시트(방장·플레이어 · 조사 1~3) — 제목 ≤ 14 · 본문 ≤ 48 · 확정 ≤ 6, 역할과 무관', () => {
+    for (const r of [1, 2, 3] as RoundNo[]) {
+      for (const role of ['host', 'player'] as const) {
+        const req = roundEntryConfirm(r, role, () => {});
+        expect(textLength(req.title), `${r} ${role} 제목`).toBeLessThanOrEqual(UI_BUDGET.confirmTitle);
+        expect(textLength(req.body), `${r} ${role} 본문`).toBeLessThanOrEqual(UI_BUDGET.confirmBody);
+        expect(labelLength(req.confirmLabel ?? ''), `${r} ${role} 확정`).toBeLessThanOrEqual(UI_BUDGET.confirmOk);
+      }
+    }
+  });
+
+  it('진행 단계 맞추기 확인 제목 「○○(으)로 가겠소?」 ≤ 14자(모든 단계)', () => {
+    for (const label of Object.values(PHASE_LABELS)) expect(textLength(`${label}(으)로 가겠소?`), label).toBeLessThanOrEqual(UI_BUDGET.confirmTitle);
+  });
+
+  it('방장 한 판(대기실 → 진상): 정상 진행에서 뜨는 확인 시트 0개 · 조사 라운드는 현장 → 고르기 → 토론(라운드당 방장 탭 3번)', async () => {
+    const code = findCode(4, (k) => asg(k).culpritSeat === 2);
+    await hostRecover(code);
+    let sheets = 0;
+    const press = async (name: RegExp) => {
+      await tap(btn(name));
+      if (qdialog()) sheets++;
+    };
+    await press(/사건 시작/);
+    await press(/다 읽었소/);
+    await press(/다 봤소/);
+    await press(/첫째 조사 시작/);
+    for (const next of [/둘째 조사 시작/, /셋째 조사 시작/, /최종 변론으로/]) {
+      expect(screen.getByRole('heading', { name: /현장 보기/ })).toBeInTheDocument();
+      await press(/^고르기 \d+분 시작/);
+      await press(/토론 \d+분 시작/);
+      await press(next);
+    }
+    for (let i = 0; i < 3; i++) await press(/^다음 사람/);
+    await press(/지목하러/);
+    await press(/셋 세기 시작/);
+    await tap(btn('건너뛰기'));
+    for (const t of [2, 1, 2, 2]) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
+    await press(/진상 공개/);
+    expect(sheets).toBe(0);
+    expect(document.querySelector('.gu-reveal-dark')).not.toBeNull();
   });
 });

@@ -126,3 +126,12 @@ describe('room — 방 코드', () => {
     expect(parseEntryParams('code=7F3K5&v=abc').caseVersion).toBeNull();
   });
 });
+
+describe('큰 화면 현장 링크(통합)', () => {
+  it('buildSceneUrl — /gung/scene?code=… (코드 정규화 · 끝 / 정리 · 코드 없으면 경로만)', async () => {
+    const { buildSceneUrl, SCENE_ROUTE_PATH } = await import('./room');
+    expect(SCENE_ROUTE_PATH).toBe('/gung/scene');
+    expect(buildSceneUrl('https://x.app/', '7f3k5')).toBe('https://x.app/gung/scene?code=7F3K5');
+    expect(buildSceneUrl('https://x.app', null)).toBe('https://x.app/gung/scene');
+  });
+});

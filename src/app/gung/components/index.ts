@@ -7,7 +7,7 @@
 // 앱 프레임
 export { GuFrame, type GuFrameProps } from './GuFrame';
 export { GuHeader, type GuHeaderProps } from './GuHeader';
-export { PhaseRail, type PhaseRailProps } from './PhaseRail';
+export { PhaseRail, type PhaseRailProps, FlowStrip, type FlowStripProps, type FlowStripStep, RoundSteps, type RoundStepsProps } from './PhaseRail';
 export { BottomTabs, type BottomTabsProps, type GuTabKey } from './BottomTabs';
 export { ActionBar, type ActionBarProps } from './ActionBar';
 export { GuButton, type GuButtonProps, type GuButtonVariant } from './GuButton';

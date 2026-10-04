@@ -12,7 +12,7 @@
  * 스포일러 금지(D8): 결과 카드·OG·공유 문구에 범인 역할명·역할 아이콘·방 코드·결과 딥링크를 넣지 않는다.
  */
 import type { GameResult } from './game';
-import { buildJoinUrl, formatRoomCode, ROUTE_PATH } from './room';
+import { buildJoinUrl, buildSceneUrl, formatRoomCode, ROUTE_PATH } from './room';
 import type { PlayerCount } from './types';
 
 export const SITE_ORIGIN = 'https://project-orsrw.vercel.app';
@@ -237,6 +237,34 @@ export function invitePayload(i: InviteShareInput): SharePayload {
   };
 }
 
+/**
+ * 큰 화면(노트북·TV) 현장 주소 보내기 — 카톡 「나와의 채팅」으로 보내 PC 카톡에서 여는 길을 연다.
+ * 비밀 없음: 현장 그림 주소뿐(관찰 문구·본 물건·역할·결과는 넣지 않는다). 방 코드는 초대 링크와 같은 값.
+ */
+export function scenePayload(i: { code: string; origin?: string; imageOrigin?: string; title?: string }): SharePayload {
+  const title = i.title ?? APP_TITLE;
+  const url = buildSceneUrl(i.origin ?? SITE_ORIGIN, i.code);
+  const desc = '노트북·TV에서 열면 현장 그림만 크게 뜨오';
+  return {
+    kakao: {
+      objectType: 'feed',
+      content: {
+        title: `${title} · 현장 보기`,
+        description: desc,
+        imageUrl: coverImageUrl(i.imageOrigin),
+        imageWidth: OG_WIDTH,
+        imageHeight: OG_HEIGHT,
+        link: link(url),
+      },
+      buttons: [{ title: '현장 열기', link: link(url) }],
+    },
+    title,
+    text: `[${title}] 현장 보기 — ${desc}`,
+    url,
+    copyText: url,
+  };
+}
+
 export interface ResultShareInput {
   caught: boolean;
   /** 적중자 수(비범인 중 1차 지목에서 범인을 짚은 수) */
@@ -381,7 +409,7 @@ export function resultShareInput(r: GameResult, n: PlayerCount, date: string): R
 export function genericPayload(opts: { origin?: string; imageOrigin?: string; title?: string } = {}): SharePayload {
   const title = opts.title ?? APP_TITLE;
   const home = homeUrl(opts.origin);
-  const desc = '4~6명 · 폰 하나씩 · 약 60분. 범인은 이 자리에 있다.';
+  const desc = '4~6명 · 폰 하나씩 · 약 35분. 범인은 이 자리에 있다.';
   return {
     kakao: {
       objectType: 'feed',

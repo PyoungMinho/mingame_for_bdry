@@ -36,7 +36,7 @@ function richHost(): GameState {
     { type: 'advance' },
     { type: 'advance' },
     { type: 'advance' },
-    { type: 'advance' }, // r1 select (타이머 running)
+    { type: 'advance' }, // r1 현장 보기(6판 — 현장 타이머 running)
     { type: 'pickPlace', round: 1, placeId: 'clinic' },
     { type: 'openClue', round: 1 },
     { type: 'disclose', round: 1, value: 'public' },

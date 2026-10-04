@@ -18,6 +18,7 @@ import {
   BOARD_LIMIT,
   applyAction,
   assignmentOf,
+  isQuietTimer,
   newHostGame,
   reachedRound,
   resultOf,
@@ -77,28 +78,37 @@ function findCode(n: PlayerCount, pred: (a: Assignment) => boolean): string {
 
 // ─────────────────────────────── G2 ───────────────────────────────
 
-describe('G2 낭독 먼저 — 조사 라운드에 들어서면 고르기 타이머는 멈춰 있다', () => {
-  it('세 진입 경로(자기소개→조사1 · 토론→다음 조사 · 자기소개 건너뛰기 · 진행 단계 맞추기) 모두 timer=null · roundSub=select, 시작하면 2:00', () => {
+describe('G2 → 6판 현장 보기 — 조사 라운드에 들어서면 현장(조용한 1분)부터, 고르기 타이머는 현장 → 고르기 때 돈다', () => {
+  it('세 진입 경로(자기소개→조사1 · 토론→다음 조사 · 자기소개 건너뛰기)는 roundSub=scene + 현장 타이머 1:00 실행', () => {
     const h = newHostGame(c, '7F3K5', T0)!;
     const viaIntro = run(h, adv(4));
-    const viaDiscuss = run(viaIntro, [...adv(2)]);
+    const viaDiscuss = run(viaIntro, adv(3));
     const viaSkip = run(run(h, adv(2)), [{ type: 'skipIntro' }]);
-    const viaSync = run(h, [{ type: 'syncPhase', phase: 'r3' }]);
     for (const [label, s, phase] of [
       ['intro→r1', viaIntro, 'r1'],
       ['discuss→r2', viaDiscuss, 'r2'],
       ['skipIntro', viaSkip, 'r1'],
-      ['sync→r3', viaSync, 'r3'],
     ] as const) {
       expect(s.phase, label).toBe(phase);
-      expect(s.host!.roundSub, label).toBe('select');
-      expect(s.host!.timer, label).toBeNull();
-      const started = applyAction(s, { type: 'timer', op: 'restart' }, { c, now: T0 + 99_000 });
-      expect(started.host!.timer, label).toMatchObject({ kind: 'select', running: true, totalMs: 120_000, endsAt: T0 + 99_000 + 120_000 });
+      expect(s.host!.roundSub, label).toBe('scene');
+      expect(s.host!.timer, label).toMatchObject({ kind: 'scene', running: true, totalMs: 60_000 });
+      expect(isQuietTimer(s.host!.timer!.kind), label).toBe(true);
+      // 현장 → 고르기: 고르기 1:00 이 바로 돈다(별도 시작 버튼 없음)
+      const select = applyAction(s, { type: 'advance' }, { c, now: T0 + 99_000 });
+      expect(select.host!.roundSub, label).toBe('select');
+      expect(select.host!.timer, label).toMatchObject({ kind: 'select', running: true, totalMs: 60_000, endsAt: T0 + 99_000 + 60_000 });
+      expect(isQuietTimer(select.host!.timer!.kind), label).toBe(false);
     }
-    // 토론 → 다음 조사도 멈춘 채(토론 타이머는 그대로 자동 시작)
-    const discuss = run(viaIntro, adv(1));
-    expect(discuss.host!.timer).toMatchObject({ kind: 'discuss' });
+  });
+
+  it('진행 단계 맞추기(복구 경로)로 들어오면 장소 고르기부터 · 타이머 꺼짐 · 다시 시작하면 1:00', () => {
+    const viaSync = run(newHostGame(c, '7F3K5', T0)!, [{ type: 'syncPhase', phase: 'r3' }]);
+    expect(viaSync.host!.roundSub).toBe('select');
+    expect(viaSync.host!.timer).toBeNull();
+    const started = applyAction(viaSync, { type: 'timer', op: 'restart' }, { c, now: T0 + 99_000 });
+    expect(started.host!.timer).toMatchObject({ kind: 'select', running: true, totalMs: 60_000, endsAt: T0 + 99_000 + 60_000 });
+    const discuss = applyAction(started, { type: 'advance' }, { c, now: T0 + 100_000 });
+    expect(discuss.host!.timer).toMatchObject({ kind: 'discuss', totalMs: 300_000 });
   });
 });
 
@@ -163,8 +173,10 @@ describe('R2 궁 배치도 · 호칭표 · 인물록', () => {
     expect(ids.slice().sort()).toEqual(c.places.map((p) => p.id).sort());
   });
 
-  it('호칭표의 모든 별칭은 공개 텍스트(브리핑 ∪ 공개 프로필 ∪ 공용·장소·추가 증언 카드 본문)에 실제로 있다', () => {
+  it('호칭표의 모든 별칭은 공개 텍스트(브리핑 ∪ 공개 프로필 ∪ 공용·장소·추가 증언 카드 본문 ∪ 현장 관찰)에 실제로 있다', () => {
     const pub: string[] = [...c.briefing.paragraphs, ...c.roles.map((r) => r.profile)];
+    // 6판: 현장 관찰(공용 화면)도 공개 텍스트다
+    for (const sc of c.scenes ?? []) for (const o of sc.objects) pub.push(o.name, ...o.lines.map((l) => l.text));
     for (const rd of c.rounds) {
       for (const card of rd.publicCards ?? []) pub.push(card.title, card.body);
       for (const card of rd.npcCards ?? []) pub.push(card.title, card.body);

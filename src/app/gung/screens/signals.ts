@@ -71,5 +71,3 @@ export const gateCaption = (signal: string) => `방장이 '${signal}'라고 외�
 export const hostCaption = (signal: string) => `누르고 외치시오: '${signal}'`;
 /** 방장 전진 토스트(G1) — 신호가 없는 하위 전진은 단계명만 */
 export const advanceToast = (label: string, signal: string | null) => (signal ? `넘어갔소 → ${label} · 📣 '${signal}'` : `넘어갔소 → ${label}`);
-/** 자기소개 건너뛰기 링크 아래(G1) */
-export const SKIP_INTRO_NOTE = `건너뛰면 외치시오: '${roundSignal(1)}' — 모두 두 번 눌러야 하오`;

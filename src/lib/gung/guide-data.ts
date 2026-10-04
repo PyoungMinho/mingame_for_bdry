@@ -13,16 +13,42 @@ export const GUIDE_BANNED_WORDS = ['꿀', '석청', '탕약', '매듭', '부자'
 
 export const GUIDE = {
   // ── G2 낭독 먼저 · 방장 조사는 단서함에서 ──
-  selectCue: '공용 단서를 먼저 읽고, 고르기 2분을 시작하시오. 장소는 한 군데만이오',
-  selectTimerStart: '다 읽었소 → 고르기 2분 시작',
+  // 6판: 낭독은 현장 보기 1분이 맡고, 고르기 타이머는 현장 → 고르기 전진 때 저절로 돈다. 분 숫자는 DEFAULT_TIMERS 와 같아야 한다(테스트).
+  selectCue: '각자 한 곳만 고르시오. 같은 곳은 같은 단서요',
+  /** 단계 맞추기·방장 복구로 고르기에 들어와 타이머가 없을 때만(보통은 현장 → 고르기 전진 때 저절로 돈다) */
+  selectTimerStart: '⏱ 고르기 1분 시작',
   publicAlsoInPhones: '이 단서는 각자 폰 단서함에도 있소',
-  hostOwnClueLink: '🔒 내 조사(장소·단서)는 단서함에서 ›',
 
-  // ── G3 자기소개 ──
-  introCue: '1번부터 차례로 신분을 밝히시오. 패의 신분 글을 읽으면 되오. 말투는 자유요',
-  introPlayer: "방장이 내 번호를 부르면, 아래를 꾹 눌러 '신분'을 읽으시오",
-  rulesIntroStep: '③ 자기소개 — 패의 신분 글을 읽는다(말투는 자유)',
-  speechHead: '그 일이 화제에 오를 때 쓰는 말이오. 자기소개 땐 읽지 마시오.',
+  // ── 6판 현장 보기(조사 첫 1분, 다 같이 보는 그림) ──
+  // 통합(프론트팀장): 그림이 무대 맨 위(큐 한 줄), 공용 단서는 그 아래 「소리 내어 읽으시오」 머리가 맡는다
+  sceneCue: '그림 속 물건을 눌러 다 같이 보시오',
+  sceneNewHead: '이번 조사 새 관찰 — 소리 내어 읽으시오',
+  sceneTimerDone: '다 봤으면 넘어가시오',
+  sceneLabel: '현장 보기',
+  /** 장소 이름을 누르면 펼치는 궁 배치도(장소를 누르면 그 현장으로) */
+  sceneMapToggle: '배치도로 장소 고르기',
+  sceneMapHint: '장소를 누르면 그 현장으로 가오',
+  /** 플레이어 장소 고르기 위 — 현장 단계엔 방장 화면을 함께 본다 */
+  scenePlayerHint: '현장 그림은 방장 화면에서 다 같이 보시오',
+  sceneOpenLink: '📜 내 폰으로 현장 보기 ›',
+  sceneAgainLink: '📜 현장 다시 보기 ›',
+  /** 큰 화면(노트북·TV) — /gung/scene */
+  bigScreenMenu: '노트북·TV로 현장 보기',
+  bigScreenBody: '노트북·TV 브라우저에 이 주소를 열면 현장 그림만 크게 뜨오',
+  bigScreenNote: '비밀은 없소. 조사 번호는 그 화면에서 고르시오',
+  bigScreenMirror: '폰 화면을 TV에 비추는 중이면 필요 없소',
+  bigScreenCopy: '주소 복사',
+  bigScreenSend: '카톡으로 보내기',
+  bigScreenCopied: '큰 화면 주소를 복사했소',
+  bigScreenHomeLink: '노트북·TV 현장 화면 ›',
+  hostOwnClueLink: '🔒 내 조사는 단서함에서 ›',
+
+  // ── G3 자기소개 — 6판 압축: 이름·직함 한 줄만(공개 프로필 전문은 「?」 › 인물) ──
+  introCue: '1번부터 차례로 이름과 직함만 밝히시오',
+  introPlayer: '내 차례에 꾹 눌러 이름·직함만 밝히시오',
+  introProfileLink: '공개 프로필은 「?」 › 인물에 있소',
+  /** 말투 예시는 게임이 끝난 뒤 '모두의 패'에서만(UX 스펙 §2-2 다 · 내 패 칩 6개) */
+  speechSection: '말투',
 
   // ── G4 정체 칸 ──
   innocentStamp: '결백',
@@ -35,18 +61,19 @@ export const GUIDE = {
   truthConfirmBody: '방장이 범인을 밝힌 뒤에만 누르시오. 넘어가면 범인과 모두의 비밀이 보이오.',
   truthConfirmOk: '보겠소',
 
-  // ── R1 거짓말 규칙(브리핑 '둘.' = 원고 7-1, 공통 규칙 2 = 원고 1-7 = 플레이어 뷰 2-4) ──
+  // ── R1 규칙 상자 — 6판: 원고 1-7 공통 규칙(4줄 + ※) 원문. 브리핑 '하나~넷'(원고 7-1)은 이것을 줄여 낭독한다 ──
   lieRulesTitle: '거짓말 규칙',
+  rulesTitle: '규칙',
   lieRules: [
-    '범인은 무엇이든 거짓말할 수 있소.',
-    '범인이 아닌 자는 패의 「둘러대도 되는 것」만 둘러댈 수 있고, 그 거짓으로 남에게 죄를 씌울 순 없소.',
-    '그 밖의 일은 입을 다물 순 있어도 지어낼 순 없소.',
-    '「물으면 사실대로」는 누가 물어야 나오오. 물으면 숨김없이 답하시오. 「R2부터」「R3부터」가 붙었으면 그 조사 전까진 입만 다무시오(부인·지어내기 금지).',
-    '거짓이 들통났다고 곧 범인은 아니오. 범인은 물증으로 가리시오.',
+    '범인은 이 판의 플레이어 가운데 독을 넣은 단 한 사람. 독살인 줄 모르고 거든 자는 범인이 아니다.',
+    '범인만 무엇이든 거짓말한다. 나머지는 패의 「둘러대도 되는 것」만 둘러대되 남에게 죄를 씌울 순 없고, 그 밖엔 입을 다물 뿐 지어내지 못하며, 「물으면 사실대로」는 물으면 답해야 한다.',
+    '조사는 세 번. 매번 공용 단서와 현장 그림을 함께 본 뒤, 각자 장소 한 곳을 골라 그 장소 카드를 얻는다(겹쳐도 된다). 간 곳은 밝히되, 카드는 공개하든 숨기든 자유다.',
+    '누구나 숨길 비밀이 있다. 거짓말이 들통났다고 곧 범인은 아니다. 범인은 물증으로 가려라.',
+    '※ 패에 「R2부터」「R3부터」가 붙은 일은 그 조사 전엔 입을 다물어도 된다(부인·지어내기는 금지). 판에 따라 라운드 시작 때 추가 증언 카드가 함께 열릴 수 있다. 카드·관찰·증언은 본 대로 들은 대로다.',
   ],
   // 봉인 패 '거짓말' 칸 맨 위엔 한 줄 요약만(긴 패가 한 화면을 넘지 않게 — QA F-1). 전문은 메뉴 › 하는 법.
   lieRulesShort: '범인 아닌 자는 「둘러대도 되는 것」만 둘러대고, 「물으면 사실대로」는 답하시오. 전문은 메뉴 › 하는 법.',
-  discussAskLine: '「물으면 사실대로」는 물어야 나오오. 궁금하면 콕 집어 물으시오.',
+  discussAskLine: '「물으면 사실대로」는 물어야 나오오. 콕 집어 물으시오.',
   cardsMustSee: '꼭 볼 3칸: 정체 · 비밀 · 거짓말',
 
   // ── R2 궁 배치도 · 인물 ──
@@ -59,6 +86,8 @@ export const GUIDE = {
   peopleAbsentHead: '이 자리에 없으나 증언을 남긴 이',
   aliasHead: '부르는 말',
   mapLink: '🗺 궁 배치도 보기',
+  /** 방장 개요 화면 — 시각표·배치도는 「?」 시트로(개요 아래 상시 노출 제거, UX 스펙 §2-2 가-10) */
+  helpLink: '배치도 · 시각표 ›',
   mapTapHint: '지도를 누르면 크게 보이오',
   /** QA(개선 묶음 1): 큰 지도 시트 — 1.4배라 좌우로 밀어 본다 */
   mapPanHint: '◀ 좌우로 밀어 보시오 ▶',
@@ -89,45 +118,78 @@ export const GUIDE = {
   notesIdle: '1분 동안 손대지 않으면 진행 화면으로 돌아가오',
 
   // ── R5 공개 단서 인장 보드 ──
-  clueMicro: '공개해도 다른 폰엔 저절로 가지 않소. 인장을 방장에게 불러 주시오',
-  boardEmpty: '아직 올린 단서가 없소. 공개한 이에게 인장을 불러 달라 하시오',
+  clueMicro: '공개했으면 인장을 방장에게 불러 주시오',
+  boardEmpty: '아직 올린 단서가 없소. 인장을 불러 달라 하시오',
   boardAdd: '＋ 인장으로 올리기',
   keypadTitle: '인장 번호를 넣으시오',
   sealReject: '그런 인장은 없소',
   sealLocked: '10초 뒤에 다시 넣으시오',
   sealDuplicate: '이미 올린 단서요',
-  sealWho: '누가 밝혔소? (건너뛰어도 되오)',
-  sealSkip: '건너뛰기',
-  sealPost: '보드에 올리기',
+  /** 6판: 4자리를 다 넣으면 바로 보드에 오른다 — '누가'는 올린 뒤 고른다(안 골라도 된다) */
+  sealPosted: '보드에 올렸소',
+  sealWho: '누가 밝혔소? (안 눌러도 되오)',
+  sealNext: '다른 인장 넣기',
+  sealClose: '다 올렸소',
   unpost: '내리기',
-  unpostTitle: '이 단서를 보드에서 내리겠소?',
-  unpostBody: '내린 단서는 인장으로 다시 올릴 수 있소.',
-  unpostOk: '내리겠소',
+  /** 6판: 내리기 확인 시트 대신 5초 되돌리기 토스트 */
+  unpostToast: '보드에서 내렸소',
   boardFooter: '보드엔 스스로 밝힌 단서만 오르오',
-  placeHint: '같은 곳을 고르면 같은 단서요. 나눠 갈수록 많이 알게 되오',
+  /** 장소 고르기 안내 한 줄(UX 스펙 §2-2 다) */
+  placeHint: '한 곳만 고르시오 · 같은 곳은 같은 단서요',
 
   // ── R6 최종 변론 3칸 틀 ──
-  defenseCue: '한 사람씩 1분. 아래 셋만 말하시오',
+  defenseCue: '한 사람씩 45초. 아래 셋만 말하시오',
   defenseFrame: ['범인이라 보는 자', '그 물증 하나 — 카드든 증언이든(수단·기회·동기 중)', '내가 아닌 까닭 한 줄'],
 
   // ── R7 보너스 문항 정식 단계 ──
-  bonusHostHead: '보너스 문항 — 맞히면 +1 (범인의 답은 셈하지 않소)',
+  bonusHostHead: '보너스 — 맞히면 +1(범인 답은 빼오)',
   bonusHostGuide: '문항을 읽고, 셋에 손가락 1~4로 답하게 하시오',
-  bonusZeroTitle: '보너스 없이 공개하겠소?',
-  bonusZeroBody: '보너스 문항을 하나도 적지 않았소. 그대로 가면 보너스 점수 없이 셈하오.',
-  bonusZeroOk: '그대로 공개',
-  bonusPlayerHead: '보너스 문항 — 방장이 물으면 손가락으로 답하시오',
+  /** 6판: 보너스 0개 확인 시트 대신 버튼 위 인라인 경고 */
+  bonusZeroInline: '보너스 없이 가면 점수 없이 셈하오',
+  bonusPlayerHead: '보너스 문항 — 손가락으로 답하시오',
+  /** 플레이어: 보너스를 열면 지목이 잠긴다(확인 시트 대신 인라인 한 줄) */
+  bonusOpenNote: '보너스를 열면 지목은 잠기오',
+  /** 원고 8-1 투표 화면 문구 + 작은 글씨(규칙 1) */
+  votePrompt: '독을 넣은 자는 누구인가?',
+  voteNote: '독살인 줄 모르고 거든 자는 범인이 아니다',
 
   // ── M1 문구 정정 ──
-  sameCaseNewRoom: '같은 사건, 다른 모임용 새 방 ›',
-  sameCaseTitle: '같은 사건을 새 방으로 열겠소?',
-  sameCaseBody: '범인은 늘 같소. 방금 한 사람은 진상을 아니, 처음 하는 이들끼리 하시오. 지금 기록은 지워지오.',
+  sameCaseNewRoom: '같은 사건으로 새 방 ›',
+  sameCaseTitle: '새 방을 열겠소?',
+  sameCaseBody: '범인은 늘 같소. 처음 하는 이들끼리 하시오. 지금 기록은 지워지오.',
   sameCaseOk: '새 방 열기',
-  homeMinutes: '약 60분',
+  homeMinutes: '약 35분',
 
   // ── M2 모두의 패 ──
   expandAll: '모두 펼치기',
   collapseAll: '모두 접기',
+
+  // ── 6판 진행 압축(docs/design/gung-compact-scene-spec.md §2) ──
+  /** 배너(≤ 40자) */
+  storageBanner: '이 브라우저는 저장이 안 돼요. 새로고침하면 처음부터예요',
+  wakeBanner: '🌙 화면이 꺼지면 종이 안 울려요. 설정 › 자동 잠금을 늘리시오',
+  versionBanner: '사건 내용이 갱신됐어요. 새 방을 권해요.',
+  /** H1 롤콜 — 자리별 외치기 대신 표식 한 번에(자리 칩은 선택) */
+  lobbyCue: '표식이 같소? 한꺼번에 외치시오',
+  /** P1 대기 */
+  lobbyPlayer: '방장 화면의 표식과 같은지 보시오',
+  lobbyPlayerMicro: '자리가 틀렸으면 ⋮ › 자리 바꾸기',
+  /** 진행표(FlowStrip) — 분 합계는 flowPlan(타이머 상수)에서 */
+  flowTitle: '오늘의 순서',
+  flowRoundsNote: '조사 1번 = 현장 1 + 고르기 1 + 토론 5분',
+  /** 방장 ⋮ 메뉴 — 패 확인 화면의 건너뛰기 링크를 옮김 */
+  skipIntroMenu: '자기소개 건너뛰기',
+  /** 조사 라운드 하위 단계 표시(현장 → 고르기 → 토론) */
+  roundStepsLabel: '이번 조사 순서',
+  /** P2 개요 — 규칙 카드 + 낭독문 접힘 */
+  briefingPlayerLine: '방장이 읽소. 규칙만 보시오',
+  briefingRulesHead: '규칙 넷',
+  briefingFold: '낭독문 전체 ▸',
+  /** P9 진상 — 결론 + 전문 접힘 */
+  truthConclusion: '결론',
+  truthFullFold: '진상 전문 ▸',
+  /** H10 결과 — 미리보기 상시 노출 대신 이미지 저장 시트에서 */
+  resultNoSpoiler: '결과 카드엔 범인 이름이 없소',
 } as const;
 
 /**
@@ -152,6 +214,12 @@ export const guideText = {
   boardSeat: (seat: number) => `${seat}번 공개`,
   /** R5 내 지난 방문 꼬리표 */
   visitedTag: (round: number) => `조사 ${round}에 감`,
+  /** 진행표 합계 */
+  flowTotal: (minutes: number) => `약 ${minutes}분`,
+  /** 6판 현장 화면 접힘 1곳(지난 공용 단서 + 시각 어림) */
+  pastAndTime: (round: number) => (round > 1 ? '지난 공용 단서 · 시각 어림 ▸' : '시각 어림 ▸'),
+  /** 플레이어 최종 변론 머리(길이는 타이머 값에서 — '45초'·'1분') */
+  defenseHead: (duration: string) => `최종 변론 · 1번부터 ${duration}씩`,
   /** G5 대기 화면 내 지목 칩(적중 표시 없음) */
   myVoteChip: (seat: number) => `내 지목: ${seat}번`,
 } as const;
@@ -174,6 +242,10 @@ export const GUIDE_COPY: readonly string[] = (() => {
     guideText.boardSeat(2),
     guideText.visitedTag(1),
     guideText.myVoteChip(3),
+    guideText.flowTotal(35),
+    guideText.pastAndTime(1),
+    guideText.pastAndTime(2),
+    guideText.defenseHead('45초'),
   );
   return out;
 })();

@@ -36,6 +36,10 @@ export const TEXT_LIMITS = {
   clueChars: 120,
   beatCount: 12,
   beatChars: 70,
+  /** 현장 관찰 한 줄(원고 10-3 「40자 이내」 — 공백 포함) */
+  observationChars: 40,
+  /** 장소 그림 한 장의 물건 수(UX 스펙 §1-6 「장소당 최대 8개」) */
+  sceneObjects: 8,
 } as const;
 
 export function validateCase(c: GungCase): CaseIssue[] {
@@ -217,6 +221,39 @@ export function validateCase(c: GungCase): CaseIssue[] {
     c.truth.beats.forEach((b, i) => {
       if (b.text.includes(r.name)) warn(`truth.beats[${i}]`, `범인 이름 "${r.name}" 이 '범인은…' 비트 전에 나옴(스포일러)`);
     });
+  }
+
+  // ── 현장 관찰(원고 10장) — 공용 화면이라 조건 필드가 없다. 라운드 잠금은 fromRound 로만 건다
+  const sceneIds = new Set<string>();
+  const scenePlaces = new Set<string>();
+  for (const sc of c.scenes ?? []) {
+    const sw = `scenes.${sc.placeId}`;
+    if (!placeIds.has(sc.placeId)) err(sw, `없는 장소 "${sc.placeId}"`);
+    if (scenePlaces.has(sc.placeId)) err(sw, '장소 그림 중복');
+    scenePlaces.add(sc.placeId);
+    if (!sc.art) err(sw, '그림 키(art) 없음');
+    if (!sc.objects.length) err(sw, '물건 없음');
+    if (sc.objects.length > TEXT_LIMITS.sceneObjects) warn(sw, `물건 ${sc.objects.length}개 > ${TEXT_LIMITS.sceneObjects}`);
+    for (const o of sc.objects) {
+      const ow = `${sw}.${o.id}`;
+      if (!o.id) err(sw, '물건 id 없음');
+      else if (sceneIds.has(o.id) || cardIds.has(o.id)) err(ow, `id "${o.id}" 중복(물건·카드 통틀어)`);
+      sceneIds.add(o.id);
+      if (!o.name) err(ow, 'name 없음');
+      const [x, y] = o.pos ?? [];
+      if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > 100 || y < 0 || y > 100) err(ow, `위치 ${JSON.stringify(o.pos)} (0~100 %)`);
+      if (!o.lines.length) err(ow, '관찰 줄 없음');
+      if (o.lines.length && o.lines[0].fromRound !== 1) warn(ow, `R1 관찰이 없음 — R${o.lines[0].fromRound} 전엔 그림에 물건이 안 보임`);
+      let prev = 0;
+      for (const l of o.lines) {
+        if (!ROUND_NOS.includes(l.fromRound)) err(ow, `fromRound ${String(l.fromRound)}`);
+        else if (l.fromRound <= prev) err(ow, `fromRound ${l.fromRound} — 오름차순·라운드당 1줄이어야 함`);
+        prev = l.fromRound;
+        if (!l.text.trim()) err(ow, '빈 관찰 줄');
+        const n = Array.from(l.text).length;
+        if (n > TEXT_LIMITS.observationChars) warn(ow, `R${l.fromRound} 관찰 ${n}자 > ${TEXT_LIMITS.observationChars}`);
+      }
+    }
   }
 
   // ── 보너스 문항

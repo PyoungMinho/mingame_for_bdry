@@ -12,7 +12,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { assignFromCode, getClue, roundPlaces, SEED_ALPHABET, seatOfRole, type PlayerCount } from '@/lib/gung';
+import { assignFromCode, getClue, GUIDE, roundPlaces, SEED_ALPHABET, seatOfRole, type PlayerCount } from '@/lib/gung';
 import { sejaCase as c } from '@/lib/gung/case-data';
 import { GungApp } from './GungApp';
 
@@ -103,16 +103,18 @@ async function hostVotes(targets: number[]) {
   for (const t of targets) await tap(screen.getByRole('button', { name: new RegExp(`^${t}번`) }));
 }
 
-describe('BUG-28 결정 — 패 확인 3분 · 동률 변론 30초', () => {
-  it('H3 패 확인: 브리핑에서 넘어오면 3분 카운트다운이 바로 돈다 · 단계 맞추기로 왔으면 시작 버튼', async () => {
+describe('BUG-28 결정 — 패 확인(6판: 2분 — UX 스펙 §2-3이 3분 결정을 대체) · 동률 변론 30초', () => {
+  it('H3 패 확인: 브리핑에서 넘어오면 2분 카운트다운이 바로 돈다 · 단계 맞추기로 왔으면 시작 버튼 · 안내 불릿·건너뛰기 링크 없음', async () => {
     await hostRecover(findCode(5, () => true));
     await syncTo(/^사건 개요/, false);
     await tap(btn(/다 읽었소/));
-    expect(screen.getByText('03:00')).toBeInTheDocument();
+    expect(screen.getByText('02:00')).toBeInTheDocument();
+    expect(qbtn(/자기소개 건너뛰기/)).toBeNull(); // ⋮ 메뉴로 옮겼다
+    expect(document.querySelector('.gu-plainlist')).toBeNull();
     await tap(within(screen.getByRole('banner')).getByRole('button', { name: '되돌리기' }));
     await syncTo(/^패 확인/);
-    await tap(btn(/패 확인 3분 타이머 시작/));
-    expect(screen.getByText('03:00')).toBeInTheDocument();
+    await tap(btn(/패 확인 2분 타이머 시작/));
+    expect(screen.getByText('02:00')).toBeInTheDocument();
   });
 
   it('H8 동률: 동률자 추가 변론 30초 타이머(다음 사람 다시) → 재지목 시작하면 사라진다 · 동률이 아니면 없다', async () => {
@@ -147,9 +149,10 @@ describe('SCR-10 명판관 · 결말 → 요약(원고 7-2)', () => {
     await hostRecover(code);
     await syncTo(/^지목/, false);
     await hostVotes([2, 1, 2, 2]); // 2번(범인) 검거
+    // 6판: 진상 공개는 1탭 — 보너스를 하나도 안 적었으면 버튼 위 인라인 경고만
+    expect(bodyText()).toContain(GUIDE.bonusZeroInline);
     await tap(btn(/진상 공개/));
-    // R7: 보너스를 하나도 안 적었으면 「보너스 없이 공개하겠소?」 → 그대로 공개
-    await tap(within(dialog()).getByRole('button', { name: /공개하겠소|그대로 공개/ }));
+    expect(screen.queryByRole('dialog')).toBeNull();
     for (let i = 0; i < 30 && !screen.queryByRole('img', { name: /도장: (검거|도주|미결)/ }); i++) await tap(btn(/^다음/));
     expect(screen.getByRole('img', { name: '도장: 검거' })).toBeInTheDocument();
     const text = bodyText();
@@ -162,18 +165,23 @@ describe('SCR-10 명판관 · 결말 → 요약(원고 7-2)', () => {
     expect(bodyText()).not.toContain('명탐정');
   });
 
-  it('플레이어 P9: 결말이 요약보다 먼저', async () => {
+  it('플레이어 P9(6판): 결론(⑤ 요약)만 펼치고, 비트·자백·④ 결말은 「진상 전문 ▸」 접힘 — 결론 ≤ 200자', async () => {
     const code = findCode(4, (k) => asg(k).culpritSeat !== 2);
     await joinAsPlayer(code, 2);
     await syncTo(/^진상 공개/);
     // G5: 진상 대기 → 방장 「범인이 밝혀졌소」 → 확인 시트 → P9
     await tap(btn(/범인이 밝혀졌어요/));
     await tap(within(dialog()).getByRole('button', { name: '보겠소' }));
-    const text = bodyText();
-    const ep = text.indexOf(c.truth.epilogue!.slice(0, 20));
-    const sum = text.indexOf(c.truth.summary!.slice(0, 20));
-    expect(ep).toBeGreaterThan(-1);
-    expect(sum).toBeGreaterThan(ep);
+    const full = document.querySelector<HTMLDetailsElement>('details.gu-ptruth-full')!;
+    expect(full).not.toBeNull();
+    expect(full.open).toBe(false);
+    expect(full.querySelector('summary')?.textContent).toBe(GUIDE.truthFullFold);
+    expect(full.textContent).toContain(c.truth.epilogue!.slice(0, 20));
+    expect(full.textContent).toContain(c.truth.confession.slice(0, 20));
+    expect(full.textContent).not.toContain(c.truth.summary!.slice(0, 20));
+    const outside = bodyText().replace(full.textContent ?? '', '');
+    expect(outside).toContain(c.truth.summary!);
+    expect(Array.from(c.truth.summary!).length).toBeLessThanOrEqual(200);
   });
 });
 
@@ -190,12 +198,16 @@ describe('BUG-12 결정 — S2 인원별 등장인물 목록 없음(원고 1-3)'
 });
 
 describe('BUG-27 결정 — 용어 「?」·시각표', () => {
-  it('헤더 「?」 시트: 시각표 + 기본 용어 + 들어선 라운드 공용 카드 용어 · 역할 전용 용어(활맥)는 없다 · 브리핑 화면에도 시각표', async () => {
+  it('헤더 「?」 시트: 시각표 + 기본 용어 + 들어선 라운드 공용 카드 용어 · 역할 전용 용어(활맥)는 없다 · 브리핑 화면의 「배치도 · 시각표 ›」도 같은 시트', async () => {
     const code = findCode(6, (k) => seatOfRole(asg(k), 'physician') === 1); // 방장 = 어의(역할 용어 보유)
     await hostRecover(code);
     await syncTo(/^사건 개요/, false);
-    expect(screen.getByRole('region', { name: '시각표' })).toBeInTheDocument();
-    expect(bodyText()).toContain('19~21시');
+    // 6판: 시각표는 개요 화면에 상시로 두지 않고 링크 한 줄 → 「?」 시트
+    expect(screen.queryByRole('region', { name: '시각표' })).toBeNull();
+    await tap(btn(GUIDE.helpLink));
+    expect(within(dialog()).getByRole('region', { name: '시각표' })).toBeInTheDocument();
+    expect(dialog().textContent).toContain('19~21시');
+    await tap(within(dialog()).getByRole('button', { name: '닫기' }));
     await syncTo(/^조사 1/);
     await tap(btn('궁 배치도·시각표·인물·용어'));
     const sheet = dialog().textContent ?? '';

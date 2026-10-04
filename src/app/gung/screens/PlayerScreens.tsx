@@ -13,6 +13,13 @@
  *  - R3: 조사 화면 맨 위 「📢 이번 조사 공용 단서 ▸」(그 라운드 것만).
  *  - R5: 공개한 카드에 인장 번호 · 공개 토스트 · 장소 타일 「조사 N에 감」 · 고르기 위 안내.
  *  - R6: 변론 3칸 틀 + 수첩·단서함·내 패 바로가기. R7: 지목 확정 뒤에만 보너스 문항 참조 카드. M2: 모두 펼치기.
+ *
+ * 6판 진행 압축(docs/design/gung-compact-scene-spec.md §2)
+ *  - P1 대기: 「오늘의 순서」 6줄 → 진행표(FlowStrip) + 한 줄. P2 개요: 규칙 넷 카드 + 「낭독문 전체 ▸」 접힘(방장이 읽는다).
+ *  - P4 자기소개: 봉인 카드엔 이름·직함만(공개 프로필 전문은 「?」 › 인물).
+ *  - 조사 게이트 확인 시트는 **잠금 기억이 풀리는 라운드(데이터 memories.fromRound — 이 사건은 조사 3)** 에만. 조사 1·2는 1탭.
+ *  - P5 장소 고르기 안내 한 줄. P7 변론 「변론 준비」·「내 차례」 줄 삭제. P8 지목 → 진상 게이트·지목 바꾸기·보너스 열기 확인 시트 삭제.
+ *  - P9 진상: 결론(≤ 200자) + 「진상 전문 ▸」 접힘. 말투 예시는 게임 뒤 '모두의 패'에서만.
  */
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
@@ -34,15 +41,16 @@ import {
   publicSeat,
   publicSeats,
   reachedRound,
+  recheckRoundBetween,
   resolveBriefing,
   rolesVisible,
   roundPlaces,
+  timerMs,
 } from "@/lib/gung";
 import {
   ClueCard,
   GuButton,
   MemoryBlock,
-  PalaceMap,
   PlaceGrid,
   RevealScroll,
   RoleIcon,
@@ -56,7 +64,13 @@ import type { GuTabKey, PalaceMapProps, SectionKey } from "../components";
 import { useHoldReveal } from "../lib/useHoldReveal";
 import { placeToSummary, sheetToContent } from "./adapters";
 import { roundEntryConfirm, type ConfirmRequest } from "./Overlays";
-import { BonusReference, DefenseFrame, PublicFold } from "./Shared";
+import {
+  BonusReference,
+  DefenseFrame,
+  GameFlow,
+  isNoteLine,
+  PublicFold,
+} from "./Shared";
 import { gateCaption, gateSignal } from "./signals";
 import { MyCardTab } from "./Tabs";
 
@@ -105,6 +119,8 @@ export interface PlayerAreaProps {
   onOpenMap: () => void;
   /** R5 장소 카드 id → 인장 */
   sealOf: (cardId: string) => number | null;
+  /** 통합: 내 폰으로 현장 보기 시트(현장 그림은 공용 — 방장 화면과 같은 그림) */
+  onOpenScene?: () => void;
   /** R1 P1 — 한 번 연 칩 점(UI 상태) */
   seenSections?: Partial<Record<SectionKey, boolean>>;
   onSeenSection?: (section: SectionKey) => void;
@@ -115,6 +131,31 @@ const gate = (phase: GameState["phase"]) => {
   const sig = gateSignal(phase);
   return sig ? gateCaption(sig) : undefined;
 };
+
+/**
+ * 조사 라운드 게이트 — 넘어가면 잠금 기억(「R3에 떠오르는 기억」)이 풀리는 라운드일 때만 확인 시트(QA BUG-05 유지).
+ * 판정은 데이터(memories.fromRound)로만 — 역할·자리 무관(모든 폰이 같은 시트를 받는다). 그 밖의 라운드는 1탭(6판).
+ */
+function roundGate(
+  c: GungCase,
+  from: number,
+  to: RoundNo,
+  onConfirm: PlayerAreaProps["onConfirm"],
+  go: () => void,
+): () => void {
+  return () => {
+    if (recheckRoundBetween(c, from, to) === null) return go();
+    onConfirm(roundEntryConfirm(to, "player", go));
+  };
+}
+
+/** 60_000 → '1분', 45_000 → '45초' */
+function durationLabel(ms: number): string {
+  return ms % 60_000 === 0 ? `${ms / 60_000}분` : `${Math.round(ms / 1000)}초`;
+}
+
+/** 브리핑 규칙 줄(원고 7-1 「하나~넷」) */
+const RULE_LINE = /^(하나|둘|셋|넷|다섯)\./;
 
 export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
   const { c, state, a, dispatch } = props;
@@ -155,22 +196,12 @@ export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
           <>
             <p className="gu-display">{seat}번 자리로 들었소</p>
             <p className="gu-body">
-              사건 표식 「<span className="gu-gold">{room?.tag}</span>」 — 방장
-              화면과 같은지 보시오
+              사건 표식 「<span className="gu-gold">{room?.tag}</span>」 —{" "}
+              {GUIDE.lobbyPlayer}
             </p>
-            <p className="gu-h3">오늘의 순서</p>
-            <ol className="gu-plainlist gu-steps">
-              <li>① 사건 개요 듣기</li>
-              <li>② 내 패 몰래 보기</li>
-              <li>③ 자기소개</li>
-              <li>④ 조사 3번(장소 → 단서)</li>
-              <li>⑤ 최종 변론</li>
-              <li>⑥ 동시 지목 → 진상</li>
-            </ol>
-            <p className="gu-micro">
-              자리 번호가 틀렸다면 ⋮ › 자리 바꾸기 · 늦게 왔다면 위쪽 기둥을
-              눌러 단계를 맞추시오
-            </p>
+            {/* 6판: 「오늘의 순서」 6줄 → 진행표(분은 타이머 상수에서) */}
+            <GameFlow c={c} n={a.n} />
+            <p className="gu-micro">{GUIDE.lobbyPlayerMicro}</p>
           </>
         ),
         actionBar: (
@@ -186,25 +217,64 @@ export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
     }
     case "briefing": {
       const b = resolveBriefing(c, a.n);
+      // 6판: 방장이 낭독하니 플레이어는 규칙 넷만 카드로, 낭독문 전체는 접힘(같은 글 — 정보는 그대로)
+      const rules = b.paragraphs.filter((p) => RULE_LINE.test(p.trim()));
+      const notes = b.paragraphs.filter(isNoteLine);
+      const paragraphs = b.paragraphs.map((p, i) => (
+        <p
+          key={i}
+          className={
+            isNoteLine(p)
+              ? "gu-micro gu-briefing-note"
+              : "gu-body gu-briefing-p gu-briefing-p--private"
+          }
+        >
+          {p}
+        </p>
+      ));
       return {
         body: (
           <>
             <p className="gu-display">{b.heading}</p>
-            {b.paragraphs.map((p, i) => (
-              <p
-                key={i}
-                className="gu-body gu-briefing-p gu-briefing-p--private"
-              >
-                {p}
-              </p>
-            ))}
-            {/* R2: 플레이어 뷰 2-1 지도 — 블라인드 검증 때와 같은 정보. 누르면 큰 시트 */}
-            <PalaceMap
-              {...props.map}
-              onTap={props.onOpenMap}
-              tapLabel={GUIDE.mapTapHint}
-            />
-            <p className="gu-micro gu-center">{GUIDE.mapTapHint}</p>
+            {rules.length > 0 ? (
+              <>
+                <p className="gu-body">{GUIDE.briefingPlayerLine}</p>
+                <section
+                  className="gu-rulecard"
+                  aria-label={GUIDE.briefingRulesHead}
+                >
+                  <p className="gu-rulecard-title">
+                    {GUIDE.briefingRulesHead}
+                  </p>
+                  {rules.map((p, i) => (
+                    <p key={i} className="gu-rulecard-line">
+                      {p}
+                    </p>
+                  ))}
+                </section>
+                {notes.map((p, i) => (
+                  <p key={i} className="gu-micro gu-briefing-note">
+                    {p}
+                  </p>
+                ))}
+                <details className="gu-fold gu-fold--briefing">
+                  <summary className="gu-fold-summary">
+                    {GUIDE.briefingFold}
+                  </summary>
+                  {paragraphs}
+                </details>
+              </>
+            ) : (
+              paragraphs
+            )}
+            {/* R2: 배치도는 큰 시트로(플레이어 뷰 2-1 — 블라인드 검증 때와 같은 정보) */}
+            <button
+              type="button"
+              className="gu-ghostlink gu-maplink"
+              onClick={props.onOpenMap}
+            >
+              {GUIDE.mapLink}
+            </button>
           </>
         ),
         actionBar: (
@@ -256,16 +326,12 @@ export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
           </>
         ),
         actionBar: (
-          // 조사 라운드 진입은 어떤 경로든 같은 확인(QA BUG-05) — 넘어가면 첫째 조사 장소·공용 단서가 풀린다
+          // 6판: 조사 1 진입은 1탭(풀리는 잠금 기억이 없다). 확인 여부는 데이터로만 — roundGate
           <GuButton
             variant="primary"
-            onClick={() =>
-              props.onConfirm(
-                roundEntryConfirm(1, "player", () =>
-                  dispatch({ type: "advance" }),
-                ),
-              )
-            }
+            onClick={roundGate(c, 0, 1, props.onConfirm, () =>
+              dispatch({ type: "advance" }),
+            )}
           >
             1라운드 시작됐어요 →
           </GuButton>
@@ -280,11 +346,11 @@ export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
       return {
         body: (
           <>
-            <p className="gu-display">최종 변론 · 1번부터 1분씩</p>
-            <p className="gu-body">내 차례: {seat}번째</p>
-            {/* R6: 무대와 같은 3칸 틀(입력칸 없음) — 범인도 같은 틀로 말한다 */}
+            <p className="gu-display">
+              {guideText.defenseHead(durationLabel(timerMs(c, "defense")))}
+            </p>
+            {/* R6: 무대와 같은 3칸 틀(입력칸 없음) — 범인도 같은 틀로 말한다. 6판: 「변론 준비」·「내 차례」 줄 삭제 */}
             <DefenseFrame />
-            <p className="gu-h3">변론 준비</p>
             <div className="gu-row3">
               <GuButton
                 variant="secondary"
@@ -333,8 +399,8 @@ export function PlayerPlayArea(props: PlayerAreaProps): PlayerAreaResult {
 
 /**
  * P4 — 신분 섹션 고정 봉인 카드(보기 방식 설정·재봉인 신호를 그대로 따른다).
- * G3: 역할명 + 공개 프로필만. 말투 예시는 블라인드 검증에 들어가지 않은 정보 경로라(세자빈 ①·조상궁 ① 등이 반전을 먼저 가리킴)
- * 자기소개 때 소리 내어 읽히지 않게 뺐다 — 내 패 '말투' 섹션에만 남는다.
+ * 6판: 이름 + 직함 한 줄만(자기소개 1인 약 10초). 공개 프로필 전문은 「?」 › 인물(자기소개 뒤 모두에게 같은 목록), 내 패 '신분'.
+ * 말투 예시는 블라인드 검증에 들어가지 않은 정보 경로라 자기소개에서 읽지 않는다(G3) — 게임 뒤 '모두의 패'에만 남는다.
  */
 function PlayerIntroCard({
   sheet,
@@ -380,7 +446,11 @@ function PlayerIntroCard({
           <div className="gu-sealed-open">
             <div className="gu-sealed-paper">
               <p className="gu-display gu-hopae-rolename">{sheet.name}</p>
-              <p className="gu-hopae-body">{sheet.profile}</p>
+              {sheet.subtitle && (
+                <p className="gu-hopae-body gu-intro-subtitle">
+                  {sheet.subtitle}
+                </p>
+              )}
             </div>
             <p className="gu-sealed-release">
               {revealMode === "hold"
@@ -431,19 +501,11 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
   const nextLabel =
     round < 3 ? `${round + 1}라운드 시작됐어요 →` : "최종 변론 시작됐어요 →";
   // QA BUG-05: 다음 조사 라운드로 넘어가면 그 라운드 장소 단서(와 「R3에 떠오르는 기억」)가 바로 풀린다 — 한 번 보면 못 되돌린다.
-  // 취중 오탭 한 번으로 방장 신호 전에 풀리지 않게 확인 시트를 거친다. 진행 단계 맞추기(O1)도 같은 시트(roundEntryConfirm).
-  // 문구는 모든 역할에 같다(역할 메타 누설 금지). 조사 3→최종 변론은 새로 풀리는 정보가 없어 1탭.
-  const advanceGate = () => {
-    if (round >= 3) {
-      dispatch({ type: "advance" });
-      return;
-    }
-    onConfirm(
-      roundEntryConfirm((round + 1) as RoundNo, "player", () =>
-        dispatch({ type: "advance" }),
-      ),
-    );
-  };
+  // 6판: 확인 시트는 잠금 기억이 풀리는 라운드(데이터로 판정 — 이 사건은 조사 3)에만. 문구는 모든 역할에 같다(역할 메타 누설 금지).
+  // 진행 단계 맞추기(O1)는 예전처럼 모든 조사 진입에 같은 시트(roundEntryConfirm). 조사 3→최종 변론은 1탭.
+  const go = () => dispatch({ type: "advance" });
+  const advanceGate =
+    round >= 3 ? go : roundGate(c, round, (round + 1) as RoundNo, onConfirm, go);
 
   if (!pick) {
     const places = roundPlaces(c, round).map((p) => placeToSummary(c, p.id));
@@ -451,9 +513,9 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
     return {
       body: (
         <>
+          {/* 통합: 라운드 첫 1분은 방장 화면(또는 큰 화면)의 현장 그림을 다 같이 본다. 내 폰으로도 같은 그림을 볼 수 있다 */}
+          <ScenePrompt onOpenScene={props.onOpenScene} />
           <ThisRoundPublic c={c} a={a} round={round} />
-          <p className="gu-display">어디를 조사하겠소?</p>
-          <p className="gu-body">한 라운드에 한 곳만. 단서를 열면 못 바꿔요.</p>
           <p className="gu-placehint">{GUIDE.placeHint}</p>
           <button
             type="button"
@@ -512,6 +574,11 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
           sealOf={props.sealOf}
         />
         <p className="gu-micro">{GUIDE.clueMicro}</p>
+        {props.onOpenScene && (
+          <button type="button" className="gu-ghostlink gu-center-self gu-scene-againlink" onClick={props.onOpenScene}>
+            {GUIDE.sceneAgainLink}
+          </button>
+        )}
       </>
     ),
     actionBar: (
@@ -521,6 +588,20 @@ function playerRound(props: PlayerAreaProps): PlayerAreaResult {
     ),
     gateCaption: gate(state.phase),
   };
+}
+
+/** 장소 고르기 위 — 「현장 그림은 방장 화면에서 다 같이」 + 내 폰으로 보기(모든 역할에 같은 문구) */
+function ScenePrompt({ onOpenScene }: { onOpenScene?: () => void }) {
+  return (
+    <div className="gu-scene-prompt">
+      <p className="gu-scene-prompt-text">{GUIDE.scenePlayerHint}</p>
+      {onOpenScene && (
+        <button type="button" className="gu-ghostlink gu-scene-prompt-link" onClick={onOpenScene}>
+          {GUIDE.sceneOpenLink}
+        </button>
+      )}
+    </div>
+  );
 }
 
 /** R5 — 내 지난 방문 꼬리표(이 폰 기록만. 남이 많이 간 곳 같은 집계는 없다) */
@@ -600,15 +681,10 @@ function PlayerClue({
 }
 
 function playerVote(props: PlayerAreaProps): PlayerAreaResult {
-  const { c, a, state, dispatch, onConfirm, draftVote, setDraftVote } = props;
+  const { c, a, state, dispatch, draftVote, setDraftVote } = props;
   const showRoles = rolesVisible(c, state.phase);
-  const revealGate = () =>
-    onConfirm({
-      title: "진상 공개로 넘어가겠소?",
-      body: "방장이 진상을 밝히기 시작했을 때만 누르시오. 넘어가면 범인과 모두의 비밀이 보이오.",
-      confirmLabel: "넘어가겠소",
-      onConfirm: () => dispatch({ type: "advance" }),
-    });
+  // 6판: 지목 → 진상 게이트 확인 시트 삭제 — 다음 화면(G5 진상 대기)은 범인을 보여 주지 않는다. 범인 보기 시트는 그대로.
+  const revealGate = () => dispatch({ type: "advance" });
 
   if (state.myVote) {
     const ps = publicSeat(c, a, state.myVote.seat);
@@ -628,7 +704,6 @@ function playerVote(props: PlayerAreaProps): PlayerAreaResult {
           </p>
           <VoteAfterConfirm
             questions={c.bonusQuestions ?? []}
-            onConfirm={onConfirm}
             onClear={() => dispatch({ type: "clearVote" })}
           />
         </div>
@@ -652,16 +727,15 @@ function playerVote(props: PlayerAreaProps): PlayerAreaResult {
   return {
     body: (
       <>
-        <p className="gu-display">범인이라 생각하는 자를 고르시오</p>
+        {/* 원고 8-1 투표 화면 문구 + 작은 글씨(규칙 1) */}
+        <p className="gu-display">{GUIDE.votePrompt}</p>
+        <p className="gu-micro">{GUIDE.voteNote}</p>
         <SeatGrid
           seats={items}
           selected={draftVote}
           onSelect={(s) => setDraftVote(s)}
           showRoles={showRoles}
         />
-        <p className="gu-micro">
-          내 자리({state.seat}번)는 목록에 없소. 고르면 확정 버튼을 누르시오.
-        </p>
         <GuButton variant="secondary" onClick={() => props.onGoTab("notes")}>
           {GUIDE.notesShortcut}
         </GuButton>
@@ -694,58 +768,38 @@ function playerVote(props: PlayerAreaProps): PlayerAreaResult {
  * P9-0 진상 대기(G5) — 범인·적중 여부·진상 본문·'모두의 패' 버튼이 모두 없다. 모든 역할(범인 포함)에서 DOM 이 같다
  * (내 지목 숫자만 다름). 방장이 범인 도장 비트에서 「범인이 밝혀졌소」를 외치면 → 확인 시트 → P9.
  */
-/** 지목 확정 뒤: 「지목 바꾸기」 또는 「보너스 문항 보기」(연 뒤엔 지목 변경 불가 — 보너스로 범인 판단이 흔들리지 않게) */
+/**
+ * 지목 확정 뒤: 「지목 바꾸기」 또는 「보너스 문항 보기」(연 뒤엔 지목 변경 불가 — 보너스로 범인 판단이 흔들리지 않게).
+ * 6판: 두 확인 시트를 없앴다 — 지목은 로컬·되돌릴 수 있고, 보너스 잠금은 버튼 옆 한 줄로 알린다.
+ */
 function VoteAfterConfirm({
   questions,
-  onConfirm,
   onClear,
 }: {
   questions: NonNullable<GungCase["bonusQuestions"]>;
-  onConfirm: PlayerAreaProps["onConfirm"];
   onClear: () => void;
 }) {
   const [bonusOpen, setBonusOpen] = useState(false);
-  const dispatch = (a: { type: "clearVote" }) => {
-    if (a.type === "clearVote") onClear();
-  };
-  const c = { bonusQuestions: questions };
+  if (bonusOpen) return <BonusReference questions={questions} />;
   return (
     <>
-      {/* R7: 보너스 문항은 지목 확정 뒤, 그것도 '보너스 열기'로만 — 연 뒤엔 지목을 바꿀 수 없다(보너스를 보고 범인 판단을 바꾸지 않게) */}
-      {bonusOpen ? (
-        <BonusReference questions={c.bonusQuestions ?? []} />
-      ) : (
+      <button
+        type="button"
+        className="gu-ghostlink gu-center-self"
+        onClick={onClear}
+      >
+        지목 바꾸기 ›
+      </button>
+      {questions.length > 0 && (
         <>
           <button
             type="button"
             className="gu-ghostlink gu-center-self"
-            onClick={() =>
-              onConfirm({
-                title: "지목을 바꾸겠소?",
-                body: "방장이 이미 적었다면 방장에게도 말하시오.",
-                confirmLabel: "바꾸겠소",
-                onConfirm: () => dispatch({ type: "clearVote" }),
-              })
-            }
+            onClick={() => setBonusOpen(true)}
           >
-            지목 바꾸기 ›
+            보너스 문항 보기 ›
           </button>
-          {(c.bonusQuestions ?? []).length > 0 && (
-            <button
-              type="button"
-              className="gu-ghostlink gu-center-self"
-              onClick={() =>
-                onConfirm({
-                  title: "보너스 문항을 열겠소?",
-                  body: "열면 지목을 더는 바꿀 수 없소.",
-                  confirmLabel: "열겠소",
-                  onConfirm: () => setBonusOpen(true),
-                })
-              }
-            >
-              보너스 문항 보기 ›
-            </button>
-          )}
+          <p className="gu-micro gu-center">{GUIDE.bonusOpenNote}</p>
         </>
       )}
     </>
@@ -812,26 +866,32 @@ function playerTruth(
             내 지목: {mine}번 {hit ? "✓ 적중" : "✗"}
           </p>
         )}
-        <p className="gu-h3">그날 밤의 진상</p>
-        <RevealScroll
-          beats={c.truth.beats.map((b) => ({
-            time: b.time ?? "",
-            text: b.text,
-          }))}
-          index={c.truth.beats.length - 1}
-          mode="all"
-        />
-        <p className="gu-ptruth-line gu-display">{c.truth.culpritLine}</p>
-        <p className="gu-ptruth-confession">{c.truth.confession}</p>
-        {/* 원고 7-2 순서: ④ 결말 → ⑤ 요약 */}
-        {c.truth.epilogue && (
-          <p className="gu-ptruth-summary gu-ptruth-epilogue">
-            {c.truth.epilogue}
-          </p>
-        )}
+        {/* 6판: 낭독은 이미 들었다 — 결론(원고 7-2 ⑤ 요약)만 펼치고, 전문(비트·자백·결말)은 접힘 */}
         {c.truth.summary && (
-          <p className="gu-ptruth-summary">{c.truth.summary}</p>
+          <>
+            <p className="gu-h3">{GUIDE.truthConclusion}</p>
+            <p className="gu-ptruth-summary">{c.truth.summary}</p>
+          </>
         )}
+        <details className="gu-fold gu-ptruth-full" open={!c.truth.summary}>
+          <summary className="gu-fold-summary">{GUIDE.truthFullFold}</summary>
+          <RevealScroll
+            beats={c.truth.beats.map((b) => ({
+              time: b.time ?? "",
+              text: b.text,
+            }))}
+            index={c.truth.beats.length - 1}
+            mode="all"
+          />
+          <p className="gu-ptruth-line gu-display">{c.truth.culpritLine}</p>
+          <p className="gu-ptruth-confession">{c.truth.confession}</p>
+          {/* 원고 7-2 순서: ④ 결말(→ ⑤ 요약은 위 결론) */}
+          {c.truth.epilogue && (
+            <p className="gu-ptruth-summary gu-ptruth-epilogue">
+              {c.truth.epilogue}
+            </p>
+          )}
+        </details>
         <ShareActions kind="generic" onShare={onShareGeneric} />
         <p className="gu-micro gu-center">
           점수·결과 카드는 방장 폰에서 공유해요
@@ -944,6 +1004,19 @@ function AllSheets({ sheets }: { sheets: ResolvedSheet[] }) {
                     ))}
                   </ul>
                 </div>
+                {content.speech.length > 0 && (
+                  // 6판: 말투 예시는 게임이 끝난 뒤 여기서만(내 패 칩에서 뺐다)
+                  <div className="gu-allsheets-block">
+                    <p className="gu-allsheets-title">{GUIDE.speechSection}</p>
+                    <ul className="gu-hopae-list">
+                      {content.speech.map((sp, i) => (
+                        <li key={i} className="gu-font-hand">
+                          “{sp}”
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {content.mission.length > 0 && (
                   <div className="gu-allsheets-block">
                     <p className="gu-allsheets-title">미션</p>
