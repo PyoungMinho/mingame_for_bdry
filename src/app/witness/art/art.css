@@ -1,0 +1,195 @@
+/*
+ * 「목격자는 AI」 그림 전용 스타일 — 장면·초상·판정 그래픽의 루프·전환 키프레임.
+ *
+ *  - 모든 선택자는 .wt-shell 아래, 클래스 접두 wt-art-. 전역 누수 0(blast radius 0).
+ *  - 이 파일은 witness.css 와 함께 src/app/witness/layout.tsx 한 곳에서 import 한다(프론트팀장).
+ *  - 장식 루프(비·LED 대기 호흡·이퀄라이저·초상 호흡)는 「화면 효과: 줄이기」(data-fx='reduced'),
+ *    OS prefers-reduced-motion, 숨김 탭(.wt-paused)에서 정지한다(디자인 D31, §6-4). 색·모양은 그대로 남는다.
+ *  - 번쩍임 규칙: 1초에 1회 이하, 최대 불투명도 .55, 90ms 이내(§6-4). 이 파일의 점멸은 전부 그 아래다.
+ *  - 컷인·균열·도장 키프레임은 VerdictFx 가 클래스로 켠다. 줄이기용 키프레임(wt-art-cutin-fade)을 따로 둔다
+ *    — 전역 animation-duration 끄기로 처리하면 컷인 문구가 화면 밖 프레임에 멈춘다(§6-4 load-bearing).
+ */
+
+/* ───────────── 공통 틀 ───────────── */
+.wt-shell .wt-art-scene,
+.wt-shell .wt-art-portrait,
+.wt-shell .wt-art-fx {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+.wt-shell .wt-art-portrait { overflow: visible; }
+.wt-shell .wt-art-portrait [data-part] { transition: opacity 90ms linear; }
+
+/* ───────────── 장면: 비 · 반짝임 · 기기 LED ───────────── */
+@keyframes wt-art-rain { from { transform: translateY(0); } to { transform: translateY(200px); } }
+.wt-shell .wt-art-rain { animation: wt-art-rain 0.9s linear infinite; }
+
+@keyframes wt-art-blink { 0%, 62%, 100% { opacity: 1; } 70%, 92% { opacity: 0.25; } }
+.wt-shell .wt-art-blink { animation: wt-art-blink 1.6s steps(1, end) infinite; }
+
+@keyframes wt-art-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1); }
+}
+.wt-shell .wt-art-twinkle { transform-box: fill-box; transform-origin: center; animation: wt-art-twinkle 2.6s ease-in-out infinite; }
+
+@keyframes wt-art-flicker { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.55; } }
+.wt-shell .wt-art-flicker { animation: wt-art-flicker 3.4s ease-in-out infinite; }
+
+/* 노트북 터미널 커서(장면) */
+@keyframes wt-art-cursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.wt-shell .wt-art-cursor { animation: wt-art-cursor 1.1s steps(1, end) infinite; }
+
+/* ───────────── 또박이 LED 4상태 ───────────── */
+/* 대기(normal) — 숨쉬기 .65 ↔ 1, 3.2s */
+@keyframes wt-art-led-breathe { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+.wt-shell .wt-art-spk[data-led='standby'] .wt-art-led,
+.wt-shell .wt-art-spk[data-led='standby'] .wt-art-led-glow { animation: wt-art-led-breathe 3.2s ease-in-out infinite; }
+/* 처리 중(sweat) — 벨트를 도는 밝은 구간 1.2s */
+@keyframes wt-art-led-run { from { transform: translateX(-60px); } to { transform: translateX(140px); } }
+.wt-shell .wt-art-led-run { animation: wt-art-led-run 1.2s linear infinite; }
+/* 정정(shock/break) — break 는 느리게 깜빡이며 절반 어두움 */
+@keyframes wt-art-led-dim { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.9; } }
+.wt-shell .wt-art-portrait[data-face='break'] .wt-art-led { animation: wt-art-led-dim 2.4s ease-in-out infinite; }
+/* 권한 거부(angry) — 600ms 짧은 점멸 2회 후 고정 */
+@keyframes wt-art-led-refuse { 0%, 24%, 50%, 74%, 100% { opacity: 1; } 12%, 62% { opacity: 0.3; } }
+.wt-shell .wt-art-spk[data-led='refuse'] .wt-art-led { animation: wt-art-led-refuse 600ms linear 2; }
+/* 이퀄라이저 — 말할 때만 */
+@keyframes wt-art-eq { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+.wt-shell .wt-art-spk .wt-art-eq rect { transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0.35); }
+.wt-shell .wt-art-spk[data-speaking='on'] .wt-art-eq rect { animation: wt-art-eq 0.7s ease-in-out infinite; }
+.wt-shell .wt-art-spk[data-speaking='on'] .wt-art-eq1 { animation-delay: -0.2s; }
+.wt-shell .wt-art-spk[data-speaking='on'] .wt-art-eq2 { animation-delay: -0.45s; }
+.wt-shell .wt-art-spk[data-speaking='on'] .wt-art-eq3 { animation-delay: -0.1s; }
+.wt-shell .wt-art-spk[data-speaking='on'] .wt-art-eq4 { animation-delay: -0.3s; }
+
+/* ───────────── 초상 ───────────── */
+/* 장식 호흡(무대가 아니라 초상 안쪽 몸통) — ±2px 4s */
+@keyframes wt-art-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+.wt-shell .wt-art-portrait[data-idle='on'] .wt-art-breath { animation: wt-art-breathe 4s ease-in-out infinite; }
+/* shock — 0.22s 점프(−6px → 0, 1.06 → 1) + 스파크 3줄 */
+@keyframes wt-art-jump {
+  0% { transform: translateY(-6px) scale(1.06); }
+  100% { transform: translateY(0) scale(1); }
+}
+.wt-shell .wt-art-portrait[data-face='shock'] .wt-art-figure { transform-origin: 300px 800px; animation: wt-art-jump 220ms cubic-bezier(0.34, 1.56, 0.64, 1) 1; }
+@keyframes wt-art-spark { 0% { opacity: 0; transform: scale(0.6); } 30% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
+.wt-shell .wt-art-spark { transform-box: fill-box; transform-origin: center; animation: wt-art-spark 220ms ease-out 1 both; }
+/* 한결 신뢰 2 — 눈 흔들림(3회 후 정지 = 정보성 아님, 장식 루프로 취급하지 않고 3회만) */
+@keyframes wt-art-eyeshake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+.wt-shell .wt-art-eyeshake { animation: wt-art-eyeshake 0.5s linear 3; }
+
+/* ───────────── 판정 그래픽(VerdictFx 가 클래스로 켬) ───────────── */
+/* 컷인 사선 스트립 — 왼쪽에서 280ms 스윕 인 → 유지 → 220ms 아웃. 총 길이는 --wt-art-cutin-ms(기본 650ms) */
+@keyframes wt-art-cutin {
+  0% { transform: translateX(-110%); opacity: 1; }
+  40% { transform: translateX(0); opacity: 1; }
+  72% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(110%); opacity: 1; }
+}
+@keyframes wt-art-cutin-fade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.wt-shell .wt-art-cutin.is-play { animation: wt-art-cutin calc(var(--wt-art-cutin-ms, 650ms) * var(--wt-fx-scale, 1)) cubic-bezier(0.22, 0.8, 0.2, 1) 1 both; }
+/* 균열 — 선이 그려짐(stroke-dashoffset, pathLength=1) */
+@keyframes wt-art-crack { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.wt-shell .wt-art-crack path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.wt-shell .wt-art-crack.is-play path { animation: wt-art-crack calc(240ms * var(--wt-fx-scale, 1)) ease-out 1 both; }
+.wt-shell .wt-art-crack.is-play path:nth-child(2n) { animation-delay: calc(30ms * var(--wt-fx-scale, 1)); }
+.wt-shell .wt-art-crack.is-play path:nth-child(3n) { animation-delay: calc(60ms * var(--wt-fx-scale, 1)); }
+/* 도장 — scale 1.7 → 1, 회전은 그림 안에 있음 */
+@keyframes wt-art-stamp {
+  0% { transform: scale(1.7); opacity: 0; }
+  55% { transform: scale(0.94); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.wt-shell .wt-art-stamp.is-play { transform-origin: center; animation: wt-art-stamp calc(var(--wt-art-stamp-ms, 400ms) * var(--wt-fx-scale, 1)) cubic-bezier(0.34, 1.56, 0.64, 1) 1 both; }
+/* 도장 파문 링 1회 */
+@keyframes wt-art-ripple { from { transform: scale(0.9); opacity: 0.7; } to { transform: scale(1.35); opacity: 0; } }
+.wt-shell .wt-art-stamp.is-play .wt-art-ripple { transform-box: fill-box; transform-origin: center; animation: wt-art-ripple 520ms ease-out 120ms 1 both; }
+.wt-shell .wt-art-stamp .wt-art-ripple { opacity: 0; }
+/* 홀로그램 결 — 골드 도장 위를 한 번 쓸고 지나감 */
+@keyframes wt-art-holo { from { transform: translateX(-240px); } to { transform: translateX(240px); } }
+.wt-shell .wt-art-stamp.is-play .wt-art-holo { animation: wt-art-holo 700ms ease-in-out 260ms 1 both; }
+
+/* ───────────── 엔딩: 경광등 적·청 교대(0.8Hz, 초당 3회 미만) ───────────── */
+@keyframes wt-art-siren { 0%, 100% { opacity: 0.7; } 50% { opacity: 0.15; } }
+.wt-shell .wt-art-siren-a { animation: wt-art-siren 1.25s ease-in-out infinite; }
+.wt-shell .wt-art-siren-b { animation: wt-art-siren 1.25s ease-in-out -0.625s infinite; }
+
+/* ───────────── 줄이기 · OS 모션 줄이기 · 숨김 탭 ───────────── */
+.wt-shell[data-fx='reduced'] .wt-art-rain,
+.wt-shell[data-fx='reduced'] .wt-art-blink,
+.wt-shell[data-fx='reduced'] .wt-art-twinkle,
+.wt-shell[data-fx='reduced'] .wt-art-flicker,
+.wt-shell[data-fx='reduced'] .wt-art-cursor,
+.wt-shell[data-fx='reduced'] .wt-art-led,
+.wt-shell[data-fx='reduced'] .wt-art-led-glow,
+.wt-shell[data-fx='reduced'] .wt-art-led-run,
+.wt-shell[data-fx='reduced'] .wt-art-eq rect,
+.wt-shell[data-fx='reduced'] .wt-art-breath,
+.wt-shell[data-fx='reduced'] .wt-art-figure,
+.wt-shell[data-fx='reduced'] .wt-art-spark,
+.wt-shell[data-fx='reduced'] .wt-art-eyeshake,
+.wt-shell[data-fx='reduced'] .wt-art-crack path,
+.wt-shell[data-fx='reduced'] .wt-art-stamp,
+.wt-shell[data-fx='reduced'] .wt-art-ripple,
+.wt-shell[data-fx='reduced'] .wt-art-holo,
+.wt-shell[data-fx='reduced'] .wt-art-siren-a,
+.wt-shell[data-fx='reduced'] .wt-art-siren-b {
+  animation: none !important;
+}
+.wt-shell[data-fx='reduced'] .wt-art-rain { opacity: 0.25; }
+.wt-shell[data-fx='reduced'] .wt-art-led-run { opacity: 0 !important; }
+.wt-shell[data-fx='reduced'] .wt-art-cutin.is-play { animation: wt-art-cutin-fade calc(820ms * var(--wt-fx-scale, 1)) linear 1 both !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-shell:not([data-fx='full']) .wt-art-rain,
+  .wt-shell:not([data-fx='full']) .wt-art-blink,
+  .wt-shell:not([data-fx='full']) .wt-art-twinkle,
+  .wt-shell:not([data-fx='full']) .wt-art-flicker,
+  .wt-shell:not([data-fx='full']) .wt-art-cursor,
+  .wt-shell:not([data-fx='full']) .wt-art-led,
+  .wt-shell:not([data-fx='full']) .wt-art-led-glow,
+  .wt-shell:not([data-fx='full']) .wt-art-led-run,
+  .wt-shell:not([data-fx='full']) .wt-art-eq rect,
+  .wt-shell:not([data-fx='full']) .wt-art-breath,
+  .wt-shell:not([data-fx='full']) .wt-art-figure,
+  .wt-shell:not([data-fx='full']) .wt-art-spark,
+  .wt-shell:not([data-fx='full']) .wt-art-eyeshake,
+  .wt-shell:not([data-fx='full']) .wt-art-crack path,
+  .wt-shell:not([data-fx='full']) .wt-art-stamp,
+  .wt-shell:not([data-fx='full']) .wt-art-ripple,
+  .wt-shell:not([data-fx='full']) .wt-art-holo,
+  .wt-shell:not([data-fx='full']) .wt-art-siren-a,
+  .wt-shell:not([data-fx='full']) .wt-art-siren-b {
+    animation: none !important;
+  }
+  .wt-shell:not([data-fx='full']) .wt-art-rain { opacity: 0.25; }
+  .wt-shell:not([data-fx='full']) .wt-art-led-run { opacity: 0 !important; }
+  .wt-shell:not([data-fx='full']) .wt-art-cutin.is-play { animation: wt-art-cutin-fade 820ms linear 1 both !important; }
+}
+
+/* 숨김 탭·백그라운드 — 장식 루프만 일시 정지(진행 중 판정 연출은 건드리지 않음) */
+.wt-shell.wt-paused .wt-art-rain,
+.wt-shell.wt-paused .wt-art-blink,
+.wt-shell.wt-paused .wt-art-twinkle,
+.wt-shell.wt-paused .wt-art-flicker,
+.wt-shell.wt-paused .wt-art-cursor,
+.wt-shell.wt-paused .wt-art-led,
+.wt-shell.wt-paused .wt-art-led-glow,
+.wt-shell.wt-paused .wt-art-led-run,
+.wt-shell.wt-paused .wt-art-eq rect,
+.wt-shell.wt-paused .wt-art-breath,
+.wt-shell.wt-paused .wt-art-siren-a,
+.wt-shell.wt-paused .wt-art-siren-b {
+  animation-play-state: paused;
+}
