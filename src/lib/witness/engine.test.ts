@@ -6,8 +6,12 @@ import { describe, expect, it } from 'vitest';
 import { CASE } from './case-data';
 import {
   RULES,
+  STAR_TOTAL,
   accuseWarn,
   addAchievement,
+  cancelAccuse,
+  endInvestigation,
+  starsToGate,
   applyResultToMeta,
   caseFileUnlocked,
   clock,
@@ -36,6 +40,7 @@ import {
   press,
   profiles,
   questions,
+  rewind,
   roomStatus,
   setSlot,
   setStatus,
@@ -74,16 +79,16 @@ function tutorial(): RunState {
 }
 
 describe('새 판 · 튜토리얼', () => {
-  it('행동 12 · 신뢰 5 · 23:00 · 사건 소개부터', () => {
+  it('행동 13 · 신뢰 5 · 22:50 · 사건 소개부터(규칙 개정 rev 2)', () => {
     const r = newRun();
-    expect(r).toMatchObject({ actions: 12, trust: 5, wrong: 0, hints: 0, phase: 'play', screen: { name: 'intro' } });
-    expect(clock(r)).toBe('23:00');
-    expect(minutesLeft(r)).toBe(120);
+    expect(r).toMatchObject({ actions: 13, trust: 5, wrong: 0, hints: 0, phase: 'play', rev: 2, screen: { name: 'intro' } });
+    expect(clock(r)).toBe('22:50');
+    expect(minutesLeft(r)).toBe(130);
   });
 
   it('튜토리얼(거실·브리핑)은 무료, 증거 3장 + ◆ C01', () => {
     const r = tutorial();
-    expect(r.actions).toBe(12);
+    expect(r.actions).toBe(13);
     expect(r.evidence).toEqual(['E01', 'E02', 'E03']);
     expect(r.broken).toEqual(['C01']);
     expect(stars(r)).toBe(0);
@@ -101,7 +106,7 @@ describe('새 판 · 튜토리얼', () => {
 
   it('2회차 건너뛰기 = 튜토리얼 증거 자동 획득 + 돌파 처리, 행동 그대로', () => {
     const r = newRun({ skipTutorial: true });
-    expect(r).toMatchObject({ actions: 12, trust: 5, evidence: ['E01', 'E02', 'E03'], broken: ['C01'], screen: { name: 'hub' } });
+    expect(r).toMatchObject({ actions: 13, trust: 5, evidence: ['E01', 'E02', 'E03'], broken: ['C01'], screen: { name: 'hub' } });
     expect(r.checkpoint).toBeUndefined();
   });
 });
@@ -111,24 +116,24 @@ describe('행동 경제(시스템 2-1)', () => {
     let r = tutorial();
     expect(costOf(r, { location: 'L1' })).toBe(1);
     const s = enterLocation(r, 'L1');
-    expect(s.events).toContainEqual({ t: 'spent', cost: 1, left: 11 });
+    expect(s.events).toContainEqual({ t: 'spent', cost: 1, left: 12 });
     r = must(exit(s.run));
     expect(costOf(r, { location: 'L1' })).toBe(0);
     const again = enterLocation(r, 'L1');
     expect(again.events).toEqual([]);
-    expect(again.run.actions).toBe(11);
-    expect(clock(again.run)).toBe('23:10');
+    expect(again.run.actions).toBe(12);
+    expect(clock(again.run)).toBe('23:00');
   });
 
   it('일반 핫스팟은 무료, 정밀 조사는 +1(처음 한 번)', () => {
     let r = must(enterLocation(tutorial(), 'L2'));
     r = must(examine(r, 'L2.h1'));
-    expect(r.actions).toBe(11);
+    expect(r.actions).toBe(12);
     expect(costOf(r, { hotspot: 'L2.h3' })).toBe(1);
     r = must(examine(r, 'L2.h3'));
-    expect(r.actions).toBe(10);
+    expect(r.actions).toBe(11);
     expect(r.evidence).toContain('E09');
-    expect(must(examine(r, 'L2.h3')).actions).toBe(10);
+    expect(must(examine(r, 'L2.h3')).actions).toBe(11);
   });
 
   it('정밀 조사는 장소에 들어가야 한다', () => {
@@ -137,12 +142,12 @@ describe('행동 경제(시스템 2-1)', () => {
 
   it('세트 첫 열람 1 · 재진입 0 · 추궁·제시 0', () => {
     let r = must(openSet(tutorial(), 'T01'));
-    expect(r.actions).toBe(11);
+    expect(r.actions).toBe(12);
     r = must(press(r, 'T01.1'));
     r = must(present(r, 'T01.1', ['E02']));
-    expect(r.actions).toBe(11);
+    expect(r.actions).toBe(12);
     r = must(exit(r));
-    expect(must(openSet(r, 'T01')).actions).toBe(11);
+    expect(must(openSet(r, 'T01')).actions).toBe(12);
   });
 
   it('★ 해금(chain) 세트는 무료, ◆ 해금 세트·장소는 기본 비용, 대질은 ◆ 섞여도 무료', () => {
@@ -174,18 +179,134 @@ describe('행동 경제(시스템 2-1)', () => {
 });
 
 describe('사이렌(시스템 2-5)', () => {
-  it('행동 0이 된 세트는 끝까지 — 나오는 순간 사이렌, 이후 재진입 금지', () => {
+  it('행동 0이 된 세트는 끝까지 — 나오는 순간 사이렌, 새 곳은 막히고 이미 연 곳은 다시 열린다', () => {
     let r = { ...tutorial(), actions: 1 };
     r = must(openSet(r, 'T01'));
     expect(r.actions).toBe(0);
     r = must(press(r, 'T01.2'));
     expect(setStatus(r, 'T01').state).toBe('opened');
-    expect(enterLocation(r, 'L0').error).toBe('siren');
     const out = exit(r);
     expect(out.events).toContainEqual({ t: 'siren' });
     expect(out.run).toMatchObject({ phase: 'siren', screen: { name: 'siren' } });
-    expect(openSet(out.run, 'T01').error).toBe('siren');
+    // 새로 돈이 드는 곳 — 막힘
+    expect(openSet(out.run, 'T02').error).toBe('siren');
+    expect(enterLocation(out.run, 'L1').error).toBe('siren');
     expect(roomStatus(out.run, 'L1').state).toBe('siren');
+    expect(setStatus(out.run, 'T02').state).toBe('siren');
+    // 이미 연 곳 — 무료로 다시(R3)
+    expect(setStatus(out.run, 'T01').state).toBe('opened');
+    expect(roomStatus(out.run, 'L0').state).toBe('visited');
+    expect(must(openSet(out.run, 'T01')).actions).toBe(0);
+    expect(must(enterLocation(out.run, 'L0')).actions).toBe(0);
+  });
+
+  it('사이렌 뒤: 이미 연 증언에서 추궁·제시가 정상 동작(R3) — 늦게 얻은 증거로 ★ 를 깰 수 있다(B10)', () => {
+    // 13번째 행동이 정밀 조사(P:L5.h3 = E17) — 예전엔 그 증거를 증언에 못 썼다(12번째 행동 규칙)
+    const before = playPath(['L3', 'T05', 'L1', 'T03', 'T02', 'L2', 'T04', 'P:L2.h3', 'T01', 'L5', 'T06', 'L4']);
+    expect(before.actions).toBe(1);
+    expect(before.evidence).not.toContain('E17');
+    expect(stars(before)).toBe(5);
+    const last = playPath(['P:L5.h3'], before);
+    expect(last.actions).toBe(0);
+    expect(last.phase).toBe('siren'); // closure 가 나오는 순간 사이렌
+    expect(last.evidence).toContain('E17');
+    expect(stars(last)).toBe(STAR_TOTAL); // 사이렌 뒤 이미 연 증언에서 E17 로 ★ 를 깼다
+  });
+
+  it('사이렌 뒤 비용 0 세트(해금된 chain·대질)는 첫 열람도 된다(R4) — 정밀 조사·수첩 정리는 no-actions(R5)', () => {
+    // 행동을 다 쓴 채 T04 를 깨 T07(chain, 비용 0)을 연다 — 사이렌 뒤에도 T07 첫 열람
+    let r = playPath(['T05', 'L2']);
+    r = { ...r, actions: 1 };
+    r = must(openSet(r, 'T04'));
+    r = must(press(r, 'T04.1'));
+    r = must(exit(r)); // 사이렌 전(행동 0 에서 처음 나감 → siren)
+    expect(r.phase).toBe('siren');
+    expect(r.opened).not.toContain('T07');
+    expect(setStatus(r, 'T07').state).toBe('locked');
+    // 사이렌 뒤에 T04 를 다시 열어 ★ 를 깨면 T07 이 열리고, 비용 0 이라 첫 열람이 허용된다
+    r = must(openSet(r, 'T04'));
+    r = must(present(r, 'T04.2', ['E06']));
+    expect(setStatus(r, 'T07')).toMatchObject({ cost: 0 });
+    expect(setStatus(r, 'T07').state).not.toBe('siren');
+    r = must(openSet(r, 'T07'));
+    expect(r.opened).toContain('T07');
+    expect(r.actions).toBe(0);
+    // 정밀 조사·수첩 정리는 행동이 필요하다
+    expect(enterLocation(r, 'L2').error).toBeUndefined();
+    expect(examine(must(enterLocation(r, 'L2')), 'L2.h3').error).toBe('no-actions');
+    expect(hint(r).error).toBe('no-actions');
+  });
+
+  it('사이렌 뒤 일반 핫스팟(무료)은 이미 들어간 장소 안에서 조사할 수 있다', () => {
+    let r = must(enterLocation({ ...tutorial(), actions: 2 }, 'L1'));
+    r = must(exit(r));
+    r = { ...r, actions: 1 };
+    r = must(enterLocation(r, 'L2')); // 마지막 행동
+    r = must(exit(r));
+    expect(r.phase).toBe('siren');
+    const again = must(enterLocation(r, 'L1'));
+    expect(must(examine(again, 'L1.h1')).visited).toContain('L1.h1');
+  });
+
+  it('사이렌 뒤 ★ ≥ 3 이면 [지목하기] — 경고가 뜨고 취소할 수 있다(R6·R7)', () => {
+    let r = playPath(['L2', 'T04', 'T05', 'L3']);
+    expect(stars(r)).toBe(3);
+    r = { ...r, actions: 0 };
+    r = must(exit(r));
+    expect(r.phase).toBe('siren');
+    const hub = must(continueAfterSiren(r));
+    expect(hub.screen.name).toBe('hub');
+    expect(hub.phase).toBe('siren');
+    expect(hub.accuse).toBeUndefined();
+    expect(endInvestigation(hub).error).toBe('gate');
+    const a = must(startAccuse(hub));
+    expect(a.accuse).toMatchObject({ stage: 'suspect', forced: false });
+    // 경고(B12): 사이렌 뒤에도 계산된다 — 옛 저장의 forced:true 도 무시한다
+    const warn = accuseWarn(a);
+    expect(accuseWarn({ ...a, accuse: { ...a.accuse!, forced: true } })).toEqual(warn);
+    const back = must(cancelAccuse(a));
+    expect(back).toMatchObject({ phase: 'siren', screen: { name: 'hub' } });
+    expect(back.accuse).toBeUndefined();
+  });
+
+  it('사이렌 뒤 ★ < 3 이면 [수사 종료] → 시간 초과 · C (★ ≥ 3 이면 gate)', () => {
+    const t = must(continueAfterSiren(must(exit({ ...tutorial(), actions: 0 }))));
+    expect(t.phase).toBe('siren');
+    expect(t.result).toBeUndefined();
+    expect(starsToGate(t)).toBe(3);
+    const end = endInvestigation(t);
+    expect(end.events).toContainEqual({ t: 'ended', ending: 'timeout', grade: 'C' });
+    expect(end.run.result).toMatchObject({ ending: 'timeout', grade: 'C', actionsLeft: 0 });
+    // 사이렌 전(play)에는 쓸 수 없다
+    expect(endInvestigation(tutorial()).error).toBe('gate');
+    expect(endInvestigation(end.run).error).toBe('ended');
+  });
+
+  it('continueAfterSiren 은 사이렌 상태에서만(그 밖엔 gate / ended)', () => {
+    expect(continueAfterSiren(tutorial()).error).toBe('gate');
+  });
+
+  it('사이렌 뒤에 증언에서 나가도 사이렌이 또 울리지 않는다(exit 은 허브로만)', () => {
+    let r = must(exit({ ...tutorial(), actions: 0 }));
+    r = must(continueAfterSiren(r));
+    r = must(openSet(r, 'T00'));
+    const out = exit(r);
+    expect(out.events).toEqual([]);
+    expect(out.run).toMatchObject({ phase: 'siren', screen: { name: 'hub' } });
+  });
+
+  it('사이렌 뒤에 연 증언에서 수사 배제 → 되감기는 사이렌 상태를 그대로 이어 간다(행동이 되살아나지 않음)', () => {
+    let r = must(openSet({ ...tutorial(), actions: 1 }, 'T01'));
+    r = must(continueAfterSiren(must(exit(r))));
+    r = must(openSet(r, 'T01'));
+    expect(r.checkpoint?.phase).toBe('siren');
+    r = { ...r, trust: 1 };
+    const dead = must(present(r, 'T01.1', ['E01']));
+    expect(dead.phase).toBe('ended');
+    expect(dead.result?.ending).toBe('excluded');
+    const back = must(rewind(dead));
+    expect(back).toMatchObject({ phase: 'siren', actions: 0, rewound: true });
+    expect(openSet(back, 'T02').error).toBe('siren');
   });
 
   it('행동 0에서 깬 ★의 chain 세트는 같은 흐름으로 이어서 할 수 있다', () => {
@@ -199,17 +320,6 @@ describe('사이렌(시스템 2-5)', () => {
     expect(verdictOf(s)?.kind).toBe('BREAK');
   });
 
-  it('사이렌 뒤 ★ ≥ 3 이면 강제 지목(경고 생략), 아니면 시간 초과', () => {
-    let r = playPath(['L2', 'T04', 'T05', 'L3']);
-    expect(stars(r)).toBe(3);
-    r = { ...r, actions: 0 };
-    r = must(exit(r));
-    const a = must(continueAfterSiren(r));
-    expect(a.accuse).toMatchObject({ stage: 'suspect', forced: true });
-    expect(accuseWarn(a)).toBeNull();
-    const t = must(continueAfterSiren(must(exit({ ...tutorial(), actions: 0 }))));
-    expect(t.result?.ending).toBe('timeout');
-  });
 });
 
 describe('추궁', () => {
@@ -404,7 +514,7 @@ describe('해금 · 결과 카드 목록(diffOpened)', () => {
     expect(setStatus(a, 'T09').state).toBe('locked');
     const b = playPath(['L3', 'T05', 'T01', 'T02']);
     expect(b.opened).toContain('T09');
-    expect(b.actions).toBe(8);
+    expect(b.actions).toBe(9);
   });
 });
 
@@ -489,10 +599,10 @@ describe('수첩 정리(힌트, 시스템 3-8)', () => {
   it('행동 1 · 판당 2회 · 마지막 행동이면 바로 사이렌', () => {
     let r = tutorial();
     const s = hint(r);
-    expect(s.events[0]).toEqual({ t: 'spent', cost: 1, left: 11 });
+    expect(s.events[0]).toEqual({ t: 'spent', cost: 1, left: 12 });
     expect(s.events[1]).toMatchObject({ t: 'hint' });
     r = must(hint(s.run));
-    expect(r).toMatchObject({ hints: 2, actions: 10 });
+    expect(r).toMatchObject({ hints: 2, actions: 11 });
     expect(r.hintLog?.length).toBe(2);
     expect(hint(r).error).toBe('no-hints');
     const last = hint({ ...tutorial(), actions: 1 });
@@ -687,9 +797,9 @@ describe('손으로 한 판 — 경로 A(유료 8, 완벽 해결)', () => {
     r = must(present(r, 'T10.2', ['E05', 'E15']));
     r = must(present(r, 'T10.4', ['E16']));
     r = must(exit(r));
-    expect(r).toMatchObject({ actions: 4, trust: 5, wrong: 0 });
+    expect(r).toMatchObject({ actions: 5, trust: 5, wrong: 0 });
     expect(stars(r)).toBe(5);
-    expect(clock(r)).toBe('00:20');
+    expect(clock(r)).toBe('00:10');
     r = must(startAccuse(r));
     r = must(pickCulprit(r, CULPRIT));
     r = must(setSlot(r, 'means', 'E02'));
@@ -697,18 +807,19 @@ describe('손으로 한 판 — 경로 A(유료 8, 완벽 해결)', () => {
     r = must(setSlot(r, 'motive', 'E09'));
     const end = submitAccusation(r);
     expect(end.events).toContainEqual({ t: 'ended', ending: 'perfect', grade: 'A' });
-    expect(end.run.result).toMatchObject({ ending: 'perfect', grade: 'A', title: '로그를 읽는 사람', actionsLeft: 4, evidence: 12, stars: 5 });
+    expect(end.run.result).toMatchObject({ ending: 'perfect', grade: 'A', title: '로그를 읽는 사람', actionsLeft: 5, evidence: 12, stars: 5 });
+    expect(end.run.result?.achievements).toContain('lightning');
   });
 });
 
 describe('규칙 상수(시스템 7-1)', () => {
   it('normal', () => {
-    expect(RULES.normal).toMatchObject({ actions: 12, minutesPerAction: 10, trustMax: 5, trustOnStar: 1, hintsMax: 2, hintCost: 1, starGate: 3, confirmWhenActionsLeq: 2, sMaxWrong: 2, rewindTrust: 2 });
+    expect(RULES.normal).toMatchObject({ actions: 13, minutesPerAction: 10, startMinute: 22 * 60 + 50, trustMax: 5, trustOnStar: 1, hintsMax: 2, hintCost: 1, starGate: 3, confirmWhenActionsLeq: 2, sMaxWrong: 2, rewindTrust: 2 });
   });
 
   it('freeClosure 는 시작 상태를 튜토리얼까지 진행한다', () => {
     const r = freeClosure(newRun());
     expect(r.broken).toEqual(['C01']);
-    expect(r.actions).toBe(12);
+    expect(r.actions).toBe(13);
   });
 });

@@ -8,8 +8,8 @@
  */
 import { ChevronDown, ChevronUp, Lock, List, Map as MapIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { CASE, canAccuse, roomStatus, setStatus, stars, type Location, type TestimonySet } from '@/lib/witness';
-import { COACH_TEXT, HUD_TOUR } from '../lib/copy';
+import { CASE, canAccuse, endInvestigation, roomStatus, setStatus, stars, starsToGate, type Location, type TestimonySet } from '@/lib/witness';
+import { COACH_TEXT, END_SHEET, HUD_TOUR, TOAST } from '../lib/copy';
 import { houseLayout, nameOf, placeName, tutorialDone } from '../lib/format';
 import { useNav } from '../lib/useNav';
 import { useWt } from '../lib/context';
@@ -17,7 +17,8 @@ import { ActionChip, ChipRow, statusChips, type ChipKind } from '../components/A
 import { LedBadge } from '../components/CharacterStage';
 import { ArtSlot } from '../components/ArtSlot';
 import { HudBar } from '../components/Hud';
-import { AccuseBar, BottomTabs, CoachBubble } from '../components/Nav';
+import { AccuseBar, BottomTabs, CoachBubble, EndInvestigationBar } from '../components/Nav';
+import { ConfirmSheet } from '../components/BottomSheet';
 import { Notebook, hasNotebookNews } from '../components/Notebook';
 import { SpendPrompt, useSpend, type SpendTarget } from '../components/SpendPrompt';
 
@@ -91,6 +92,7 @@ export function HubScreen() {
   const anchor = game.heldScreen ?? run.screen;
   const tab = anchor.tab ?? 'house';
   const spend = useSpend();
+  const [endOpen, setEndOpen] = useState(false);
   const settled = tutorialDone(run);
   const { step: tourStep, on: tourOn, next: nextTour } = useHudTour(settled);
   const legendOn = useLegendOnce(settled);
@@ -107,6 +109,12 @@ export function HubScreen() {
 
   const setTab = (t: 'house' | 'people' | 'notebook') => game.anchor({ tab: t });
 
+  // 사이렌 뒤 재방문으로 새로 열린 비용 0 증언(대질·chain) — 사람 탭 점 + 「수사 종료」 시트 한 줄(UX-3)
+  const newSetAfterSiren = run.phase === 'siren' && CASE.sets.some((x) => {
+    const st = setStatus(run, x.id);
+    return st.state === 'open' && st.isNew;
+  });
+
   const confirmSpend = () => {
     const t = spend.target;
     spend.cancel();
@@ -122,7 +130,7 @@ export function HubScreen() {
       return;
     }
     if (st.state === 'siren') {
-      toast({ kind: 'warn', text: '사이렌 뒤라 못 들어가요' });
+      toast({ kind: 'warn', text: TOAST.sirenLocked });
       return;
     }
     if (st.cost > 0) {
@@ -136,7 +144,7 @@ export function HubScreen() {
     const st = setStatus(run, s.id);
     if (st.state === 'locked') return;
     if (st.state === 'siren') {
-      toast({ kind: 'warn', text: '사이렌 뒤라 못 들어가요' });
+      toast({ kind: 'warn', text: TOAST.sirenLocked });
       return;
     }
     if (st.cost > 0) {
@@ -179,9 +187,28 @@ export function HubScreen() {
             coach={!coachSeen('firstSpend') ? COACH_TEXT.firstSpend : undefined}
           />
         )}
-        {canAccuse(run) && run.phase === 'play' && <AccuseBar onClick={requestAccuse} />}
-        <BottomTabs tab={tab} newDot={hasNotebookNews(run)} onTab={setTab} />
+        {canAccuse(run) && run.phase !== 'ended' && <AccuseBar onClick={requestAccuse} afterSiren={run.phase === 'siren'} />}
+        {run.phase === 'siren' && !canAccuse(run) && <EndInvestigationBar onClick={() => setEndOpen(true)} />}
+        <BottomTabs tab={tab} newDot={hasNotebookNews(run)} peopleDot={newSetAfterSiren} onTab={setTab} />
       </div>
+
+      <ConfirmSheet
+        open={endOpen}
+        title={END_SHEET.title}
+        confirmLabel={END_SHEET.yes}
+        cancelLabel={END_SHEET.no}
+        onCancel={() => setEndOpen(false)}
+        onConfirm={() => {
+          setEndOpen(false);
+          game.act((r) => endInvestigation(r));
+        }}
+        confirmTestId="end-yes"
+        danger
+      >
+        <p>{END_SHEET.lead}</p>
+        <p>{END_SHEET.body(starsToGate(run))}</p>
+        {newSetAfterSiren && <p data-testid="end-newset">{END_SHEET.newSet}</p>}
+      </ConfirmSheet>
     </div>
   );
 }
@@ -204,16 +231,22 @@ function HouseTab({ onRoom, highlightLoc }: { onRoom: (l: Location) => void; hig
   return (
     <div className="wt-house">
       <div className="wt-goal">
-        {goalOpen ? (
+        {run.phase === 'siren' ? (
+          <p data-testid="siren-goal">
+            <b>사이렌 뒤</b> · 이미 연 곳은 다시 볼 수 있다{starsToGate(run) > 0 ? ` · ★ ${starsToGate(run)}개 더` : ''}
+          </p>
+        ) : goalOpen ? (
           <p>
             <b>목표</b> · 결정적 모순 3개를 깨면 지목할 수 있다
           </p>
         ) : (
           <p className="wt-muted">목표는 접어 뒀어요</p>
         )}
-        <button type="button" className="wt-iconbtn wt-iconbtn--sm" onClick={() => setGoalOpen((v) => !v)} aria-label={goalOpen ? '목표 접기' : '목표 펼치기'} aria-expanded={goalOpen}>
-          {goalOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden />}
-        </button>
+        {run.phase !== 'siren' && (
+          <button type="button" className="wt-iconbtn wt-iconbtn--sm" onClick={() => setGoalOpen((v) => !v)} aria-label={goalOpen ? '목표 접기' : '목표 펼치기'} aria-expanded={goalOpen}>
+            {goalOpen ? <ChevronUp size={16} aria-hidden /> : <ChevronDown size={16} aria-hidden />}
+          </button>
+        )}
       </div>
 
       {list ? (

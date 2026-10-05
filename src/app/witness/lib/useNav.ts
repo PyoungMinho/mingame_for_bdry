@@ -1,13 +1,14 @@
 'use client';
 
 /**
- * 화면 이동(장소 진입 · 증언 열기 · 나가기) — 엔진 Step 을 토스트·진동·HUD 피드백으로 번역한다.
+ * 화면 이동(장소 진입 · 증언 열기 · 나가기) — 엔진 Step 을 토스트·진동·효과음(시계 틱 · 행동 3 경고)·HUD 피드백으로 번역한다.
  * 자동으로 행동을 쓰는 경로는 없다: 유료 대상은 호출 전에 SpendPrompt 를 거친다(호출자 책임).
  */
-import { enterLocation, exit as engineExit, openSet, type EngineEvent, type HubTab, type Step } from '@/lib/witness';
+import { RULES, enterLocation, exit as engineExit, openSet, type EngineEvent, type HubTab, type Step } from '@/lib/witness';
 import { TOAST } from './copy';
 import { useWt } from './context';
 import { VIB } from './fx';
+import { playSfx } from '../audio/useGameAudio';
 
 const ERR_TEXT: Record<string, string> = {
   siren: TOAST.sirenLocked,
@@ -28,12 +29,13 @@ export function useNav() {
       if (e.left === 3 && prevActions > 3) {
         toast({ kind: 'danger', text: TOAST.sirenNear, ms: 4000 });
         vib(VIB.action3);
-      }
+        playSfx('siren');
+      } else playSfx('tick');
     }
   };
 
   const run = (fn: Parameters<typeof game.act>[0]): Step => {
-    const prev = game.getRun()?.actions ?? 12;
+    const prev = game.getRun()?.actions ?? RULES.normal.actions;
     const step = game.act(fn);
     if (step.error) toast({ kind: 'warn', text: ERR_TEXT[step.error] ?? '지금은 할 수 없다', ms: 1600 });
     else feedback(step.events, prev);

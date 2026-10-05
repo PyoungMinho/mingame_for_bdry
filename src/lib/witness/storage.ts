@@ -5,14 +5,22 @@
  *  - run 은 읽을 때 구조·값 범위·id 를 전부 검증하고 **화이트리스트 필드만** 복사한다. 하나라도 깨졌으면 키를 지우고 폐기
  *    (디자인 §7-4 "저장 손상 / v 불일치 → run 폐기 + meta 보존"). 모르는 필드는 버린다.
  *  - 없는 선택 필드는 기본값으로 읽는다(phase 'play', final [] …) — v 는 1 유지.
+ *  - 규칙 개정(rev 2 = 행동 13 · 사이렌 뒤 재방문): rev 가 없는 옛 저장은 행동 12 규칙으로 진행 중이던 판이다.
+ *    진행 중(phase 'play')이면 남은 행동에 +1 을 더해 새 규칙으로 이관한다. 근거 — 새 규칙은 옛 규칙보다 모든 면에서 넉넉하다(행동 +1,
+ *    재방문 허용). 쓴 행동 수는 그대로라 시계가 10분 이르게(시작이 23:00 → 22:50) 가리킬 뿐 강력팀 도착 01:00 은 그대로이고
+ *    (= 늘어난 행동 1번만큼의 시간이 더 생긴 것), 이미 얻은 증거·돌파·신뢰는 한 칸도 건드리지 않는다. 옛 규칙을 판마다 따로 유지하면 엔진 분기가 영구히 남는다.
+ *    이미 사이렌이 울린 판(phase 'siren')과 끝난 판은 행동을 그대로 둔다(사이렌 장면을 두 번 보이지 않으려고).
+ *    옛 저장의 accuse.forced 는 읽되 엔진이 무시한다(취소·경고 가능).
  *  - meta 는 관대하게: 깨진 필드만 기본값으로 바꾸고 나머지는 살린다(도감은 소중하다).
  */
 import {
   CASE_ID,
   DEFAULT_SETTINGS,
+  RULES_REV,
   KNOWN,
   RULES,
   SAVE_V,
+  SOUND_LEVELS,
   newMeta,
   rulesOf,
   type AccuseDraft,
@@ -28,6 +36,7 @@ import {
   type Screen,
   type ScreenName,
   type Settings,
+  type SoundLevel,
   type WitnessMeta,
 } from './engine';
 import type { AchievementId, EndingId, Grade, Id, Slot, SuspectId } from './types';
@@ -256,6 +265,7 @@ function parseCore(v: unknown): RunCore | null {
   const mode = v.mode === undefined ? 'normal' : v.mode;
   if (!MODES.includes(mode as Mode)) return null;
   const rules = rulesOf({ mode: mode as Mode });
+  if (v.rev !== undefined && v.rev !== RULES_REV) return null;
   if (!isInt(v.actions, 0, rules.actions) || !isInt(v.trust, 0, rules.trustMax)) return null;
   if (!isInt(v.wrong, 0, 9999) || !isInt(v.hints, 0, rules.hintsMax) || typeof v.rewound !== 'boolean') return null;
   const visited = idList(v.visited, VISITABLE);
@@ -282,11 +292,15 @@ function parseCore(v: unknown): RunCore | null {
   if (seen === null) return null;
   if (v.egg !== undefined && typeof v.egg !== 'boolean') return null;
   if (phase === 'ended' && !result) return null;
+  // 옛 규칙(행동 12) 저장 이관 — 진행 중인 판만 행동 +1(상한 = 새 예산). 옛 규칙의 '마지막 행동 중' 표시(final)는 더 쓸 일이 없다
+  const legacyPlay = v.rev === undefined && phase === 'play';
+  const actions = legacyPlay ? Math.min(rules.actions, v.actions + 1) : v.actions;
   const core: RunCore = {
     v: SAVE_V,
     caseId: CASE_ID,
     mode: mode as Mode,
-    actions: v.actions,
+    rev: RULES_REV,
+    actions,
     trust: v.trust,
     wrong: v.wrong,
     hints: v.hints,
@@ -304,7 +318,7 @@ function parseCore(v: unknown): RunCore | null {
     startedAt: v.startedAt,
     playMs: v.playMs,
     phase: phase as Phase,
-    final,
+    final: legacyPlay && v.actions === 0 ? [] : final,
   };
   if (accuse) core.accuse = accuse;
   if (hintLog) core.hintLog = hintLog;
@@ -386,6 +400,10 @@ function parseSettings(v: unknown): Settings {
   if (typeof v.leftHand === 'boolean') s.leftHand = v.leftHand;
   if (typeof v.readFast === 'boolean') s.readFast = v.readFast;
   if (['map', 'list'].includes(v.hubView as string)) s.hubView = v.hubView as Settings['hubView'];
+  // 소리(나중에 더한 필드) — 옛 저장에는 없으므로 없거나 깨졌으면 기본값(보통·보통·켬)
+  if (SOUND_LEVELS.includes(v.bgm as SoundLevel)) s.bgm = v.bgm as SoundLevel;
+  if (SOUND_LEVELS.includes(v.sfx as SoundLevel)) s.sfx = v.sfx as SoundLevel;
+  if (typeof v.muted === 'boolean') s.muted = v.muted;
   return s;
 }
 

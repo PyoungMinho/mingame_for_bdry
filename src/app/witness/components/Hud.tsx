@@ -1,16 +1,17 @@
 'use client';
 
 /**
- * HUD — 시계 · 행동 핍 · 신뢰도(한결의 인내심) · ★ 게이지 · 수첩 버튼 (디자인 §3-2, UI 5-1·5-2).
- * 허브(96px)는 시계+12핍, 인게임(52px)은 숫자형 + 하단 2px 12칸 헤어라인(D02).
+ * HUD — 시계 · 행동 핍 · 신뢰도(한결의 인내심) · ★ 게이지 · 수첩 버튼 (디자인 §3-2, UI 5-1·5-2). 소리 토글은 허브 HUD(… 옆)에만 — 인게임 HUD 는 한결 얼굴 자리를 지킨다.
+ * 허브(96px)는 시계+13핍, 인게임(52px)은 숫자형 + 하단 2px 13칸 헤어라인(D02). 개수는 RULES.normal.actions 를 따른다.
  * 전체 ★ 개수는 보여 주지 않는다(엔딩에서 처음 공개). 값 변화는 role="status" 로 600ms 디바운스해 읽는다.
  */
 import { Clock, Ellipsis, NotebookPen, Siren, Star, ChevronLeft } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
-import { clock, minutesLeft, rulesOf, stars, type Face, type RunCore } from '@/lib/witness';
+import { RULES, clock, minutesLeft, rulesOf, stars, type Face, type RunCore } from '@/lib/witness';
 import { ArtSlot } from './ArtSlot';
+import { SoundToggle } from '../audio/SoundToggle';
 
-export function ActionPips({ left, total = 12, as = 'pips', preview = 0 }: { left: number; total?: number; as?: 'pips' | 'line'; preview?: number }) {
+export function ActionPips({ left, total = RULES.normal.actions, as = 'pips', preview = 0 }: { left: number; total?: number; as?: 'pips' | 'line'; preview?: number }) {
   const items = Array.from({ length: total }, (_, i) => i);
   if (as === 'line') {
     return (
@@ -160,6 +161,7 @@ export function HudBar({ variant, run, onBack, onNotebook, onMenu, onStar, noteb
           <span className="wt-count" aria-hidden>
             {left}
           </span>
+          <SoundToggle />
           <button type="button" className="wt-iconbtn" onClick={onMenu} aria-label="설정 · 도움말">
             <Ellipsis size={20} aria-hidden />
           </button>

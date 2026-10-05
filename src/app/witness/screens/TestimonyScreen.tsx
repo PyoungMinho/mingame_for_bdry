@@ -54,6 +54,7 @@ import { SpendPrompt, useSpend } from '../components/SpendPrompt';
 import { TestimonyPanel } from '../components/TestimonyPanel';
 import { ConfrontEntry } from '../components/Overlays';
 import { Stamp, VerdictFx, type FxPlan } from '../components/VerdictFx';
+import { playSfx } from '../audio/useGameAudio';
 
 type Stage =
   | { k: 'idle' }
@@ -153,7 +154,9 @@ export function TestimonyScreen({ setId }: { setId: string }) {
     if (!coachSeen(id) && id in COACH_TEXT) setEventCoach({ id, text: COACH_TEXT[id as keyof typeof COACH_TEXT] });
   };
 
-  const eventsFeedback = (events: EngineEvent[], after: RunState) => {
+  /** sound=false: 돌파 결과 카드가 따로 소리를 낸다(같은 순간 두 번 울리지 않게) */
+  const eventsFeedback = (events: EngineEvent[], after: RunState, sound = true) => {
+    if (sound && events.some((e) => e.t === 'revealed' || e.t === 'hotspotOpened')) playSfx('unlock');
     for (const e of events) {
       if (e.t === 'revealed') {
         const n = visibleLines(after, setId).findIndex((x) => x.line.id === e.line) + 1;
@@ -203,8 +206,11 @@ export function TestimonyScreen({ setId }: { setId: string }) {
         dialogue(
           row.line.press.lines,
           () => {
-            eventsFeedback(step.events, step.run);
-            if (acquired.length) setAcq({ ids: acquired, i: 0 });
+            eventsFeedback(step.events, step.run, !acquired.length);
+            if (acquired.length) {
+              playSfx('pickup');
+              setAcq({ ids: acquired, i: 0 });
+            }
             goIdle();
           },
           { readKey: `${lineId}#press` },
@@ -291,8 +297,12 @@ export function TestimonyScreen({ setId }: { setId: string }) {
         }
         if (starEv?.count === 3) toast({ kind: 'star', text: TOAST.ready, ms: 3200 });
         if (starEv?.count === 1) showCoachOnce('firstStar');
-        eventsFeedback(step.events, after);
-        setResult({ brk, items: diffOpened(before, after), trustDelta, outro: cleared?.outro ?? null });
+        eventsFeedback(step.events, after, false);
+        const items = diffOpened(before, after);
+        // 결과 카드가 뜨는 순간: 새로 열린 곳(세트·장소·핫스팟·비밀)이 있으면 걸쇠, 증거만이면 픽업
+        if (items.some((it) => it.kind === 'set' || it.kind === 'location' || it.kind === 'hotspot' || it.kind === 'secret')) playSfx('unlock');
+        else if (items.length) playSfx('pickup');
+        setResult({ brk, items, trustDelta, outro: cleared?.outro ?? null });
         goIdle();
       }, { readKey: `${v.breakId}#break` });
       return;
@@ -340,6 +350,7 @@ export function TestimonyScreen({ setId }: { setId: string }) {
     if (r?.outro && r.outro.length) {
       dialogue(r.outro, () => {
         setStamp(true);
+        playSfx('stamp');
         setTimeout(() => setStamp(false), fxMs(1400, fx) || 10);
         unlock();
         goIdle();
@@ -355,7 +366,7 @@ export function TestimonyScreen({ setId }: { setId: string }) {
 
   const gotoItem = (item: OpenedItem) => {
     const go = () => {
-      // 행동 0(마지막 행동으로 연 세트 안): 이 세트·chain 말고는 갈 수 없다 — 「0 → −1」 비용 프롬프트·헛걸음 대신 안내만
+      // 행동 0(마지막 행동으로 연 세트 안): 새로 돈이 드는 곳은 갈 수 없다 — 「0 → −1」 비용 프롬프트·헛걸음 대신 안내만(이미 연 곳은 다시 갈 수 있다)
       const cur = game.getRun()!;
       const blocked =
         item.kind === 'set'
@@ -366,7 +377,7 @@ export function TestimonyScreen({ setId }: { setId: string }) {
               ? roomStatus(cur, item.location).state === 'siren'
               : false;
       if (blocked) {
-        toast({ kind: 'warn', text: TOAST.sirenLocked, ms: 2400 });
+        toast({ kind: 'warn', text: cur.actions <= 0 && cur.phase === 'play' ? TOAST.zeroInside : TOAST.sirenLocked, ms: 2400 });
         return;
       }
       if (item.kind === 'set') {

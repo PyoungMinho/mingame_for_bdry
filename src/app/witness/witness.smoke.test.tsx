@@ -93,9 +93,9 @@ describe('화면 스모크 — 처음부터 끝까지', () => {
     const afterTut = readRun()!;
     expect(afterTut.screen.name).toBe('hub');
     expect(afterTut.broken).toContain(tut.lines[tutLine].breaks![0].id);
-    expect(afterTut.actions).toBe(12);
+    expect(afterTut.actions).toBe(13);
     expect(q('.wt-hud--hub')).toBeTruthy();
-    expect(q('[aria-label^="행동 12번 남음"]')).toBeTruthy();
+    expect(q('[aria-label^="행동 13번 남음"]')).toBeTruthy();
 
     // ── 허브: 방 타일 칩(엔진 셀렉터가 만든 상태) ──
     expect(q('[data-testid=room-L5]')?.getAttribute('aria-label')).toContain('잠김');
@@ -109,7 +109,7 @@ describe('화면 스모크 — 처음부터 끝까지', () => {
       await closureUI();
     }
     const run = readRun()!;
-    expect(run.actions).toBe(4);
+    expect(run.actions).toBe(5);
     expect(stars(run)).toBeGreaterThanOrEqual(3);
     expect(STAR_TOTAL).toBeGreaterThanOrEqual(3);
     expect(run.evidence).toEqual(expect.arrayContaining([...CASE.solution.accept.opportunity, ...CASE.solution.accept.motive]));
@@ -211,13 +211,13 @@ describe('화면 스모크 — 처음부터 끝까지', () => {
     await flush();
     expect(q('.wt-grade')?.getAttribute('data-grade')).toBe('A');
 
-    // ── 다시 수사: 2회차는 소개·튜토리얼을 건너뛰고 허브로(증거 3, 행동 12, 신뢰 5) ──
+    // ── 다시 수사: 2회차는 소개·튜토리얼을 건너뛰고 허브로(증거 3, 행동 13, 신뢰 5) ──
     click(q('[data-testid=ending-again]'));
     await flush();
     const again = readRun()!;
     expect(again.screen.name).toBe('hub');
     expect(again.evidence.length).toBe(3);
-    expect(again.actions).toBe(12);
+    expect(again.actions).toBe(13);
     expect(again.trust).toBe(5);
     expect(q('.wt-hud--hub')).toBeTruthy();
   }, 120_000);
@@ -238,7 +238,7 @@ describe('저장·이어하기', () => {
     await flush();
     const resume = q('[data-testid=title-resume]');
     expect(resume).toBeTruthy();
-    expect(resume!.textContent).toContain('행동 12 남음');
+    expect(resume!.textContent).toContain('행동 13 남음');
     // 새 수사는 확인 시트(취소가 기본 포커스)
     click(q('[data-testid=title-new]'));
     await flush();
@@ -313,21 +313,21 @@ describe('비용 프롬프트·설정', () => {
     click(q('[data-testid=room-L1]'));
     await flush();
     expect(q('.wt-spend')?.textContent).toContain('처음 들어간다');
-    expect(q('.wt-spend')?.textContent).toContain('12 → 11');
-    expect(readRun()!.actions).toBe(12);
+    expect(q('.wt-spend')?.textContent).toContain('13 → 12');
+    expect(readRun()!.actions).toBe(13);
     clickText('닫기', q('.wt-spend')!);
     await flush();
     expect(q('.wt-spend')).toBeNull();
-    expect(readRun()!.actions).toBe(12);
+    expect(readRun()!.actions).toBe(13);
     click(q('[data-testid=room-L1]'));
     await flush();
     click(q('[data-testid=spend-yes]'));
     await flush();
-    expect(readRun()!.actions).toBe(11);
+    expect(readRun()!.actions).toBe(12);
     expect(readRun()!.screen.name).toBe('location');
   });
 
-  it('남은 행동 1: 마지막 행동 시트(기본 포커스 [돌아간다]) · 2: 확인 시트(기본 포커스 [돌아간다])', async () => {
+  it('남은 행동 2: 확인 시트(기본 포커스 [돌아간다]) — 1 의 마지막 행동 시트는 flows 테스트', async () => {
     window.localStorage.setItem(STORAGE_KEYS.meta, JSON.stringify({ v: 1, plays: 1, endings: [], secrets: [], achievements: [], readLines: [], settings: {}, coach: ['hudTour', 'hubLegend', 'firstSpend'] }));
     render(<WitnessApp />);
     await flush();
@@ -344,18 +344,21 @@ describe('비용 프롬프트·설정', () => {
       await openSetUI(set);
       await exitToHub();
     }
-    expect(readRun()!.actions).toBe(4);
+    expect(readRun()!.actions).toBe(5);
     await openSetUI('T05');
     await exitToHub();
-    expect(readRun()!.actions).toBe(3);
-    // 3 → 인라인(여기서 T06 은 잠김이라 열 수 없다) — 손님방도 잠김. 남은 유료 항목이 없으므로 수첩 정리(2회)로 2, 1을 만든다
+    expect(readRun()!.actions).toBe(4);
+    // 4 → 인라인(여기서 T06 은 잠김이라 열 수 없다) — 손님방도 잠김. 수첩 정리 1회(→3) + 정밀 조사(→2)로 2를 만든다
     await tab_notebook();
     clickText('정리하기');
     await flush();
     click(q('[data-testid=spend-yes]'));
     await flush();
     await closeHintSheet();
+    expect(readRun()!.actions).toBe(3);
+    await pay('P:L2.h3');
     expect(readRun()!.actions).toBe(2);
+    await tab_notebook();
     clickText('정리하기');
     await flush();
     // 남은 행동 2 → 확인 시트

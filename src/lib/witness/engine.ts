@@ -3,7 +3,10 @@
  *
  * 규칙 출처: docs/planning/witness-system.md
  *  - 2-1 비용(첫 진입·첫 열람 1, 재방문·재진입·추궁·제시 0, ★ 해금 무료 — 비용은 사건 데이터의 cost 로 명시)
- *  - 2-5 행동 0: 그 행위(장소·세트)는 끝까지, 나오는 순간 사이렌. 이후 재진입 금지(chain 세트는 같은 흐름으로 본다)
+ *  - 2-5 행동 0: 그 행위(장소·세트)는 끝까지, 나오는 순간 사이렌 = '새로운 곳은 끝'.
+ *    사이렌 뒤에도 이미 연 장소·증언은 무료로 다시 볼 수 있고(추궁·제시 포함), 비용 0 항목(해금된 대질·chain 세트)은 첫 열람도 된다.
+ *    새 장소·새 유료 증언은 'siren', 정밀 조사·수첩 정리는 'no-actions'. 지목은 ★ 조건이 되면 언제든,
+ *    안 되면 endInvestigation(「수사 종료」)으로 시간 초과 엔딩(밸런스 R1~R8: docs/planning/witness-balance.md)
  *  - 3-4 제시 판정: 이미 깸 → 돌파(requires 미충족이면 HALF) → HALF(겹침 · v3 반쪽 카드) → 우회 → 오답
  *  - 3-5 신뢰도·되감기, 3-8 수첩 정리(힌트), 4-2 엔딩·등급, 5 업적
  * UI 는 원시 배열을 해석하지 않고 아래 셀렉터(costOf·roomStatus·setStatus·visibleHotspots·visibleLines …)만 쓴다(디자인 §8-2).
@@ -41,7 +44,7 @@ export type Mode = 'normal';
 export interface Rules {
   actions: number;
   minutesPerAction: number;
-  /** 수사 시작 시각(분) — 23:00 */
+  /** 수사 시작 시각(분) — 22:50 (13번 × 10분 → 강력팀 도착 01:00) */
   startMinute: number;
   trustMax: number;
   trustOnStar: number;
@@ -55,9 +58,9 @@ export interface Rules {
 
 export const RULES: Record<Mode, Rules> = {
   normal: {
-    actions: 12,
+    actions: 13,
     minutesPerAction: 10,
-    startMinute: 23 * 60,
+    startMinute: 22 * 60 + 50,
     trustMax: 5,
     trustOnStar: 1,
     hintsMax: 2,
@@ -71,6 +74,11 @@ export const RULES: Record<Mode, Rules> = {
 
 export const CASE_ID = CASE.id;
 export const SAVE_V = 1 as const;
+/**
+ * 규칙 개정 번호 — 2 = 행동 13 · 사이렌 뒤 재방문(R1~R8). 옛 저장(rev 없음 = 행동 12 규칙)은 storage 가 읽을 때
+ * 진행 중인 판(phase play)에 행동 +1 을 더해 이관한다(쓴 행동 수 그대로 · 시계는 22:50 시작이라 10분 이르게 가리키고 도착 01:00 은 같다).
+ */
+export const RULES_REV = 2 as const;
 
 // ─────────────────────────────── 상태 ───────────────────────────────
 
@@ -94,7 +102,7 @@ export interface AccuseDraft {
   means?: Id;
   opportunity?: Id;
   motive?: Id;
-  /** 사이렌 강제 지목(경고 생략) */
+  /** @deprecated 옛 저장 호환용 — 이제 항상 false 로 쓰고, 읽을 때는 무시한다(사이렌 뒤에도 경고·취소가 된다) */
   forced?: boolean;
 }
 
@@ -146,6 +154,8 @@ export interface RunCore {
   v: typeof SAVE_V;
   caseId: typeof CASE_ID;
   mode?: Mode;
+  /** 규칙 개정 번호(RULES_REV). 없으면 옛 규칙(행동 12)으로 만든 저장 */
+  rev?: number;
   actions: number;
   trust: number;
   /** 누적 틀린 제시(튜토리얼 제외) */
@@ -170,7 +180,7 @@ export interface RunCore {
   startedAt: number;
   playMs: number;
   phase: Phase;
-  /** 행동이 0이 된 뒤에도 끝까지 마칠 수 있는 대상(장소·세트) — 나오면 사이렌 */
+  /** 행동이 0이 된 순간 들어가 있던 대상(장소·세트) — 끝까지 마치고 나오면 사이렌 */
   final: Id[];
   accuse?: AccuseDraft;
   hintLog?: HintEntry[];
@@ -346,10 +356,19 @@ function holdsOrSuperseded(run: RunCore, id: Id, depth = 0): boolean {
 
 const cardHeld = (run: RunCore, id: CardId): boolean => PROFILE.has(id) || has(run.evidence, id);
 
-/** 이 장소·세트에 지금 들어가거나 손댈 수 있나(사이렌 규칙) */
+/**
+ * 이 장소·세트에 지금 들어가거나 손댈 수 있나(사이렌 규칙 R3·R4).
+ * 행동이 남았거나, 행동 0 이 된 그 대상이거나, 이미 들어간 곳·이미 연 증언이거나, 비용 0 인 곳(해금된 대질·chain 세트)이면 된다.
+ * 새로 돈이 드는 곳만 막힌다.
+ */
 function accessible(run: RunCore, id: Id): boolean {
-  if (run.phase !== 'play') return false;
-  return run.actions > 0 || has(run.final, id);
+  if (run.phase === 'ended') return false;
+  if (run.actions > 0 || has(run.final, id)) return true;
+  const l = LOC.get(id);
+  if (l) return has(run.visited, id) || l.cost === 0;
+  const s = SET.get(id);
+  if (s) return has(run.opened, id) || s.cost === 0;
+  return false;
 }
 
 export function stars(run: RunCore): number {
@@ -389,6 +408,7 @@ export function newRun(opts: NewRunOptions = {}): RunState {
     v: SAVE_V,
     caseId: CASE_ID,
     mode: opts.mode ?? 'normal',
+    rev: RULES_REV,
     actions: rules.actions,
     trust: rules.trustMax,
     wrong: 0,
@@ -466,10 +486,9 @@ function finish(run: RunState): RunState {
 const ok = (run: RunState, events: EngineEvent[] = []): Step => ({ run: finish(run), events });
 const fail = (run: RunState, error: StepError): Step => ({ run, events: [], error });
 
+/** 끝난 판만 막는다. 사이렌 뒤(phase 'siren')는 accessible() 이 항목별로 가른다 */
 function guardPlay(run: RunState): StepError | null {
-  if (run.phase === 'ended') return 'ended';
-  if (run.phase === 'siren') return 'siren';
-  return null;
+  return run.phase === 'ended' ? 'ended' : null;
 }
 
 /** 행동을 쓴다. 0이 되면 지금 대상만 끝까지 허용 */
@@ -735,7 +754,7 @@ function applyBreak(run: RunState, brk: Break, set: TestimonySet): Step {
         r.secrets.push(u.secret);
         ev.push({ t: 'secret', who: u.secret });
       }
-    } else if ('set' in u && u.chain && r.actions === 0) {
+    } else if ('set' in u && u.chain && r.actions === 0 && r.phase === 'play') {
       // 행동 0 에서 깬 chain — 같은 흐름이므로 끝까지 허용(시스템 2-1 "몰아붙이는 흐름을 끊지 않는다")
       if (!has(r.final, u.set)) r.final.push(u.set);
     }
@@ -757,12 +776,12 @@ function applyBreak(run: RunState, brk: Break, set: TestimonySet): Step {
 
 // ─────────────────────────────── 나가기 · 사이렌 ───────────────────────────────
 
-/** 장소·세트에서 허브로. 행동이 0이면 사이렌 */
+/** 장소·세트에서 허브로. 처음 행동이 0이 된 채 나오면 사이렌, 사이렌 뒤에는 그냥 허브 */
 export function exit(run: RunState, tab?: HubTab): Step {
-  if (run.phase !== 'play') return ok(run);
+  if (run.phase === 'ended') return ok(run);
   const r = draft(run);
   r.screen = { name: 'hub', tab: tab ?? run.screen.tab ?? 'house' };
-  if (r.actions <= 0) return siren(r, []);
+  if (run.phase === 'play' && r.actions <= 0) return siren(r, []);
   return ok(r);
 }
 
@@ -774,16 +793,24 @@ function siren(r: RunState, ev: EngineEvent[]): Step {
   return ok(r, ev);
 }
 
-/** 사이렌 화면 [계속] — ★ 3 이상이면 강제 지목, 아니면 「시간 초과」 */
+/** 사이렌 화면 [계속] — 허브로 돌아온다(R6). 이미 연 곳은 다시 볼 수 있고, ★≥3 이면 [지목하기], 아니면 [수사 종료] */
 export function continueAfterSiren(run: RunState): Step {
   if (run.phase !== 'siren') return fail(run, run.phase === 'ended' ? 'ended' : 'gate');
-  if (stars(run) >= rulesOf(run).starGate) {
-    const r = draft(run);
-    r.accuse = { stage: 'suspect', forced: true };
-    r.screen = { name: 'accuse' };
-    return ok(r);
-  }
+  const r = draft(run);
+  r.screen = { name: 'hub', tab: run.screen.tab ?? 'house' };
+  return ok(r);
+}
+
+/** 사이렌 뒤 「수사 종료」 — 지목 조건(★)이 안 될 때만. 시간 초과 엔딩으로 간다 */
+export function endInvestigation(run: RunState): Step {
+  if (run.phase === 'ended') return fail(run, 'ended');
+  if (run.phase !== 'siren' || canAccuse(run)) return fail(run, 'gate');
   return endRun(draft(run), null, []);
+}
+
+/** 지목 조건까지 모자란 ★ 수(사이렌 뒤 허브 안내용) */
+export function starsToGate(run: RunCore): number {
+  return Math.max(0, rulesOf(run).starGate - stars(run));
 }
 
 // ─────────────────────────────── 수첩 정리(힌트) ───────────────────────────────
@@ -987,15 +1014,14 @@ export function startAccuse(run: RunState): Step {
   if (run.phase === 'ended') return fail(run, 'ended');
   if (!canAccuse(run)) return fail(run, 'gate');
   const r = draft(run);
-  const forced = run.phase === 'siren' || run.actions <= 0;
-  r.accuse = { ...(run.accuse ?? {}), stage: run.accuse?.stage ?? 'suspect', forced };
+  // R7: 사이렌 뒤에도 경고가 뜨고 취소할 수 있다 — forced 는 옛 저장 호환용 필드라 항상 false
+  r.accuse = { ...(run.accuse ?? {}), stage: run.accuse?.stage ?? 'suspect', forced: false };
   r.screen = { name: 'accuse' };
   return ok(r);
 }
 
 export function cancelAccuse(run: RunState): Step {
   if (!run.accuse) return ok(run);
-  if (run.accuse.forced) return fail(run, 'siren');
   const r = draft(run);
   r.accuse = undefined;
   r.screen = { name: 'hub', tab: run.screen.tab ?? 'house' };
@@ -1041,9 +1067,8 @@ export function setAccuseStage(run: RunState, stage: AccuseDraft['stage']): Step
   return ok(r);
 }
 
-/** 지목 경고(시스템 1-8 v2 · v3 단계별). 강제 지목이면 생략. 위에서부터 처음 맞는 하나 */
+/** 지목 경고(시스템 1-8 v2 · v3 단계별). 위에서부터 처음 맞는 하나(사이렌 뒤에도 똑같이 뜬다) */
 export function accuseWarn(run: RunCore): Dialogue[] | null {
-  if (run.accuse?.forced) return null;
   const w = (CASE.solution.accuseWarn ?? []).find((x) => evalCond(x.when, run));
   return w ? w.lines : null;
 }
@@ -1099,11 +1124,15 @@ function isRawForgedSource(id: Id): boolean {
   return !!e && e.reliability === 'raw' && end !== id && EV.get(end)?.reliability === 'forged';
 }
 
+/** 「번개 수사」 — 이만큼 이하의 행동을 쓰고 풀면 */
+export const LIGHTNING_MAX_SPENT = 9;
+
 function achievementsOf(run: RunCore, j: JudgeResult, a: Accusation | null, secretsRevealed: SuspectId[]): AchievementId[] {
   const out: AchievementId[] = [];
   const solved = j.ending === 'perfect' || j.ending === 'hidden';
   if (solved && run.wrong === 0) out.push('flawless');
-  if (solved && run.actions >= 3) out.push('lightning');
+  // 번개 수사 = 쓴 유료 행동 ≤ 9 (예산 12 시절 '남은 행동 ≥ 3'과 같은 절대 기준 — R8)
+  if (solved && rulesOf(run).actions - run.actions <= LIGHTNING_MAX_SPENT) out.push('lightning');
   if (solved && run.hints === 0) out.push('nohint');
   if (stars(run) === STAR_TOTAL && SUSPECTS.every((s) => secretsRevealed.includes(s))) out.push('allclear');
   if (run.egg) out.push('arrestSpeaker');
@@ -1191,12 +1220,18 @@ export function verdictScript(a: Accusation): { call: Dialogue; steps: { slot: S
   return { call, steps, wrongArrest: false };
 }
 
-/** 수사 배제 → 심문 직전으로 되감기(신뢰 max(체크포인트, 2), S 불가) */
+/**
+ * 수사 배제 → 심문 직전으로 되감기(신뢰 max(체크포인트, 2), S 불가).
+ * 체크포인트가 '행동 0 대상 안'(phase play·행동 0)이면 허브로 돌아가는 순간이 곧 나가기이므로
+ * 사이렌으로 되감는다 — 행동 0·사이렌 전 허브(지목도 수사 종료도 없는 막힌 상태)를 만들지 않는다(QA-BAL-01)
+ */
 export function rewind(run: RunState): Step {
   if (run.phase !== 'ended' || run.result?.ending !== 'excluded') return fail(run, 'gate');
   if (!run.checkpoint) return fail(run, 'no-checkpoint');
   const cp = run.checkpoint;
   const rules = rulesOf(run);
+  const toSiren = cp.phase === 'siren' || (cp.phase === 'play' && cp.actions <= 0);
+  const fresh = toSiren && cp.phase !== 'siren';
   const r: RunState = {
     ...cp,
     visited: [...cp.visited],
@@ -1207,19 +1242,19 @@ export function rewind(run: RunState): Step {
     revealed: [...cp.revealed],
     flags: [...cp.flags],
     secrets: [...cp.secrets],
-    final: [...cp.final],
+    final: toSiren ? [] : [...cp.final],
     trust: Math.max(cp.trust, rules.rewindTrust),
     rewound: true,
-    phase: 'play',
+    phase: toSiren ? 'siren' : 'play',
     result: undefined,
     accuse: undefined,
     playMs: run.playMs,
     egg: run.egg || cp.egg,
     seen: run.seen,
-    screen: { name: 'hub', tab: 'people' },
+    screen: fresh ? { name: 'siren' } : { name: 'hub', tab: 'people' },
     checkpoint: cp,
   };
-  return ok(r);
+  return ok(r, fresh ? [{ t: 'siren' }] : []);
 }
 
 // ─────────────────────────────── UI 셀렉터 (디자인 §8-2) ───────────────────────────────
@@ -1266,7 +1301,7 @@ export function roomStatus(run: RunCore, id: Id): RoomStatus {
   const unexamined = visited ? l.hotspots.filter((h) => hotspotVisible(run, h) && !has(run.visited, h.id)).length : 0;
   if (!avail) return { state: 'locked', cost: l.cost, isNew: false, unexamined: 0, lockedLabel: l.lockedLabel };
   const cost = costOf(run, { location: id });
-  if (run.phase !== 'play' || (run.actions <= 0 && !has(run.final, id))) return { state: 'siren', cost, isNew: false, unexamined };
+  if (!accessible(run, id)) return { state: 'siren', cost, isNew: false, unexamined };
   const newHotspot = visited && l.hotspots.some((h) => h.unlock && !h.precise && hotspotVisible(run, h) && !has(run.visited, h.id));
   return { state: visited ? 'visited' : 'open', cost, isNew: (!visited && !l.initial) || newHotspot, unexamined };
 }
@@ -1293,7 +1328,7 @@ export function setStatus(run: RunCore, id: Id): SetStatus {
   };
   if (!setAvailable(run, s)) return { ...base, state: 'locked', isNew: false };
   const opened = has(run.opened, id);
-  if (run.phase !== 'play' || (run.actions <= 0 && !has(run.final, id))) return { ...base, state: 'siren', isNew: false };
+  if (!accessible(run, id)) return { ...base, state: 'siren', isNew: false };
   return { ...base, state: opened ? 'opened' : 'open', isNew: !opened && !s.initial };
 }
 
@@ -1434,7 +1469,7 @@ export function diffOpened(before: RunCore, after: RunCore): OpenedItem[] {
   return [...sets, ...locs, ...hs, ...evs, ...upgrades, ...secrets];
 }
 
-/** 화면 시계 'HH:MM' — 23:00 + 쓴 행동 × 10분 */
+/** 화면 시계 'HH:MM' — 22:50 + 쓴 행동 × 10분 */
 export function clock(run: RunCore): string {
   const r = rulesOf(run);
   const m = (r.startMinute + (r.actions - run.actions) * r.minutesPerAction) % (24 * 60);
@@ -1461,7 +1496,16 @@ export interface Settings {
   leftHand: boolean;
   readFast: boolean;
   hubView: 'map' | 'list';
+  /** 배경음악 크기 0=끔 · 1=작게 · 2=보통 · 3=크게 */
+  bgm: SoundLevel;
+  /** 효과음 크기(대사 타자음 포함) */
+  sfx: SoundLevel;
+  /** 전체 끄기 — 켜면 레벨은 그대로 두고 소리만 멈춘다 */
+  muted: boolean;
 }
+
+export type SoundLevel = 0 | 1 | 2 | 3;
+export const SOUND_LEVELS: readonly SoundLevel[] = [0, 1, 2, 3];
 
 export const DEFAULT_SETTINGS: Settings = {
   speed: 'normal',
@@ -1471,6 +1515,9 @@ export const DEFAULT_SETTINGS: Settings = {
   leftHand: false,
   readFast: true,
   hubView: 'map',
+  bgm: 2,
+  sfx: 2,
+  muted: false,
 };
 
 export interface LastEnding {

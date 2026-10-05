@@ -2,18 +2,27 @@
 
 /**
  * 설정(W70, 디자인 §5-18) · 규칙 카드(W03, 설정 > 도움말에서 다시 보기).
- * 항목: 글자 속도 · 글자 크기 · 화면 효과(기본/짧게/줄이기) · 진동 · 왼손 모드 · 읽은 대사 바로 보기 · 허브 지도/목록 · 도움말 · 데이터 삭제 · 1인용 안내.
+ * 항목: 글자 속도 · 글자 크기 · 화면 효과(기본/짧게/줄이기) · 진동 · 왼손 모드 · 읽은 대사 바로 보기 · 허브 지도/목록 · 소리(전체 끄기 · 배경음악 · 효과음 4단계) · 도움말 · 데이터 삭제 · 1인용 안내.
  * 바꾸면 즉시 반영하고 meta.settings 에 저장한다. 위험 항목은 아래, 확인 시트에서 취소가 기본 포커스.
  */
 import { Check } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { CASE, type Settings as SettingsT } from '@/lib/witness';
+import { CASE, RULES, type Settings as SettingsT } from '@/lib/witness';
 import { GLOSSARY, NOTICE, RULE_CARD_2_EXTRA, RULE_TITLES, SETTINGS_TEXT } from '../lib/copy';
 import { canVibrate } from '../lib/fx';
 import { useWt } from '../lib/context';
 import { useTypewriter } from '../lib/useTypewriter';
 import { ActionPips, StarGate, TrustMeter } from './Hud';
 import { BottomSheet, ConfirmSheet } from './BottomSheet';
+import { playSfx, unlockAudio } from '../audio/useGameAudio';
+
+type LevelStr = '0' | '1' | '2' | '3';
+const LEVEL_OPTS: { v: LevelStr; label: string }[] = [
+  { v: '0', label: '끔' },
+  { v: '1', label: '작게' },
+  { v: '2', label: '보통' },
+  { v: '3', label: '크게' },
+];
 
 function Seg<T extends string>({ label, value, options, onChange, id }: { label: string; value: T; options: { v: T; label: string }[]; onChange: (v: T) => void; id: string }) {
   return (
@@ -23,7 +32,17 @@ function Seg<T extends string>({ label, value, options, onChange, id }: { label:
       </span>
       <div role="radiogroup" aria-labelledby={id} className="wt-seg wt-seg--set">
         {options.map((o) => (
-          <button key={o.v} type="button" role="radio" aria-checked={value === o.v} onClick={() => onChange(o.v)} data-testid={`set-${id}-${o.v}`}>
+          <button
+            key={o.v}
+            type="button"
+            role="radio"
+            aria-checked={value === o.v}
+            onClick={() => {
+              playSfx('tap');
+              onChange(o.v);
+            }}
+            data-testid={`set-${id}-${o.v}`}
+          >
             {value === o.v && <Check size={13} aria-hidden />} {o.label}
           </button>
         ))}
@@ -39,7 +58,19 @@ function Toggle({ label, desc, on, onChange, id }: { label: string; desc?: strin
         {label}
         {desc && <small>{desc}</small>}
       </span>
-      <button type="button" role="switch" aria-checked={on} aria-labelledby={id} className="wt-toggle" data-on={on ? '1' : undefined} onClick={() => onChange(!on)} data-testid={`set-${id}`}>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-labelledby={id}
+        className="wt-toggle"
+        data-on={on ? '1' : undefined}
+        onClick={() => {
+          playSfx('tap');
+          onChange(!on);
+        }}
+        data-testid={`set-${id}`}
+      >
         <i aria-hidden>{on && <Check size={12} />}</i>
         <span>{on ? '켬' : '끔'}</span>
       </button>
@@ -77,6 +108,41 @@ export function SettingsSheet({ open, onClose, inGame, onTitle, onShowRules }: {
         <Toggle id="lefthand" label="왼손 모드" desc="버튼 좌우를 뒤집어요" on={s.leftHand} onChange={(v) => set({ leftHand: v })} />
         <Toggle id="readfast" label="읽은 대사 바로 보기" desc="이미 본 대사는 바로 보여요" on={s.readFast} onChange={(v) => set({ readFast: v })} />
         <Seg id="hubview" label="허브 지도" value={s.hubView} options={[{ v: 'map', label: '지도' }, { v: 'list', label: '목록' }]} onChange={(v) => set({ hubView: v })} />
+
+        <h3 className="wt-sec-h">소리</h3>
+        <Toggle
+          id="mute"
+          label="소리 전체 끄기"
+          desc="배경음악·효과음을 모두 멈춰요"
+          on={s.muted}
+          onChange={(v) => {
+            set({ muted: v });
+            if (!v) unlockAudio(true);
+          }}
+        />
+        <Seg
+          id="bgm"
+          label="배경음악"
+          value={String(s.bgm) as LevelStr}
+          options={LEVEL_OPTS}
+          onChange={(v) => {
+            set({ bgm: Number(v) as SettingsT['bgm'] });
+            // 둘 다 '끔'이라 잠들어 있던 소리를 이 탭(제스처) 안에서 깨운다. 음소거 중이면 그대로 둔다
+            if (!s.muted && Number(v) > 0) unlockAudio(true);
+          }}
+        />
+        <Seg
+          id="sfx"
+          label="효과음"
+          value={String(s.sfx) as LevelStr}
+          options={LEVEL_OPTS}
+          onChange={(v) => {
+            set({ sfx: Number(v) as SettingsT['sfx'] });
+            if (!s.muted && Number(v) > 0) unlockAudio(true);
+            // 바뀐 크기로 한 번 들려준다(설정 반영 effect 뒤)
+            window.setTimeout(() => playSfx('pickup'), 120);
+          }}
+        />
 
         <h3 className="wt-sec-h">도움말</h3>
         <div className="wt-setbtns">
@@ -188,8 +254,8 @@ export function RuleCards({ onDone, doneLabel = '수사 시작' }: { onDone: () 
         <div className="wt-rulecard-art" aria-hidden>
           {i === 0 && (
             <div className="wt-rule-pips">
-              <ActionPips left={12} />
-              <b>12</b>
+              <ActionPips left={RULES.normal.actions} />
+              <b>{RULES.normal.actions}</b>
             </div>
           )}
           {i === 1 && (
@@ -225,7 +291,16 @@ export function RuleCards({ onDone, doneLabel = '수사 시작' }: { onDone: () 
             이전
           </button>
         )}
-        <button type="button" className="wt-btn wt-btn--primary" onClick={last ? onDone : () => go(1)} data-testid="rules-next">
+        <button
+          type="button"
+          className="wt-btn wt-btn--primary"
+          onClick={() => {
+            playSfx('tap');
+            if (last) onDone();
+            else go(1);
+          }}
+          data-testid="rules-next"
+        >
           {last ? doneLabel : '다음'}
         </button>
       </div>

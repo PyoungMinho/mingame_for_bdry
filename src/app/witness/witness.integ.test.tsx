@@ -231,7 +231,7 @@ describe('기타 통합', () => {
     await flush();
     const hook = q('.wt-title-hook')?.textContent ?? '';
     expect(hook).toContain('용의자는 넷, 증인은 스피커 하나.');
-    expect(hook).toContain('행동 12번');
+    expect(hook).toContain('행동 13번');
     for (const s of ['S1', 'S2', 'S3', 'S4'] as const) expect(hook).not.toContain(CASE.names[s]);
     expect(document.body.textContent).toContain('혼자서');
     cleanup();

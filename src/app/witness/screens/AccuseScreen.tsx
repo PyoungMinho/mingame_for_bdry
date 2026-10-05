@@ -3,7 +3,7 @@
 /**
  * 최종 지목(W50~W53) — 1단계 범인 선택 → 2단계 수단·기회·동기 3칸 → (경고) → 확인 → 판정 연출 → 엔딩.
  *  - 초안(범인·3칸)은 변경할 때마다 저장한다(새로고침해도 같은 단계에서 이어진다). 제출 후에는 고칠 수 없다.
- *  - 강제 지목(행동 0)은 이 화면부터 시작, 경고 없음(확인은 거친다). 되돌아가기 없음.
+ *  - 사이렌 뒤에도 똑같다 — 경고가 뜨고 [뒤로]로 허브에 돌아갈 수 있다(밸런스 R7. 옛 저장의 forced 는 무시).
  *  - 또박이를 고르면 이스터에그(페널티 없음) + 업적 토스트 후 다시 고른다.
  *  - 판정 연출 중에는 화면 전환을 잠근다(holdRoute) — 연출이 끝나야 엔딩으로 넘어간다.
  */
@@ -17,12 +17,12 @@ import { ConfirmModal, SLOT_ORDER, SlotBoard, SuspectPick, VerdictStage, WarnMod
 import { DialogueBox } from '../components/DialogueBox';
 import { EvidenceSheet } from '../components/EvidenceSheet';
 import { BottomSheet } from '../components/BottomSheet';
+import { playSfx } from '../audio/useGameAudio';
 
 export function AccuseScreen() {
   const { game, toast, openNotebook } = useWt();
   const run = game.run!;
   const draft = run.accuse ?? { stage: 'suspect' as const };
-  const forced = !!draft.forced;
   const stage = draft.stage;
   const [picked, setPicked] = useState<SuspectId | 'AI' | null>(draft.culprit ?? null);
   const [egg, setEgg] = useState<Dialogue[] | null>(null);
@@ -44,7 +44,7 @@ export function AccuseScreen() {
 
   // 초안 방어: 지목 화면인데 초안이 없으면(비정상) 1단계로
   useEffect(() => {
-    if (!run.accuse && run.phase !== 'ended') game.patch((r) => ({ ...r, accuse: { stage: 'suspect', forced: r.phase === 'siren' || r.actions <= 0 } }));
+    if (!run.accuse && run.phase !== 'ended') game.patch((r) => ({ ...r, accuse: { stage: 'suspect', forced: false } }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -99,6 +99,8 @@ export function AccuseScreen() {
       toast({ kind: 'warn', text: '지금은 제출할 수 없다' });
       return;
     }
+    // 지목 확정 — 묵직한 타격(판정 결과와 무관한 같은 소리)
+    playSfx('accuse');
     setVerdict(acc);
   };
 
@@ -127,7 +129,6 @@ export function AccuseScreen() {
           type="button"
           className="wt-iconbtn"
           aria-label={stage === 'suspect' ? '지목 그만두고 돌아가기' : '범인 다시 고르기'}
-          disabled={forced && stage === 'suspect'}
           onClick={() => {
             if (stage === 'suspect') game.act((r) => cancelAccuse(r));
             else game.act((r) => setAccuseStage(r, 'suspect'));
@@ -143,7 +144,7 @@ export function AccuseScreen() {
       </header>
 
       {stage === 'suspect' ? (
-        <SuspectPick picked={picked} onPick={setPicked} onSubmit={submitPick} forced={forced} />
+        <SuspectPick picked={picked} onPick={setPicked} onSubmit={submitPick} />
       ) : (
         <SlotBoard
           draft={draft}

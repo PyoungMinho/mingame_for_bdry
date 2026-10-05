@@ -16,6 +16,7 @@ import { CutInStrip, GlassCrack, VerdictStamp, type CutInKind, type StampKind } 
 import { fxMs, T, VIB } from '../lib/fx';
 import { useWt } from '../lib/context';
 import { ActionChip } from './ActionChip';
+import { playSfx, playVerdict } from '../audio/useGameAudio';
 
 export type FxPlan =
   | { kind: 'press' }
@@ -77,16 +78,20 @@ export function VerdictFx({ plan, shakeRef, onImpact, onDone }: VerdictFxProps) 
       timers.push(setTimeout(() => el.setAttribute('data-shake', kind), delay));
       timers.push(setTimeout(() => el.removeAttribute('data-shake'), delay + len));
     };
+    // 소리: 컷인 시작(휙·쾅) → 판정이 화면에 뜨는 순간(impact)에만 판정음. 판정 종류 말고는 아무것도 보지 않는다
     if (plan.kind === 'press') {
       vib(VIB.tap);
+      playSfx('press');
       timers.push(setTimeout(() => doneRef.current(), fxMs(T.cutPress, fx)));
     } else {
       const pre = fxMs(T.cutPresent + T.flyCard, fx);
       const len = fxMs(verdictMs(plan), fx);
+      playSfx('present');
       timers.push(
         setTimeout(() => {
           setPhase('verdict');
           impactRef.current?.();
+          playVerdict(plan.verdict, plan.tier, plan.tutorial);
           if (plan.verdict === 'BREAK') vib(plan.tier === 'star' ? (plan.third ? VIB.star3 : VIB.star) : VIB.minor);
           else if (plan.verdict === 'HALF') vib(VIB.half);
           else if (plan.verdict === 'WRONG' && !plan.tutorial) vib(VIB.trustDown);
@@ -94,7 +99,12 @@ export function VerdictFx({ plan, shakeRef, onImpact, onDone }: VerdictFxProps) 
       );
       if (plan.verdict === 'BREAK') {
         shake(plan.tier === 'star' ? 'star' : 'minor', pre + fxMs(120, fx), fxMs(plan.tier === 'star' ? 300 : 200, fx));
-        timers.push(setTimeout(() => setStampOn(true), pre + fxMs(plan.tier === 'star' ? STAMP_AT.star : STAMP_AT.minor, fx)));
+        timers.push(
+          setTimeout(() => {
+            setStampOn(true);
+            if (plan.tier === 'star') playSfx('star');
+          }, pre + fxMs(plan.tier === 'star' ? STAMP_AT.star : STAMP_AT.minor, fx)),
+        );
       }
       if (plan.verdict === 'WRONG') shake('wrong', pre + fxMs(60, fx), fxMs(300, fx));
       timers.push(setTimeout(() => doneRef.current(), pre + len));

@@ -300,9 +300,13 @@
 .wt-shell .wt-pip:nth-child(4n+1):not(:first-child) { margin-left: 4px; }
 .wt-shell .wt-pip.is-on { background: var(--wt-cost); border-color: var(--wt-cost); box-shadow: 0 0 6px var(--wt-amber-glow); }
 .wt-shell .wt-pips[data-danger='1'] .wt-pip.is-on { background: var(--wt-danger); border-color: var(--wt-danger); box-shadow: 0 0 6px var(--wt-red-glow); }
+/* 핍 13개(행동 13번) — HUD 1줄은 7px·묶음 여백 2px(≥430px 에서만). ≤429px 폭은 12개일 때(12×8+11×2+묶음 여백 8=126)보다 좁은 13×7+12×2=115 라 320px 여유(2px)가 오히려 늘어난다 */
+.wt-shell .wt-hud-row1 .wt-pip { width: 7px; height: 7px; }
+.wt-shell .wt-hud-row1 .wt-pip:nth-child(4n+1):not(:first-child) { margin-left: 2px; }
+@media (max-width: 429px) { .wt-shell .wt-hud-row1 .wt-pip:nth-child(4n+1):not(:first-child) { margin-left: 0; } }
 .wt-shell .wt-pip.is-preview, .wt-shell .wt-hair-seg.is-preview { animation: wt-blink 0.9s ease-in-out 3; }
 .wt-shell .wt-pip.is-preview { background: transparent; }
-.wt-shell .wt-hair { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; height: 2px; padding: 0 4px; }
+.wt-shell .wt-hair { display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; height: 2px; padding: 0 4px; }
 .wt-shell .wt-hair-seg { background: var(--wt-line-3); display: block; }
 .wt-shell .wt-hair-seg.is-on { background: var(--wt-cost); }
 .wt-shell .wt-hair[data-danger='1'] .wt-hair-seg.is-on { background: var(--wt-danger); }
@@ -345,6 +349,7 @@
 .wt-shell .wt-tab .wt-dot { top: 8px; right: calc(50% - 22px); }
 .wt-shell .wt-accusebar { padding: 6px 16px; animation: wt-slideup 240ms var(--wt-ease) both; }
 .wt-shell .wt-accusebar-btn { width: 100%; min-height: 48px; border-radius: var(--wt-radius-md); background: var(--wt-star); color: var(--wt-ink-dark); font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--wt-glow-star); }
+.wt-shell .wt-accusebar-btn--end { background: var(--wt-surface-3); color: var(--wt-ink); box-shadow: none; border: 1px solid var(--wt-line-3); }
 
 .wt-shell .wt-coach { position: absolute; z-index: var(--wt-z-scene-ui); left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--wt-radius-lg); background: var(--wt-surface-3); border: 1px solid var(--wt-line-3); box-shadow: var(--wt-shadow-pop); animation: wt-pop 220ms var(--wt-ease) both; }
 .wt-shell .wt-coach p { flex: 1 1 auto; font-size: var(--wt-fs-small); font-weight: 600; line-height: 1.45; }
@@ -775,7 +780,6 @@
 .wt-shell .wt-accuse-step { font-weight: 800; }
 .wt-shell .wt-pick, .wt-shell .wt-slotboard { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 16px 16px; display: flex; flex-direction: column; }
 .wt-shell .wt-pick-h { font-size: var(--wt-fs-h1); margin: 8px 0 12px; }
-.wt-shell .wt-pick-forced { color: var(--wt-danger); font-weight: 700; margin: -4px 0 12px; }
 .wt-shell .wt-pick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .wt-shell .wt-pickcard { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 208px; padding: 10px 8px 12px; border-radius: 16px; background: var(--wt-surface); border: 1px solid var(--wt-line-2); transition: opacity var(--wt-dur-base), border-color var(--wt-dur-base); }
 .wt-shell .wt-pickcard-art { width: 100px; height: 133px; overflow: hidden; border-radius: 10px; }
@@ -1101,3 +1105,22 @@
 }
 /* QA BUG-W05: 빈 슬롯 라벨 「B」 대비 4.13:1(< 4.5) — 반투명 line-3 대신 muted 바탕(ink-dark 위 약 6.3:1) */
 .wt-shell .wt-slot.is-empty .wt-slot-l { background: var(--wt-muted); }
+
+/* ── 소리 토글(44px) — 타이틀은 설정 톱니 왼쪽, 규칙 카드는 왼쪽 위, 인트로는 「빠르게」 줄 끝, 허브 HUD 는 … 메뉴 왼쪽.
+   조사·증언 HUD 에는 넣지 않는다(한결 얼굴 = 오답 피드백 자리를 지킨다, QA AUD-QA-03) ── */
+.wt-shell .wt-title-sound { position: absolute; top: calc(var(--wt-safe-t) + 8px); right: 56px; z-index: 3; }
+/* 규칙 카드: 「1/3」이 오른쪽 위라 토글은 왼쪽 위(카드 위 여백 안 — 카드와 겹치지 않는다) */
+.wt-shell .wt-rules-sound { position: absolute; top: calc(var(--wt-safe-t) + 2px); left: 8px; z-index: 3; }
+.wt-shell .wt-soundbtn[aria-pressed='true'] { color: var(--wt-muted); }
+/* 허브 HUD 1줄에도 소리 토글이 들어가면서 — 430px 미만은 남은 행동 숫자 칩(핍·조사 HUD 와 같은 정보)을 숨기고 핍 간격 2px,
+   374px 미만은 시계 아이콘을 숨기고(시각은 그대로), 360px 미만은 왼쪽 여백 8px(사이렌 아이콘이 붙는 최악에도 320px 실측 여유 2px) */
+@media (max-width: 429px) {
+  .wt-shell .wt-hud-row1 .wt-count { display: none; }
+  .wt-shell .wt-hud-row1 .wt-pips { gap: 2px; }
+}
+@media (max-width: 373px) {
+  .wt-shell .wt-hud-row1 .wt-hud-clock > svg { display: none; }
+}
+@media (max-width: 359px) {
+  .wt-shell .wt-hud-row1 { padding-left: 8px; }
+}

@@ -8,6 +8,7 @@
  * 목소리 변형(data-voice): 사람(고딕) · 한결 · 나(명조 + 좌측 바) · 내레이션(패널 없음) · 또박이(고정폭 + 시안 틴트 + 이퀄라이저) · 기기.
  * 접근성: 화면 표시용 타이핑 사본은 aria-hidden, 같은 문장 전체를 sr-only role="log" 로 먼저 둔다.
  * 읽은 대사: meta.plays ≥ 1 + 설정 켬 + readLines 에 있으면 즉시 표시. 줄이 끝나면 읽음으로 기록한다.
+ * 소리: 글자가 나오는 동안 2~3자마다 아주 작은 타자음(화자 종류별 음색 — 또박이 · 사람 · 나 · 기기, 내레이션은 없음).
  */
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -17,6 +18,8 @@ import { useWt } from '../lib/context';
 import { LONG_PRESS_MS } from '../lib/fx';
 import { useTypewriter } from '../lib/useTypewriter';
 import { ArtSlot } from './ArtSlot';
+import { blipEvery } from '../audio/cues';
+import { playBlip } from '../audio/useGameAudio';
 
 export function useDocVisible(): boolean {
   const [v, setV] = useState(true);
@@ -86,6 +89,27 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
     if (line) onLineRef.current?.(line, idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playKey, idx]);
+
+  // 대사 타자음: 글자가 한 자씩 나올 때만, 2~3자마다 한 번(즉시·읽은 대사·건너뛰기 = 소리 없음). 음색은 화자 '종류'로만
+  const blip = useRef({ key: '', len: 0, n: 0 });
+  const shownLen = tw.shown.length;
+  const every = instantNow ? 0 : blipEvery(game.settings.speed);
+  useEffect(() => {
+    const b = blip.current;
+    const k = `${playKey}:${idx}`;
+    if (b.key !== k) {
+      b.key = k;
+      b.len = shownLen;
+      b.n = 0;
+      return;
+    }
+    const step = shownLen - b.len;
+    b.len = shownLen;
+    if (step !== 1 || !every || !line) return;
+    b.n += 1;
+    if (b.n % every === 1 || every === 1) playBlip(line.who);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shownLen, playKey, idx]);
 
   useEffect(() => {
     if (tw.done && rk) game.markRead([rk]);

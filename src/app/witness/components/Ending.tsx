@@ -15,10 +15,13 @@ import { GradeStamp as ArtGradeStamp } from '../art/fx';
 import { ArtSlot } from './ArtSlot';
 import { BottomSheet } from './BottomSheet';
 import { DialogueBox } from './DialogueBox';
+import { playSfx } from '../audio/useGameAudio';
 
 /** 등급 도장 — 링·글자는 그림 모듈(art/fx GradeStamp: S 골드 톱니 · A 시안 이중 · B 앰버 · C 점선), 칭호는 HTML(줄바꿈·스크린 리더) */
 export function GradeStamp({ grade, title }: { grade: EndingData['grade']; title: string }) {
   const { fx, game } = useWt();
+  // 도장이 찍히는 순간(등급과 무관한 같은 소리)
+  useEffect(() => playSfx('stamp'), []);
   return (
     <div className="wt-grade" data-grade={grade}>
       <span className="wt-grade-ring" aria-hidden>

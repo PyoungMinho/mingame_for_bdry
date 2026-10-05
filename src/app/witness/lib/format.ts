@@ -254,7 +254,7 @@ export function endingFromLast(le: LastEnding): EndingData {
 
 export const ACHIEVEMENT_INFO: Record<AchievementId, { name: string; how: string }> = {
   flawless: { name: '무결점', how: '틀린 제시 없이 완벽 해결' },
-  lightning: { name: '번개 수사', how: '행동 3 이상 남기고 완벽 해결' },
+  lightning: { name: '번개 수사', how: '행동 4 이상 남기고 완벽 해결' },
   nohint: { name: '힌트 없이', how: '수첩 정리 없이 완벽 해결' },
   allclear: { name: '다 털었다', how: '결정적 모순과 비밀 4개를 모두 채움' },
   arrestSpeaker: { name: '스피커를 체포하려 함', how: '또박이를 범인으로 지목해 봄' },

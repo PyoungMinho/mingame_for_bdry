@@ -5,10 +5,12 @@
  *   3-2 진실 유형 · 참조 무결성 · 비용 규칙(2-1) · 핫스팟 간격(디자인 D10) · 의존 그래프 DAG.
  * 동적(analyzeEconomy): 유료 항목 14개의 부분집합을 층별 BFS. 무료 행동(추궁·정답 제시·무료 진입·무료 핫스팟)은
  *   단조(얻기만 하고 잃지 않음)라 '그 집합에서 할 수 있는 무료 행동 전부'(closure)로 접는다 → 상태 = 유료 항목 집합.
- *   단, 행동이 0이 되는 마지막(12번째) 행동은 순서가 결과를 바꾸므로(사이렌 규칙) 따로 펼쳐 본다.
+ *   예산은 RULES.normal.actions(13). 행동이 0이 된 뒤(사이렌)에도 이미 연 곳 재방문·비용 0 세트 첫 열람은 무료라 closure 에 들어간다
+ *   (밸런스 R3·R4). 그래도 마지막(13번째) 행동은 어떤 유료 항목이냐에 따라 상태가 달라질 수 있어 순서별로 따로 펼쳐 본다.
  */
 import { CASE } from './case-data';
 import {
+  RULES,
   STAR_TOTAL,
   canAccuse,
   halfCards,
@@ -774,6 +776,9 @@ export interface EconomyReport {
   /** S(★ 전부) + 숨은 엔딩 최단 — 마지막 행동 순서까지 펼쳐 계산 */
   minSHidden: number | null;
   reachable: number;
+  /** 예산을 다 쓴 상태(마지막 층, 순서별) 중 완벽 해결 재료가 손에 남은 비율 / ★ 전부 + 완벽 비율(S 가능) — 재방문 범위를 넓히는 회귀 방지용 상한(B7) */
+  fullBudgetPerfectShare: number;
+  fullBudgetSShare: number;
   /** 행동이 남았는데 할 수 있는 유료 행동도, 지목도 없는 상태 수(soft-lock) */
   stuck: number;
   /** 무제한 행동으로 다 했을 때 */
@@ -814,7 +819,7 @@ function starSourceCount(run: RunCore): { sources: number; culpritOnly: boolean 
 }
 
 /** 유료 항목 부분집합 BFS(예산 budget). 실제 엔진 + freeClosure */
-export function analyzeEconomy(budget = 12): EconomyReport {
+export function analyzeEconomy(budget: number = RULES.normal.actions): EconomyReport {
   const items = paidItems();
   const start = freeClosure(newRun());
   const layers: Map<number, RunState>[] = [new Map([[0, start]])];
@@ -908,6 +913,7 @@ export function analyzeEconomy(budget = 12): EconomyReport {
     if (!progressed) break;
   }
   const fo = accuseOptions(full);
+  const last = stats[budget];
   return {
     items: items.map((x) => x.key),
     budget,
@@ -923,6 +929,8 @@ export function analyzeEconomy(budget = 12): EconomyReport {
     minHidden: firstK((s) => s.hidden > 0),
     minSHidden,
     reachable: layers.reduce((a, m) => a + m.size, 0),
+    fullBudgetPerfectShare: last && last.states ? last.perfect / last.states : 0,
+    fullBudgetSShare: last && last.states ? last.sPerfect / last.states : 0,
     stuck,
     full: {
       items: done,
@@ -951,7 +959,7 @@ export function playPath(keys: string[], from: RunState = freeClosure(newRun()))
   return r;
 }
 
-/** 사이렌 뒤 처리까지(테스트용) */
+/** 사이렌 화면 [계속]까지(테스트용) — 허브로 돌아온 상태. 지목은 호출하는 쪽이 startAccuse 로 시작한다 */
 export function afterSiren(run: RunState): RunState {
   return run.phase === 'siren' ? continueAfterSiren(run).run : run;
 }

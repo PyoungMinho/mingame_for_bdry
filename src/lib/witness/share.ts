@@ -7,7 +7,8 @@
  * 카카오: /gung 의 share 패턴을 참고한 별도 구현(파일 공유 없음). 키는 NEXT_PUBLIC_KAKAO_JS_KEY 우선, 없으면 /gung 과 같은 공개 키.
  */
 import type { EndingId, Grade } from './types';
-import { EVIDENCE_TOTAL, STAR_TOTAL, type RunResult } from './engine';
+import { EVIDENCE_TOTAL, RULES, STAR_TOTAL, titleOf, type RunResult } from './engine';
+import { CASE } from './case-data';
 
 export const SITE_ORIGIN = 'https://project-orsrw.vercel.app';
 export const ROUTE_PATH = '/witness';
@@ -21,7 +22,7 @@ export const HOOKS = [
   '용의자는 넷, 증인은 스피커 하나.',
   'AI는 거짓말을 안 해. 다만 다 말하지도 않지.',
   "목격자가 '죄송해요, 잘 모르겠어요'래.",
-  '행동 12번. 너라면 어디부터 뒤질래?',
+  '행동 13번. 너라면 어디부터 뒤질래?',
 ] as const;
 
 /** 공유·OG 문자열에 들어가면 안 되는 트릭 어휘(시스템 4-4 금지 목록 + 이 사건 핵심 소품) */
@@ -95,13 +96,16 @@ export function ogKind(ending: EndingId): OgKind {
   return 'w';
 }
 
+/** OG `r`(남은 행동) 상한 — 행동 예산을 따른다(v4: 13) */
+const ACTIONS_MAX = RULES.normal.actions;
+
 export function toOgParams(i: ShareInput): OgParams {
   const r = i.result;
   return {
     g: r.grade,
     s: Math.min(STAR_TOTAL, Math.max(0, r.stars)),
     e: Math.min(EVIDENCE_TOTAL, Math.max(0, r.evidence)),
-    r: Math.min(12, Math.max(0, r.actionsLeft)),
+    r: Math.min(ACTIONS_MAX, Math.max(0, r.actionsLeft)),
     k: ogKind(r.ending),
     v: hookIndex(i.plays),
   };
@@ -133,10 +137,58 @@ export function parseOgParams(q: { get(name: string): string | null }): OgParams
   if (k === null || !['p', 'h', 's', 'w', 't', 'x'].includes(k)) return null;
   const s = int('s', STAR_TOTAL);
   const e = int('e', EVIDENCE_TOTAL);
-  const r = int('r', 12);
+  const r = int('r', ACTIONS_MAX);
   const v = int('v', HOOKS.length - 1);
   if (s === null || e === null || r === null || v === null) return null;
   return { g: g as Grade, s, e, r, k: k as OgKind, v };
+}
+
+/** 쿼리 문자열(또는 undefined) → OgParams. 검증 실패·쿼리 없음·여분/중복 키 → null (라우트가 기본 커버로 폴백) */
+export function parseOgQueryString(search: string | null | undefined): OgParams | null {
+  if (!search) return null;
+  const q = new URLSearchParams(search);
+  const keys = Array.from(q.keys());
+  // 여분 키·중복 키는 이미지 캐시 키만 늘린다 — 정확히 g,s,e,r,k,v 한 번씩일 때만 결과 카드
+  if (keys.length !== OG_KEYS.length || new Set(keys).size !== OG_KEYS.length || !keys.every((k) => (OG_KEYS as readonly string[]).includes(k))) return null;
+  return parseOgParams(q);
+}
+
+const OG_KEYS = ['g', 's', 'e', 'r', 'k', 'v'] as const;
+
+/** 엔딩 종류별 스포 없는 한 줄(OG 결과 카드). 인물·증거 이름, 트릭 어휘, 범인 암시 금지 — 테스트가 TRICK_WORDS 로 막는다 */
+export const OG_KIND_LINE: Record<OgKind, string> = {
+  p: '또박이의 말 사이, 틈을 끝까지 파고들었다.',
+  h: '이야기는 한 겹 더 있었다.',
+  s: '지목은 했다. 증거가 모자랐을 뿐.',
+  w: '스피커도 당황한 지목이었다.',
+  t: '사이렌이 울릴 때까지 지목하지 못했다.',
+  x: '수사에서 배제됐다. 수첩은 압수.',
+};
+
+/** 결과 카드 한 장에 찍히는 모든 문구 — 범인·증거가 들어올 자리가 없다(등급·숫자·열거형에서만 파생) */
+export interface OgCard {
+  grade: Grade;
+  /** 도장 아래 칭호 — 오인 체포는 인물과 무관하게 하나 */
+  title: string;
+  line: string;
+  chips: [string, string, string];
+  /** 숨은 엔딩 배지 문구(해당할 때만) */
+  badge: string | null;
+  hook: string;
+}
+
+const KIND_ENDING: Record<OgKind, EndingId> = { p: 'perfect', h: 'hidden', s: 'short', w: 'wrong-S1', t: 'timeout', x: 'excluded' };
+
+export function ogCard(p: OgParams): OgCard {
+  const ending = KIND_ENDING[p.k];
+  return {
+    grade: p.g,
+    title: p.k === 'w' ? CASE.titles.wrong : titleOf(ending, p.g),
+    line: OG_KIND_LINE[p.k],
+    chips: [`결정적 모순 ${p.s}/${STAR_TOTAL}`, `증거 ${p.e}/${EVIDENCE_TOTAL}`, `남은 행동 ${p.r}/${ACTIONS_MAX}`],
+    badge: p.k === 'h' ? '숨은 엔딩 발견' : null,
+    hook: HOOKS[p.v],
+  };
 }
 
 // ─────────────────────────────── 카카오(P1) ───────────────────────────────

@@ -8,7 +8,7 @@
  *  cop-ddobagi  한결(당황) + 또박이 소형
  *  suspects     용의자 실루엣 4(초상 마스킹, 같은 크기·같은 처리) + 또박이 LED
  *  ddobagi      또박이 클로즈업(대기) + 나 실루엣
- *  clock        23:00 시계(허브 태블릿) — HUD 로 넘어가기 직전 컷
+ *  clock        22:50 시계(허브 태블릿) — HUD 로 넘어가기 직전 컷
  * 장식(aria-hidden) — 컷 문장은 대사창이 읽는다.
  */
 import type { ReactNode } from 'react';
@@ -146,7 +146,7 @@ export function IntroCutArt({ art, idScope = 'intro', rain = true, className, fi
           <rect x={170} y={120} width={460} height={300} rx={28} fill="#0C1426" />
           <rect x={190} y={140} width={420} height={260} rx={14} fill="#06101C" stroke={C.cyan} strokeOpacity={0.35} strokeWidth={2} />
           <text x={400} y={312} textAnchor="middle" fontSize={136} fontWeight={700} fill={C.cyan} style={{ fontFamily: "var(--wt-font-num, 'JetBrains Mono'), ui-monospace, monospace", fontVariantNumeric: 'tabular-nums' }}>
-            23:00
+            22:50
           </text>
           <path d="M240 352h320" stroke={C.cyan} strokeWidth={4} opacity={0.3} strokeLinecap="round" />
           <path d="M240 352h40" stroke={C.amber} strokeWidth={4} strokeLinecap="round" />

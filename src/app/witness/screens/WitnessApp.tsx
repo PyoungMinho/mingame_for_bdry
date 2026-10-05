@@ -6,7 +6,7 @@
  * 하이드레이션 안전: 서버·첫 렌더는 스켈레톤. 마운트 뒤 effect 에서 저장을 읽고 화면을 정한다.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { canAccuse, exit as engineExit, getLine, minutesLeft, openSet, stars, startAccuse, visibleLines, type HintTarget, type RunState } from '@/lib/witness';
+import { canAccuse, exit as engineExit, getLine, getSet, minutesLeft, openSet, stars, startAccuse, visibleLines, type HintTarget, type RunState, type Screen } from '@/lib/witness';
 import { BackStackProvider, useBackGuard, useEscClose } from '../lib/BackStack';
 import { TOAST } from '../lib/copy';
 import { WtContext, useWt, type NotebookTab, type WtCtx } from '../lib/context';
@@ -28,6 +28,8 @@ import { LocationScreen } from './LocationScreen';
 import { SirenScreen } from './SirenScreen';
 import { TestimonyScreen } from './TestimonyScreen';
 import { TitleScreen, TitleSkeleton } from './TitleScreen';
+import type { Scene } from '../audio/cues';
+import { useGameAudio, useSfxOnRise } from '../audio/useGameAudio';
 
 export function WitnessApp() {
   return (
@@ -44,6 +46,20 @@ function ambientOf(run: RunState | null, scr: string | undefined): 'tense' | 'si
   if (run.phase === 'ended') return run.result && (run.result.ending === 'perfect' || run.result.ending === 'hidden') ? 'clear' : undefined;
   if (run.actions <= 3 || run.trust <= 2) return 'tense';
   return undefined;
+}
+
+/**
+ * 소리용 장면 — 지금 화면에 보이는 것만(연출 중이면 잡아 둔 화면). PlayRouter 와 같은 규칙으로 고른다.
+ * 엔딩 곡은 엔딩 화면이 실제로 뜬 뒤에만(지목 판정 연출 중에는 지목 곡 유지).
+ */
+export function sceneOf(ready: boolean, view: 'title' | 'play' | 'ending', run: RunState | null, held: Screen | null, lastEnding: string | undefined): Scene {
+  if (!ready) return { ready: false, view: 'title' };
+  if (view === 'ending') return { ready: true, view: 'ending', ending: (lastEnding as Scene['ending']) ?? null };
+  if (view === 'title' || !run) return { ready: true, view: 'title' };
+  if (run.phase === 'ended' && !held) return { ready: true, view: 'play', screen: 'ending', phase: run.phase, ending: run.result?.ending ?? null };
+  const scr = held ?? run.screen;
+  const setId = scr.name === 'testimony' ? scr.ref : undefined;
+  return { ready: true, view: 'play', screen: scr.name, setId, setKind: setId ? getSet(setId)?.kind : undefined, phase: run.phase, actions: run.actions };
 }
 
 function AppInner() {
@@ -115,9 +131,9 @@ function AppInner() {
         return;
       }
       // 행동 0 인 대상(마지막 행동으로 들어온 장소·세트) 안: 여기서 나가면 곧 사이렌이다.
-      // 메모의 [그 장소로/그 증언으로]는 어차피 갈 수 없으니, 나가기(사이렌)로 바꾸지 않고 안내만 한다(나가기는 [나가기]로만)
+      // 메모의 [그 장소로/그 증언으로]는 나가기(사이렌)로 바꾸지 않고 안내만 한다(나가기는 [나가기]로만)
       if (r.phase === 'play' && r.actions <= 0 && r.screen.name !== 'hub') {
-        toast({ kind: 'warn', text: TOAST.sirenLocked, ms: 2400 });
+        toast({ kind: 'warn', text: TOAST.zeroInside, ms: 2400 });
         return;
       }
       game.setHighlight({ target: t, at: Date.now() });
@@ -136,6 +152,12 @@ function AppInner() {
       const ref = getLine(lineId);
       if (!ref) return;
       setNbOpen(false);
+      // gotoTarget 과 같은 가드(QA-BAL-01): 행동 0 대상 안에서는 그 대상(final) 밖 증언으로 바로 건너가지 않는다
+      const r = game.getRun();
+      if (r && r.phase === 'play' && r.actions <= 0 && r.screen.name !== 'hub' && !r.final.includes(ref.set.id)) {
+        toast({ kind: 'warn', text: TOAST.zeroInside, ms: 2400 });
+        return;
+      }
       const step = game.act((r) => openSet(r, ref.set.id));
       if (step.error) {
         toast({ kind: 'warn', text: TOAST.sirenLocked });
@@ -194,7 +216,6 @@ function AppInner() {
         return 'handled';
       }
       case 'accuse':
-        if (r.accuse?.forced) return 'handled';
         if (r.accuse?.stage === 'slots') {
           game.patch((x) => (x.accuse ? { ...x, accuse: { ...x.accuse, stage: 'suspect' } } : x));
         } else game.patch((x) => ({ ...x, accuse: undefined, screen: { name: 'hub', tab: x.screen.tab ?? 'house' } }));
@@ -229,6 +250,14 @@ function AppInner() {
 
   // 연출 ‘줄이기’ 기본값 등으로 바뀌는 문서 언어·테마 색
   const s = game.settings;
+
+  // 소리 — 장면 → 곡, 설정 → 음량. 수첩 열기 · 사이렌은 바뀌는 순간만(이어하기 직후 첫 동기화는 무음)
+  useGameAudio(sceneOf(game.ready, game.view, run, game.heldScreen, game.meta.lastEnding?.ending), s);
+  useSfxOnRise(nbOpen || (scrName === 'hub' && run?.screen.tab === 'notebook'), 'paper', inPlay);
+  // 사이렌 효과음은 '사이렌에 처음 들어갈 때' 한 번만(디자인 §5-6). 사이렌 뒤 배제 엔딩(ended)은 사이렌이 이어지는 것으로 보아
+  // 되감기(ended → siren)에서 다시 울리지 않는다(QA-BAL-02). 연결부만 — audio/ 기능은 그대로
+  const sirenOn = run?.phase === 'siren' || (run?.phase === 'ended' && run.result?.ending === 'excluded' && run.checkpoint?.phase === 'siren');
+  useSfxOnRise(sirenOn, 'siren', inPlay);
   const ambient = ambientOf(run, scrName);
 
   let body: React.ReactNode;

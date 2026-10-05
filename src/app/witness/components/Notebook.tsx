@@ -108,7 +108,7 @@ export function Notebook({ run, tab, onTab, onGoto, onJumpLine, asSheet }: Noteb
   const confirmHint = () => {
     spend.cancel();
     const lock = game.holdRoute();
-    const prevActions = game.getRun()?.actions ?? 12;
+    const prevActions = game.getRun()?.actions ?? RULES.normal.actions;
     const step = game.act((r) => hint(r));
     if (step.error) {
       lock();

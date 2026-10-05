@@ -14,6 +14,7 @@ import { useWt } from '../lib/context';
 import { ArtSlot } from '../components/ArtSlot';
 import { DialogueBox } from '../components/DialogueBox';
 import { RuleCards } from '../components/Settings';
+import { SoundToggle } from '../audio/SoundToggle';
 
 export function IntroScreen() {
   const { game } = useWt();
@@ -43,6 +44,8 @@ export function IntroScreen() {
             건너뛰기
           </button>
         )}
+        {/* 첫 판은 건너뛸 수 없으니 여기서 바로 끌 수 있어야 한다(공공장소) */}
+        <SoundToggle />
       </div>
       <div className="wt-intro-art" key={i}>
         <ArtSlot kind="cut" art={cut.art} rain={game.fxMode !== 'reduced'} />
@@ -73,6 +76,7 @@ export function RulesScreen() {
   };
   return (
     <main className="wt-screen wt-rules-screen" aria-label="규칙">
+      <SoundToggle className="wt-rules-sound" />
       <RuleCards onDone={start} />
     </main>
   );

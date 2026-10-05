@@ -264,7 +264,8 @@ describe('엔딩 8종 — 화면 조작으로 도달(도감은 판 사이에 이
   it('⑥ 시간 초과: 마지막 행동(수첩 정리)을 화면에서 쓰고 → 사이렌 → [계속] → 「사이렌이 먼저 왔다」 C', async () => {
     let r = wander(freeClosure(newRun({ now: Date.now(), skipTutorial: true })), ['L1', 'L2', 'L3', 'L4', 'T01', 'T02', 'T03', 'T04', 'T05', 'P:L2.h3']);
     r = hint(r).run;
-    expect(r.actions).toBe(1);
+    // 제시 없이 쓸 수 있는 유료 항목은 10개뿐 — 남은 행동을 1 로 맞추고 마지막 행동을 수첩 정리로 쓴다
+    r = { ...r, actions: 1 };
     expect(stars(r)).toBeLessThan(3);
     seedRun(setScreen(r, { name: 'hub', tab: 'notebook' }));
     await boot();
@@ -283,7 +284,16 @@ describe('엔딩 8종 — 화면 조작으로 도달(도감은 판 사이에 이
     click(q('[data-testid=hint-close]'), '수첩 정리 닫기');
     await flush();
     expect(q('.wt-siren')).toBeTruthy();
+    expect(q('.wt-siren-sub')?.textContent).toContain('결정적 모순이 3개 더 필요하다');
     click(q('[data-testid=siren-continue]'));
+    await flush();
+    // 사이렌 뒤 허브 — ★ < 3 이면 [지목하기] 대신 [수사 종료](확인 시트 → [끝낸다])
+    expect(q('[data-testid=accuse-bar]')).toBeNull();
+    click(q('[data-testid=end-investigation]'), '수사 종료');
+    await flush();
+    expect(document.body.textContent).toContain('수사를 끝낼까요?');
+    expect(document.body.textContent).toContain('지목하려면 결정적 모순이 3개 더 필요해요.');
+    click(q('[data-testid=end-yes]'));
     await flush();
     await toEndingDetail();
     expect(q('.wt-ending-title')?.textContent).toBe(CASE.endings.timeout!.title);

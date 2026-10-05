@@ -9,6 +9,7 @@
 import { NotebookPen, RotateCcw, Siren } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { CASE } from '@/lib/witness';
+import { SIREN_SUB } from '../lib/copy';
 import { fxMs } from '../lib/fx';
 import { useWt } from '../lib/context';
 import { ArtSlot } from './ArtSlot';
@@ -41,7 +42,7 @@ export function OrientationGuard() {
   );
 }
 
-export function SirenOverlay({ canAccuse, onContinue, onNotebook }: { canAccuse: boolean; onContinue: () => void; onNotebook: () => void }) {
+export function SirenOverlay({ canAccuse, missing = 0, onContinue, onNotebook }: { canAccuse: boolean; /** 지목까지 모자란 결정적 모순 수(★ < 3 일 때 안내) */ missing?: number; onContinue: () => void; onNotebook: () => void }) {
   const { vib } = useWt();
   useEffect(() => {
     vib([200, 100, 200]);
@@ -57,12 +58,12 @@ export function SirenOverlay({ canAccuse, onContinue, onNotebook }: { canAccuse:
         <p id="wt-siren-t" className="wt-display wt-siren-t">
           새벽 1시. 사이렌이 들린다.
         </p>
-        <p className="wt-siren-sub">{canAccuse ? '시간이 다 됐다. 지금 가진 걸로 지목한다.' : '강력팀이 도착했다. 수사는 여기까지다.'}</p>
+        <p className="wt-siren-sub">{canAccuse ? SIREN_SUB.ready : SIREN_SUB.short(missing)}</p>
         <button type="button" className="wt-btn wt-btn--primary wt-btn--full" onClick={onContinue} data-autofocus data-testid="siren-continue">
-          {canAccuse ? '지목하러 간다' : '계속'}
+          계속
         </button>
         <button type="button" className="wt-link" onClick={onNotebook}>
-          <NotebookPen size={14} aria-hidden /> 마지막으로 수첩 보기
+          <NotebookPen size={14} aria-hidden /> 수첩 보기
         </button>
       </div>
     </div>

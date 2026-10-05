@@ -50,7 +50,7 @@ export const COACH_TEXT: Record<CoachId, string> = {
  * 보여 준 순간 기록해, 새로고침·이어하기 뒤에 이미 본 말풍선이 또 나오지 않는다.
  */
 export const HUD_TOUR: { id: string; text: string; anchor: 'clock' | 'trust' | 'star' }[] = [
-  { id: 'hudTour1', text: '시계와 점은 행동이에요. 12번이 다 지나면 사이렌이 울려요.', anchor: 'clock' },
+  { id: 'hudTour1', text: '시계와 점은 행동이에요. 13번이 다 지나면 사이렌이 울려요.', anchor: 'clock' },
   { id: 'hudTour2', text: '다음부턴 틀리면 제 인내심이 깎여요, 선배님.', anchor: 'trust' },
   { id: 'hudTour3', text: '결정적 모순 별 3개를 모으면 범인을 지목할 수 있어요.', anchor: 'star' },
 ];
@@ -59,16 +59,28 @@ export const RULE_CARD_2_EXTRA = '(두 장을 겹쳐 낼 수도 있다)';
 
 export const RULE_TITLES = ['시간', '증언', '지목'] as const;
 
-/** 마지막 행동 시트 본문(디자인 §5-3) */
+/** 마지막 행동 시트 본문(디자인 §5-3, v4 축소 — 잃는 건 새 수사뿐이라 경고는 두 줄 + ★ 부족일 때 한 줄) */
 export const LAST_ACTION = {
   title: '마지막 행동',
   body1: '이게 마지막 행동이다.',
-  body2: '끝나면 사이렌 — 이미 연 증언에도 다시 못 들어간다. 그래도 할까요?',
-  setNote: '이 증언은 끝까지 할 수 있다.',
-  placeNoteGate: '여기서 얻는 증거는 증언엔 못 쓴다. 최종 지목 칸엔 넣을 수 있다.',
-  hintNoteGate: '정리한 뒤엔 수첩과 최종 지목만 남는다.',
-  noGate: (k: number) => `결정적 모순이 아직 ${k}개 모자라다. 사이렌이 울리면 그대로 수사가 끝난다.`,
-  sub: '수첩과 최종 지목은 사이렌 뒤에도 열려 있다.',
+  body2: '끝나면 새 수사는 끝. 이미 연 곳은 다시 볼 수 있다.',
+  noGate: (k: number) => `결정적 모순이 아직 ${k}개 모자라다.`,
+} as const;
+
+/** 사이렌 화면 보조 문구(디자인 §5-16, v4) — 두 변형 모두 '이미 연 곳은 다시 본다'를 말한다 */
+export const SIREN_SUB = {
+  ready: '새 수사는 끝이다. 이미 연 곳을 다시 보고, 준비되면 지목하라.',
+  short: (k: number) => `새 수사는 끝이다. 이미 연 곳은 다시 볼 수 있다. 결정적 모순이 ${k}개 더 필요하다.`,
+} as const;
+
+/** 「수사 종료」 확인 시트 — 사이렌 뒤 ★ < 3 (밸런스 R6) */
+export const END_SHEET = {
+  title: '수사를 끝낼까요?',
+  lead: '끝내면 결과가 바로 나와요.',
+  body: (k: number) => `지목하려면 결정적 모순이 ${k}개 더 필요해요.`,
+  newSet: '새로 열린 증언이 있어요.',
+  no: '더 본다',
+  yes: '끝낸다',
 } as const;
 
 export const SPEND_TEXT = {
@@ -94,7 +106,9 @@ export const TOAST = {
   upgraded: (from: string, to: string) => `증거 갱신: ${from} → ${to}`,
   ready: '고발 준비 완료 — 최종 지목이 열렸어요',
   backAgain: '한 번 더 누르면 나가요(기록은 저장돼요)',
-  sirenLocked: '사이렌 뒤라 못 들어가요',
+  sirenLocked: '사이렌 뒤엔 새로운 곳에 못 가요',
+  /** 행동 0 인 대상 안에서 다른 곳으로 가려 할 때 */
+  zeroInside: '나가면 사이렌. 이미 연 곳은 그 뒤에도 다시 볼 수 있다.',
   noActionPrecise: '남은 행동이 없다 — 정밀 조사는 못 한다',
   twoCards: '두 장까지 낼 수 있어요',
   moved: (slot: string) => `${slot} 칸에서 옮겼다`,
@@ -119,7 +133,7 @@ export const NOTICE = {
 } as const;
 
 export const GLOSSARY: { term: string; desc: string }[] = [
-  { term: '행동', desc: '처음 가는 장소, 처음 듣는 증언, 정밀 조사, 수첩 정리에 한 번씩 들어요. 12번이 다 지나면 사이렌이 울려요. 다시 들어가는 건 무료예요.' },
+  { term: '행동', desc: '처음 가는 장소, 처음 듣는 증언, 정밀 조사, 수첩 정리에 한 번씩 들어요. 13번을 다 쓰면 사이렌. 그 뒤엔 새 수사는 끝, 이미 연 곳은 다시 볼 수 있어요.' },
   { term: '신뢰도', desc: '한결의 인내심이에요. 틀린 증거를 내밀면 한 칸 깎여요. 0이 되면 수사에서 배제돼요. 결정적 모순을 깨면 한 칸 돌아와요.' },
   { term: '결정적 모순', desc: '범인을 지목하려면 3개를 깨야 하는 별(★)이에요. 깨면 신뢰도도 한 칸 올라요.' },
   { term: '일반 모순', desc: '마름모(◆). 지목 조건은 아니지만 새 길을 열어 줘요.' },
@@ -139,7 +153,7 @@ export const TITLE_TEXT = {
   wordB: 'AI',
   chips: ['혼자서', '약 25분', '가입 없음'],
   /** 홈 진입 문구 — 저장이 없을 때(첫 방문) 이어하기 자리에 쓴다. 스포일러 없음(메타 description 과 같은 정보량) */
-  hook: ['비 오는 밤, 41층 펜트하우스에서 회장이 숨졌다.', '용의자는 넷, 증인은 스피커 하나.', '행동 12번 안에 거짓말을 깨라.'],
+  hook: ['비 오는 밤, 41층 펜트하우스에서 회장이 숨졌다.', '용의자는 넷, 증인은 스피커 하나.', '행동 13번 안에 거짓말을 깨라.'],
 } as const;
 
 export const ENDING_SLOT_LABEL: Record<string, string> = {

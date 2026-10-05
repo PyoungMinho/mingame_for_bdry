@@ -18,6 +18,7 @@ import { ArtSlot } from './ArtSlot';
 import { BottomSheet } from './BottomSheet';
 import { DialogueBox } from './DialogueBox';
 import { EvidenceCard, EvidenceRow } from './EvidenceCard';
+import { playSfx } from '../audio/useGameAudio';
 
 const SLOT_META: Record<Slot, { name: string; ask: string; icon: React.ReactNode; call: string }> = {
   means: { name: '수단', ask: '무엇으로?', icon: <Hammer size={18} aria-hidden />, call: '수단!' },
@@ -29,11 +30,10 @@ export const slotName = (s: Slot): string => SLOT_META[s].name;
 
 const jobOf = (id: SuspectId): string => (CASE.profiles.find((p) => p.id === id)?.summary[0] ?? '').split('.')[0];
 
-export function SuspectPick({ picked, onPick, onSubmit, forced }: { picked: SuspectId | 'AI' | null; onPick: (id: SuspectId | 'AI') => void; onSubmit: () => void; forced: boolean }) {
+export function SuspectPick({ picked, onPick, onSubmit }: { picked: SuspectId | 'AI' | null; onPick: (id: SuspectId | 'AI') => void; onSubmit: () => void }) {
   return (
     <div className="wt-pick">
       <h2 className="wt-display wt-pick-h">범인은 누구인가?</h2>
-      {forced && <p className="wt-pick-forced">시간이 다 됐다. 지금 가진 걸로 지목한다.</p>}
       {/* 라디오 5개(용의자 4 + 증인 또박이)가 한 그룹이다. 이름은 사람 이름만, 직업·역할은 설명으로 둔다(그림·이름표가 겹쳐 이름이 길어지지 않게) */}
       <div className="wt-pick-radios" role="radiogroup" aria-label="범인 후보">
         <div className="wt-pick-grid">
@@ -195,10 +195,13 @@ export function VerdictStage({ acc, onFinish, canSkip: canSkipProp }: { acc: Acc
     }
     if (stage.k === 'slam') {
       const step = script.steps[stage.i];
+      // 카드가 날아가 꽂히는 순간(휙·쾅) → 통했다/안 통했다가 화면에 뜨는 순간에만 그 소리
+      playSfx('present');
       const t = setTimeout(() => {
         setResults((r) => [...r, step.ok]);
         if (step.ok) setOkCount((n) => n + 1);
         vib(step.ok ? VIB.verdictOk : VIB.verdictNg);
+        playSfx(step.ok ? 'slotOk' : 'wrong');
         setStage({ k: 'lines', i: stage.i });
       }, fxMs(T.verdictSlot, fx));
       return () => clearTimeout(t);

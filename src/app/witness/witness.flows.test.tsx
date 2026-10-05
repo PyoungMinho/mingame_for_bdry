@@ -186,24 +186,62 @@ describe('사이렌', () => {
     return { ...base, actions: 0, phase: 'siren', final: [], screen: { name: 'siren' } };
   };
 
-  it('★ ≥ 3: 강제 지목(되돌아가기 없음, 경고 생략) — 자동 진행 없이 [지목하러 간다]를 기다린다', async () => {
+  it('★ ≥ 3: [계속] → 허브(자동 진행 없음) → [지목하기] — 지목 화면에서도 뒤로 갈 수 있다(밸런스 R6·R7)', async () => {
     seed(sirenRun(true));
     await boot();
     expect(q('.wt-siren')).toBeTruthy();
     expect(q('.wt-siren')?.textContent).toContain('새벽 1시. 사이렌이 들린다.');
-    expect(q('.wt-siren')?.textContent).toContain('시간이 다 됐다. 지금 가진 걸로 지목한다.');
+    expect(q('.wt-siren')?.textContent).toContain('새 수사는 끝이다. 이미 연 곳을 다시 보고, 준비되면 지목하라.');
     click(q('[data-testid=siren-continue]'));
     await flush();
+    // 허브로 돌아온다 — 강제 지목이 아니다
+    expect(q('.wt-pick')).toBeNull();
+    expect(q('.wt-screen--hub')).toBeTruthy();
+    expect(readRun()).toMatchObject({ phase: 'siren', actions: 0 });
+    expect(q('[data-testid=end-investigation]')).toBeNull();
+    expect(q('[data-testid=accuse-bar]')?.textContent).toContain('지목하기');
+    click(q('[data-testid=accuse-bar]'));
+    await flush();
     expect(q('.wt-pick')).toBeTruthy();
-    expect(q('.wt-pick-forced')?.textContent).toContain('시간이 다 됐다');
-    expect((q('button[aria-label="지목 그만두고 돌아가기"]') as HTMLButtonElement).disabled).toBe(true);
-    expect(readRun()!.accuse?.forced).toBe(true);
+    expect(q('.wt-pick-forced')).toBeNull();
+    expect(readRun()!.accuse?.forced).toBe(false);
+    const back = q('button[aria-label="지목 그만두고 돌아가기"]') as HTMLButtonElement;
+    expect(back.disabled).toBe(false);
+    click(back);
+    await flush();
+    expect(q('.wt-screen--hub')).toBeTruthy();
+    expect(readRun()).toMatchObject({ phase: 'siren', actions: 0 });
   });
 
-  it('★ < 3: 「시간 초과」 엔딩 → 등급 C', async () => {
+  it('옛 저장(사이렌 뒤 강제 지목 화면, forced:true)도 뒤로 갈 수 있다', async () => {
+    const r = sirenRun(true);
+    const old = { ...r, screen: { name: 'accuse' }, accuse: { stage: 'suspect', forced: true } } as unknown as RunState;
+    seed(old);
+    await boot();
+    expect(q('.wt-pick')).toBeTruthy();
+    expect(q('.wt-pick-forced')).toBeNull();
+    expect((q('button[aria-label="지목 그만두고 돌아가기"]') as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('★ < 3: [계속] → 허브 → [수사 종료](확인 시트, 기본 포커스 [더 본다]) → [끝낸다] → 「시간 초과」 · 등급 C', async () => {
     seed(sirenRun(false));
     await boot();
+    expect(q('.wt-siren')?.textContent).toContain('새 수사는 끝이다. 이미 연 곳은 다시 볼 수 있다. 결정적 모순이 2개 더 필요하다.');
     click(q('[data-testid=siren-continue]'));
+    await flush();
+    expect(q('.wt-screen--hub')).toBeTruthy();
+    expect(q('[data-testid=accuse-bar]')).toBeNull();
+    click(q('[data-testid=end-investigation]'));
+    await flush();
+    expect(document.body.textContent).toContain('수사를 끝낼까요?');
+    expect(document.body.textContent).toContain('지목하려면 결정적 모순이 2개 더 필요해요.');
+    expect(document.activeElement?.textContent).toContain('더 본다');
+    clickText('더 본다');
+    await flush();
+    expect(readRun()?.phase).toBe('siren'); // 취소하면 그대로
+    click(q('[data-testid=end-investigation]'));
+    await flush();
+    click(q('[data-testid=end-yes]'));
     await flush();
     for (let i = 0; i < 20 && !q('.wt-ending-detail'); i++) {
       click(q('.wt-dialogue-tap'));
@@ -212,6 +250,25 @@ describe('사이렌', () => {
     expect(q('.wt-ending-title')?.textContent).toBe(CASE.endings.timeout!.title);
     expect(q('.wt-grade')?.getAttribute('data-grade')).toBe('C');
     expect(window.localStorage.getItem(STORAGE_KEYS.run)).toBeNull();
+  });
+
+  it('사이렌 뒤 허브: 이미 연 곳은 무료로 다시 들어가고, 새 곳은 「사이렌 뒤엔 새로운 곳에 못 가요」', async () => {
+    seed(sirenRun(false));
+    await boot();
+    click(q('[data-testid=siren-continue]'));
+    await flush();
+    const l1 = q('[data-testid=room-L1]');
+    expect(l1?.getAttribute('data-state')).toBe('siren');
+    click(l1);
+    await flush();
+    expect(document.body.textContent).toContain('사이렌 뒤엔 새로운 곳에 못 가요');
+    expect(q('.wt-screen--loc')).toBeNull();
+    const l3 = q('[data-testid=room-L3]');
+    expect(l3?.getAttribute('data-state')).toBe('visited');
+    click(l3);
+    await flush();
+    expect(q('.wt-screen--loc')).toBeTruthy();
+    expect(readRun()).toMatchObject({ actions: 0, phase: 'siren' });
   });
 
   it('마지막 행동으로 수첩 정리를 쓰면 시트를 닫을 때 사이렌(그 전엔 시트가 열려 있다)', async () => {
@@ -362,7 +419,7 @@ describe('하이드레이션 · 뒤로가기', () => {
     expect(html).toContain('목격자는');
     expect(html).toContain('aria-busy="true"');
     expect(html).not.toContain('이어하기');
-    expect(html).not.toContain('행동 12 남음');
+    expect(html).not.toContain('행동 13 남음');
   });
 
   it('뒤로가기(popstate): 열린 시트부터 닫고 → 조사·심문은 허브로 → 허브에서는 안내 토스트(두 번째는 나감)', async () => {

@@ -111,6 +111,26 @@ describe('사건 데이터 — 검사기 통과', () => {
   });
 });
 
+describe('규칙 문구 — 행동 13 · 사이렌 뒤 재방문(밸런스 R1~R3)', () => {
+  it('규칙 카드 1: 행동 13번 · 새로운 곳은 끝 · 이미 연 곳은 다시 볼 수 있다', () => {
+    expect(CASE.rules[0]).toContain('행동 13번');
+    expect(CASE.rules[0]).toContain('새로운 곳은 끝');
+    expect(CASE.rules[0]).toContain('이미 연 곳은 다시 볼 수 있다');
+    expect(CASE.rules[0]).not.toContain('다시 못 들어간다');
+  });
+
+  it('인트로 마지막 컷: 22시 50분(시작 22:50 + 13×10분 = 도착 01:00)', () => {
+    const last = CASE.intro[CASE.intro.length - 1];
+    expect(last.art).toBe('clock');
+    expect(last.lines.map((l) => l.text).join(' ')).toContain('22시 50분');
+    expect(CASE.intro.flatMap((c) => c.lines).map((l) => l.text).join(' ')).not.toMatch(/(^|\s)23시/);
+  });
+
+  it('핵심 문구에 12번이 남지 않았다', () => {
+    expect(CASE.rules.join(' ')).not.toContain('12번');
+  });
+});
+
 describe('검사기가 실제로 잡아낸다(변조 데이터)', () => {
   it('고아 증거 — decoys 에서 빼면 오류, decoys 에 있으면 통과', () => {
     const c = clone();

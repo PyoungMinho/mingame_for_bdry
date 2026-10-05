@@ -87,11 +87,8 @@ export function SpendPrompt({ run, target, onConfirm, onCancel, onOpenNotebook, 
   }
 
   // 남은 행동 1 — 마지막 행동 시트
-  const gate = starsOf(run) >= rulesOf(run).starGate;
-  let note: string;
-  if (target.kind === 'set') note = LAST_ACTION.setNote;
-  else if (!gate) note = LAST_ACTION.noGate(rulesOf(run).starGate - starsOf(run));
-  else note = target.kind === 'hint' ? LAST_ACTION.hintNoteGate : LAST_ACTION.placeNoteGate;
+  // v4: 사이렌 뒤에도 이미 연 곳은 다시 보므로 대상별 변형 문구는 없앴다. ★ 부족일 때만 한 줄
+  const missing = rulesOf(run).starGate - starsOf(run);
   return (
     <BottomSheet open title={LAST_ACTION.title} onClose={onCancel} height="auto" hideTitle className="wt-sheet--last">
       <p className="wt-last-head">
@@ -100,8 +97,7 @@ export function SpendPrompt({ run, target, onConfirm, onCancel, onOpenNotebook, 
       <p className="wt-spend-main">{main}</p>
       <p className="wt-last-body">{LAST_ACTION.body1}</p>
       <p className="wt-last-body">{LAST_ACTION.body2}</p>
-      <p className="wt-last-note">{note}</p>
-      {gate && <p className="wt-last-sub">{LAST_ACTION.sub}</p>}
+      {missing > 0 && <p className="wt-last-note">{LAST_ACTION.noGate(missing)}</p>}
       <div className="wt-actions wt-actions--stack">
         <button type="button" className="wt-btn wt-btn--primary" onClick={onCancel} data-autofocus="">
           돌아간다

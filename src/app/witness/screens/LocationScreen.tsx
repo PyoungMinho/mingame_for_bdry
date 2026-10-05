@@ -8,7 +8,7 @@
  *  - [나가기]는 항상 무료이고 확인창이 없다. 행동이 0 이었다면 나가는 순간 사이렌.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CASE, EVIDENCE_TOTAL, evidenceCount, examine, getEvidence, visibleHotspots, type Dialogue, type Hotspot, type Id } from '@/lib/witness';
+import { CASE, EVIDENCE_TOTAL, RULES, evidenceCount, examine, getEvidence, visibleHotspots, type Dialogue, type Hotspot, type Id } from '@/lib/witness';
 import { COACH_TEXT, TOAST } from '../lib/copy';
 import { TUTORIAL_SET, tutorialDone } from '../lib/format';
 import { useNav } from '../lib/useNav';
@@ -21,6 +21,7 @@ import { hasNotebookNews } from '../components/Notebook';
 import { HotspotRail, SceneView, type SceneSpot } from '../components/SceneView';
 import { SpendPrompt, useSpend } from '../components/SpendPrompt';
 import { fxMs, T } from '../lib/fx';
+import { playSfx } from '../audio/useGameAudio';
 
 type Flow =
   | { k: 'explore' }
@@ -65,7 +66,7 @@ export function LocationScreen({ locId }: { locId: string }) {
   );
 
   const doExamine = (h: Hotspot) => {
-    const prev = game.getRun()?.actions ?? 12;
+    const prev = game.getRun()?.actions ?? RULES.normal.actions;
     const step = game.act((r) => examine(r, h.id));
     if (step.error) {
       gateRef.current = false;
@@ -123,6 +124,8 @@ export function LocationScreen({ locId }: { locId: string }) {
       setFlow({ k: 'explore' });
       return;
     }
+    // 획득 카드·기기 로그가 뜨는 순간 픽업음
+    playSfx('pickup');
     if (spot.device) setFlow({ k: 'log', spot, ids: acquired });
     else setFlow({ k: 'acquire', ids: acquired, i: 0 });
   };

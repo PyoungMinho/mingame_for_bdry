@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * 타이틀(W01, 디자인 §5-4) — 이어하기(앰버 주 버튼) · 새 수사 · 엔딩 도감 · 설정. 칩 「혼자서」「약 25분」「가입 없음」.
+ * 타이틀(W01, 디자인 §5-4) — 이어하기(앰버 주 버튼) · 새 수사 · 엔딩 도감 · 설정 · 소리 토글(톱니 옆). 칩 「혼자서」「약 25분」「가입 없음」.
  * 하이드레이션: 서버 렌더는 스켈레톤(워드마크 + 버튼 자리 + 이어하기 자리 56px 점선 박스). 저장은 마운트 뒤 effect 에서 읽고 이어하기 카드를 채운다.
  * 1인용 게임이다 — 방 코드·초대·계정·서버가 없다는 사실을 칩과 설정 하단 문구로 못 박는다.
  */
@@ -13,6 +13,8 @@ import { fmtSavedAt, runSummary } from '../lib/format';
 import { useWt } from '../lib/context';
 import { ArtSlot } from '../components/ArtSlot';
 import { ConfirmSheet } from '../components/BottomSheet';
+import { SoundToggle } from '../audio/SoundToggle';
+import { playSfx } from '../audio/useGameAudio';
 
 function Wordmark() {
   return (
@@ -55,6 +57,7 @@ export function TitleScreen() {
   const got = endingSlots().filter((e) => game.meta.endings.includes(e)).length;
 
   const start = () => {
+    playSfx('tap');
     if (canResume) setConfirmNew(true);
     else game.startNew();
   };
@@ -67,6 +70,7 @@ export function TitleScreen() {
       <button type="button" className="wt-iconbtn wt-title-gear" onClick={openSettings} aria-label="설정">
         <Settings size={22} aria-hidden />
       </button>
+      <SoundToggle className="wt-title-sound" />
 
       {!game.persistent && <p className="wt-banner">{NOTICE.noStorage}</p>}
       {game.notice && (
@@ -83,7 +87,17 @@ export function TitleScreen() {
       <div className="wt-title-actions">
         {canResume && run ? (
           // 이름은 '이어하기'만, 요약·저장 시각은 설명으로(이름이 길면 이름으로 못 찾는다)
-          <button type="button" className="wt-btn wt-btn--primary wt-btn--full wt-resume" onClick={game.resume} data-testid="title-resume" aria-label="이어하기" aria-describedby="wt-resume-desc">
+          <button
+            type="button"
+            className="wt-btn wt-btn--primary wt-btn--full wt-resume"
+            onClick={() => {
+              playSfx('tap');
+              game.resume();
+            }}
+            data-testid="title-resume"
+            aria-label="이어하기"
+            aria-describedby="wt-resume-desc"
+          >
             <span className="wt-resume-t" aria-hidden>
               이어하기
             </span>
