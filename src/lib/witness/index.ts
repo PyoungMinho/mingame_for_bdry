@@ -7,3 +7,4 @@ export { CASE, NAMES } from './case-data';
 export * from './engine';
 export * from './storage';
 export * from './share';
+export * from './readlines';

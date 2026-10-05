@@ -3,9 +3,10 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { RULES, applyResultToMeta, cancelAccuse, continueAfterSiren, exit, newMeta, newRun, openSet, pickCulprit, present, setSlot, startAccuse, submitAccusation, type RunState } from './engine';
-import { STORAGE_KEYS, clearRun, loadMeta, loadRun, memoryStorage, openStorage, parseMeta, parseRun, saveMeta, saveRun, type StorageLike } from './storage';
+import { STORAGE_KEYS, clearRun, isReplayRun, loadMeta, loadRun, memoryStorage, mergeMeta, openStorage, parseMeta, parseRun, saveMeta, saveRun, serializeRun, type StorageLike } from './storage';
+import { RECALL_ELIGIBLE, endInvestigation, gradeCapOf, hint, keepSavedRun, rewind, rewindOption, type Accusation } from './engine';
 import { CASE } from './case-data';
-import { playPath } from './validate';
+import { freeClosure, playPath } from './validate';
 
 const mid = (): RunState => playPath(['L3', 'T05', 'L1', 'T03']);
 
@@ -90,9 +91,9 @@ describe('run 저장·복원', () => {
     }
   });
 
-  it('v 또는 사건 id 가 다르면 status=version 으로 폐기', () => {
+  it('v 또는 사건 id 가 다르면 status=version 으로 폐기(v 2 는 다시 하기 판 — 받아들인다, 3 부터 version)', () => {
     const s = memoryStorage();
-    s.setItem(STORAGE_KEYS.run, JSON.stringify({ ...JSON.parse(JSON.stringify(mid())), v: 2 }));
+    s.setItem(STORAGE_KEYS.run, JSON.stringify({ ...JSON.parse(JSON.stringify(mid())), v: 3 }));
     expect(loadRun(s)).toEqual({ status: 'version', run: null });
     s.setItem(STORAGE_KEYS.run, JSON.stringify({ ...JSON.parse(JSON.stringify(mid())), caseId: 'witness-02' }));
     expect(loadRun(s).status).toBe('version');
@@ -323,5 +324,219 @@ describe('규칙 개정(행동 12 → 13) 이어하기 호환 — rev 없는 옛
     delete old.rev;
     old.actions = 12;
     expect(parseRun(JSON.stringify(old))?.actions).toBe(13);
+  });
+});
+
+// ═══════════════════════════════ 다시 하기 저장(docs/planning/witness-replay.md d · h-3) ═══════════════════════════════
+
+const PERFECT = ['L3', 'T05', 'L1', 'T03', 'T02', 'L2', 'T04', 'P:L2.h3'];
+const SHORT: Accusation = { culprit: CASE.solution.culprit, means: 'E02', opportunity: 'E03b', motive: 'E06' };
+function judge(run: RunState, a: Accusation): RunState {
+  let r = startAccuse(run).run;
+  r = pickCulprit(r, a.culprit).run;
+  r = setSlot(setSlot(setSlot(r, 'means', a.means).run, 'opportunity', a.opportunity).run, 'motive', a.motive).run;
+  const s = submitAccusation(r);
+  expect(s.error).toBeUndefined();
+  return s.run;
+}
+const raw = (r: RunState) => JSON.parse(JSON.stringify(r)) as Record<string, unknown>;
+/** 배포된 옛 코드(5a8f53a)의 run 문턱 — v 가 1 이 아니면 'version' 으로 판만 버린다(storage.ts 옛 loadRun 그대로) */
+function oldLoadRun(st: StorageLike): { status: string } {
+  const r = st.getItem(STORAGE_KEYS.run);
+  if (!r) return { status: 'empty' };
+  const o = JSON.parse(r) as Record<string, unknown>;
+  if (o.v !== 1 || o.caseId !== 'witness-01') {
+    st.removeItem(STORAGE_KEYS.run);
+    return { status: 'version' };
+  }
+  return { status: 'ok' };
+}
+
+describe('다시 하기 — run 저장', () => {
+  it('S1 새 필드(rewinds·attempts·prevAccuse·recall·accuseCp·actCp) 왕복 보존', () => {
+    const st = memoryStorage();
+    const mem = playPath(['T02', 'T03', 'T04', 'T05'], freeClosure(newRun({ recall: RECALL_ELIGIBLE, recallN: 5 })));
+    const end = judge(mem, SHORT);
+    const back = rewind(end).run;
+    expect(back).toMatchObject({ rewinds: { judged: 1, excluded: 0 }, attempts: 1, recall: { n: 5 } });
+    expect(back.prevAccuse && back.checkpoint && back.actCp).toBeTruthy();
+    for (const r of [end, back]) {
+      expect(saveRun(st, r)).toBe(true);
+      const l = loadRun(st);
+      expect(l.status).toBe('ok');
+      expect(l.run).toEqual(raw(r));
+    }
+  });
+
+  it('S2 손상 → 판 폐기: 스냅샷 중첩 · recall id 범위 밖·중복·빈 목록 · judged 3 · attempts 4 · 잘못된 prevAccuse', () => {
+    const end = judge(playPath(PERFECT), SHORT);
+    const base = raw(end);
+    const bad: Record<string, unknown>[] = [
+      { ...base, accuseCp: { ...(base.accuseCp as object), actCp: base.actCp } },
+      { ...base, actCp: { ...(base.actCp as object), checkpoint: base.checkpoint } },
+      { ...base, recall: { n: 2, ids: ['E03b'] } },
+      { ...base, recall: { n: 2, ids: ['E05', 'E05'] } },
+      { ...base, recall: { n: 2, ids: [] } },
+      { ...base, recall: { n: 0, ids: ['E05'] } },
+      { ...base, rewinds: { judged: 3, excluded: 0 } },
+      { ...base, rewinds: { judged: 0 } },
+      { ...base, attempts: 4 },
+      { ...base, prevAccuse: { culprit: 'AI' } },
+      { ...base, prevAccuse: { culprit: 'S1', means: 'E99' } },
+      { ...base, prevAccuse: { notCulprit: 'AI' } },
+      { ...base, prevAccuse: { culprit: 'S1', miss: ['who'] } },
+      { ...base, prevAccuse: { culprit: 'S1', miss: 'motive' } },
+      { ...base, result: { ...(base.result as object), attempt: 4 } },
+      { ...base, result: { ...(base.result as object), recallRun: 0 } },
+    ];
+    for (const b of bad) expect(parseRun(JSON.stringify(b)), JSON.stringify(b).slice(0, 80)).toBeNull();
+    expect(parseRun(JSON.stringify(base))).not.toBeNull();
+  });
+
+  it('S2b 범인 틀린 뒤 prevAccuse(범인 없음 · notCulprit · miss) 왕복', () => {
+    const base = raw(judge(playPath(PERFECT), SHORT));
+    const pa = { notCulprit: 'S1', means: 'E02', miss: ['means'] };
+    expect(parseRun(JSON.stringify({ ...base, prevAccuse: pa }))?.prevAccuse).toEqual(pa);
+  });
+
+  it('S3 기억 판·판정 되감기 판만 v:2(코어·스냅샷) — 옛 탭은 판만 버리고 meta 는 그대로', () => {
+    const clean = judge(playPath(PERFECT), SHORT);
+    expect(isReplayRun(clean)).toBe(false);
+    expect(JSON.parse(serializeRun(clean)).v).toBe(1);
+    const rewound = rewind(clean).run;
+    expect(isReplayRun(rewound)).toBe(true);
+    const out = JSON.parse(serializeRun(rewound));
+    expect(out.v).toBe(2);
+    expect(out.checkpoint.v).toBe(2);
+    expect(out.actCp.v).toBe(2);
+    const mem = newRun({ recall: RECALL_ELIGIBLE });
+    expect(JSON.parse(serializeRun(mem)).v).toBe(2);
+    // 수사 배제 되감기만 쓴 판은 옛 탭도 A 상한을 안다(rewound) → v:1 그대로
+    let x = openSet(playPath(PERFECT), 'T01').run;
+    while (x.phase !== 'ended') x = present(x, 'T01.1', ['E01']).run;
+    expect(JSON.parse(serializeRun(rewind(x).run)).v).toBe(1);
+    // 옛 탭: 'version' → run 키만 삭제, meta 는 손대지 않는다
+    for (const r of [rewound, mem]) {
+      const st = memoryStorage();
+      const meta = { ...newMeta(), plays: 4 };
+      saveMeta(st, meta);
+      saveRun(st, r);
+      expect(oldLoadRun(st).status).toBe('version');
+      expect(st.getItem(STORAGE_KEYS.run)).toBeNull();
+      expect(loadMeta(st)).toEqual(meta);
+    }
+    // 새 탭은 v 1·2 모두 받는다
+    const st = memoryStorage();
+    saveRun(st, rewound);
+    expect(loadRun(st).run).toEqual(raw(rewound));
+  });
+
+  it('S4 배포 전 판(rewound:true, 새 필드 없음) 정상 로드 → rewinds {0,1} · 상한 A / rewound:false → 필드 없음', () => {
+    const old = { ...raw(playPath(PERFECT)), rewound: true };
+    const r = parseRun(JSON.stringify(old))!;
+    expect(r).not.toBeNull();
+    expect(r.rewinds).toEqual({ judged: 0, excluded: 1 });
+    expect(gradeCapOf(r)).toBe('A');
+    const clean = parseRun(JSON.stringify(raw(playPath(PERFECT))))!;
+    expect(clean.rewinds).toBeUndefined();
+    expect(gradeCapOf(clean)).toBeNull();
+    // 배포 전 끝난 결과(attempt 없음) → 1 로 읽는다
+    const end = raw(judge(playPath(PERFECT), SHORT));
+    const res = { ...(end.result as Record<string, unknown>) };
+    delete res.attempt;
+    expect(parseRun(JSON.stringify({ ...end, result: res }))?.result?.attempt).toBe(1);
+  });
+
+  it('S6 되감기 선택지가 있는 끝난 판은 저장 유지 · 이어하기로 끝난 판 그대로(칩·되감기) / 선택지 없으면 삭제 대상', () => {
+    const st = memoryStorage();
+    const end = judge(playPath(PERFECT), SHORT);
+    expect(keepSavedRun(end)).toBe(true);
+    saveRun(st, end);
+    const back = loadRun(st).run!;
+    expect(back.phase).toBe('ended');
+    expect(rewindOption(back)).toEqual({ kind: 'accuse', cost: 1, last: false });
+    expect(rewind(back).error).toBeUndefined();
+    // 시간 초과 ★2 — actCp 가 저장을 건너와도 되감기가 된다
+    const star2 = playPath(['L2', 'T04', 'T05']);
+    const t = endInvestigation(continueAfterSiren(hint({ ...star2, actions: 1 }).run).run).run;
+    saveRun(st, t);
+    expect(rewindOption(loadRun(st).run!)).toMatchObject({ kind: 'action' });
+    // 소진·완벽 → 지운다
+    let r = rewind(end).run;
+    r = rewind(judge(r, SHORT)).run;
+    const third = judge(r, SHORT);
+    expect(keepSavedRun(third)).toBe(false);
+  });
+});
+
+describe('다시 하기 — meta(found·best·lastEnding)', () => {
+  const le = { ending: 'short', grade: 'B', stars: 3, evidence: 9, wrong: 0, hints: 0, actionsLeft: 2, playMs: 1, missed: ['E05', 'E09', 'E03b'], unbrokenStars: 4, hiddenTeaser: false, newAchievements: [], at: 1, pendingView: false };
+
+  it('S5 found 없음 + lastEnding → 백필 · 잘못된 id 제거 · 16개 → 15 · v 1 유지 · found 를 지운 meta 재로드 → 복원', () => {
+    const m = parseMeta(JSON.stringify({ v: 1, plays: 1, lastEnding: le }));
+    expect(m.found).toEqual(RECALL_ELIGIBLE.filter((id) => !['E05', 'E09'].includes(id)));
+    const junk = parseMeta(JSON.stringify({ v: 1, found: ['E05', 'E03b', 'E14', 'X', 7, 'E05', ...RECALL_ELIGIBLE] }));
+    expect(junk.found).toEqual([...RECALL_ELIGIBLE]);
+    expect(junk.found).toHaveLength(15);
+    expect(parseMeta(JSON.stringify({ v: 1, found: 'nope' })).found).toEqual([]);
+    expect(parseMeta(JSON.stringify({ v: 1 })).found).toBeUndefined();
+    // 저장해도 v 1 그대로
+    const st = memoryStorage();
+    saveMeta(st, m);
+    expect(JSON.parse(st.getItem(STORAGE_KEYS.meta)!).v).toBe(1);
+    // 옛 탭이 found 를 지우고 저장해도 다음 로드에 lastEnding 으로 복원(멱등)
+    const wiped = JSON.parse(st.getItem(STORAGE_KEYS.meta)!) as Record<string, unknown>;
+    delete wiped.found;
+    st.setItem(STORAGE_KEYS.meta, JSON.stringify(wiped));
+    expect(loadMeta(st).found).toEqual(m.found);
+    expect(parseMeta(JSON.stringify(loadMeta(st)))).toEqual(loadMeta(st));
+  });
+
+  it('best 범위 실패 → undefined, 다른 필드 불변 · lastEnding 칩 필드 왕복(깨진 칩 필드만 버림)', () => {
+    const good = { used: 8, ms: 1000, grade: 'A', at: 5 };
+    expect(parseMeta(JSON.stringify({ v: 1, plays: 2, best: good }))).toMatchObject({ plays: 2, best: good });
+    for (const b of [{ ...good, used: 14 }, { ...good, used: -1 }, { ...good, grade: 'Z' }, { ...good, ms: -3 }, 'x']) {
+      const m = parseMeta(JSON.stringify({ v: 1, plays: 2, best: b }));
+      expect(m.best).toBeUndefined();
+      expect(m.plays).toBe(2);
+    }
+    expect(parseMeta(JSON.stringify({ v: 1, lastEnding: { ...le, recallRun: 3, rewinds: 2 } })).lastEnding).toMatchObject({ recallRun: 3, rewinds: 2 });
+    const broken = parseMeta(JSON.stringify({ v: 1, lastEnding: { ...le, recallRun: 0, rewinds: 'x' } })).lastEnding!;
+    expect(broken.ending).toBe('short');
+    expect(broken.recallRun).toBeUndefined();
+    expect(broken.rewinds).toBeUndefined();
+  });
+
+  it('엔딩 반영(되감기·기억 판) → lastEnding 칩·found·best 저장 왕복', () => {
+    const st = memoryStorage();
+    const end = judge(playPath(PERFECT), SHORT);
+    const res = judge(rewind(end).run, { ...SHORT, motive: 'E09' }).result!;
+    expect(res).toMatchObject({ ending: 'perfect', grade: 'A', rewinds: 1, attempt: 2 });
+    let m = applyResultToMeta(newMeta(), end.result!, 1);
+    m = applyResultToMeta(m, res, 2);
+    expect(m).toMatchObject({ plays: 1, lastEnding: { ending: 'perfect', rewinds: 1 } });
+    expect(m.best).toBeUndefined();
+    saveMeta(st, m);
+    expect(loadMeta(st)).toEqual(m);
+  });
+});
+
+describe('두 탭 meta 병합(A1)', () => {
+  it('쌓이는 값은 잃지 않는다 · settings 는 이 탭 · lastEnding 은 늦은 쪽 · best 는 행동 적은 쪽', () => {
+    const le = (at: number, pendingView: boolean) => ({ ending: 'short' as const, grade: 'B' as const, stars: 3, evidence: 9, wrong: 0, hints: 0, actionsLeft: 1, playMs: 1, missed: [], unbrokenStars: 0, hiddenTeaser: false, newAchievements: [], at, pendingView });
+    const stored = { ...newMeta(), plays: 5, endings: ['perfect' as const], achievements: ['flawless' as never], readLines: ['a'], coach: ['x'], bestGrade: 'S' as const, found: ['E05'], best: { used: 8, ms: 9, grade: 'S' as const, at: 1 }, lastEnding: le(10, true) };
+    const mine = { ...newMeta(), plays: 3, endings: ['short' as const], readLines: ['b'], coach: ['y'], bestGrade: 'B' as const, settings: { ...newMeta().settings, text: 'xl' as const }, found: ['E06'], best: { used: 10, ms: 1, grade: 'S' as const, at: 2 }, lastEnding: le(10, false) };
+    const m = mergeMeta(stored, mine);
+    expect(m.plays).toBe(5);
+    expect([...m.endings].sort()).toEqual(['perfect', 'short']);
+    expect(m.achievements).toEqual(['flawless']);
+    expect([...m.readLines].sort()).toEqual(['a', 'b']);
+    expect([...m.coach].sort()).toEqual(['x', 'y']);
+    expect(m.bestGrade).toBe('S');
+    expect(m.settings.text).toBe('xl');
+    expect(m.found).toEqual(expect.arrayContaining(['E05', 'E06']));
+    expect(m.best?.used).toBe(8);
+    expect(m.lastEnding?.pendingView).toBe(false); // 같은 시각이면 이 탭(엔딩을 떠난 표시가 먹는다)
+    expect(mergeMeta(stored, { ...mine, lastEnding: le(5, false) }).lastEnding?.at).toBe(10);
   });
 });

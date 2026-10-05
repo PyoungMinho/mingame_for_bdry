@@ -285,7 +285,7 @@
 .wt-shell .wt-count { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 6px; border-radius: 8px; background: var(--wt-surface-3); font-family: var(--wt-font-num); font-weight: 700; font-size: 14px; }
 .wt-shell .wt-siren-ic { color: var(--wt-danger); animation: wt-breath 1.2s ease-in-out 3; }
 .wt-shell .wt-hud-row2 { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; }
-.wt-shell .wt-hud-row3 { height: 20px; padding: 0 16px; font-size: var(--wt-fs-micro); color: var(--wt-muted); line-height: 20px; }
+.wt-shell .wt-hud-row3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 20px; padding: 0 16px; font-size: var(--wt-fs-micro); color: var(--wt-muted); line-height: 20px; }
 .wt-shell .wt-hud-trust { display: inline-flex; align-items: center; gap: 8px; }
 .wt-shell .wt-hud-trusttext { font-size: var(--wt-fs-caption); color: var(--wt-body); font-weight: 700; }
 .wt-shell .wt-hud-compactrow { display: flex; align-items: center; gap: 6px; height: 50px; padding: 0 4px; }
@@ -853,7 +853,7 @@
 .wt-shell .wt-grade-title { font-size: 15px; font-weight: 800; text-shadow: 0 1px 6px #000, 0 0 2px #000; max-width: 180px; text-align: right; line-height: 1.25; transform: rotate(-4deg); }
 .wt-shell .wt-grade[data-grade='S'] .wt-grade-title { color: var(--wt-star); }
 .wt-shell .wt-ending-title { position: relative; margin-top: -8px; padding: 0 16px; font-size: var(--wt-fs-h1); line-height: 1.25; text-align: center; z-index: 2; }
-.wt-shell .wt-ending-text { padding: 8px 0 0; display: flex; flex-direction: column; align-items: stretch; }
+.wt-shell .wt-ending-text { padding: 26px 0 0; display: flex; flex-direction: column; align-items: stretch; }
 .wt-shell .wt-ending-text .wt-btn { align-self: center; margin-top: 8px; }
 .wt-shell .wt-ending-detail { display: flex; flex-direction: column; gap: 14px; padding: 12px 16px 0; }
 .wt-shell .wt-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1124,3 +1124,46 @@
 @media (max-width: 359px) {
   .wt-shell .wt-hud-row1 { padding-left: 8px; }
 }
+
+/* ── 다시 하기(witness-replay.md) — 되감기 · 새 수사 시트 · 읽은 대사 넘기기 · 기억 표시 ── */
+/* [≫ 읽은 건 넘기기] — 대사창 오른쪽 위(이름표의 반대편, 위쪽 모서리에 걸친다). 자리는 늘 잡아 두고 투명도만 바꾼다(깜빡임·탭 영역 겹침 방지, 44px) */
+.wt-shell .wt-skipread { position: absolute; top: -22px; right: 12px; z-index: 3; min-width: var(--wt-tap-min); min-height: var(--wt-tap-min); padding: 0 14px; border-radius: 999px; background: var(--wt-surface-2); border: 1px solid var(--wt-line-3); color: var(--wt-ink); font-size: var(--wt-fs-caption); font-weight: 700; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 120ms var(--wt-ease); touch-action: manipulation; }
+.wt-shell .wt-skipread[data-on='1'] { opacity: 1; pointer-events: auto; }
+.wt-shell .wt-skipread[data-on='1']:active { background: var(--wt-surface-3); }
+/* 넘기기 코치마크는 대사창 아래에 띄운다 — 위에 띄우면 버튼(윗모서리)이나 엔딩의 [↺ 직전부터 다시]를 가리고, [알겠어요]가 넘기기 버튼에 붙는다(UX-7) */
+.wt-shell .wt-coach--skipread { top: calc(100% + 8px); bottom: auto; }
+/* 아래 자리가 없을 때(장소 화면 — 아래는 하단 바): 버튼 윗변(−22px) 위로 8px 띄운다(장면 위, 버튼·[알겠어요] 간격 확보) */
+.wt-shell .wt-coach--skipread-up { bottom: calc(100% + 30px); }
+/* 되감은 뒤 지목: 범인이 아니었던 인물 · 지난번 안 통한 칸 */
+.wt-shell .wt-pickcard[data-ruled='1'] { cursor: not-allowed; }
+.wt-shell .wt-pickcard[data-ruled='1'] .wt-pickcard-job { color: var(--wt-danger); font-weight: 700; }
+.wt-shell .wt-sbslot-miss { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 4px; padding: 0 8px; min-height: 20px; border-radius: 999px; border: 1px solid var(--wt-line-3); color: var(--wt-muted); font-size: var(--wt-fs-micro); font-weight: 800; }
+
+/* 판 종류 칩 — 엔딩 칭호 아래 · 허브 HUD 3줄 · 조사·증언 HUD 아래 모서리 */
+.wt-shell .wt-modechips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 6px 16px 0; position: relative; z-index: 2; }
+.wt-shell .wt-modechip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; border: 1px solid var(--wt-ai); color: var(--wt-ai); font-size: var(--wt-fs-micro); font-weight: 800; font-style: normal; line-height: 1; white-space: nowrap; background: color-mix(in srgb, var(--wt-ai) 10%, transparent); }
+.wt-shell .wt-hud-modes { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.wt-shell .wt-hud-modes--compact { position: absolute; right: 8px; top: 100%; margin-top: 4px; z-index: 2; pointer-events: none; }
+
+/* 되감기 — 제목 바로 아래 주 버튼 + 부제 */
+.wt-shell .wt-rewind { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 12px 16px 0; }
+.wt-shell .wt-rewind-sub { text-align: center; color: var(--wt-muted); font-size: var(--wt-fs-caption); font-weight: 700; }
+.wt-shell .wt-rewind-over { text-align: center; color: var(--wt-muted); font-size: var(--wt-fs-small); }
+.wt-shell .wt-excluded .wt-rewind-sub { margin-top: -6px; }
+.wt-shell .wt-fold { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; min-height: var(--wt-tap-min); padding: 0 12px; border-radius: var(--wt-radius-md); color: var(--wt-body); font-size: var(--wt-fs-small); font-weight: 700; border: 1px solid var(--wt-line-2); background: var(--wt-surface); }
+.wt-shell .wt-missed-lock { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--wt-muted); font-size: var(--wt-fs-small); }
+.wt-shell .wt-ending-links { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+/* 새 수사 시트 — 기억 이어가기(위) / 처음부터(아래), 위치 고정 */
+.wt-shell .wt-start-warn { margin-bottom: 8px; color: var(--wt-cost); font-size: var(--wt-fs-small); font-weight: 700; text-align: center; }
+.wt-shell .wt-start-opts { display: flex; flex-direction: column; gap: var(--wt-tap-gap); }
+.wt-shell .wt-startopt { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 64px; padding: 8px 16px; }
+.wt-shell .wt-startopt b { font-size: var(--wt-fs-h3); font-weight: 800; }
+.wt-shell .wt-startopt small { font-size: var(--wt-fs-caption); font-weight: 600; opacity: 0.85; }
+
+/* 돌파 결과 카드 — '새로 열린 것'을 이미 본 적이 있으면 한 줄 칩으로 접는다 */
+.wt-shell .wt-result-fold { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: var(--wt-tap-min); padding: 0 14px; border-radius: 999px; border: 1px solid var(--wt-line-2); background: var(--wt-surface-2); color: var(--wt-body); font-size: var(--wt-fs-caption); font-weight: 700; }
+
+/* 지도 ✓(기억으로 이 방 증거를 다 가졌다 — 문구 없음) */
+.wt-shell .wt-room-recalled { position: absolute; top: 10px; right: 10px; color: var(--wt-free); }
+.wt-shell .wt-roomrow .wt-room-recalled { position: static; margin-left: auto; flex: none; }

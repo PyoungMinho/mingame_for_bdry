@@ -60,9 +60,9 @@ export function EndInvestigationBar({ onClick }: { onClick: () => void }) {
 }
 
 /** 코치마크 — 한 탭으로 닫히고 게임 입력을 막지 않는다. 부모는 position: relative */
-export function CoachBubble({ text, onDismiss, placement = 'top', label = '알겠어요' }: { text: string; onDismiss: () => void; placement?: 'top' | 'bottom' | 'center' | 'dock'; label?: string }) {
+export function CoachBubble({ text, onDismiss, placement = 'top', label = '알겠어요', className }: { text: string; onDismiss: () => void; placement?: 'top' | 'bottom' | 'center' | 'dock'; label?: string; className?: string }) {
   return (
-    <div className={`wt-coach wt-coach--${placement}`} role="status">
+    <div className={['wt-coach', `wt-coach--${placement}`, className].filter(Boolean).join(' ')} role="status">
       <p>{text}</p>
       <button type="button" className="wt-coach-ok" onClick={onDismiss}>
         {label}

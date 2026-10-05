@@ -8,7 +8,8 @@ export const runtime = 'edge';
  * 디자인 §9-2 OG 이미지(Edge, 1200×630) — gung `og/result` 선례.
  * - 쿼리 없음/검증 실패/여분 키 → 기본 커버를 200 으로(404 금지 — 카톡 카드가 깨지지 않게).
  *   같은 출처의 정적 /witness/og.jpg 바이트를 그대로 돌려주고, 그게 실패하면 ImageResponse 커버.
- * - 유효 쿼리(g,s,e,r,k,v — 전부 정수·열거형) → 결과 카드. 문구는 전부 ogCard()가 등급·숫자·열거형에서 파생한다.
+ * - 유효 쿼리(g,s,e,r,k,v — 전부 정수·열거형, 선택 m 0~3 = 판 종류) → 결과 카드. 문구는 전부 ogCard()가 등급·숫자·열거형에서 파생한다.
+ *   m(되감기·기억)은 칭호 옆 작은 칩 하나로만 그린다.
  *   자유 텍스트를 받지 않고, 범인·증거 이름·트릭 어휘가 들어올 자리가 없다.
  * - 색은 witness.css 토큰의 리터럴 값(satori 는 CSS 변수를 못 읽는다). 한글은 Black Han Sans 서브셋(text=) 1회 fetch,
  *   실패 시 기본 폰트. 폰트 성공 → 결과 카드 장기 캐시 / 실패 → no-store(깨진 □ 이미지를 CDN 에 박지 않는다).
@@ -171,7 +172,19 @@ function ResultCard({ c, font }: { c: OgCard; font: string }) {
           {c.badge}
         </div>
       )}
-      <div style={{ position: 'absolute', left: 64, top: 258, display: 'flex', fontSize: 44, color: GOLD, fontFamily: font }}>{c.title}</div>
+      <div style={{ position: 'absolute', left: 64, top: 258, display: 'flex', alignItems: 'center', fontSize: 44, color: GOLD, fontFamily: font }}>
+        <span>{c.title}</span>
+        {c.mode && (
+          <div
+            style={{
+              marginLeft: 20, height: 40, padding: '0 16px', display: 'flex', alignItems: 'center', fontSize: 24, color: BODY, fontFamily: font,
+              border: '1px solid rgba(160,196,255,0.35)', borderRadius: 20,
+            }}
+          >
+            {c.mode}
+          </div>
+        )}
+      </div>
       <div style={{ position: 'absolute', left: 64, top: 322, display: 'flex', fontSize: 28, color: BODY, fontFamily: font }}>{c.line}</div>
       <div style={{ position: 'absolute', left: 64, top: 396, display: 'flex', gap: 16 }}>
         {c.chips.map((t) => (
@@ -248,8 +261,8 @@ export async function GET(request: NextRequest) {
 
   if (parsed) {
     const card = ogCard(parsed);
-    const { res, fontOk } = await renderImage((f) => <ResultCard c={card} font={f} />, subset(card.title, card.line, card.chips.join(''), card.badge ?? '', card.hook));
-    // 결과 카드는 (g,s,e,r,k,v) 만의 순수 함수 — 폰트가 정상일 때만 장기 캐시
+    const { res, fontOk } = await renderImage((f) => <ResultCard c={card} font={f} />, subset(card.title, card.line, card.chips.join(''), card.badge ?? '', card.mode ?? '', card.hook));
+    // 결과 카드는 (g,s,e,r,k,v,m) 만의 순수 함수 — 폰트가 정상일 때만 장기 캐시
     res.headers.set('Cache-Control', fontOk ? 'public, max-age=31536000, immutable' : 'no-store');
     return res;
   }

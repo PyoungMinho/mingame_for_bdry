@@ -6,14 +6,15 @@
  * 하이드레이션 안전: 서버·첫 렌더는 스켈레톤. 마운트 뒤 effect 에서 저장을 읽고 화면을 정한다.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { canAccuse, exit as engineExit, getLine, getSet, minutesLeft, openSet, stars, startAccuse, visibleLines, type HintTarget, type RunState, type Screen } from '@/lib/witness';
+import { absorbFound, canAccuse, exit as engineExit, getLine, getSet, keepSavedRun, minutesLeft, openSet, recallPlan, rewindOption, stars, startAccuse, visibleLines, type HintTarget, type RecallPlan, type RunState, type Screen } from '@/lib/witness';
 import { BackStackProvider, useBackGuard, useEscClose } from '../lib/BackStack';
-import { TOAST } from '../lib/copy';
+import { REPLAY_TEXT, TOAST } from '../lib/copy';
 import { WtContext, useWt, type NotebookTab, type WtCtx } from '../lib/context';
 import { vibrate } from '../lib/fx';
 import type { EndingData } from '../lib/format';
 import { useWitnessGame } from '../lib/useWitnessGame';
 import { BottomSheet, ConfirmSheet } from '../components/BottomSheet';
+import { StartSheet } from '../components/StartSheet';
 import { CaseFileView, CollectionView } from '../components/Collection';
 import { Notebook } from '../components/Notebook';
 import { OrientationGuard, RainLayer } from '../components/Overlays';
@@ -29,7 +30,7 @@ import { SirenScreen } from './SirenScreen';
 import { TestimonyScreen } from './TestimonyScreen';
 import { TitleScreen, TitleSkeleton } from './TitleScreen';
 import type { Scene } from '../audio/cues';
-import { useGameAudio, useSfxOnRise } from '../audio/useGameAudio';
+import { playSfx, useGameAudio, useSfxOnRise } from '../audio/useGameAudio';
 
 export function WitnessApp() {
   return (
@@ -73,6 +74,8 @@ function AppInner() {
   const [caseOpen, setCaseOpen] = useState(false);
   const [shareData, setShareData] = useState<EndingData | null>(null);
   const [gate, setGate] = useState<null | 'info' | 'confirm'>(null);
+  /** 새 수사 시트·확인(진입 3곳 공통) — plan 이 있으면 「기억 이어가기 / 처음부터」, 없으면 저장된 판 확인만 */
+  const [startAsk, setStartAsk] = useState<null | { skipTutorial?: boolean; plan: RecallPlan | null; hasSaved: boolean; savedRewind: boolean }>(null);
   const lastBack = useRef(0);
   useEscClose();
 
@@ -87,6 +90,12 @@ function AppInner() {
     warnedSave.current = true;
     toasts.push({ kind: 'warn', text: TOAST.saveBlocked, ms: 4000 });
   }, [inPlay, game.persistent, toasts.push]);
+
+  // 다른 탭에서 바뀐 저장을 다시 읽었으면 한 번 알린다(A1)
+  useEffect(() => {
+    if (game.synced > 0) toasts.push({ kind: 'info', text: TOAST.synced, ms: 2600 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game.synced]);
 
   const vib = useCallback((p: number | readonly number[]) => vibrate(game.settings.haptics, p), [game.settings.haptics]);
   const toast = toasts.push;
@@ -109,6 +118,34 @@ function AppInner() {
     }
     startAccuseNow();
   }, [game, startAccuseNow]);
+
+  const requestNewRun = useCallback(
+    (o: { skipTutorial?: boolean } = {}) => {
+      const r = game.getRun();
+      const hasSaved = !!r && keepSavedRun(r);
+      // 저장된 판이 되감기를 기다리는 끝난 판이면 경고를 「되감기 기회도 사라져요」로(UX-10)
+      const savedRewind = hasSaved && r!.phase === 'ended';
+      // 끝나지 않은 판을 버리면 거기서 찾은 증거도 기억에 들어간다 — 시트의 「증거 n개」가 시작 때 실제 들고 가는 수와 같도록 미리 합쳐서 센다
+      const base = r && r.phase !== 'ended' ? absorbFound(game.meta, r) : game.meta;
+      const plan = recallPlan(base);
+      if (!plan && !hasSaved) {
+        game.startNew(o);
+        return;
+      }
+      setStartAsk({ ...o, plan, hasSaved, savedRewind });
+    },
+    [game],
+  );
+
+  const pickStart = (recall: boolean) => {
+    const a = startAsk;
+    setStartAsk(null);
+    if (!a) return;
+    if (recall && a.plan) {
+      playSfx('pickup');
+      game.startNew({ skipTutorial: a.skipTutorial, plan: a.plan });
+    } else game.startNew({ skipTutorial: a.skipTutorial });
+  };
 
   const openNotebook = useCallback(
     (tab?: NotebookTab) => {
@@ -186,11 +223,12 @@ function AppInner() {
       openCollection: () => setCollOpen(true),
       openCaseFile: () => setCaseOpen(true),
       openShare: (d) => setShareData(d),
+      requestNewRun,
       vib,
       gotoTarget,
       coachSeen: (id) => game.meta.coach.includes(id),
     }),
-    [game, toast, openNotebook, nbOpen, nbTab, requestAccuse, jumpToLine, vib, gotoTarget],
+    [game, toast, openNotebook, nbOpen, nbTab, requestAccuse, jumpToLine, requestNewRun, vib, gotoTarget],
   );
 
   // 하드웨어·브라우저 뒤로: 열린 층 닫기 → 한 단계 위 화면 → 허브에서는 한 번 더 누르면 나감
@@ -256,9 +294,12 @@ function AppInner() {
   useSfxOnRise(nbOpen || (scrName === 'hub' && run?.screen.tab === 'notebook'), 'paper', inPlay);
   // 사이렌 효과음은 '사이렌에 처음 들어갈 때' 한 번만(디자인 §5-6). 사이렌 뒤 배제 엔딩(ended)은 사이렌이 이어지는 것으로 보아
   // 되감기(ended → siren)에서 다시 울리지 않는다(QA-BAL-02). 연결부만 — audio/ 기능은 그대로
-  const sirenOn = run?.phase === 'siren' || (run?.phase === 'ended' && run.result?.ending === 'excluded' && run.checkpoint?.phase === 'siren');
+  // 지목 되감기(accuseCp 가 사이렌 뒤)도 같다 — 사이렌 뒤에 지목했다가 되감아 사이렌 화면으로 돌아와도 다시 울리지 않는다
+  const sirenOn = run?.phase === 'siren' || (run?.phase === 'ended' && ((run.result?.ending === 'excluded' && run.checkpoint?.phase === 'siren') || run.accuseCp?.phase === 'siren'));
   useSfxOnRise(sirenOn, 'siren', inPlay);
   const ambient = ambientOf(run, scrName);
+  // 되감기를 기다리는 끝난 판 — 사건 파일(진상·내가 못 깬 모순)을 잠근다(A2·UX-1)
+  const rewindPending = !!run && run.phase === 'ended' && rewindOption(run) !== null;
 
   let body: React.ReactNode;
   if (!game.ready) body = <TitleSkeleton />;
@@ -292,9 +333,25 @@ function AppInner() {
         )}
         <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} inGame={inPlay} onTitle={() => { setSettingsOpen(false); game.toTitle(); }} onShowRules={() => setRulesOpen(true)} />
         <RulesSheet open={rulesOpen} onClose={() => setRulesOpen(false)} />
-        <CollectionView open={collOpen} meta={game.meta} onClose={() => setCollOpen(false)} onCaseFile={() => setCaseOpen(true)} />
-        <CaseFileView open={caseOpen} meta={game.meta} brokenIds={run?.phase === 'ended' ? run.broken : undefined} onClose={() => setCaseOpen(false)} />
+        <CollectionView open={collOpen} meta={game.meta} waitRewind={rewindPending} onClose={() => setCollOpen(false)} onCaseFile={() => setCaseOpen(true)} />
+        <CaseFileView open={caseOpen} meta={game.meta} waitRewind={rewindPending} brokenIds={run?.phase === 'ended' && !rewindPending ? run.broken : undefined} onClose={() => setCaseOpen(false)} />
         {shareData && <ShareSheet open data={shareData} plays={game.meta.plays} onClose={() => setShareData(null)} />}
+
+        {startAsk?.plan ? (
+          <StartSheet
+            open
+            plan={startAsk.plan}
+            warn={startAsk.hasSaved ? (startAsk.savedRewind ? REPLAY_TEXT.sheetWarnRewind : REPLAY_TEXT.sheetWarn) : null}
+            primary={game.meta.lastEnding?.ending === 'perfect' || game.meta.lastEnding?.ending === 'hidden' ? 'fresh' : 'recall'}
+            onRecall={() => pickStart(true)}
+            onFresh={() => pickStart(false)}
+            onClose={() => setStartAsk(null)}
+          />
+        ) : (
+          <ConfirmSheet open={!!startAsk} title="새 수사를 시작할까요?" confirmLabel="새로 시작" cancelLabel="취소" onCancel={() => setStartAsk(null)} onConfirm={() => pickStart(false)}>
+            <p>{startAsk?.savedRewind ? REPLAY_TEXT.sheetWarnRewind : '지금 수사 기록이 지워져요.'} (엔딩 도감·업적은 그대로예요)</p>
+          </ConfirmSheet>
+        )}
 
         <BottomSheet open={gate === 'info'} title="아직 지목할 수 없다" onClose={() => setGate(null)} height="confirm">
           <p className="wt-confirm-body">결정적 모순 3개를 깨면 지목할 수 있다. 지금 {run ? stars(run) : 0}개.</p>

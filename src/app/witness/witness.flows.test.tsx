@@ -156,7 +156,7 @@ describe('판정 5종의 화면 결과', () => {
 });
 
 describe('수사 배제와 되감기', () => {
-  it('신뢰 0 → 연출이 끝난 뒤 W65 → [심문 직전으로 되감기]: 신뢰는 최소 2칸, S 등급 불가(rewound)', async () => {
+  it('신뢰 0 → 연출이 끝난 뒤 W65 → [↺ 직전부터 다시]: 신뢰는 최소 2칸, S 등급 불가(rewound)', async () => {
     let run = atT05();
     // 신뢰를 1로 만든다(엔진): 오답 4번
     for (let i = 0; i < 4; i++) run = present(run, 'T05.1', ['E01']).run;
@@ -167,7 +167,7 @@ describe('수사 배제와 되감기', () => {
     await presentUI(['E01']);
     await settle();
     expect(q('.wt-excluded')).toBeTruthy();
-    expect(document.body.textContent).toContain('신뢰는 최소 2칸으로 돌아와요. 이번 판은 S 등급을 받을 수 없어요.');
+    expect(q('[data-testid=excluded-rewind-sub]')?.textContent).toBe('증언 직전으로 · 최고 A');
     // 도감에는 이미 기록(수사 배제는 도감만)
     expect(loadMeta(openStorage().storage).endings).toContain('excluded');
     click(q('[data-testid=excluded-rewind]'));

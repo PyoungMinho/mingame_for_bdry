@@ -6,7 +6,7 @@
  *  - 사람: 용의자 4 + 또박이(증인 — 용의자가 아님을 틀로 구분) 블록, 증언 행 ≥ 56px. 잠긴 증언은 한 줄로 합쳐 개수·제목을 알리지 않는다.
  *  - 유료 대상은 항상 비용 프롬프트(2탭)를 거친다. 목록 뷰 토글은 설정에 기억한다.
  */
-import { ChevronDown, ChevronUp, Lock, List, Map as MapIcon } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Lock, List, Map as MapIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { CASE, canAccuse, endInvestigation, roomStatus, setStatus, stars, starsToGate, type Location, type TestimonySet } from '@/lib/witness';
 import { COACH_TEXT, END_SHEET, HUD_TOUR, TOAST } from '../lib/copy';
@@ -31,7 +31,8 @@ const chipText: Record<string, string> = {
   siren: '사이렌 뒤',
   cleared: '다 털었다',
 };
-const chipAria = (cs: { kind: ChipKind; label?: string }[]) => cs.map((c) => c.label ?? chipText[c.kind] ?? '').filter(Boolean).join(', ');
+const chipAria = (cs: { kind: ChipKind; label?: string }[], recalled?: boolean) =>
+  [...cs.map((c) => c.label ?? chipText[c.kind] ?? ''), recalled ? '기억으로 다 찾음' : ''].filter(Boolean).join(', ');
 
 const setWho = (s: TestimonySet) => s.speakers.map((w) => nameOf(w)).join('·');
 
@@ -253,8 +254,9 @@ function HouseTab({ onRoom, highlightLoc }: { onRoom: (l: Location) => void; hig
         <ul className="wt-roomlist">
           {rows.map(({ loc, st, chips }) => (
             <li key={loc.id}>
-              <button type="button" className="wt-roomrow" data-state={st.state} data-flash={highlightLoc === loc.id ? '1' : undefined} onClick={() => onRoom(loc)} aria-label={`${placeName(loc)}, ${chipAria(chips)}${st.state === 'locked' ? '. ' + (st.lockedLabel ?? '') : ''}`} data-testid={`room-${loc.id}`}>
+              <button type="button" className="wt-roomrow" data-state={st.state} data-flash={highlightLoc === loc.id ? '1' : undefined} onClick={() => onRoom(loc)} aria-label={`${placeName(loc)}, ${chipAria(chips, st.allRecalled)}${st.state === 'locked' ? '. ' + (st.lockedLabel ?? '') : ''}`} data-testid={`room-${loc.id}`}>
                 <span className="wt-room-name">{placeName(loc)}</span>
+                {st.allRecalled && <Check size={16} className="wt-room-recalled" aria-hidden data-testid={`recalled-${loc.id}`} />}
                 <ChipRow chips={chips} />
               </button>
             </li>
@@ -266,9 +268,10 @@ function HouseTab({ onRoom, highlightLoc }: { onRoom: (l: Location) => void; hig
             if (!loc) return <div key={`e${i}`} className="wt-room wt-room--empty" aria-hidden />;
             const r = rows.find((x) => x.loc.id === loc.id)!;
             return (
-              <button key={loc.id} type="button" className="wt-room" data-state={r.st.state} data-flash={highlightLoc === loc.id ? '1' : undefined} onClick={() => onRoom(loc)} aria-label={`${placeName(loc)}, ${chipAria(r.chips)}${r.st.state === 'locked' ? '. ' + (r.st.lockedLabel ?? '') : ''}`} data-testid={`room-${loc.id}`}>
+              <button key={loc.id} type="button" className="wt-room" data-state={r.st.state} data-flash={highlightLoc === loc.id ? '1' : undefined} onClick={() => onRoom(loc)} aria-label={`${placeName(loc)}, ${chipAria(r.chips, r.st.allRecalled)}${r.st.state === 'locked' ? '. ' + (r.st.lockedLabel ?? '') : ''}`} data-testid={`room-${loc.id}`}>
                 <span className="wt-room-name">{placeName(loc)}</span>
                 {r.st.state === 'locked' && <Lock size={16} aria-hidden className="wt-room-lock" />}
+                {r.st.allRecalled && <Check size={16} className="wt-room-recalled" aria-hidden data-testid={`recalled-${loc.id}`} />}
                 <ChipRow chips={r.chips} />
               </button>
             );

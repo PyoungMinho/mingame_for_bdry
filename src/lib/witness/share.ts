@@ -5,6 +5,8 @@
  * 스포일러 금지: 인물·증거 이름, 트릭 어휘, 숨은 엔딩 내용, 범인을 암시하는 값은 문구·URL·OG 어디에도 넣지 않는다.
  * 공유 URL 에는 파라미터를 붙이지 않는다(P0). OG 결과 변형은 숫자·열거형만 받는다.
  * 카카오: /gung 의 share 패턴을 참고한 별도 구현(파일 공유 없음). 키는 NEXT_PUBLIC_KAKAO_JS_KEY 우선, 없으면 /gung 과 같은 공개 키.
+ * 다시 하기(witness-replay.md e-4): 기억 판·되감기 판은 둘째 줄 끝에 「· N회차·기억」「· 되감기」 꼬리(카카오 제목도 같게), OG 는 m(0~3).
+ * 처음부터·무되감기 판은 꼬리·m 없음(현행 그대로).
  */
 import type { EndingId, Grade } from './types';
 import { EVIDENCE_TOTAL, RULES, STAR_TOTAL, titleOf, type RunResult } from './engine';
@@ -57,8 +59,28 @@ export function timePhrase(r: Pick<RunResult, 'ending' | 'actionsLeft'>, minutes
   return `강력팀 도착 ${r.actionsLeft * minutesPerAction}분 전 ${verb}`;
 }
 
+/** 결과 칩·공유 꼬리 문구(사양 g-5) */
+export const REPLAY_CHIP = { recall: '기억', rewind: '되감기' } as const;
+
+type ReplayMarks = Pick<RunResult, 'recallRun' | 'rewinds'>;
+
+/** 엔딩 칭호 아래 작은 칩 — [`N회차·기억`] / [`되감기`] / 둘 다 / 없음 */
+export function replayChips(r: ReplayMarks): string[] {
+  const out: string[] = [];
+  if (r.recallRun && r.recallRun >= 1) out.push(`${r.recallRun}회차·${REPLAY_CHIP.recall}`);
+  if (r.rewinds && r.rewinds >= 1) out.push(REPLAY_CHIP.rewind);
+  return out;
+}
+
+/** 공유 둘째 줄·카카오 제목 꼬리(` · 3회차·기억 · 되감기`). 처음부터·무되감기는 '' */
+export function replayTail(r: ReplayMarks): string {
+  return replayChips(r)
+    .map((c) => ` · ${c}`)
+    .join('');
+}
+
 export interface ShareInput {
-  result: Pick<RunResult, 'ending' | 'grade' | 'title' | 'stars' | 'evidence' | 'actionsLeft'>;
+  result: Pick<RunResult, 'ending' | 'grade' | 'title' | 'stars' | 'evidence' | 'actionsLeft' | 'recallRun' | 'rewinds'>;
   /** 엔딩 반영 뒤 플레이 횟수 */
   plays: number;
   origin?: string;
@@ -68,7 +90,7 @@ export interface ShareInput {
 /** 시스템 4-4 공유 문구(5줄, 스포 없음) */
 export function shareText(i: ShareInput): string {
   const r = i.result;
-  const head = `${r.grade}등급 · ${shareTitle(r)}${r.ending === 'hidden' ? ' · 숨은 엔딩 발견' : ''}`;
+  const head = `${r.grade}등급 · ${shareTitle(r)}${r.ending === 'hidden' ? ' · 숨은 엔딩 발견' : ''}${replayTail(r)}`;
   const tp = timePhrase(r);
   const stats = [`결정적 모순 ${r.stars}/${STAR_TOTAL}`, `증거 ${r.evidence}/${EVIDENCE_TOTAL}`, ...(tp ? [tp] : [])].join(' · ');
   return [`「${SHARE_TITLE}」`, head, stats, HOOKS[hookIndex(i.plays)], homeUrl(i.origin)].join('\n');
@@ -78,6 +100,9 @@ export function shareText(i: ShareInput): string {
 
 export type OgKind = 'p' | 'h' | 's' | 'w' | 't' | 'x';
 
+/** 판 종류 — 0 처음부터 · 1 되감기 · 2 기억 · 3 둘 다(없으면 0) */
+export type OgMode = 0 | 1 | 2 | 3;
+
 export interface OgParams {
   g: Grade;
   s: number;
@@ -85,6 +110,12 @@ export interface OgParams {
   r: number;
   k: OgKind;
   v: number;
+  /** 판 종류(0 이면 키 자체가 없다 — 처음부터 판의 URL·값은 예전과 같다) */
+  m?: Exclude<OgMode, 0>;
+}
+
+export function ogMode(r: ReplayMarks): OgMode {
+  return (((r.rewinds ?? 0) > 0 ? 1 : 0) + ((r.recallRun ?? 0) > 0 ? 2 : 0)) as OgMode;
 }
 
 export function ogKind(ending: EndingId): OgKind {
@@ -108,11 +139,15 @@ export function toOgParams(i: ShareInput): OgParams {
     r: Math.min(ACTIONS_MAX, Math.max(0, r.actionsLeft)),
     k: ogKind(r.ending),
     v: hookIndex(i.plays),
+    ...withMode(ogMode(r)),
   };
 }
 
+const withMode = (m: OgMode): Pick<OgParams, 'm'> => (m ? { m } : {});
+
+/** m 은 0 이 아닐 때만 붙인다(처음부터 판의 이미지 URL·캐시 키는 예전과 같다) */
 export function buildOgQuery(p: OgParams): string {
-  return `g=${p.g}&s=${p.s}&e=${p.e}&r=${p.r}&k=${p.k}&v=${p.v}`;
+  return `g=${p.g}&s=${p.s}&e=${p.e}&r=${p.r}&k=${p.k}&v=${p.v}${p.m ? `&m=${p.m}` : ''}`;
 }
 
 export function ogResultUrl(i: ShareInput): string {
@@ -139,8 +174,9 @@ export function parseOgParams(q: { get(name: string): string | null }): OgParams
   const e = int('e', EVIDENCE_TOTAL);
   const r = int('r', ACTIONS_MAX);
   const v = int('v', HOOKS.length - 1);
-  if (s === null || e === null || r === null || v === null) return null;
-  return { g: g as Grade, s, e, r, k: k as OgKind, v };
+  const m = q.get('m') === null ? 0 : int('m', 3);
+  if (s === null || e === null || r === null || v === null || m === null) return null;
+  return { g: g as Grade, s, e, r, k: k as OgKind, v, ...withMode(m as OgMode) };
 }
 
 /** 쿼리 문자열(또는 undefined) → OgParams. 검증 실패·쿼리 없음·여분/중복 키 → null (라우트가 기본 커버로 폴백) */
@@ -148,8 +184,11 @@ export function parseOgQueryString(search: string | null | undefined): OgParams 
   if (!search) return null;
   const q = new URLSearchParams(search);
   const keys = Array.from(q.keys());
-  // 여분 키·중복 키는 이미지 캐시 키만 늘린다 — 정확히 g,s,e,r,k,v 한 번씩일 때만 결과 카드
-  if (keys.length !== OG_KEYS.length || new Set(keys).size !== OG_KEYS.length || !keys.every((k) => (OG_KEYS as readonly string[]).includes(k))) return null;
+  // 여분 키·중복 키는 이미지 캐시 키만 늘린다 — 정확히 g,s,e,r,k,v 한 번씩(+ 선택 m 한 번)일 때만 결과 카드
+  const optional = keys.includes('m') ? 1 : 0;
+  if (keys.length !== OG_KEYS.length + optional || new Set(keys).size !== keys.length) return null;
+  if (!keys.every((k) => (OG_KEYS as readonly string[]).includes(k) || k === 'm')) return null;
+  if (!OG_KEYS.every((k) => keys.includes(k))) return null;
   return parseOgParams(q);
 }
 
@@ -174,19 +213,31 @@ export interface OgCard {
   chips: [string, string, string];
   /** 숨은 엔딩 배지 문구(해당할 때만) */
   badge: string | null;
+  /** 판 종류 칩(m) — 「되감기」 / 「기억」 / 「기억 · 되감기」. 처음부터면 null(회차 숫자는 OG 에 없다) */
+  mode: string | null;
   hook: string;
 }
+
+const OG_MODE_CHIP: Record<OgMode, string | null> = {
+  0: null,
+  1: REPLAY_CHIP.rewind,
+  2: REPLAY_CHIP.recall,
+  3: `${REPLAY_CHIP.recall} · ${REPLAY_CHIP.rewind}`,
+};
 
 const KIND_ENDING: Record<OgKind, EndingId> = { p: 'perfect', h: 'hidden', s: 'short', w: 'wrong-S1', t: 'timeout', x: 'excluded' };
 
 export function ogCard(p: OgParams): OgCard {
   const ending = KIND_ENDING[p.k];
+  // 해결(p·h) 칭호는 S 가 아니면 A 용 — 기억 판은 등급 B 여도 칭호는 「로그를 읽는 사람」(사양 e-1)
+  const titleGrade: Grade = p.k === 'p' || p.k === 'h' ? (p.g === 'S' ? 'S' : 'A') : p.g;
   return {
     grade: p.g,
-    title: p.k === 'w' ? CASE.titles.wrong : titleOf(ending, p.g),
+    title: p.k === 'w' ? CASE.titles.wrong : titleOf(ending, titleGrade),
     line: OG_KIND_LINE[p.k],
     chips: [`결정적 모순 ${p.s}/${STAR_TOTAL}`, `증거 ${p.e}/${EVIDENCE_TOTAL}`, `남은 행동 ${p.r}/${ACTIONS_MAX}`],
     badge: p.k === 'h' ? '숨은 엔딩 발견' : null,
+    mode: OG_MODE_CHIP[p.m ?? 0],
     hook: HOOKS[p.v],
   };
 }
@@ -328,7 +379,7 @@ export function sharePayload(i: ShareInput): SharePayload {
     kakao: {
       objectType: 'feed',
       content: {
-        title: `목격자는 AI — ${r.grade}등급 · ${shareTitle(r)}`,
+        title: `목격자는 AI — ${r.grade}등급 · ${shareTitle(r)}${replayTail(r)}`,
         description: [`결정적 모순 ${r.stars}/${STAR_TOTAL}`, `증거 ${r.evidence}/${EVIDENCE_TOTAL}`, ...(tp ? [tp] : [])].join(' · '),
         imageUrl: ogResultUrl(i),
         imageWidth: OG_WIDTH,

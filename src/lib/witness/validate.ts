@@ -7,9 +7,12 @@
  *   단조(얻기만 하고 잃지 않음)라 '그 집합에서 할 수 있는 무료 행동 전부'(closure)로 접는다 → 상태 = 유료 항목 집합.
  *   예산은 RULES.normal.actions(13). 행동이 0이 된 뒤(사이렌)에도 이미 연 곳 재방문·비용 0 세트 첫 열람은 무료라 closure 에 들어간다
  *   (밸런스 R3·R4). 그래도 마지막(13번째) 행동은 어떤 유료 항목이냐에 따라 상태가 달라질 수 있어 순서별로 따로 펼쳐 본다.
+ * 다시 하기(witness-replay.md h-1): analyzeEconomy(budget, start, { ban }) — 기억 판 시작 상태(memStart)·돌파 금지 실험(ban),
+ *   minReach(목표 최단만, 조기 종료), guessOdds(지목 찍기 정확 열거 — 결정적, 몬테카를로 아님).
  */
 import { CASE } from './case-data';
 import {
+  REWIND_COST,
   RULES,
   STAR_TOTAL,
   canAccuse,
@@ -654,7 +657,13 @@ export function applyItem(run: RunState, item: PaidItem): RunState | null {
  * 무료로 할 수 있는 것 전부(완벽한 플레이어): 무료 장소·세트 진입, 보이는 일반 핫스팟 조사, 모든 줄 추궁,
  * 정답 카드 세트를 들고 있으면 제시. 사이렌 규칙은 엔진이 막는다. 끝나면 허브로 나간다(행동 0이면 사이렌).
  */
-export function freeClosure(run: RunState): RunState {
+export interface ClosureOptions {
+  /** 깨지 않을 돌파 id(금지 실험 — 이 돌파 없이도 되는지) */
+  ban?: Iterable<Id>;
+}
+
+export function freeClosure(run: RunState, opts: ClosureOptions = {}): RunState {
+  const ban = new Set(opts.ban ?? []);
   let r = run;
   let changed = true;
   while (changed) {
@@ -695,7 +704,7 @@ export function freeClosure(run: RunState): RunState {
           }
         }
         for (const b of l.breaks ?? []) {
-          if (r.broken.includes(b.id)) continue;
+          if (r.broken.includes(b.id) || ban.has(b.id)) continue;
           for (const alt of [b.evidence, ...(b.accept ?? [])]) {
             if (!alt.every((card) => r.evidence.includes(card) || CASE.profiles.some((p) => p.id === card))) continue;
             const s = present(r, l.id, alt);
@@ -818,10 +827,17 @@ function starSourceCount(run: RunCore): { sources: number; culpritOnly: boolean 
   return { sources: origins.size, culpritOnly };
 }
 
-/** 유료 항목 부분집합 BFS(예산 budget). 실제 엔진 + freeClosure */
-export function analyzeEconomy(budget: number = RULES.normal.actions): EconomyReport {
+export interface EconomyOptions extends ClosureOptions {
+  /** 도달한 상태마다 호출(마지막 층은 순서별 상태 전부) — 테스트가 상태 전체 성질을 볼 때 */
+  inspect?: (run: RunState, k: number) => void;
+}
+
+/** 유료 항목 부분집합 BFS(예산 budget). 실제 엔진 + freeClosure. start 는 닫기 전 상태(기본 = 새 판, 기억 판은 memStart) */
+export function analyzeEconomy(budget: number = RULES.normal.actions, from: RunState = newRun(), opts: EconomyOptions = {}): EconomyReport {
   const items = paidItems();
-  const start = freeClosure(newRun());
+  const close = (r: RunState) => freeClosure(r, opts);
+  const start = close(from);
+  opts.inspect?.(start, 0);
   const layers: Map<number, RunState>[] = [new Map([[0, start]])];
   const stats: LayerStat[] = [];
   let stuck = 0;
@@ -856,7 +872,8 @@ export function analyzeEconomy(budget: number = RULES.normal.actions): EconomyRe
         if (!applied) continue;
         moves += 1;
         if (!last && next.has(nm)) continue;
-        const closed = freeClosure(applied);
+        const closed = close(applied);
+        opts.inspect?.(closed, k + 1);
         if (last) terminal.push(closed);
         else next.set(nm, closed);
       }
@@ -898,14 +915,14 @@ export function analyzeEconomy(budget: number = RULES.normal.actions): EconomyRe
       if (s.culpritOnly) star3CulpritOnly = true;
     }
   // 무제한 행동 — 전부 다 하기
-  let full = freeClosure({ ...newRun(), actions: 99 });
+  let full = close({ ...from, actions: 99 });
   let done = 0;
   for (let guard = 0; guard < 50; guard++) {
     let progressed = false;
     for (const it of items) {
       const a = applyItem(full, it);
       if (a) {
-        full = freeClosure(a);
+        full = close(a);
         done += 1;
         progressed = true;
       }
@@ -964,3 +981,126 @@ export function afterSiren(run: RunState): RunState {
   return run.phase === 'siren' ? continueAfterSiren(run).run : run;
 }
 
+
+// ─────────────────────────────── 다시 하기: 기억 판 · 금지 실험 · 찍기 열거 ───────────────────────────────
+
+/**
+ * 기억 판 시작 상태를 엔진의 newRun({recall}) 과 **따로** 만든다(P7 대조용): 튜토리얼 건너뛰기 + 증거를 손에 + 그 증거를 주는 핫스팟만 조사 완료.
+ * 장소 id 는 visited 에 넣지 않는다(입장 비용 그대로). 등급 상한용 recall 필드는 없다(경로 탐색엔 무관).
+ */
+export function memStart(ids: readonly Id[]): RunState {
+  const r = newRun({ skipTutorial: true });
+  const evidence = [...r.evidence];
+  const visited = [...r.visited];
+  const seen = new Set(r.seen ?? []);
+  for (const id of ids) {
+    const f = getEvidence(id)?.from;
+    if (!f || typeof f !== 'object' || !('location' in f)) continue;
+    if (!evidence.includes(id)) evidence.push(id);
+    if (!visited.includes(f.hotspot)) visited.push(f.hotspot);
+    seen.add(id);
+  }
+  return { ...r, evidence, visited, seen: [...seen] };
+}
+
+export type ReachGoal = 'perfect' | 'hidden' | 'star3' | 'allStars';
+
+/** 목표까지 최단 유료 행동 수(층별 BFS, 찾으면 바로 멈춤). 예산 안에 없으면 null */
+export function minReach(goal: ReachGoal, budget: number = RULES.normal.actions, from: RunState = newRun(), opts: ClosureOptions = {}): number | null {
+  const items = paidItems();
+  const close = (r: RunState) => freeClosure(r, opts);
+  const hit = (r: RunState) => {
+    const o = accuseOptions(r);
+    if (goal === 'perfect') return o.perfect;
+    if (goal === 'hidden') return o.hidden;
+    if (goal === 'star3') return stars(r) >= 3;
+    return stars(r) === STAR_TOTAL;
+  };
+  let layer = new Map<number, RunState>([[0, close(from)]]);
+  if (hit(layer.get(0)!)) return 0;
+  for (let k = 0; k < budget; k++) {
+    const next = new Map<number, RunState>();
+    const last = k + 1 === budget;
+    for (const [mask, run] of layer)
+      for (let i = 0; i < items.length; i++) {
+        const nm = mask | (1 << i);
+        if (nm === mask || (!last && next.has(nm))) continue;
+        const a = applyItem(run, items[i]);
+        if (!a) continue;
+        const c = close(a);
+        if (hit(c)) return k + 1;
+        if (!last) next.set(nm, c);
+      }
+    layer = next;
+  }
+  return null;
+}
+
+/** 지목 찍기 모델(사양 b-1) — 범인 후보 수 · 칸별 후보 n 중 정답 m */
+export interface GuessModel {
+  suspects: number;
+  slots: { n: number; m: number }[];
+}
+
+/** 정확 열거에 쓰는 되감기 규칙 */
+export interface GuessRules {
+  /** 판정 칸 */
+  slots: number;
+  /** 범인 틀림 비용 */
+  wrongCost: number;
+  /** 칸만 틀림 비용 */
+  shortCost: number;
+}
+
+/** 지금 엔진의 규칙(판정 칸 2 · 범인 틀림 2 · 칸만 틀림 1) */
+export const GUESS_RULES: GuessRules = { slots: RULES.normal.rewindSlots, wrongCost: REWIND_COST.wrongCulprit, shortCost: REWIND_COST.short };
+/** 비교용 초안 규칙(판정 3번 · 비용 균일) */
+export const GUESS_RULES_DRAFT: GuessRules = { slots: 2, wrongCost: 1, shortCost: 1 };
+
+const choose = (n: number, k: number): number => {
+  if (k < 0 || k > n) return 0;
+  let x = 1;
+  for (let i = 1; i <= k; i++) x = (x * (n - k + i)) / i;
+  return x;
+};
+
+/** 칸 하나를 t 번 안에 맞힐 확률(칸별 정오 공개 → 틀린 카드는 빼고 다시, 비복원 추출) */
+function slotWithin(n: number, m: number, t: number): number {
+  if (m <= 0) return 0;
+  if (t <= 0) return 0;
+  return 1 - choose(n - m, Math.min(t, n)) / choose(n, Math.min(t, n));
+}
+
+/**
+ * 최적 찍기의 완벽 해결 확률(정확 계산, 결정적).
+ * 범인이 틀리면 칸 정보 없음(그 범인만 지운다), 범인이 맞으면 칸별 정오 공개(현행). 매 판정 뒤 되감기 비용을 치르고 남은 칸으로 계속.
+ * f(s, c) = g(s)/c + (c−1)/c · f(s − min(wrongCost, s), c − 1)  (s ≥ 1 일 때만 이어 감)
+ * g(s)    = Π 칸별 P(1 + ⌊s / shortCost⌋ 번 안에 맞힘)   — 범인을 안 뒤 남은 판정 수
+ */
+export function guessOdds(model: GuessModel, rules: GuessRules = GUESS_RULES): number {
+  const g = (s: number): number => {
+    const tries = 1 + Math.floor(s / rules.shortCost);
+    return model.slots.reduce((p, x) => p * slotWithin(x.n, x.m, tries), 1);
+  };
+  const f = (s: number, c: number): number => {
+    if (c <= 0) return 0;
+    const hitNow = g(s) / c;
+    if (s < 1 || c <= 1) return hitNow;
+    return hitNow + ((c - 1) / c) * f(s - Math.min(rules.wrongCost, s), c - 1);
+  };
+  return f(rules.slots, model.suspects);
+}
+
+/** 사양 b-1 의 찍는 사람 모델 — 수단·동기 후보는 사건 데이터(정답 + 미끼), 기회 후보 5 · 보유 15장은 사양 가정 */
+export function guessModels(): Record<'random' | 'kinds' | 'ribbon' | 'culprit', GuessModel> {
+  const sol = CASE.solution;
+  const cand = (slot: Slot) => ({ n: sol.accept[slot].length + (sol.decoys?.[slot]?.length ?? 0), m: sol.accept[slot].length });
+  const suspects = 4;
+  const held = 15;
+  return {
+    random: { suspects, slots: SLOTS.map((s) => ({ n: held, m: sol.accept[s].length })) },
+    kinds: { suspects, slots: [cand('means'), { n: 5, m: 1 }, cand('motive')] },
+    ribbon: { suspects, slots: [cand('means'), { n: 1, m: 1 }, cand('motive')] },
+    culprit: { suspects, slots: [] },
+  };
+}

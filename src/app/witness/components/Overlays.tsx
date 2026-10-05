@@ -4,12 +4,12 @@
  * 보조 화면 — 사이렌(W12) · 수사 배제(W65) · 세로 안내(W72) · 비 오버레이.
  *  - 사이렌: 가장자리 레드/시안 바 교대(3사이클 후 레드 정적) + 「새벽 1시. 사이렌이 들린다.」. 자동 진행 없음 — [계속]을 기다린다(D29).
  *    '줄이기'에서는 상단 붉은 띠만 정적으로. 번쩍임 초당 3회 미만.
- *  - 수사 배제: 오답 연출이 끝난 뒤. [심문 직전으로 되감기](체크포인트가 있을 때만) + S 불가 고지.
+ *  - 수사 배제: 오답 연출이 끝난 뒤. [↺ 직전부터 다시](체크포인트가 있을 때만, 부제 「A등급까지」) · [새 수사].
  */
 import { NotebookPen, RotateCcw, Siren } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { CASE } from '@/lib/witness';
-import { SIREN_SUB } from '../lib/copy';
+import { REPLAY_TEXT, SIREN_SUB } from '../lib/copy';
 import { fxMs } from '../lib/fx';
 import { useWt } from '../lib/context';
 import { ArtSlot } from './ArtSlot';
@@ -89,7 +89,7 @@ export function ConfrontEntry({ names, ms, onDone }: { names: string[]; ms: numb
   );
 }
 
-export function ExcludedView({ canRewind, onRewind, onNewRun, onTitle }: { canRewind: boolean; onRewind: () => void; onNewRun: () => void; onTitle: () => void }) {
+export function ExcludedView({ rewindSub, onRewind, onNewRun, onTitle }: { rewindSub: string | null; onRewind: () => void; onNewRun: () => void; onTitle: () => void }) {
   const text = CASE.endings.excluded;
   const [done, setDone] = useState(!text || text.lines.length === 0);
   return (
@@ -98,6 +98,17 @@ export function ExcludedView({ canRewind, onRewind, onNewRun, onTitle }: { canRe
         <ArtSlot kind="ending" ending="excluded" />
       </div>
       <h1 className="wt-display wt-ending-title">{text?.title ?? '수첩 압수'}</h1>
+      {/* 되감기는 엔딩 화면과 같은 자리(제목 바로 아래) — 본문을 다 읽기 전에도 누를 수 있다(UX-8) */}
+      {rewindSub && (
+        <div className="wt-rewind">
+          <button type="button" className="wt-btn wt-btn--primary wt-btn--full" onClick={onRewind} data-autofocus data-testid="excluded-rewind">
+            <RotateCcw size={18} aria-hidden /> {REPLAY_TEXT.rewind}
+          </button>
+          <p className="wt-rewind-sub" data-testid="excluded-rewind-sub">
+            {rewindSub}
+          </p>
+        </div>
+      )}
       {!done && text && (
         <div className="wt-ending-text">
           <DialogueBox lines={text.lines} playKey="excluded" onDone={() => setDone(true)} readKey="ending-excluded" />
@@ -105,16 +116,8 @@ export function ExcludedView({ canRewind, onRewind, onNewRun, onTitle }: { canRe
       )}
       {done && (
         <div className="wt-ending-detail">
-          {canRewind && (
-            <>
-              <button type="button" className="wt-btn wt-btn--primary wt-btn--full" onClick={onRewind} data-autofocus data-testid="excluded-rewind">
-                <RotateCcw size={18} aria-hidden /> 심문 직전으로 되감기
-              </button>
-              <p className="wt-excluded-note">신뢰는 최소 2칸으로 돌아와요. 이번 판은 S 등급을 받을 수 없어요.</p>
-            </>
-          )}
           <button type="button" className="wt-btn wt-btn--secondary wt-btn--full" onClick={onNewRun} data-testid="excluded-new">
-            엔딩 도감에 기록하고 새 수사
+            {REPLAY_TEXT.newRun}
           </button>
           <button type="button" className="wt-link" onClick={onTitle}>
             제목으로

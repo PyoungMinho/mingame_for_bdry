@@ -9,7 +9,7 @@ import {
   getHotspot,
   getLocation,
   getSet,
-  titleOf,
+  endingTitle,
   type AchievementId,
   type Break,
   type Dialogue,
@@ -209,6 +209,10 @@ export interface EndingData {
   hiddenTeaser: boolean;
   achievements: AchievementId[];
   evidenceTotal: number;
+  /** 기억 판 회차(칩 `N회차·기억` · 공유 꼬리) */
+  recallRun?: number;
+  /** 되감기 수(칩 `되감기` · 공유 꼬리) */
+  rewinds?: number;
 }
 
 export function endingFromResult(r: RunResult): EndingData {
@@ -227,6 +231,8 @@ export function endingFromResult(r: RunResult): EndingData {
     hiddenTeaser: r.hiddenTeaser,
     achievements: r.achievements,
     evidenceTotal: r.evidenceTotal,
+    ...(r.recallRun ? { recallRun: r.recallRun } : {}),
+    ...(r.rewinds ? { rewinds: r.rewinds } : {}),
   };
 }
 
@@ -234,7 +240,8 @@ export function endingFromLast(le: LastEnding): EndingData {
   return {
     ending: le.ending,
     grade: le.grade,
-    title: titleOf(le.ending, le.grade),
+    // 기억 판 완벽(등급 B)의 칭호는 A 용 — titleOf 를 그대로 쓰면 새로고침 뒤 B 칭호로 바뀐다(사양 e-1)
+    title: endingTitle(le.ending, le.grade),
     stars: le.stars,
     evidence: le.evidence,
     wrong: le.wrong,
@@ -249,6 +256,8 @@ export function endingFromLast(le: LastEnding): EndingData {
     hiddenTeaser: le.hiddenTeaser,
     achievements: le.newAchievements,
     evidenceTotal: EVIDENCE_TOTAL,
+    ...(le.recallRun ? { recallRun: le.recallRun } : {}),
+    ...(le.rewinds ? { rewinds: le.rewinds } : {}),
   };
 }
 

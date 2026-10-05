@@ -11,13 +11,13 @@ import { useEffect, useState } from 'react';
 import { CASE, STAR_TOTAL, caseFileUnlocked, collectionSlots, type Id, type WitnessMeta } from '@/lib/witness';
 import { caseFileSummary } from '../lib/casefile';
 import { ACHIEVEMENT_INFO, ACHIEVEMENT_ORDER, SUSPECT_IDS, nameOf } from '../lib/format';
-import { ENDING_SLOT_LABEL } from '../lib/copy';
+import { ENDING_SLOT_LABEL, REPLAY_TEXT } from '../lib/copy';
 import { ArtSlot } from './ArtSlot';
 import { BottomSheet } from './BottomSheet';
 
 type Tab = 'endings' | 'secrets' | 'ach';
 
-export function CollectionView({ open, meta, onClose, onCaseFile }: { open: boolean; meta: WitnessMeta; onClose: () => void; onCaseFile: () => void }) {
+export function CollectionView({ open, meta, waitRewind = false, onClose, onCaseFile }: { open: boolean; meta: WitnessMeta; /** 되감기를 기다리는 판이 있다 — 사건 파일 잠금(A2) */ waitRewind?: boolean; onClose: () => void; onCaseFile: () => void }) {
   const [tab, setTab] = useState<Tab>('endings');
   useEffect(() => {
     if (open) setTab('endings');
@@ -27,7 +27,7 @@ export function CollectionView({ open, meta, onClose, onCaseFile }: { open: bool
   const gotE = slots.filter((s) => meta.endings.includes(s)).length;
   const gotS = SUSPECT_IDS.filter((s) => meta.secrets.includes(s)).length;
   const gotA = meta.achievements.length;
-  const unlocked = caseFileUnlocked(meta);
+  const unlocked = caseFileUnlocked(meta) && !waitRewind;
   return (
     <BottomSheet open={open} title="엔딩 도감" onClose={onClose} height="full" className="wt-sheet--collection">
       <div role="tablist" aria-label="도감" className="wt-seg wt-seg--tabs">
@@ -42,6 +42,12 @@ export function CollectionView({ open, meta, onClose, onCaseFile }: { open: bool
         </button>
       </div>
       {meta.bestGrade && <p className="wt-coll-best">최고 등급 <b>{meta.bestGrade}</b> · 플레이 {meta.plays}회</p>}
+      {/* 처음부터 · 되감기 없이 푼 판의 최단 기록(행동 수) — 기억·되감기 판은 올라가지 않는다 */}
+      {meta.best && (
+        <p className="wt-coll-best" data-testid="coll-best">
+          {REPLAY_TEXT.best(meta.best.used)}
+        </p>
+      )}
 
       {tab === 'endings' && (
         <ul className="wt-coll-grid" aria-label="엔딩">
@@ -110,6 +116,10 @@ export function CollectionView({ open, meta, onClose, onCaseFile }: { open: bool
         <button type="button" className="wt-btn wt-btn--secondary wt-btn--full" onClick={onCaseFile} data-testid="coll-casefile">
           {unlocked ? (
             '사건 파일'
+          ) : waitRewind && caseFileUnlocked(meta) ? (
+            <>
+              <Lock size={16} aria-hidden /> 사건 파일 · {REPLAY_TEXT.caseFileWait}
+            </>
           ) : (
             <>
               <Lock size={16} aria-hidden /> 사건 파일 · 완벽 해결 1회 또는 플레이 3회 (현재 {Math.min(meta.plays, 3)}/3)
@@ -121,19 +131,19 @@ export function CollectionView({ open, meta, onClose, onCaseFile }: { open: bool
   );
 }
 
-export function CaseFileView({ open, meta, brokenIds, onClose }: { open: boolean; meta: WitnessMeta; brokenIds?: Id[]; onClose: () => void }) {
+export function CaseFileView({ open, meta, brokenIds, waitRewind = false, onClose }: { open: boolean; meta: WitnessMeta; brokenIds?: Id[]; /** 되감기를 기다리는 판 — 진상을 열지 않는다(A2) */ waitRewind?: boolean; onClose: () => void }) {
   const [opened, setOpened] = useState(false);
   useEffect(() => {
     if (open) setOpened(false);
   }, [open]);
-  const unlocked = caseFileUnlocked(meta);
+  const unlocked = caseFileUnlocked(meta) && !waitRewind;
   const breaks = CASE.sets.flatMap((s) => s.lines.flatMap((l) => l.breaks ?? []));
   return (
     <BottomSheet open={open} title="사건 파일" onClose={onClose} height="full" className="wt-sheet--casefile">
       {!unlocked ? (
         <div className="wt-casefile-lock">
           <Lock size={22} aria-hidden />
-          <p>완벽 해결 1회 또는 플레이 3회 뒤에 열려요. (현재 {Math.min(meta.plays, 3)}/3)</p>
+          <p>{waitRewind && caseFileUnlocked(meta) ? REPLAY_TEXT.caseFileWait : `완벽 해결 1회 또는 플레이 3회 뒤에 열려요. (현재 ${Math.min(meta.plays, 3)}/3)`}</p>
           <button type="button" className="wt-btn wt-btn--primary" onClick={onClose} data-autofocus="">
             돌아간다
           </button>

@@ -6,13 +6,11 @@
  * 1인용 게임이다 — 방 코드·초대·계정·서버가 없다는 사실을 칩과 설정 하단 문구로 못 박는다.
  */
 import { Settings } from 'lucide-react';
-import { useState } from 'react';
-import { clock, endingSlots, evidenceCount } from '@/lib/witness';
+import { clock, endingSlots, evidenceCount, keepSavedRun } from '@/lib/witness';
 import { NOTICE, TITLE_TEXT } from '../lib/copy';
 import { fmtSavedAt, runSummary } from '../lib/format';
 import { useWt } from '../lib/context';
 import { ArtSlot } from '../components/ArtSlot';
-import { ConfirmSheet } from '../components/BottomSheet';
 import { SoundToggle } from '../audio/SoundToggle';
 import { playSfx } from '../audio/useGameAudio';
 
@@ -50,16 +48,16 @@ export function TitleSkeleton() {
 }
 
 export function TitleScreen() {
-  const { game, openSettings, openCollection } = useWt();
+  const { game, openSettings, openCollection, requestNewRun } = useWt();
   const run = game.run;
-  const canResume = !!run && (run.phase !== 'ended' || run.result?.ending === 'excluded');
-  const [confirmNew, setConfirmNew] = useState(false);
+  // 이어할 판: 진행 중인 판 · 수사 배제 · 되감기 선택지가 남은 끝난 판(저장돼 있을 때만 run 이 있다)
+  const canResume = !!run && (run.phase !== 'ended' || run.result?.ending === 'excluded' || keepSavedRun(run));
   const got = endingSlots().filter((e) => game.meta.endings.includes(e)).length;
 
+  // 새 수사: 2회차부터 기억할 증거가 있으면 「기억 이어가기 / 처음부터」 시트, 아니면 바로(저장된 판이 있으면 확인 시트만)
   const start = () => {
     playSfx('tap');
-    if (canResume) setConfirmNew(true);
-    else game.startNew();
+    requestNewRun();
   };
 
   return (
@@ -102,7 +100,7 @@ export function TitleScreen() {
               이어하기
             </span>
             <span id="wt-resume-desc" className="wt-resume-desc">
-              <span className="wt-resume-s">{runSummary(run, clock(run), evidenceCount(run))}</span>
+              <span className="wt-resume-s">{run.phase === 'ended' ? '방금 수사 결과' : runSummary(run, clock(run), evidenceCount(run))}</span>
               {game.savedAt && <span className="wt-resume-s">{fmtSavedAt(game.savedAt)}</span>}
             </span>
           </button>
@@ -125,20 +123,6 @@ export function TitleScreen() {
           </button>
         </div>
       </div>
-
-      <ConfirmSheet
-        open={confirmNew}
-        title="새 수사를 시작할까요?"
-        confirmLabel="새로 시작"
-        cancelLabel="취소"
-        onCancel={() => setConfirmNew(false)}
-        onConfirm={() => {
-          setConfirmNew(false);
-          game.startNew();
-        }}
-      >
-        <p>지금 수사 기록이 지워져요. (엔딩 도감·업적은 그대로예요)</p>
-      </ConfirmSheet>
     </main>
   );
 }

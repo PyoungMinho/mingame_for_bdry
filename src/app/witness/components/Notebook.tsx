@@ -15,6 +15,7 @@ import {
   getEvidence,
   holdings,
   hint,
+  isRecalled,
   profiles,
   questions,
   summaries,
@@ -24,7 +25,7 @@ import {
   type Id,
   type RunState,
 } from '@/lib/witness';
-import { COACH_TEXT, EMPTY } from '../lib/copy';
+import { COACH_TEXT, EMPTY, REPLAY_TEXT } from '../lib/copy';
 import { hourOf, nameOf } from '../lib/format';
 import { useWt, type NotebookTab } from '../lib/context';
 import { BottomSheet } from './BottomSheet';
@@ -128,7 +129,9 @@ export function Notebook({ run, tab, onTab, onGoto, onJumpLine, asSheet }: Noteb
     release.current = null;
   };
 
-  const obtained = sortEvidence(ev, sort);
+  // 기억으로 들고 시작한 카드는 작은 「기억」 표시를 달고 아래쪽으로(정렬 안에서 순서는 그대로, 사양 g-4)
+  const sorted = sortEvidence(ev, sort);
+  const obtained = run.recall ? [...sorted.filter((e) => !isRecalled(run, e.id)), ...sorted.filter((e) => isRecalled(run, e.id))] : sorted;
   const slots = Math.max(0, EVIDENCE_TOTAL - ev.length);
   const pf = sortProfiles(profiles(run));
   const tl = timeline(run);
@@ -181,7 +184,7 @@ export function Notebook({ run, tab, onTab, onGoto, onJumpLine, asSheet }: Noteb
             {ev.length === 0 && <p className="wt-empty">{EMPTY.evidence}</p>}
             <div className="wt-cardgrid">
               {obtained.map((e) => (
-                <EvidenceCard key={e.id} evidence={e} size="S" isNew={!seenSet.has(e.id)} upgraded={!!e.upgradeOf} onClick={() => setDetail(e.id)} />
+                <EvidenceCard key={e.id} evidence={e} size="S" isNew={!seenSet.has(e.id)} upgraded={!!e.upgradeOf} badge={isRecalled(run, e.id) ? REPLAY_TEXT.chipRecall : undefined} onClick={() => setDetail(e.id)} />
               ))}
               {Array.from({ length: slots }, (_, i) => (
                 <div key={`s${i}`} className="wt-card wt-card--S wt-card--silhouette" aria-label="아직 얻지 못한 증거">

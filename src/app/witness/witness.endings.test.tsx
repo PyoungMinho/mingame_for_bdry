@@ -109,6 +109,12 @@ async function toEndingDetail(): Promise<void> {
     await flush();
   }
   expect(q('.wt-ending-detail'), '엔딩 결과 영역').toBeTruthy();
+  // 되감기가 남은 실패 엔딩은 도장·통계를 접어 둔다(다시 하기 §g-1) — 등급을 확인하는 테스트는 펼쳐서 본다
+  const fold = q('[data-testid=ending-fold]');
+  if (fold && fold.getAttribute('aria-expanded') !== 'true') {
+    click(fold);
+    await flush();
+  }
 }
 
 /** 허브의 [최종 지목] → (행동이 남았으면) 확인 시트 → 1단계 */
@@ -343,8 +349,7 @@ describe('엔딩 8종 — 화면 조작으로 도달(도감은 판 사이에 이
     await flush();
     // 마지막 엔딩(시간 초과)을 아직 '보는 중'으로 남겨 뒀으면 엔딩 화면부터 → [제목으로]
     if (q('.wt-ending')) {
-      if (!q('.wt-ending-detail')) clickText('결과 바로 보기');
-      await flush();
+      await toEndingDetail(); // 이미 읽은 본문이라 [결과 바로 보기]는 없다 — 탭으로 넘긴다
       clickText('제목으로');
       await flush();
     }

@@ -22,7 +22,8 @@ export type CoachId =
   | 'firstStar'
   | 'firstUpgrade'
   | 'firstTrust1'
-  | 'hintAdvice';
+  | 'hintAdvice'
+  | 'skipRead';
 
 export const COACH_TEXT: Record<CoachId, string> = {
   firstDot: '빛나는 점을 눌러요.',
@@ -43,6 +44,7 @@ export const COACH_TEXT: Record<CoachId, string> = {
   firstUpgrade: '기록이 바뀌었어요. 수첩 증거에 「갱신」 표시가 붙어요.',
   firstTrust1: '신뢰 1 — 한 번 더 틀리면 수사 배제예요.',
   hintAdvice: '수첩 정리 전에 의문·정리된 것을 봤나요? (행동 1이 들어요)',
+  skipRead: '이미 본 대화는 한 번에 넘길 수 있어요.',
 };
 
 /**
@@ -116,6 +118,43 @@ export const TOAST = {
   copyFailed: '복사하지 못했어요. 아래 문구를 직접 선택해 주세요',
   achievement: (name: string) => `업적: ${name}`,
   saveBlocked: '이 브라우저는 저장을 막고 있어요. 탭을 닫으면 기록이 사라져요.',
+  /** 되감기 직후 지목 조건(★3)이 다시 닫혔을 때 1회 */
+  gateClosed: '지목 조건이 다시 닫혔어요',
+  /** 다른 탭에서 바뀐 저장을 다시 읽었을 때(A1) */
+  synced: '다른 탭에서 바뀐 기록을 불러왔어요',
+} as const;
+
+/** 다시 하기(되감기 · 수사 기억 · 읽은 대사 넘기기) 확정 문구 — witness-replay.md §g-5. 금지 단어: 제한·불가·페널티 */
+export const REPLAY_TEXT = {
+  /** 되감기 버튼(종류와 무관하게 이름 하나) */
+  rewind: '직전부터 다시',
+  /** 부제 = 돌아가는 곳 · 상한(기억 판 B) · 마지막(QA-RP-01·UX-5). 예: 「지목 직전으로 · 최고 A」 */
+  rewindSub: (kind: 'accuse' | 'action' | 'excluded', cap: string, last: boolean) =>
+    `${kind === 'accuse' ? '지목 직전으로' : kind === 'action' ? '한 수 전으로' : '증언 직전으로'} · 최고 ${cap}${last ? ' · 마지막 1번' : ''}`,
+  rewindOver: '되감기 끝',
+  missedLocked: '되감기를 마치면 보여요',
+  /** 되감기를 기다리는 판의 사건 파일 잠금(A2) */
+  caseFileWait: '되감기를 마치면 열려요',
+  /** 엔딩 본문 건너뛰기 — 되감기 판은 결과가 접혀 있어 「결과 바로 보기」라 하지 않는다(UX-2) */
+  skipBody: '본문 넘기기',
+  /** 새 수사 시트 — 버튼 이름은 사장 결정 문구 그대로, 부제는 대칭(들고 가는 것 · 최고 등급, UX-3) */
+  sheetTitle: '새 수사',
+  sheetWarn: '저장된 수사는 사라져요',
+  sheetWarnRewind: '되감기 기회도 사라져요',
+  recall: '기억 이어가기',
+  recallSub: (n: number) => `증거 ${n}개 들고 · 최고 B`,
+  fresh: '처음부터',
+  freshSub: '빈손 · 최고 S · 최단 기록',
+  newRun: '새 수사',
+  /** 대사창 넘기기 */
+  skipRead: '≫ 읽은 건 넘기기',
+  /** HUD · 지도 · 수첩 칩 */
+  chipRecall: '기억',
+  chipRewind: '되감기',
+  /** 돌파 뒤 '새로 열린 것' 접힘 칩 */
+  openedFold: (n: number) => `새로 열린 것 ${n}개`,
+  /** 도감 최단 기록 */
+  best: (used: number) => `최단 기록 행동 ${used}번`,
 } as const;
 
 export const EMPTY = {

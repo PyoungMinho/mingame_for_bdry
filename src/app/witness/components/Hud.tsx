@@ -8,6 +8,7 @@
 import { Clock, Ellipsis, NotebookPen, Siren, Star, ChevronLeft } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { RULES, clock, minutesLeft, rulesOf, stars, type Face, type RunCore } from '@/lib/witness';
+import { REPLAY_TEXT } from '../lib/copy';
 import { ArtSlot } from './ArtSlot';
 import { SoundToggle } from '../audio/SoundToggle';
 
@@ -121,6 +122,23 @@ export function useLiveText(spoken: string, star: number, ms = 600): string {
 
 const clockSpoken = (c: string) => `${Number(c.slice(0, 2))}시 ${Number(c.slice(3))}분`;
 
+/** 이번 판 종류 칩 — 기억 판이면 「기억」, 되감기를 썼으면 「되감기」(상시, 사양 g-4) */
+export function ModeChips({ run, compact }: { run: Pick<RunCore, 'recall' | 'rewound'>; compact?: boolean }) {
+  const chips: string[] = [];
+  if (run.recall) chips.push(REPLAY_TEXT.chipRecall);
+  if (run.rewound) chips.push(REPLAY_TEXT.chipRewind);
+  if (chips.length === 0) return null;
+  return (
+    <span className={['wt-hud-modes', compact ? 'wt-hud-modes--compact' : ''].filter(Boolean).join(' ')} data-testid="hud-modes">
+      {chips.map((c) => (
+        <i key={c} className="wt-modechip">
+          {c}
+        </i>
+      ))}
+    </span>
+  );
+}
+
 export interface HudProps {
   variant: 'hub' | 'compact';
   run: RunCore;
@@ -178,7 +196,10 @@ export function HudBar({ variant, run, onBack, onNotebook, onMenu, onStar, noteb
             <StarGate count={star} gate={rules.starGate} onClick={onStar} />
           </span>
         </div>
-        <div className="wt-hud-row3">강력팀 도착까지 {mins}분</div>
+        <div className="wt-hud-row3">
+          <span>강력팀 도착까지 {mins}분</span>
+          <ModeChips run={run} />
+        </div>
         <div className="wt-sr" role="status" aria-live="polite">
           {live}
         </div>
@@ -212,6 +233,7 @@ export function HudBar({ variant, run, onBack, onNotebook, onMenu, onStar, noteb
         </button>
       </div>
       <ActionPips left={left} total={rules.actions} as="line" preview={previewPips} />
+      <ModeChips run={run} compact />
       <div className="wt-sr" role="status" aria-live="polite">
         {live}
       </div>

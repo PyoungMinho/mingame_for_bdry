@@ -12,11 +12,22 @@
  *    이미 사이렌이 울린 판(phase 'siren')과 끝난 판은 행동을 그대로 둔다(사이렌 장면을 두 번 보이지 않으려고).
  *    옛 저장의 accuse.forced 는 읽되 엔진이 무시한다(취소·경고 가능).
  *  - meta 는 관대하게: 깨진 필드만 기본값으로 바꾸고 나머지는 살린다(도감은 소중하다).
+ *  - 다시 하기(docs/planning/witness-replay.md d-1·d-2):
+ *    · 기억 판·판정 되감기를 쓴 판만 v:2 로 쓴다(serializeRun — 코어·스냅샷 모두). 새 파서는 1·2 모두 받고, 옛 탭의 파서는 'version' 으로
+ *      그 판만 버리고 meta 는 지킨다 → 옛 코드가 상한(A/B)을 모른 채 S 를 meta 에 쓰는 일이 없다.
+ *    · 새 필드(rewinds·attempts·prevAccuse·recall·accuseCp·actCp)는 범위 밖이면 판 폐기. 이건 '손상 방어'다 — 변조는 막지 못하며 막으려 하지 않는다(서버·랭킹 없음).
+ *    · 배포 전 판: rewinds 가 없고 rewound:true 면 {judged:0, excluded:1} 로 읽는다(폐기 사유 아님).
+ *    · meta.found 는 읽을 때마다 lastEnding.missed 로 멱등 백필(옛 탭이 found 를 지워도 다음 로드에 복원). best 는 범위가 틀리면 버린다.
+ *    · readLines 는 문구 해시 키만 남긴다(readlines.ts) — 해시 없는 옛 키는 1회 초기화.
  */
 import {
   CASE_ID,
   DEFAULT_SETTINGS,
+  RECALL_ELIGIBLE,
   RULES_REV,
+  SAVE_V_REPLAY,
+  foundFromMissed,
+  mergeFound,
   KNOWN,
   RULES,
   SAVE_V,
@@ -24,12 +35,16 @@ import {
   newMeta,
   rulesOf,
   type AccuseDraft,
+  type BestRecord,
   type HintEntry,
   type HintTarget,
   type LastEnding,
   type MissedItem,
   type Mode,
   type Phase,
+  type PrevAccuse,
+  type RecallInfo,
+  type RewindCount,
   type RunCore,
   type RunResult,
   type RunState,
@@ -40,6 +55,7 @@ import {
   type WitnessMeta,
 } from './engine';
 import type { AchievementId, EndingId, Grade, Id, Slot, SuspectId } from './types';
+import { READ_LINES_MAX, cleanReadLines } from './readlines';
 
 export const STORAGE_KEYS = {
   run: 'wt:save:v1',
@@ -226,8 +242,14 @@ function parseResult(v: unknown): RunResult | null | undefined {
   const ach = Array.isArray(v.achievements) && v.achievements.every((a) => ACHIEVEMENTS.includes(a as AchievementId));
   const sec = idList(v.secretsRevealed, KNOWN.suspects);
   if (!missed || !ach || !sec) return null;
+  const maxAttempts = 1 + Math.max(...MODES.map((m) => RULES[m].rewindSlots));
+  if (v.attempt !== undefined && !isInt(v.attempt, 1, maxAttempts)) return null;
+  if (v.recallRun !== undefined && !isInt(v.recallRun, 1, 9999)) return null;
+  if (v.rewinds !== undefined && !isInt(v.rewinds, 1, 9999)) return null;
   const r: RunResult = {
     ending: v.ending,
+    // 배포 전 결과에는 없다 — 첫 판정으로 본다
+    attempt: v.attempt === undefined ? 1 : (v.attempt as number),
     grade: v.grade as Grade,
     title: v.title,
     stars: v.stars as number,
@@ -255,13 +277,53 @@ function parseResult(v: unknown): RunResult | null | undefined {
     if (!isObj(s) || !SLOT_KEYS.every((k) => typeof s[k] === 'boolean')) return null;
     r.slots = { means: s.means as boolean, opportunity: s.opportunity as boolean, motive: s.motive as boolean };
   }
+  if (v.recallRun !== undefined) r.recallRun = v.recallRun as number;
+  if (v.rewinds !== undefined) r.rewinds = v.rewinds as number;
   return r;
+}
+
+function parseRewinds(v: unknown, slots: number): RewindCount | null | undefined {
+  if (v === undefined) return undefined;
+  if (!isObj(v) || !isInt(v.judged, 0, slots) || !isInt(v.excluded, 0, 999)) return null;
+  return { judged: v.judged, excluded: v.excluded };
+}
+
+function parsePrevAccuse(v: unknown): PrevAccuse | null | undefined {
+  if (v === undefined) return undefined;
+  if (!isObj(v)) return null;
+  const a: PrevAccuse = {};
+  // 범인·범인 아님은 선택(범인이 틀린 뒤엔 culprit 없이 notCulprit) — 있으면 용의자여야 한다
+  for (const k of ['culprit', 'notCulprit'] as const) {
+    const c = v[k];
+    if (c === undefined) continue;
+    if (!isStr(c) || !KNOWN.suspects.has(c)) return null;
+    a[k] = c as SuspectId;
+  }
+  for (const k of SLOT_KEYS) {
+    const c = v[k];
+    if (c === undefined) continue;
+    if (!isStr(c) || !KNOWN.evidence.has(c)) return null;
+    a[k] = c;
+  }
+  if (v.miss !== undefined) {
+    if (!Array.isArray(v.miss) || !v.miss.every((x) => (SLOT_KEYS as readonly unknown[]).includes(x))) return null;
+    if (v.miss.length) a.miss = [...new Set(v.miss as Slot[])];
+  }
+  return a;
+}
+
+function parseRecall(v: unknown): RecallInfo | null | undefined {
+  if (v === undefined) return undefined;
+  if (!isObj(v) || !isInt(v.n, 1, 9999) || !Array.isArray(v.ids) || v.ids.length === 0) return null;
+  const ids = idList(v.ids, KNOWN.recall);
+  if (!ids || ids.length !== v.ids.length) return null; // 중복도 손상
+  return { n: v.n, ids };
 }
 
 /** RunCore 한 벌 검증(체크포인트에도 같은 규칙). 깨졌으면 null */
 function parseCore(v: unknown): RunCore | null {
   if (!isObj(v)) return null;
-  if (v.v !== SAVE_V || v.caseId !== CASE_ID) return null;
+  if ((v.v !== SAVE_V && v.v !== SAVE_V_REPLAY) || v.caseId !== CASE_ID) return null;
   const mode = v.mode === undefined ? 'normal' : v.mode;
   if (!MODES.includes(mode as Mode)) return null;
   const rules = rulesOf({ mode: mode as Mode });
@@ -292,6 +354,11 @@ function parseCore(v: unknown): RunCore | null {
   if (seen === null) return null;
   if (v.egg !== undefined && typeof v.egg !== 'boolean') return null;
   if (phase === 'ended' && !result) return null;
+  const rewinds = parseRewinds(v.rewinds, rules.rewindSlots);
+  const prevAccuse = parsePrevAccuse(v.prevAccuse);
+  const recall = parseRecall(v.recall);
+  if (rewinds === null || prevAccuse === null || recall === null) return null;
+  if (v.attempts !== undefined && !isInt(v.attempts, 0, 1 + rules.rewindSlots)) return null;
   // 옛 규칙(행동 12) 저장 이관 — 진행 중인 판만 행동 +1(상한 = 새 예산). 옛 규칙의 '마지막 행동 중' 표시(final)는 더 쓸 일이 없다
   const legacyPlay = v.rev === undefined && phase === 'play';
   const actions = legacyPlay ? Math.min(rules.actions, v.actions + 1) : v.actions;
@@ -325,8 +392,19 @@ function parseCore(v: unknown): RunCore | null {
   if (seen) core.seen = seen;
   if (v.egg === true) core.egg = true;
   if (result) core.result = result;
+  // 되감기 기록 — 배포 전 판(rewinds 없음)은 rewound 로 추정한다: true → {0,1}. false 면 없는 그대로({0,0})
+  if (rewinds) {
+    core.rewinds = rewinds;
+    if (rewinds.judged + rewinds.excluded > 0) core.rewound = true;
+  } else if (v.rewound === true) core.rewinds = { judged: 0, excluded: 1 };
+  if (v.attempts !== undefined) core.attempts = v.attempts as number;
+  if (prevAccuse) core.prevAccuse = prevAccuse;
+  if (recall) core.recall = recall;
   return core;
 }
+
+/** 스냅샷 필드 — 코어 안에 있으면 손상(중첩 0) */
+const SNAPSHOTS = ['checkpoint', 'accuseCp', 'actCp'] as const;
 
 /** 저장 문자열 → RunState(검증 통과분만). 깨졌으면 null */
 export function parseRun(raw: string | null): RunState | null {
@@ -340,14 +418,31 @@ export function parseRun(raw: string | null): RunState | null {
   const core = parseCore(v);
   if (!core) return null;
   const run: RunState = { ...core };
-  const cp = (v as Obj).checkpoint;
-  if (cp !== undefined) {
-    if (isObj(cp) && cp.checkpoint !== undefined) return null;
+  for (const k of SNAPSHOTS) {
+    const cp = (v as Obj)[k];
+    if (cp === undefined) continue;
+    if (isObj(cp) && SNAPSHOTS.some((x) => cp[x] !== undefined)) return null;
     const c = parseCore(cp);
     if (!c) return null;
-    run.checkpoint = c;
+    run[k] = c;
   }
   return run;
+}
+
+/** 다시 하기 판(기억 판 · 판정 되감기를 쓴 판)인가 — v:2 로 저장할 대상 */
+export function isReplayRun(run: Pick<RunCore, 'recall' | 'rewinds'>): boolean {
+  return !!run.recall || (run.rewinds?.judged ?? 0) > 0;
+}
+
+/** 저장 문자열 — 다시 하기 판이면 코어·스냅샷 모두 v:2(옛 파서가 판만 버리게) */
+export function serializeRun(run: RunState): string {
+  if (!isReplayRun(run)) return JSON.stringify(run);
+  const out: Record<string, unknown> = { ...run, v: SAVE_V_REPLAY };
+  for (const k of SNAPSHOTS) {
+    const cp = run[k];
+    if (cp) out[k] = { ...cp, v: SAVE_V_REPLAY };
+  }
+  return JSON.stringify(out);
 }
 
 export type LoadStatus = 'empty' | 'ok' | 'corrupt' | 'version';
@@ -366,7 +461,7 @@ export function loadRun(storage: StorageLike): LoadedRun {
   let status: LoadStatus = 'corrupt';
   try {
     const o = JSON.parse(raw) as Obj;
-    if (isObj(o) && (o.v !== SAVE_V || o.caseId !== CASE_ID)) status = 'version';
+    if (isObj(o) && ((o.v !== SAVE_V && o.v !== SAVE_V_REPLAY) || o.caseId !== CASE_ID)) status = 'version';
   } catch {
     /* corrupt */
   }
@@ -377,7 +472,7 @@ export function loadRun(storage: StorageLike): LoadedRun {
 export function saveRun(storage: StorageLike, run: RunState): boolean {
   let s: string;
   try {
-    s = JSON.stringify(run);
+    s = serializeRun(run);
   } catch {
     return false;
   }
@@ -414,6 +509,10 @@ function parseLastEnding(v: unknown): LastEnding | undefined {
   const missed = idList(v.missed, KNOWN.evidence);
   if (!missed || typeof v.hiddenTeaser !== 'boolean' || typeof v.pendingView !== 'boolean') return undefined;
   if (!Array.isArray(v.newAchievements) || !v.newAchievements.every((a) => ACHIEVEMENTS.includes(a as AchievementId))) return undefined;
+  // 다시 하기 칩(나중에 더한 선택 필드) — 깨졌으면 그 필드만 버린다
+  const extra: Pick<LastEnding, 'recallRun' | 'rewinds'> = {};
+  if (isInt(v.recallRun, 1, 9999)) extra.recallRun = v.recallRun;
+  if (isInt(v.rewinds, 1, 9999)) extra.rewinds = v.rewinds;
   return {
     ending: v.ending,
     grade: v.grade as Grade,
@@ -429,8 +528,17 @@ function parseLastEnding(v: unknown): LastEnding | undefined {
     newAchievements: [...(v.newAchievements as AchievementId[])],
     at: v.at,
     pendingView: v.pendingView,
+    ...extra,
   };
 }
+
+function parseBest(v: unknown): BestRecord | undefined {
+  if (!isObj(v) || !isInt(v.used, 0, Math.max(...MODES.map((m) => RULES[m].actions)))) return undefined;
+  if (!isFinNonNeg(v.ms) || !GRADES.includes(v.grade as Grade) || !isFinNonNeg(v.at)) return undefined;
+  return { used: v.used, ms: v.ms, grade: v.grade as Grade, at: v.at };
+}
+
+const RECALL_DOMAIN = new Set<string>(RECALL_ELIGIBLE);
 
 /** meta 문자열 → WitnessMeta. 필드 단위로 관대하게(깨진 필드만 기본값) */
 export function parseMeta(raw: string | null): WitnessMeta {
@@ -449,11 +557,17 @@ export function parseMeta(raw: string | null): WitnessMeta {
   m.secrets = [...new Set(sec)];
   if (Array.isArray(v.achievements)) m.achievements = [...new Set(v.achievements.filter((a): a is AchievementId => ACHIEVEMENTS.includes(a as AchievementId)))];
   if (GRADES.includes(v.bestGrade as Grade)) m.bestGrade = v.bestGrade as Grade;
-  if (Array.isArray(v.readLines)) m.readLines = [...new Set(v.readLines.filter(isStr))].slice(0, 5000);
+  m.readLines = cleanReadLines(v.readLines);
   m.settings = parseSettings(v.settings);
   if (Array.isArray(v.coach)) m.coach = [...new Set(v.coach.filter(isStr))].slice(0, 100);
   const le = parseLastEnding(v.lastEnding);
   if (le) m.lastEnding = le;
+  // found: 배열 아니면 [] · 도메인 밖 버림 · 중복 제거 · 최대 15. 그리고 lastEnding 으로 멱등 백필
+  const rawFound = Array.isArray(v.found) ? v.found.filter((x): x is string => isStr(x) && RECALL_DOMAIN.has(x)) : [];
+  const found = mergeFound([], [...rawFound, ...(le ? foundFromMissed(le.missed) : [])]);
+  if (found.length || v.found !== undefined) m.found = found;
+  const best = parseBest(v.best);
+  if (best) m.best = best;
   return m;
 }
 
@@ -467,4 +581,37 @@ export function saveMeta(storage: StorageLike, meta: WitnessMeta): boolean {
   } catch {
     return false;
   }
+}
+
+// ─────────────────────────────── 두 탭 병합(A1) ───────────────────────────────
+
+const GRADE_RANK_S: Record<Grade, number> = { S: 4, A: 3, B: 2, C: 1 };
+const union = <T,>(a: readonly T[], b: readonly T[]): T[] => [...new Set([...a, ...b])];
+
+/**
+ * 다른 탭이 meta 를 바꾼 뒤에 이 탭이 쓸 때 — 통째로 덮지 않고 합친다(검토 A1).
+ * 쌓이는 것은 잃지 않는다: plays 큰 쪽 · 엔딩·비밀·업적·코치·읽음·found 합집합 · bestGrade 높은 쪽 · best 행동 적은 쪽 ·
+ * lastEnding 은 at 이 늦은 쪽(같으면 이 탭 — pendingView 내림이 먹도록). settings 는 이 탭 값(방금 사람이 만진 쪽).
+ * 지우는 동작(전체 초기화·코치 다시 보기)은 병합하지 않고 그대로 쓴다(호출자가 force).
+ */
+export function mergeMeta(stored: WitnessMeta, mine: WitnessMeta): WitnessMeta {
+  const out: WitnessMeta = {
+    ...mine,
+    plays: Math.max(stored.plays, mine.plays),
+    endings: union(mine.endings, stored.endings),
+    secrets: union(mine.secrets, stored.secrets),
+    achievements: union(mine.achievements, stored.achievements),
+    coach: union(mine.coach, stored.coach).slice(0, 100),
+    readLines: union(stored.readLines, mine.readLines).slice(-READ_LINES_MAX),
+  };
+  const bg = [stored.bestGrade, mine.bestGrade].filter((g): g is Grade => !!g).sort((a, b) => GRADE_RANK_S[b] - GRADE_RANK_S[a])[0];
+  if (bg) out.bestGrade = bg;
+  const le = !stored.lastEnding ? mine.lastEnding : !mine.lastEnding || stored.lastEnding.at > mine.lastEnding.at ? stored.lastEnding : mine.lastEnding;
+  if (le) out.lastEnding = le;
+  else delete out.lastEnding;
+  const found = mergeFound(mine.found, stored.found ?? []);
+  if (found.length || mine.found || stored.found) out.found = found;
+  const bests = [stored.best, mine.best].filter((b): b is BestRecord => !!b).sort((a, b) => a.used - b.used || a.ms - b.ms);
+  if (bests[0]) out.best = bests[0];
+  return out;
 }

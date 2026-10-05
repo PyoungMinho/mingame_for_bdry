@@ -18,6 +18,8 @@ import {
   ogResultUrl,
   parseOgParams,
   parseOgQueryString,
+  replayChips,
+  replayTail,
   share,
   sharePayload,
   shareText,
@@ -243,6 +245,7 @@ describe('OG 파서·결과 카드(디자인 §9-2) — /witness/og 라우트의
       line: OG_KIND_LINE.p,
       chips: ['결정적 모순 5/7', '증거 15/18', '남은 행동 4/13'],
       badge: null,
+      mode: null,
       hook: HOOKS[3],
     });
     expect(ogCard({ g: 'S', s: 7, e: 18, r: 0, k: 'h', v: 0 })).toMatchObject({ title: CASE.titles.S, badge: '숨은 엔딩 발견', hook: HOOKS[0] });
@@ -272,5 +275,70 @@ describe('OG 파서·결과 카드(디자인 §9-2) — /witness/og 라우트의
       }
     }
     for (const line of Object.values(OG_KIND_LINE)) for (const w of TRICK_WORDS) expect(line).not.toContain(w);
+  });
+});
+
+// ═══════════════════════════════ 다시 하기 표기(docs/planning/witness-replay.md e-4 · h-4 SH1) ═══════════════════════════════
+
+describe('SH1 다시 하기 꼬리 · OG m', () => {
+  const CLEAN = input('perfect', 'S', { title: CASE.titles.S });
+  const RECALL = input('perfect', 'B', { title: CASE.titles.A, recallRun: 3 }, 3);
+  const REWIND = input('perfect', 'A', { title: CASE.titles.A, rewinds: 1 });
+  const BOTH = input('short', 'B', { title: CASE.titles.B, recallRun: 4, rewinds: 2 }, 4);
+
+  it('둘째 줄 꼬리 — 「· N회차·기억」 / 「· 되감기」 / 둘 다, 처음부터·무되감기는 꼬리 없음', () => {
+    expect(shareText(RECALL).split('\n')[1]).toBe(`B등급 · ${CASE.titles.A} · 3회차·기억`);
+    expect(shareText(REWIND).split('\n')[1]).toBe(`A등급 · ${CASE.titles.A} · 되감기`);
+    expect(shareText(BOTH).split('\n')[1]).toBe(`B등급 · ${CASE.titles.B} · 4회차·기억 · 되감기`);
+    expect(shareText(CLEAN).split('\n')[1]).toBe(`S등급 · ${CASE.titles.S}`);
+    expect(shareText(input('hidden', 'B', { title: CASE.titles.A, recallRun: 2 })).split('\n')[1]).toBe(`B등급 · ${CASE.titles.A} · 숨은 엔딩 발견 · 2회차·기억`);
+    expect(shareText(CLEAN).split('\n')).toHaveLength(5);
+    expect(replayChips({ recallRun: 3, rewinds: 1 })).toEqual(['3회차·기억', '되감기']);
+    expect(replayTail({})).toBe('');
+  });
+
+  it('카카오 제목도 같은 꼬리 · 문구·URL 어디에도 금지어 없음', () => {
+    for (const i of [RECALL, REWIND, BOTH]) {
+      const p = sharePayload(i);
+      expect(p.kakao.content.title).toBe(`목격자는 AI — ${i.result.grade}등급 · ${i.result.title}${replayTail(i.result)}`);
+      const all = [p.text, p.copyText, p.kakao.content.title, p.kakao.content.description, p.kakao.content.imageUrl];
+      for (const w of [...FORBIDDEN, '제한', '불가', '페널티']) for (const t of all) expect(t.includes(w), `${w} in ${t}`).toBe(false);
+    }
+    expect(sharePayload(CLEAN).kakao.content.title).toBe(`목격자는 AI — S등급 · ${CASE.titles.S}`);
+  });
+
+  it('OG m: 처음부터는 키 없음(예전 URL 그대로) · 1 되감기 · 2 기억 · 3 둘 다 — 왕복', () => {
+    expect(toOgParams(CLEAN).m).toBeUndefined();
+    expect(ogResultUrl(CLEAN)).not.toContain('m=');
+    expect(toOgParams(REWIND).m).toBe(1);
+    expect(toOgParams(RECALL).m).toBe(2);
+    expect(toOgParams(BOTH).m).toBe(3);
+    for (const i of [CLEAN, REWIND, RECALL, BOTH]) {
+      const u = new URL(ogResultUrl(i));
+      expect(parseOgQueryString(u.search.slice(1))).toEqual(toOgParams(i));
+    }
+    expect(ogResultUrl(BOTH)).toMatch(/&m=3$/);
+  });
+
+  it('OG m 검증 — 0~3 만, 한 번만, 다른 여분 키와 같이 오면 null · m=0 은 기본값', () => {
+    const base = 'g=B&s=5&e=15&r=4&k=p&v=1';
+    expect(parseOgQueryString(`${base}&m=0`)).toEqual(parseOgQueryString(base));
+    for (const q of [`${base}&m=4`, `${base}&m=01`, `${base}&m=`, `${base}&m=1&m=2`, `${base}&m=1&t=1`, `m=1`, `g=B&s=5&e=15&r=4&k=p&m=1`])
+      expect(parseOgQueryString(q), q).toBeNull();
+  });
+
+  it('OG 카드 — 판 종류 칩 · 해결 칭호는 등급 B(기억 판)여도 A 용 · 금지어 없음', () => {
+    const p = { g: 'B' as const, s: 7, e: 18, r: 3, k: 'p' as const, v: 0 };
+    expect(ogCard({ ...p, m: 2 })).toMatchObject({ grade: 'B', title: CASE.titles.A, mode: '기억' });
+    expect(ogCard({ ...p, m: 1 }).mode).toBe('되감기');
+    expect(ogCard({ ...p, m: 3 }).mode).toBe('기억 · 되감기');
+    expect(ogCard(p).mode).toBeNull();
+    expect(ogCard({ ...p, k: 'h', g: 'S' }).title).toBe(CASE.titles.S);
+    expect(ogCard({ ...p, k: 's', m: 2 }).title).toBe(CASE.titles.B);
+    for (const m of [1, 2, 3] as const) {
+      const c = ogCard({ ...p, m });
+      // 새로 생긴 문구(칩)만 본다 — 한 줄·훅의 기존 문구는 위 스포일러 테스트가 따로 막는다
+      for (const w of [...FORBIDDEN, '제한', '불가', '페널티']) expect(`${c.title} ${c.mode}`.includes(w), w).toBe(false);
+    }
   });
 });

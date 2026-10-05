@@ -40,6 +40,11 @@ export interface WtCtx {
   openCollection: () => void;
   openCaseFile: () => void;
   openShare: (d: EndingData) => void;
+  /**
+   * 새 수사를 시작한다 — 진입 3곳(타이틀·엔딩·배제 화면) 공통.
+   * 기억할 증거가 있으면(2회차~) 「기억 이어가기 / 처음부터」 시트 1개, 없으면 바로(저장된 판이 있으면 확인 시트만).
+   */
+  requestNewRun: (opts?: { skipTutorial?: boolean }) => void;
   /** 설정(진동 켬)을 따르는 진동 */
   vib: (pattern: number | readonly number[]) => void;
   /** 수첩 정리(힌트) 대상으로 이동 */

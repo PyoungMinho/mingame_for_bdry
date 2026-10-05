@@ -54,6 +54,10 @@ export interface Rules {
   confirmWhenActionsLeq: number;
   sMaxWrong: number;
   rewindTrust: number;
+  /** 판당 판정 되감기 칸(다시 하기 a-2). 범인 틀림 = min(2, 남은 칸), 칸만 틀림·시간 초과 = 1. 수사 배제 되감기는 칸을 안 쓴다 */
+  rewindSlots: number;
+  /** 「기억 이어가기」 허용(형사 모드가 생기면 false — 지금은 normal 하나) */
+  allowRecall: boolean;
 }
 
 export const RULES: Record<Mode, Rules> = {
@@ -69,11 +73,18 @@ export const RULES: Record<Mode, Rules> = {
     confirmWhenActionsLeq: 2,
     sMaxWrong: 2,
     rewindTrust: 2,
+    rewindSlots: 2,
+    allowRecall: true,
   },
 };
 
 export const CASE_ID = CASE.id;
 export const SAVE_V = 1 as const;
+/**
+ * 다시 하기(기억 판 · 판정 되감기를 쓴 판)만 이 값으로 저장한다(storage.serializeRun). 옛 탭의 파서는 v≠1 이면 판만 버리고 meta 는 지키므로
+ * 옛 코드가 등급 상한(A/B)을 모르고 S 를 meta 에 쓰는 일이 없다(사양 d-1 · C4). 메모리 안의 RunCore.v 는 언제나 SAVE_V.
+ */
+export const SAVE_V_REPLAY = 2 as const;
 /**
  * 규칙 개정 번호 — 2 = 행동 13 · 사이렌 뒤 재방문(R1~R8). 옛 저장(rev 없음 = 행동 12 규칙)은 storage 가 읽을 때
  * 진행 중인 판(phase play)에 행동 +1 을 더해 이관한다(쓴 행동 수 그대로 · 시계는 22:50 시작이라 10분 이르게 가리키고 도착 01:00 은 같다).
@@ -129,6 +140,12 @@ export interface MissedItem {
 
 export interface RunResult {
   ending: EndingId;
+  /** 이 판의 몇 번째 판정(수사 배제 제외)인가 1~3 — 플레이 횟수는 1 일 때만 센다 */
+  attempt: number;
+  /** 기억 판이면 회차(N회차·기억) */
+  recallRun?: number;
+  /** 이 판에서 쓴 되감기 수(수사 배제 포함 합). 0 이면 없음 */
+  rewinds?: number;
   grade: Grade;
   title: string;
   accusation?: Accusation;
@@ -188,11 +205,44 @@ export interface RunCore {
   /** 또박이 지목 이스터에그를 봤다 */
   egg?: boolean;
   result?: RunResult;
+  /** 되감기 사용 기록. judged = 쓴 판정 칸(0~rewindSlots), excluded = 수사 배제 되감기 횟수. 없으면 rewound ? {0,1} : {0,0} */
+  rewinds?: RewindCount;
+  /** 이 판의 비-배제 판정 횟수 0~3 */
+  attempts?: number;
+  /** 되감은 뒤 지목 화면 미리 채우기(지금 손에 있는 카드만) */
+  prevAccuse?: PrevAccuse;
+  /** 기억 판 — n = 시작 시 meta.plays + 1, ids = 들고 시작한 증거(튜토리얼 지급분 제외, ⊆ RECALL_ELIGIBLE) */
+  recall?: RecallInfo;
+}
+
+export type RewindKind = 'excluded' | 'accuse' | 'action';
+export interface RewindCount {
+  judged: number;
+  excluded: number;
+}
+export interface PrevAccuse {
+  /** 칸만 틀렸을 때만 남긴다(범인이 틀렸으면 비우고 '범인' 단계부터) */
+  culprit?: SuspectId;
+  /** 지난 판정에서 범인이 아니었던 인물(범인 선택에서 흐리게) */
+  notCulprit?: SuspectId;
+  means?: Id;
+  opportunity?: Id;
+  motive?: Id;
+  /** 지난 판정에서 안 통한 칸(같은 카드가 그대로 있을 때만 표시) */
+  miss?: Slot[];
+}
+export interface RecallInfo {
+  n: number;
+  ids: Id[];
 }
 
 export interface RunState extends RunCore {
-  /** 심문·대질 진입 직전 스냅샷 */
+  /** 심문·대질 진입 직전 스냅샷(수사 배제 되감기) */
   checkpoint?: RunCore;
+  /** 지목 제출 직전 스냅샷(지목 되감기) */
+  accuseCp?: RunCore;
+  /** 마지막 유료 행동 직전 스냅샷(시간 초과 되감기) */
+  actCp?: RunCore;
 }
 
 // ─────────────────────────────── 이벤트 ───────────────────────────────
@@ -216,10 +266,14 @@ export type EngineEvent =
   | { t: 'easterEgg'; lines: Dialogue[] }
   | { t: 'siren' }
   | { t: 'excluded' }
-  | { t: 'ended'; ending: EndingId; grade: Grade };
+  | { t: 'ended'; ending: EndingId; grade: Grade }
+  /** 되감기 실행. gateClosed = 되감기 전엔 지목 조건(★)이 됐는데 지금은 닫혔다(토스트 「지목 조건이 다시 닫혔어요」 1회) */
+  | { t: 'rewound'; kind: RewindKind; cost: number; gateClosed: boolean };
 
 export type StepError =
   | 'unknown'
+  /** 다른 탭이 저장을 바꿔서 이 탭의 판이 낡았다 — 화면이 저장을 다시 읽고 이 행동은 버린다(검토 A1) */
+  | 'stale'
   | 'locked'
   | 'siren'
   | 'ended'
@@ -233,7 +287,8 @@ export type StepError =
   | 'gate'
   | 'not-accusing'
   | 'bad-accusation'
-  | 'no-checkpoint';
+  | 'no-checkpoint'
+  | 'no-rewind';
 
 export interface Step {
   run: RunState;
@@ -313,6 +368,16 @@ export const getProfile = (id: Id): Profile | undefined => PROFILE.get(id);
 export const isProfileCard = (id: Id): id is ProfileId => PROFILE.has(id);
 export const allBreakIds = (): Id[] => [...BRK.keys()];
 
+/**
+ * 「기억 이어가기」로 다음 판에 들고 갈 수 있는 증거 = 방(장소 핫스팟)에서 줍는 원본 15장(사양 c-1).
+ * 돌파·추궁 산출(E03a·E03b·E14·E14b·E15·E16)은 머리 쓰는 부분이라 들고 가지 않는다(c-2).
+ */
+export const RECALL_ELIGIBLE: readonly Id[] = BASE_EVIDENCE.filter((e) => typeof e.from === 'object' && 'location' in e.from).map((e) => e.id);
+const RECALL_SET = new Set<Id>(RECALL_ELIGIBLE);
+/** 증거 → 그것을 주는 핫스팟(기억 판 시작 시 '조사 완료'로 표시) */
+const RECALL_HOTSPOT = new Map<Id, Id>();
+for (const e of BASE_EVIDENCE) if (typeof e.from === 'object' && 'location' in e.from) RECALL_HOTSPOT.set(e.id, e.from.hotspot);
+
 /** 알려진 id 집합(저장 검증용) */
 export const KNOWN = {
   evidence: new Set(EV.keys()),
@@ -325,6 +390,7 @@ export const KNOWN = {
   flags: new Set([...FLAG_FROM_PRESS.keys(), ...FLAG_FROM_BREAK.keys()]),
   suspects: new Set<string>(SUSPECTS),
   cards: new Set([...EV.keys(), ...PROFILE.keys()]),
+  recall: RECALL_SET,
 };
 
 // ─────────────────────────────── 기본 질의 ───────────────────────────────
@@ -400,10 +466,20 @@ export interface NewRunOptions {
   /** 2회차 건너뛰기: 튜토리얼 증거 자동 획득 + 튜토리얼 돌파 처리(디자인 §8-3 A8) */
   skipTutorial?: boolean;
   mode?: Mode;
+  /**
+   * 「기억 이어가기」 — 지난 판들에서 방에서 찾은 증거(meta.found). RECALL_ELIGIBLE 밖·튜토리얼 지급분은 버린다.
+   * 남는 게 있으면 skipTutorial 로 시작해 그 증거를 손에 쥐고, 그 증거를 주는 핫스팟만 '조사 완료'로 둔다(장소 입장 비용은 그대로).
+   * 남는 게 없거나 rulesOf().allowRecall 이 false 면 평범한 새 판(skipTutorial 은 옵션 그대로).
+   */
+  recall?: readonly Id[];
+  /** 기억 판 회차 = 시작 시 meta.plays + 1(없으면 2) — 결과 칩·공유 꼬리 「N회차·기억」 */
+  recallN?: number;
 }
 
 export function newRun(opts: NewRunOptions = {}): RunState {
   const rules = RULES[opts.mode ?? 'normal'];
+  const recallIds = opts.recall && rules.allowRecall ? recallable(opts.recall) : [];
+  if (recallIds.length) opts = { ...opts, skipTutorial: true };
   let run: RunState = {
     v: SAVE_V,
     caseId: CASE_ID,
@@ -444,7 +520,35 @@ export function newRun(opts: NewRunOptions = {}): RunState {
     }
     run = { ...run, checkpoint: undefined, screen: { name: 'hub', tab: 'house' } };
   }
+  if (recallIds.length) {
+    const r = draft(run);
+    for (const id of recallIds) {
+      acquire(r, id, []);
+      const h = RECALL_HOTSPOT.get(id)!;
+      if (!has(r.visited, h)) r.visited.push(h);
+    }
+    const seen = new Set(r.seen ?? []);
+    for (const id of recallIds) seen.add(id);
+    r.seen = [...seen];
+    const n = Number.isInteger(opts.recallN) && opts.recallN! >= 1 ? Math.min(9999, opts.recallN!) : 2;
+    r.recall = { n, ids: recallIds };
+    run = r;
+  }
   return finish(run);
+}
+
+/** 튜토리얼이 무조건 주는 증거(거실 일반 핫스팟) — 기억 개수에서 뺀다 */
+let tutorialEvidenceCache: readonly Id[] | null = null;
+export function tutorialEvidence(): readonly Id[] {
+  if (!tutorialEvidenceCache) tutorialEvidenceCache = newRun({ skipTutorial: true }).evidence.filter((id) => RECALL_SET.has(id));
+  return tutorialEvidenceCache;
+}
+
+/** 기억으로 들고 갈 수 있는 것만(RECALL_ELIGIBLE 순서·중복 없음·튜토리얼 지급분 제외) */
+export function recallable(ids: readonly Id[]): Id[] {
+  const want = new Set(ids);
+  const tut = tutorialEvidence();
+  return RECALL_ELIGIBLE.filter((id) => want.has(id) && !tut.includes(id));
 }
 
 // ─────────────────────────────── 내부 변경 도우미 ───────────────────────────────
@@ -465,10 +569,18 @@ function draft(run: RunState): RunState {
   };
 }
 
-function core(run: RunState): RunCore {
-  const { checkpoint: _cp, ...rest } = run;
+/** 스냅샷 3종(checkpoint·accuseCp·actCp)을 벗긴 코어 — 스냅샷 안에 스냅샷이 들어가지 않는다(중첩 0) */
+export function core(run: RunState): RunCore {
+  const { checkpoint: _cp, accuseCp: _ac, actCp: _at, ...rest } = run;
   void _cp;
+  void _ac;
+  void _at;
   return rest;
+}
+
+/** 되감기 사용 기록(없으면 옛 rewound 로 추정 — 배포 전 판 호환) */
+export function rewindsOf(run: Pick<RunCore, 'rewinds' | 'rewound'>): RewindCount {
+  return run.rewinds ? { ...run.rewinds } : { judged: 0, excluded: run.rewound ? 1 : 0 };
 }
 
 /** 파생값(freePass) 재계산 */
@@ -553,6 +665,7 @@ export function enterLocation(run: RunState, id: Id): Step {
   const ev: EngineEvent[] = [];
   if (!has(r.visited, id)) {
     if (loc.cost > r.actions) return fail(run, 'no-actions');
+    if (loc.cost > 0) r.actCp = core(run);
     spend(r, loc.cost, id, ev);
     r.visited.push(id);
   }
@@ -575,6 +688,7 @@ export function examine(run: RunState, hotspotId: Id): Step {
   const ev: EngineEvent[] = [];
   if (hotspot.precise) {
     if (r.actions < 1) return fail(run, 'no-actions');
+    r.actCp = core(run);
     spend(r, 1, location.id, ev);
   }
   r.visited.push(hotspotId);
@@ -598,6 +712,7 @@ export function openSet(run: RunState, id: Id): Step {
   r.checkpoint = core(run);
   const ev: EngineEvent[] = [];
   if (first) {
+    if (set.cost > 0) r.actCp = core(run);
     spend(r, set.cost, id, ev);
     r.opened.push(id);
   }
@@ -1000,6 +1115,7 @@ export function hint(run: RunState): Step {
   const h = hintFor(run);
   const r = draft(run);
   const ev: EngineEvent[] = [];
+  if (rules.hintCost > 0) r.actCp = core(run);
   spend(r, rules.hintCost, null, ev);
   r.hints += 1;
   r.hintLog = [...(run.hintLog ?? []), h];
@@ -1015,9 +1131,33 @@ export function startAccuse(run: RunState): Step {
   if (!canAccuse(run)) return fail(run, 'gate');
   const r = draft(run);
   // R7: 사이렌 뒤에도 경고가 뜨고 취소할 수 있다 — forced 는 옛 저장 호환용 필드라 항상 false
-  r.accuse = { ...(run.accuse ?? {}), stage: run.accuse?.stage ?? 'suspect', forced: false };
+  const pre = run.accuse ? null : prefill(run, run.prevAccuse);
+  // 범인이 남아 있으면(칸만 틀림) '칸' 단계부터, 범인이 틀렸으면 카드만 채워 두고 '범인' 단계부터(QA-RP-02)
+  r.accuse = pre
+    ? { culprit: pre.culprit, means: pre.means, opportunity: pre.opportunity, motive: pre.motive, stage: pre.culprit ? 'slots' : 'suspect', forced: false }
+    : { ...(run.accuse ?? {}), stage: run.accuse?.stage ?? 'suspect', forced: false };
+  for (const k of ['culprit', ...SLOTS] as const) if (r.accuse[k] === undefined) delete r.accuse[k];
   r.screen = { name: 'accuse' };
   return ok(r);
+}
+
+/**
+ * 되감은 뒤 미리 채우기(다시 하기 a-5, QA-RP-02 정정) — 칸은 지금 손에 있는 카드만.
+ * 범인은 칸만 틀렸을 때만 그대로(범인이 틀렸으면 rewind 가 culprit 대신 notCulprit 을 넘긴다). 안 통한 칸 표시는 같은 카드가 남은 칸만.
+ */
+function prefill(run: RunCore, a: Partial<PrevAccuse> | undefined): PrevAccuse | null {
+  if (!a) return null;
+  const out: PrevAccuse = {};
+  if (a.culprit && KNOWN.suspects.has(a.culprit)) out.culprit = a.culprit;
+  if (a.notCulprit && KNOWN.suspects.has(a.notCulprit) && a.notCulprit !== out.culprit) out.notCulprit = a.notCulprit;
+  for (const s of SLOTS) {
+    const c = a[s];
+    if (c && EV.has(c) && has(run.evidence, c) && !SLOTS.some((t) => out[t] === c)) out[s] = c;
+  }
+  const miss = SLOTS.filter((s) => a.miss?.includes(s) && out[s]);
+  if (miss.length) out.miss = miss;
+  if (!out.culprit && !out.notCulprit && !SLOTS.some((s) => out[s])) return null;
+  return out;
 }
 
 export function cancelAccuse(run: RunState): Step {
@@ -1106,6 +1246,24 @@ export function gradeOf(run: RunCore, j: JudgeResult): Grade {
   return 'C';
 }
 
+const GRADE_ORDER: Record<Grade, number> = { S: 4, A: 3, B: 2, C: 1 };
+/** 둘 중 낮은 등급 */
+export function lowerGrade(a: Grade, b: Grade): Grade {
+  return GRADE_ORDER[a] <= GRADE_ORDER[b] ? a : b;
+}
+
+/** 등급 상한(사양 e-1): 기억 판 B(되감기까지 써도 B) · 되감기 판 A · 그 밖 없음 */
+export function gradeCapOf(run: Pick<RunCore, 'recall' | 'rewound' | 'rewinds'>): Grade | null {
+  if (run.recall) return 'B';
+  const rw = rewindsOf(run);
+  return run.rewound || rw.judged + rw.excluded > 0 ? 'A' : null;
+}
+
+/** 처음부터 · 되감기 없이 한 판인가(최단 기록 · 실력 업적 인정) */
+export function isCleanRun(run: Pick<RunCore, 'recall' | 'rewound' | 'rewinds'>): boolean {
+  return gradeCapOf(run) === null;
+}
+
 export function titleOf(ending: EndingId, grade: Grade): string {
   const t = CASE.titles;
   if (grade === 'S') return t.S;
@@ -1115,6 +1273,14 @@ export function titleOf(ending: EndingId, grade: Grade): string {
   if (ending === 'timeout') return t.timeout;
   if (ending === 'excluded') return t.excluded;
   return t.wrong;
+}
+
+/**
+ * 저장된 엔딩(lastEnding 등 등급만 남은 것)의 칭호 — 해결(완벽·숨은)은 S 가 아니면 A 용 칭호다.
+ * 기억 판 완벽은 등급 B 지만 칭호는 「로그를 읽는 사람」(사양 e-1). titleOf(ending, grade) 를 그대로 쓰면 B 칭호가 나온다.
+ */
+export function endingTitle(ending: EndingId, grade: Grade): string {
+  return ending === 'perfect' || ending === 'hidden' ? titleOf(ending, grade === 'S' ? 'S' : 'A') : titleOf(ending, grade);
 }
 
 /** 기회 칸에 낸 raw 위조 원본(갱신 사슬의 끝이 forged 인 raw 로그) */
@@ -1127,14 +1293,18 @@ function isRawForgedSource(id: Id): boolean {
 /** 「번개 수사」 — 이만큼 이하의 행동을 쓰고 풀면 */
 export const LIGHTNING_MAX_SPENT = 9;
 
+/**
+ * 업적(사양 e-2 기록 인정표): 실력 업적 3종(무결점·번개·힌트 없이)은 처음부터·무되감기 판만,
+ * allclear 는 기억 판 제외(기억 판은 ★ 전부 최단 10 → 5), 나머지 둘은 어느 판이든.
+ */
 function achievementsOf(run: RunCore, j: JudgeResult, a: Accusation | null, secretsRevealed: SuspectId[]): AchievementId[] {
   const out: AchievementId[] = [];
-  const solved = j.ending === 'perfect' || j.ending === 'hidden';
+  const solved = (j.ending === 'perfect' || j.ending === 'hidden') && isCleanRun(run);
   if (solved && run.wrong === 0) out.push('flawless');
   // 번개 수사 = 쓴 유료 행동 ≤ 9 (예산 12 시절 '남은 행동 ≥ 3'과 같은 절대 기준 — R8)
   if (solved && rulesOf(run).actions - run.actions <= LIGHTNING_MAX_SPENT) out.push('lightning');
   if (solved && run.hints === 0) out.push('nohint');
-  if (stars(run) === STAR_TOTAL && SUSPECTS.every((s) => secretsRevealed.includes(s))) out.push('allclear');
+  if (!run.recall && stars(run) === STAR_TOTAL && SUSPECTS.every((s) => secretsRevealed.includes(s))) out.push('allclear');
   if (run.egg) out.push('arrestSpeaker');
   if (a && isRawForgedSource(a.opportunity)) out.push('trustedMachine');
   return out;
@@ -1158,14 +1328,23 @@ export function unbrokenStars(run: RunCore): number {
 
 export function summarize(run: RunCore, a: Accusation | null): RunResult {
   const j = judgeAccusation(run, a);
-  const grade = gradeOf(run, j);
+  const base = gradeOf(run, j);
+  const cap = gradeCapOf(run);
+  const grade = cap ? lowerGrade(base, cap) : base;
+  // 기억 판 완벽 → 등급 B, 칭호는 A 용(「기억」 칩으로 구분) — 사양 e-1
+  const titleGrade = cap ? lowerGrade(base, 'A') : base;
   const sol = CASE.solution;
   const revealed = [...run.secrets];
   if (a && a.culprit === sol.culprit && j.slots?.motive && !revealed.includes(sol.culprit)) revealed.push(sol.culprit);
+  const rw = rewindsOf(run);
+  const rewinds = rw.judged + rw.excluded;
   return {
     ending: j.ending,
+    attempt: Math.max(1, Math.min(MAX_ATTEMPTS, run.attempts ?? 0)),
+    ...(run.recall ? { recallRun: run.recall.n } : {}),
+    ...(rewinds > 0 ? { rewinds } : {}),
     grade,
-    title: titleOf(j.ending, grade),
+    title: titleOf(j.ending, titleGrade),
     accusation: a ?? undefined,
     slots: j.slots,
     stars: stars(run),
@@ -1185,6 +1364,7 @@ export function summarize(run: RunCore, a: Accusation | null): RunResult {
 }
 
 function endRun(r: RunState, a: Accusation | null, ev: EngineEvent[], excluded = false): Step {
+  if (!excluded) r.attempts = Math.min(MAX_ATTEMPTS, (r.attempts ?? 0) + 1);
   const result = summarize(r, a);
   r.phase = 'ended';
   r.final = [];
@@ -1203,7 +1383,9 @@ export function submitAccusation(run: RunState, a?: Accusation): Step {
   if (!canAccuse(run)) return fail(run, 'gate');
   const acc = a ?? (run.accuse as Partial<Accusation>);
   if (!accusationValid(run, acc)) return fail(run, 'bad-accusation');
-  return endRun(draft(run), { culprit: acc.culprit, means: acc.means, opportunity: acc.opportunity, motive: acc.motive }, []);
+  const r = draft(run);
+  r.accuseCp = core(run);
+  return endRun(r, { culprit: acc.culprit, means: acc.means, opportunity: acc.opportunity, motive: acc.motive }, []);
 }
 
 /** 판정 연출 대본(범인을 맞혔을 때만 칸별 대사, 틀리면 오인 체포 엔딩 첫 줄로 대체) */
@@ -1220,18 +1402,71 @@ export function verdictScript(a: Accusation): { call: Dialogue; steps: { slot: S
   return { call, steps, wrongArrest: false };
 }
 
+/** 한 판의 판정(수사 배제 제외) 최대 횟수 = 1 + 판정 칸(칸만 틀림이면 칸 1개씩) */
+export const MAX_ATTEMPTS = 1 + RULES.normal.rewindSlots;
+/** 판정 되감기 비용(사양 a-2) — 범인 틀림은 칸 2개(범인 소거 찍기 방지 X1), 칸만 틀림·시간 초과는 1개. 남은 칸보다 크면 남은 만큼 */
+export const REWIND_COST = { wrongCulprit: 2, short: 1, timeout: 1 } as const;
+
+export interface RewindOption {
+  kind: RewindKind;
+  /** 이번에 쓰는 판정 칸(수사 배제는 0) */
+  cost: number;
+  /** 이번 되감기 뒤 판정 칸이 0 — 부제 「A등급까지 · 마지막 1번」 */
+  last: boolean;
+}
+
 /**
- * 수사 배제 → 심문 직전으로 되감기(신뢰 max(체크포인트, 2), S 불가).
- * 체크포인트가 '행동 0 대상 안'(phase play·행동 0)이면 허브로 돌아가는 순간이 곧 나가기이므로
- * 사이렌으로 되감는다 — 행동 0·사이렌 전 허브(지목도 수사 종료도 없는 막힌 상태)를 만들지 않는다(QA-BAL-01)
+ * 끝난 판에서 지금 쓸 수 있는 되감기(사양 a-1 · v2 정정). 없으면 null.
+ * 순서: 안 끝남 → null / 수사 배제 + checkpoint → excluded(칸 0, 무제한) / 완벽·숨은 → null / 남은 칸 0 → null /
+ * 시간 초과 → (★ ≥ starGate−1 && actCp) ? action : null / 오인 체포·증거 부족 → accuseCp 있으면 accuse.
+ */
+export function rewindOption(run: RunState): RewindOption | null {
+  if (run.phase !== 'ended' || !run.result) return null;
+  const e = run.result.ending;
+  if (e === 'excluded') return run.checkpoint ? { kind: 'excluded', cost: 0, last: false } : null;
+  if (e === 'perfect' || e === 'hidden') return null;
+  const rules = rulesOf(run);
+  const left = rules.rewindSlots - rewindsOf(run).judged;
+  if (left <= 0) return null;
+  if (e === 'timeout') {
+    if (!run.actCp || stars(run) < rules.starGate - 1) return null;
+    const cost = Math.min(REWIND_COST.timeout, left);
+    return { kind: 'action', cost, last: left - cost <= 0 };
+  }
+  if (!run.accuseCp) return null;
+  const cost = Math.min(e === 'short' ? REWIND_COST.short : REWIND_COST.wrongCulprit, left);
+  return { kind: 'accuse', cost, last: left - cost <= 0 };
+}
+
+/** 남은 판정 칸(0 = 「되감기 끝」) */
+export function rewindSlotsLeft(run: RunCore): number {
+  return Math.max(0, rulesOf(run).rewindSlots - rewindsOf(run).judged);
+}
+
+/** 이 판을 저장해 둬야 하나 — 되감기 선택지가 있는 끝난 판은 남긴다(새로고침으로 되감기·칩이 사라지지 않게, 사양 d-1 C1/X4) */
+export function keepSavedRun(run: RunState): boolean {
+  return run.phase !== 'ended' || rewindOption(run) !== null;
+}
+
+/**
+ * ↺ 직전부터 다시 — rewindOption 의 되감기를 실행한다(없으면 'no-rewind', 판 그대로).
+ *  - excluded: 심문 직전(checkpoint) · accuse: 지목 제출 직전(accuseCp) · action: 마지막 유료 행동 직전(actCp).
+ *  - 신뢰 = max(스냅샷, rewindTrust) · 행동·틀린 제시 = 스냅샷 값(지목 되감기 −1 없음) ·
+ *    판 전체 값 유지: 수첩 정리 횟수·기록, 플레이 시간, 본 것, 이스터에그(OR), 기억, 되감기 기록, 판정 횟수(사양 a-3).
+ *  - 스냅샷 정리(a-4): checkpoint = 돌아간 지점, accuseCp 삭제, actCp 는 accuse 일 때만 유지.
+ *  - 스냅샷이 '행동 0 대상 안'(phase play·행동 0)이면 사이렌으로, 사이렌 뒤였으면 사이렌 뒤 허브로(행동이 되살아나지 않는다, QA-BAL-01).
+ *  - 미리 채우기(a-5): 지난 지목에서 지금 손에 있는 카드만. 칸만 틀렸으면 범인 그대로 → '칸' 단계, 범인이 틀렸으면 범인은 비우고 → '범인' 단계(QA-RP-02).
  */
 export function rewind(run: RunState): Step {
-  if (run.phase !== 'ended' || run.result?.ending !== 'excluded') return fail(run, 'gate');
-  if (!run.checkpoint) return fail(run, 'no-checkpoint');
-  const cp = run.checkpoint;
+  const opt = rewindOption(run);
+  if (!opt) return fail(run, 'no-rewind');
+  const cp = (opt.kind === 'excluded' ? run.checkpoint : opt.kind === 'accuse' ? run.accuseCp : run.actCp)!;
   const rules = rulesOf(run);
   const toSiren = cp.phase === 'siren' || (cp.phase === 'play' && cp.actions <= 0);
   const fresh = toSiren && cp.phase !== 'siren';
+  const rw = rewindsOf(run);
+  const rewinds: RewindCount =
+    opt.kind === 'excluded' ? { judged: rw.judged, excluded: Math.min(999, rw.excluded + 1) } : { judged: rw.judged + opt.cost, excluded: rw.excluded };
   const r: RunState = {
     ...cp,
     visited: [...cp.visited],
@@ -1245,16 +1480,37 @@ export function rewind(run: RunState): Step {
     final: toSiren ? [] : [...cp.final],
     trust: Math.max(cp.trust, rules.rewindTrust),
     rewound: true,
+    rewinds,
     phase: toSiren ? 'siren' : 'play',
-    result: undefined,
-    accuse: undefined,
+    hints: run.hints,
     playMs: run.playMs,
-    egg: run.egg || cp.egg,
-    seen: run.seen,
-    screen: fresh ? { name: 'siren' } : { name: 'hub', tab: 'people' },
+    screen: fresh ? { name: 'siren' } : { name: 'hub', tab: opt.kind === 'excluded' ? 'people' : 'house' },
     checkpoint: cp,
   };
-  return ok(r, fresh ? [{ t: 'siren' }] : []);
+  // 판 전체 값(선택 필드) — 없으면 키도 없게
+  const keep = { hintLog: run.hintLog, seen: run.seen, recall: run.recall, attempts: run.attempts, actCp: opt.kind === 'accuse' ? run.actCp : undefined };
+  for (const [k, v] of Object.entries(keep)) {
+    if (v === undefined) delete (r as unknown as Record<string, unknown>)[k];
+    else (r as unknown as Record<string, unknown>)[k] = v;
+  }
+  delete r.result;
+  delete r.accuse;
+  delete r.accuseCp;
+  if (run.egg || cp.egg) r.egg = true;
+  // 범인이 틀렸으면 범인은 비우고(같은 오답으로 마지막 판정을 날리지 않게) 그 인물을 notCulprit 으로, 칸만 틀렸으면 안 통한 칸을 miss 로
+  const acc = run.result?.accusation;
+  const src: Partial<PrevAccuse> | undefined = acc
+    ? acc.culprit === CASE.solution.culprit
+      ? { ...acc, miss: SLOTS.filter((s) => run.result?.slots?.[s] === false) }
+      : { means: acc.means, opportunity: acc.opportunity, motive: acc.motive, notCulprit: acc.culprit }
+    : run.prevAccuse;
+  const pre = prefill(r, src);
+  if (pre) r.prevAccuse = pre;
+  else delete r.prevAccuse;
+  const gate = rules.starGate;
+  const ev: EngineEvent[] = [{ t: 'rewound', kind: opt.kind, cost: opt.cost, gateClosed: stars(run) >= gate && stars(r) < gate }];
+  if (fresh) ev.push({ t: 'siren' });
+  return ok(r, ev);
 }
 
 // ─────────────────────────────── UI 셀렉터 (디자인 §8-2) ───────────────────────────────
@@ -1291,9 +1547,30 @@ export interface RoomStatus {
   /** 아직 조사하지 않은 보이는 핫스팟 수(정밀 포함) */
   unexamined: number;
   lockedLabel?: string;
+  /** 기억 판: 이 방에서 나오는 증거를 전부 기억으로 들고 있다 → 지도에 ✓(문구 없음). 해당할 때만 true */
+  allRecalled?: true;
 }
 
 export function roomStatus(run: RunCore, id: Id): RoomStatus {
+  const st = roomStatusBase(run, id);
+  // 잠긴 방에는 ✓ 를 달지 않는다(열리기 전 방의 정체를 지도에 미리 보이지 않게)
+  return st.state !== 'locked' && allRecalled(run, id) ? { ...st, allRecalled: true } : st;
+}
+
+/** 기억 판에서 이 방의 증거를 전부 기억으로 들고 시작했나 */
+export function allRecalled(run: Pick<RunCore, 'recall'>, locId: Id): boolean {
+  const l = LOC.get(locId);
+  if (!run.recall || !l) return false;
+  const gives = l.hotspots.flatMap((h) => h.gives ?? []).filter((e) => RECALL_SET.has(e));
+  return gives.length > 0 && gives.every((e) => run.recall!.ids.includes(e) || tutorialEvidence().includes(e));
+}
+
+/** 기억으로 들고 시작한 카드인가(수첩 「기억」 표시·정렬용 — 튜토리얼 지급분은 아님) */
+export function isRecalled(run: Pick<RunCore, 'recall'>, id: Id): boolean {
+  return !!run.recall && run.recall.ids.includes(id);
+}
+
+function roomStatusBase(run: RunCore, id: Id): RoomStatus {
   const l = LOC.get(id);
   if (!l) return { state: 'locked', cost: 0, isNew: false, unexamined: 0 };
   const avail = locAvailable(run, l);
@@ -1535,6 +1812,18 @@ export interface LastEnding {
   newAchievements: AchievementId[];
   at: number;
   pendingView: boolean;
+  /** 기억 판 회차(새로고침 뒤 칩·공유 꼬리 복원, X4) */
+  recallRun?: number;
+  /** 되감기 수(배제 포함 합) */
+  rewinds?: number;
+}
+
+/** 처음부터·무되감기 완벽/숨은 최단 기록 — 순위는 used(쓴 행동 수)만, ms 는 표시용(X10) */
+export interface BestRecord {
+  used: number;
+  ms: number;
+  grade: Grade;
+  at: number;
 }
 
 export interface WitnessMeta {
@@ -1549,6 +1838,10 @@ export interface WitnessMeta {
   settings: Settings;
   coach: string[];
   lastEnding?: LastEnding;
+  /** 판을 넘어 누적한 방 증거(⊆ RECALL_ELIGIBLE, 최대 15) — 「기억 이어가기」 재료 */
+  found?: Id[];
+  /** 처음부터·무되감기 최단 기록 */
+  best?: BestRecord;
 }
 
 export function newMeta(): WitnessMeta {
@@ -1561,21 +1854,78 @@ export function addAchievement(meta: WitnessMeta, id: AchievementId): WitnessMet
   return meta.achievements.includes(id) ? meta : { ...meta, achievements: [...meta.achievements, id] };
 }
 
-/** 엔딩 도착을 meta 에 반영. 수사 배제는 도감만(되감기 가능하므로 plays·lastEnding 은 그대로) */
-export function applyResultToMeta(meta: WitnessMeta, result: RunResult, at = 0): WitnessMeta {
+/** found ∪ ids (RECALL_ELIGIBLE 순서로 정리). 바뀐 게 없으면 같은 배열 */
+export function mergeFound(found: readonly Id[] | undefined, ids: Iterable<Id>): Id[] {
+  const set = new Set<Id>(found ?? []);
+  for (const id of ids) if (RECALL_SET.has(id)) set.add(id);
+  const out = RECALL_ELIGIBLE.filter((id) => set.has(id));
+  return found && found.length === out.length && found.every((x, i) => x === out[i]) ? (found as Id[]) : out;
+}
+
+/** 놓친 것 목록 → 이 판에서 방 증거 중 찾은 것(ELIGIBLE − missed) */
+export function foundFromMissed(missedIds: readonly Id[]): Id[] {
+  return RECALL_ELIGIBLE.filter((id) => !missedIds.includes(id));
+}
+
+function withFound(meta: WitnessMeta, ids: Iterable<Id>): WitnessMeta {
+  const found = mergeFound(meta.found, ids);
+  return found === meta.found ? meta : { ...meta, found };
+}
+
+/** 끝나지 않은 판을 버리고 새 수사를 시작할 때 — 그 판에서 방에서 찾은 증거를 meta.found 에 더한다(사양 d-2 ②) */
+export function absorbFound(meta: WitnessMeta, run: RunCore): WitnessMeta {
+  return withFound(
+    meta,
+    RECALL_ELIGIBLE.filter((id) => holdsOrSuperseded(run, id)),
+  );
+}
+
+export interface RecallPlan {
+  /** newRun({ recall: ids, recallN: n }) 에 그대로 */
+  ids: Id[];
+  n: number;
+  /** 시트 부제 「증거 n개 들고」의 n(튜토리얼 지급분 제외) */
+  count: number;
+}
+
+/**
+ * 새 수사 시트에 「기억 이어가기」를 보일까(사양 g-3) — plays ≥ 1 이고 들고 갈 증거(found − 튜토리얼 3장)가 1개 이상일 때만.
+ * null 이면 시트 없이(저장된 판이 있으면 현행 확인만) 처음부터.
+ */
+export function recallPlan(meta: WitnessMeta, mode: Mode = 'normal'): RecallPlan | null {
+  if (!RULES[mode].allowRecall || meta.plays < 1) return null;
+  const ids = recallable(meta.found ?? []);
+  if (!ids.length) return null;
+  return { ids, n: Math.min(9999, meta.plays + 1), count: ids.length };
+}
+
+/**
+ * 엔딩 도착을 meta 에 반영(사양 d-2 · e-2).
+ *  - found: 수사 배제 포함 모든 엔딩에서 먼저 갱신(M1).
+ *  - 수사 배제는 도감·found 만(되감기 가능하므로 plays·lastEnding 은 그대로).
+ *  - plays 는 판당 1회 — 그 판의 첫 판정(attempt 1)에서만 +1(되감기로 사건 파일이 같은 판 안에서 열리지 않게).
+ *  - best: 처음부터·무되감기 완벽/숨은에서 쓴 행동 수가 더 적을 때만 교체.
+ */
+export function applyResultToMeta(meta0: WitnessMeta, result: RunResult, at = 0): WitnessMeta {
+  const meta = withFound(meta0, foundFromMissed(result.missed.map((m) => m.id)));
   const endings = meta.endings.includes(result.ending) ? meta.endings : [...meta.endings, result.ending];
-  if (result.ending === 'excluded') return { ...meta, endings };
+  if (result.ending === 'excluded') return endings === meta.endings ? meta : { ...meta, endings };
   const newAch = result.achievements.filter((a) => !meta.achievements.includes(a));
   const secrets = [...meta.secrets];
   for (const s of result.secretsRevealed) if (!secrets.includes(s)) secrets.push(s);
-  const best = !meta.bestGrade || GRADE_RANK[result.grade] > GRADE_RANK[meta.bestGrade] ? result.grade : meta.bestGrade;
+  const bestGrade = !meta.bestGrade || GRADE_RANK[result.grade] > GRADE_RANK[meta.bestGrade] ? result.grade : meta.bestGrade;
+  const solved = result.ending === 'perfect' || result.ending === 'hidden';
+  const clean = !result.recallRun && !result.rewinds;
+  const used = RULES.normal.actions - result.actionsLeft;
+  const best = solved && clean && (!meta.best || used < meta.best.used) ? { used, ms: result.playMs, grade: result.grade, at } : meta.best;
   return {
     ...meta,
-    plays: meta.plays + 1,
+    plays: meta.plays + ((result.attempt ?? 1) <= 1 ? 1 : 0),
     endings,
     secrets,
     achievements: [...meta.achievements, ...newAch],
-    bestGrade: best,
+    bestGrade,
+    ...(best ? { best } : {}),
     lastEnding: {
       ending: result.ending,
       grade: result.grade,
@@ -1591,6 +1941,8 @@ export function applyResultToMeta(meta: WitnessMeta, result: RunResult, at = 0):
       newAchievements: newAch,
       at,
       pendingView: true,
+      ...(result.recallRun ? { recallRun: result.recallRun } : {}),
+      ...(result.rewinds ? { rewinds: result.rewinds } : {}),
     },
   };
 }

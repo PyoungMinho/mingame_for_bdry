@@ -7,17 +7,25 @@
  * 단, 길게 누르는 동안 아무것도 넘기지 못했다면(마지막 줄에서 0.45초 넘게 누른 '느린 탭') 그 클릭은 보통 탭으로 처리한다.
  * 목소리 변형(data-voice): 사람(고딕) · 한결 · 나(명조 + 좌측 바) · 내레이션(패널 없음) · 또박이(고정폭 + 시안 틴트 + 이퀄라이저) · 기기.
  * 접근성: 화면 표시용 타이핑 사본은 aria-hidden, 같은 문장 전체를 sr-only role="log" 로 먼저 둔다.
- * 읽은 대사: meta.plays ≥ 1 + 설정 켬 + readLines 에 있으면 즉시 표시. 줄이 끝나면 읽음으로 기록한다.
+ * 읽은 대사: meta.plays ≥ 1 + 설정 켬 + readLines 에 있으면 즉시 표시. 줄이 끝나면 읽음으로 기록한다(키 = readLineKey: 문구 해시 포함).
+ *   단, 길게 누르기 연속 넘김으로 지나간 줄과 [≫ 읽은 건 넘기기]로 건너뛴 줄은 새로 기록하지 않는다(사양 f · X12).
+ * [≫ 읽은 건 넘기기](readKey 가 있는 블록만): 지금 줄 포함 연속으로 읽은 줄이 2개 이상일 때 켜지고, 눌러서 다음 '처음 보는 줄'로 점프한다
+ *   (끝까지 읽은 블록이면 onDone). 자리는 오른쪽 위에 항상 잡아 두고 투명도만 바꾼다. 건너뛴 구간의 마지막 표정·화자는 onLine 으로 한 번 알려 준다(M4).
  * 소리: 글자가 나오는 동안 2~3자마다 아주 작은 타자음(화자 종류별 음색 — 또박이 · 사람 · 나 · 기기, 내레이션은 없음).
  */
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { Dialogue } from '@/lib/witness';
+import { readLineKey, skipPlan, type Dialogue } from '@/lib/witness';
+import { COACH_TEXT, REPLAY_TEXT } from '../lib/copy';
 import { ledOf, nameOf, spokenText } from '../lib/format';
 import { useWt } from '../lib/context';
 import { LONG_PRESS_MS } from '../lib/fx';
 import { useTypewriter } from '../lib/useTypewriter';
 import { ArtSlot } from './ArtSlot';
+import { CoachBubble } from './Nav';
+
+/** 넘기기 버튼이 켜진 뒤 누름을 받기 시작하는 시간(UX-6) */
+const SKIP_ARM_MS = 400;
 import { blipEvery } from '../audio/cues';
 import { playBlip } from '../audio/useGameAudio';
 
@@ -52,7 +60,7 @@ export interface DialogueBoxProps {
   playKey: string;
   onDone: () => void;
   onLine?: (line: Dialogue, index: number) => void;
-  /** 읽은 대사 기록 키의 접두(`${readKey}#${index}`) */
+  /** 읽은 대사 기록 키의 접두(키 = `${readKey}#${index}~${문구 해시 4자}`, readLineKey) */
   readKey?: string;
   /** 즉시 표시(이미 추궁한 줄 등) */
   instant?: boolean;
@@ -62,14 +70,19 @@ export interface DialogueBoxProps {
 }
 
 export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, className, quiet }: DialogueBoxProps) {
-  const { game } = useWt();
+  const { game, coachSeen } = useWt();
   const [st, setSt] = useState({ k: playKey, i: 0 });
   const idx = st.k === playKey ? st.i : 0;
   if (st.k !== playKey) setSt({ k: playKey, i: 0 });
   const line = lines[Math.min(idx, Math.max(0, lines.length - 1))];
   const visible = useDocVisible();
-  const rk = readKey ? `${readKey}#${idx}` : null;
+  const rk = readKey && line ? readLineKey(readKey, idx, line.text) : null;
   const known = rk ? game.isRead(rk) : false;
+  const plan = skipPlan(lines, readKey, idx, game.isRead);
+  // 넘기기 안내 말풍선은 '켜진 그 줄'에서만 보인다(다음 줄로 넘어가면 사라진다)
+  const [coachKey, setCoachKey] = useState<string | null>(null);
+  const lineKey = `${playKey}:${idx}`;
+  const coachOn = coachKey === lineKey;
   const instantNow = !!instant || (game.meta.plays >= 1 && game.settings.readFast && known);
   const tw = useTypewriter(line?.text ?? '', game.settings.speed, { instant: instantNow, paused: !visible, resetKey: `${playKey}:${idx}` });
   const doneRef = useRef(onDone);
@@ -77,7 +90,7 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
   const onLineRef = useRef(onLine);
   onLineRef.current = onLine;
   const tapRef = useRef<HTMLButtonElement>(null);
-  const hold = useRef<{ start: ReturnType<typeof setTimeout> | null; tick: ReturnType<typeof setInterval> | null; fired: boolean; steps: number }>({ start: null, tick: null, fired: false, steps: 0 });
+  const hold = useRef<{ start: ReturnType<typeof setTimeout> | null; tick: ReturnType<typeof setInterval> | null; fired: boolean; steps: number; holding: boolean }>({ start: null, tick: null, fired: false, steps: 0, holding: false });
   const holdStepRef = useRef<() => void>(() => undefined);
 
   // 빈 대사는 곧바로 끝낸다
@@ -111,10 +124,33 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shownLen, playKey, idx]);
 
+  // 길게 누르기로 훑는 동안(holding)에 끝난 줄은 읽음으로 치지 않는다 — 탭으로 지나간 줄만 기록(X12)
   useEffect(() => {
-    if (tw.done && rk) game.markRead([rk]);
+    if (tw.done && rk && !hold.current.holding) game.markRead([rk]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tw.done, rk]);
+
+  // 넘기기 버튼이 켜진 직후 잠깐(400ms)은 누름을 흘려보낸다 — 대사창 오른쪽 위를 연타하던 엄지가 막 켜진 버튼에 걸리지 않게(UX-6)
+  const armedAt = useRef(0);
+  const swallow = useRef(false);
+  useEffect(() => {
+    if (plan.enabled) armedAt.current = Date.now();
+  }, [plan.enabled]);
+
+  // 넘기기 코치마크 자리(UX-7): 대사창 아래에 자리가 있으면 아래(엔딩·증언), 없으면(장소 화면 — 아래는 하단 바) 버튼보다 위
+  const coachBelow = (() => {
+    if (!coachOn || typeof window === 'undefined') return true;
+    const r = tapRef.current?.getBoundingClientRect();
+    return !r || r.bottom + 96 <= window.innerHeight;
+  })();
+
+  // [≫ 읽은 건 넘기기]가 처음 켜질 때 한 번만 안내(1회차에는 띄우지 않는다)
+  useEffect(() => {
+    if (!plan.enabled || coachOn || game.meta.plays < 1 || coachSeen('skipRead')) return;
+    setCoachKey(lineKey);
+    game.markCoach('skipRead');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan.enabled]);
 
   // 키보드 진행: 시트가 없을 때만 포커스를 가져온다
   useEffect(() => {
@@ -129,6 +165,7 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
     if (h.tick) clearInterval(h.tick);
     h.start = null;
     h.tick = null;
+    h.holding = false;
   };
   // 언마운트·대사 교체 때 타이머를 남기지 않는다
   useEffect(() => stopHold, []);
@@ -147,6 +184,8 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
       tw.skip();
       return;
     }
+    // 탭으로 지나가는 줄은 읽음(길게 누르는 중에 끝난 줄이어도, 사람이 탭해서 넘기면 읽은 것)
+    if (rk) game.markRead([rk]);
     if (last) doneRef.current();
     else setSt({ k: playKey, i: idx + 1 });
   };
@@ -168,6 +207,7 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
     hold.current.start = setTimeout(() => {
       hold.current.start = null;
       hold.current.fired = true;
+      hold.current.holding = true;
       holdStepRef.current();
       hold.current.tick = setInterval(() => holdStepRef.current(), HOLD_STEP_MS);
     }, LONG_PRESS_MS);
@@ -180,6 +220,22 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
       if (hold.current.steps > 0) return;
     }
     advance();
+  };
+
+  /** [≫ 읽은 건 넘기기] — 다음 '처음 보는 줄'로(없으면 블록 끝). 건너뛴 줄은 읽음으로 기록하지 않는다 */
+  const skipRead = () => {
+    if (swallow.current) {
+      swallow.current = false;
+      return;
+    }
+    if (!plan.enabled) return;
+    stopHold();
+    if (plan.to === null) {
+      doneRef.current();
+      return;
+    }
+    if (plan.carry) onLineRef.current?.({ who: plan.carry.who, face: plan.carry.face, text: '' }, plan.to - 1);
+    setSt({ k: playKey, i: plan.to });
   };
 
   return (
@@ -228,6 +284,24 @@ export function DialogueBox({ lines, playKey, onDone, onLine, readKey, instant, 
         )}
         {!quiet && tw.done && <ChevronDown className="wt-next" size={18} />}
       </div>
+      {readKey && (
+        <button
+          type="button"
+          className="wt-skipread"
+          data-on={plan.enabled ? '1' : undefined}
+          disabled={!plan.enabled}
+          aria-hidden={plan.enabled ? undefined : true}
+          tabIndex={plan.enabled ? 0 : -1}
+          onPointerDown={() => {
+            swallow.current = Date.now() - armedAt.current < SKIP_ARM_MS;
+          }}
+          onClick={skipRead}
+          data-testid="skip-read"
+        >
+          {REPLAY_TEXT.skipRead}
+        </button>
+      )}
+      {coachOn && <CoachBubble text={COACH_TEXT.skipRead} placement={coachBelow ? 'top' : 'bottom'} className={coachBelow ? 'wt-coach--skipread' : 'wt-coach--skipread-up'} onDismiss={() => setCoachKey(null)} />}
     </div>
   );
 }

@@ -26,6 +26,8 @@ import {
   setStatus,
   stars,
   getHotspot,
+  openedReadKey,
+  readLineKey,
   type Break,
   type CardId,
   type Dialogue,
@@ -68,6 +70,8 @@ interface ResultState {
   items: OpenedItem[];
   trustDelta: number | null;
   outro: Dialogue[] | null;
+  /** '새로 열린 것'을 전에 본 적이 있어 한 줄 칩으로 접는다 */
+  folded?: boolean;
 }
 
 const setNames = (setId: string) =>
@@ -103,7 +107,7 @@ export function TestimonyScreen({ setId }: { setId: string }) {
   });
   const [stage, setStage] = useState<Stage>(() => {
     if (run.screen.replay) return { k: 'idle' };
-    const introRead = set.intro.length === 0 || set.intro.every((_, i) => game.isRead(`${set.id}#intro#${i}`));
+    const introRead = set.intro.length === 0 || set.intro.every((l, i) => game.isRead(readLineKey(`${set.id}#intro`, i, l.text)));
     if (introRead || (run.screen.line ?? 0) > 0) return { k: 'idle' };
     if (set.kind === 'confront') return { k: 'entry', ms: set.speakers.includes('AI') ? 2000 : 1000 };
     return { k: 'dialogue', lines: set.intro, key: `intro:${set.id}`, readKey: `${set.id}#intro`, then: () => setStage({ k: 'idle' }) };
@@ -302,7 +306,11 @@ export function TestimonyScreen({ setId }: { setId: string }) {
         // 결과 카드가 뜨는 순간: 새로 열린 곳(세트·장소·핫스팟·비밀)이 있으면 걸쇠, 증거만이면 픽업
         if (items.some((it) => it.kind === 'set' || it.kind === 'location' || it.kind === 'hotspot' || it.kind === 'secret')) playSfx('unlock');
         else if (items.length) playSfx('pickup');
-        setResult({ brk, items, trustDelta, outro: cleared?.outro ?? null });
+        // 이 돌파의 '새로 열린 것'을 전에 봤으면 접는다. 처음 보여 주는 것이면 보여 준 뒤에 '봤다'를 남긴다(다음 판부터 접힘)
+        const openedKey = openedReadKey(brk.id);
+        const folded = game.isRead(openedKey);
+        if (!folded && items.length > 0) game.markRead([openedKey]);
+        setResult({ brk, items, trustDelta, outro: cleared?.outro ?? null, folded });
         goIdle();
       }, { readKey: `${v.breakId}#break` });
       return;
@@ -512,6 +520,7 @@ export function TestimonyScreen({ setId }: { setId: string }) {
         trustDelta={result ? result.trustDelta : null}
         starCount={result?.brk.tier === 'star' ? stars(run) : undefined}
         coach={tutorial && !coachSeen('result') ? COACH_TEXT.result : undefined}
+        folded={result?.folded}
         onContinue={() => {
           if (tutorial && !coachSeen('result')) game.markCoach('result');
           closeResult();

@@ -207,12 +207,24 @@ describe('화면 스모크 — 처음부터 끝까지', () => {
     await flush();
     expect(q('.wt-ending-title')?.textContent).toBe(CASE.endings.perfect!.title);
     expect(q('[data-testid=title-resume]')).toBeNull();
-    clickText('결과 바로 보기');
+    // 방금 읽은 본문이라 [결과 바로 보기] 대신 대사창의 [≫ 읽은 건 넘기기]가 켜져 있다
+    expect(q('[data-testid=skip-read]')?.getAttribute('data-on')).toBe('1');
+    clickText('≫ 읽은 건 넘기기');
     await flush();
     expect(q('.wt-grade')?.getAttribute('data-grade')).toBe('A');
 
-    // ── 다시 수사: 2회차는 소개·튜토리얼을 건너뛰고 허브로(증거 3, 행동 13, 신뢰 5) ──
+    // ── 다시 수사: 2회차부터 방에서 찾은 증거가 있으면 시트 1개(기억 이어가기 위 · 처음부터 아래) ──
     click(q('[data-testid=ending-again]'));
+    await flush();
+    const opts = qa('.wt-start-opts button');
+    expect(opts.map((b) => b.getAttribute('data-testid'))).toEqual(['start-recall', 'start-fresh']);
+    expect(q('[data-testid=start-recall]')?.textContent).toContain('기억 이어가기');
+    expect(q('[data-testid=start-fresh]')?.textContent).toContain('처음부터');
+    // 완벽 해결 직후라 「처음부터」가 주 버튼
+    expect(q('[data-testid=start-fresh]')?.getAttribute('data-primary')).toBe('1');
+    expect(q('[data-testid=start-warn]')).toBeNull(); // 저장된 판이 없다
+    // 처음부터: 소개·튜토리얼을 건너뛰고 허브로(증거 3, 행동 13, 신뢰 5)
+    click(q('[data-testid=start-fresh]'));
     await flush();
     const again = readRun()!;
     expect(again.screen.name).toBe('hub');

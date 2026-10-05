@@ -5,8 +5,10 @@
  * 「새로 열린 것」은 Unlock[] 이 아니라 돌파 전후 '열린 것'의 차이(engine.diffOpened)로 만든다(D18).
  * 모달이다(바깥 탭으로는 닫히지 않지만, 닫기(X)·Esc·뒤로가기로 닫을 수 있다 — [계속 추궁] 과 같다). 유료 대상으로 [바로 가기]하면 호출자가 비용 프롬프트를 거친다 — 자동으로 행동을 쓰지 않는다.
  */
-import { BadgeAlert, BookOpen, DoorOpen, Diamond, Search, ScrollText, Star, User, Users } from 'lucide-react';
+import { BadgeAlert, BookOpen, ChevronDown, DoorOpen, Diamond, Search, ScrollText, Star, User, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { OpenedItem } from '@/lib/witness';
+import { REPLAY_TEXT } from '../lib/copy';
 import { gotoTarget, openedLine, type OpenedLine } from '../lib/format';
 import { ActionChip } from './ActionChip';
 import { BottomSheet } from './BottomSheet';
@@ -33,12 +35,20 @@ export interface ResultCardProps {
   /** ★ 결정적 모순을 깬 직후의 누적 개수(스크린 리더용 — 카드가 뜨는 순간 몇 개째인지 바로 읽는다) */
   starCount?: number;
   coach?: string;
+  /** 이 돌파의 '새로 열린 것'을 전에 본 적이 있다 → 한 줄 칩으로 접는다(탭하면 펼친다, 사양 f · X15) */
+  folded?: boolean;
   onContinue: () => void;
   onGoto: (item: OpenedItem) => void;
 }
 
-export function ResultCard({ open, tier, revisedText, revisedLabel, items, trustDelta, starCount, coach, onContinue, onGoto }: ResultCardProps) {
+export function ResultCard({ open, tier, revisedText, revisedLabel, items, trustDelta, starCount, coach, folded, onContinue, onGoto }: ResultCardProps) {
   const lines = items.map(openedLine);
+  const [expanded, setExpanded] = useState(false);
+  // 카드가 새로 열릴 때마다 접힘 상태를 처음으로
+  useEffect(() => {
+    if (open) setExpanded(false);
+  }, [open]);
+  const collapsed = !!folded && !expanded;
   const target = gotoTarget(items);
   const isStar = tier === 'star';
   return (
@@ -56,7 +66,13 @@ export function ResultCard({ open, tier, revisedText, revisedLabel, items, trust
             <span>「{revisedText}」</span>
           </p>
         )}
-        {lines.length > 0 && (
+        {lines.length > 0 && collapsed && (
+          <button type="button" className="wt-result-fold" onClick={() => setExpanded(true)} aria-expanded={false} data-testid="result-fold">
+            <span>{REPLAY_TEXT.openedFold(lines.length)}</span>
+            <ChevronDown size={16} aria-hidden />
+          </button>
+        )}
+        {lines.length > 0 && !collapsed && (
           <>
             <p className="wt-result-sec">새로 열린 것</p>
             <ul className="wt-result-list">

@@ -90,7 +90,8 @@ export function AccuseScreen() {
     const d = game.getRun()?.accuse;
     if (!d?.culprit || !d.means || !d.opportunity || !d.motive) return;
     const acc: Accusation = { culprit: d.culprit, means: d.means, opportunity: d.opportunity, motive: d.motive };
-    setReplay(game.meta.plays >= 1);
+    // 2회차부터 · 같은 판에서 두 번째 이후 판정(되감기 뒤)에도 건너뛸 수 있다(제출 전 값 기준)
+    setReplay(game.meta.plays >= 1 || (run.attempts ?? 0) >= 1);
     releaseRef.current = game.holdRoute();
     const s = game.act((r) => submitAccusation(r, acc));
     if (s.error) {
@@ -144,11 +145,12 @@ export function AccuseScreen() {
       </header>
 
       {stage === 'suspect' ? (
-        <SuspectPick picked={picked} onPick={setPicked} onSubmit={submitPick} />
+        <SuspectPick picked={picked} ruledOut={run.prevAccuse?.notCulprit} onPick={setPicked} onSubmit={submitPick} />
       ) : (
         <SlotBoard
           draft={draft}
           error={error}
+          prev={run.prevAccuse}
           onSlot={setSlotOpen}
           onClear={(s) => game.act((r) => setSlot(r, s, null))}
           onChangeCulprit={() => game.act((r) => setAccuseStage(r, 'suspect'))}

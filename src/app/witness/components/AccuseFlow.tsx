@@ -6,10 +6,12 @@
  *  - 같은 카드가 다른 칸에 있으면 옮긴다(D25). 빈 칸 오류는 텍스트 + 아이콘 + 칸 강조(색 단독 금지).
  *  - 판정 연출은 탭으로 진행한다(D26): 호명 → 칸마다 쾅 1000ms + 판정 대사 → 요약. 2회차부터 [전부 건너뛰기].
  *  - 범인이 틀리면 칸 판정 없이 호명 직후 오인 체포 엔딩으로 이어진다.
+ *  - 되감은 뒤(witness-replay a-5): 지난 판정에서 범인이 아니었던 인물은 흐리게(「아니었다」, 고를 수 없음), 안 통한 칸은 같은 카드가 남아 있으면 「지난번 안 통함」.
+ *  - [전부 건너뛰기]는 칸 판정이 있으면 요약(통했다/안 통했다)으로 간다 — 건너뛰어도 어느 칸이 틀렸는지는 남는다(A4).
  */
 import { Check, CircleAlert, DoorOpen, Flame, Hammer, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CASE, getEvidence, verdictScript, type AccuseDraft, type Accusation, type Dialogue, type Slot, type SuspectId } from '@/lib/witness';
+import { CASE, getEvidence, verdictScript, type AccuseDraft, type Accusation, type Dialogue, type PrevAccuse, type Slot, type SuspectId } from '@/lib/witness';
 import { fxMs, T, VIB } from '../lib/fx';
 import { nameOf, SUSPECT_IDS } from '../lib/format';
 import { useWt } from '../lib/context';
@@ -30,7 +32,7 @@ export const slotName = (s: Slot): string => SLOT_META[s].name;
 
 const jobOf = (id: SuspectId): string => (CASE.profiles.find((p) => p.id === id)?.summary[0] ?? '').split('.')[0];
 
-export function SuspectPick({ picked, onPick, onSubmit }: { picked: SuspectId | 'AI' | null; onPick: (id: SuspectId | 'AI') => void; onSubmit: () => void }) {
+export function SuspectPick({ picked, ruledOut, onPick, onSubmit }: { picked: SuspectId | 'AI' | null; /** 지난 판정에서 범인이 아니었던 인물 */ ruledOut?: SuspectId; onPick: (id: SuspectId | 'AI') => void; onSubmit: () => void }) {
   return (
     <div className="wt-pick">
       <h2 className="wt-display wt-pick-h">범인은 누구인가?</h2>
@@ -38,7 +40,7 @@ export function SuspectPick({ picked, onPick, onSubmit }: { picked: SuspectId | 
       <div className="wt-pick-radios" role="radiogroup" aria-label="범인 후보">
         <div className="wt-pick-grid">
           {SUSPECT_IDS.map((id) => (
-            <button key={id} type="button" role="radio" aria-checked={picked === id} aria-label={nameOf(id)} aria-describedby={`wt-pick-job-${id}`} className="wt-pickcard" data-picked={picked === id ? '1' : undefined} data-dim={picked && picked !== id ? '1' : undefined} onClick={() => onPick(id)} data-testid={`pick-${id}`}>
+            <button key={id} type="button" role="radio" aria-checked={picked === id} aria-label={ruledOut === id ? `${nameOf(id)}, 지난번에 아니었다` : nameOf(id)} aria-describedby={`wt-pick-job-${id}`} className="wt-pickcard" data-picked={picked === id ? '1' : undefined} data-dim={(picked && picked !== id) || ruledOut === id ? '1' : undefined} data-ruled={ruledOut === id ? '1' : undefined} disabled={ruledOut === id} onClick={() => onPick(id)} data-testid={`pick-${id}`}>
               <span className="wt-pickcard-art" aria-hidden>
                 <ArtSlot kind="portrait" who={id} title={nameOf(id)} decorative />
               </span>
@@ -47,7 +49,7 @@ export function SuspectPick({ picked, onPick, onSubmit }: { picked: SuspectId | 
                 <span>{nameOf(id)}</span>
               </span>
               <span id={`wt-pick-job-${id}`} className="wt-pickcard-job">
-                {jobOf(id)}
+                {ruledOut === id ? '지난번 아니었다' : jobOf(id)}
               </span>
             </button>
           ))}
@@ -71,7 +73,7 @@ export function SuspectPick({ picked, onPick, onSubmit }: { picked: SuspectId | 
   );
 }
 
-export function SlotBoard({ draft, error, onSlot, onClear, onChangeCulprit, onConfirm }: { draft: AccuseDraft; error: boolean; onSlot: (s: Slot) => void; onClear: (s: Slot) => void; onChangeCulprit: () => void; onConfirm: () => void }) {
+export function SlotBoard({ draft, error, prev, onSlot, onClear, onChangeCulprit, onConfirm }: { draft: AccuseDraft; error: boolean; /** 지난 판정(되감은 뒤) — 안 통한 칸에 같은 카드가 그대로면 표시 */ prev?: PrevAccuse; onSlot: (s: Slot) => void; onClear: (s: Slot) => void; onChangeCulprit: () => void; onConfirm: () => void }) {
   const filled = SLOT_ORDER.filter((s) => !!draft[s]).length;
   return (
     <div className="wt-slotboard">
@@ -85,8 +87,9 @@ export function SlotBoard({ draft, error, onSlot, onClear, onChangeCulprit, onCo
         const id = draft[s];
         const e = id ? getEvidence(id) : undefined;
         const missing = error && !id;
+        const missedBefore = !!id && !!prev?.miss?.includes(s) && prev[s] === id;
         return (
-          <div key={s} className="wt-sbslot" data-filled={e ? '1' : undefined} data-error={missing ? '1' : undefined}>
+          <div key={s} className="wt-sbslot" data-filled={e ? '1' : undefined} data-error={missing ? '1' : undefined} data-miss={missedBefore ? '1' : undefined}>
             <button type="button" className="wt-sbslot-main" onClick={() => onSlot(s)} aria-label={`${SLOT_META[s].name} 칸, ${SLOT_META[s].ask}${e ? `, 지금 ${e.name}, 누르면 바꿔요` : ', 비어 있음, 증거를 고르세요'}`} data-testid={`slot-${s}`}>
               <span className="wt-sbslot-head">
                 {SLOT_META[s].icon}
@@ -94,6 +97,11 @@ export function SlotBoard({ draft, error, onSlot, onClear, onChangeCulprit, onCo
                 <small>{SLOT_META[s].ask}</small>
               </span>
               {e ? <EvidenceRow evidence={e} /> : <span className="wt-sbslot-empty">+ 증거를 고른다</span>}
+              {missedBefore && (
+                <span className="wt-sbslot-miss" data-testid={`slot-miss-${s}`}>
+                  <X size={12} aria-hidden /> 지난번 안 통함
+                </span>
+              )}
             </button>
             {e && (
               <button type="button" className="wt-iconbtn wt-sbslot-x" onClick={() => onClear(s)} aria-label={`${SLOT_META[s].name} 칸 비우기`}>
@@ -214,8 +222,15 @@ export function VerdictStage({ acc, onFinish, canSkip: canSkipProp }: { acc: Acc
   const face = faceFor(okCount);
   const smirk = stage.k === 'lines' && cur && !cur.ok;
 
+  // 건너뛰어도 칸별 결과는 요약으로 보여 준다(A4) — 범인이 틀렸으면 칸 판정이 없으니 바로 엔딩
   const skipAll = () => {
-    finishRef.current();
+    if (script.wrongArrest || script.steps.length === 0) {
+      finishRef.current();
+      return;
+    }
+    setResults(script.steps.map((x) => x.ok));
+    setOkCount(script.steps.filter((x) => x.ok).length);
+    setStage({ k: 'summary' });
   };
 
   return (

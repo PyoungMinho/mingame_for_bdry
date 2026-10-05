@@ -24,6 +24,7 @@ import {
   examine,
   exit,
   fillTemplate,
+  getEvidence,
   hint,
   hintFor,
   holdings,
@@ -41,6 +42,20 @@ import {
   profiles,
   questions,
   rewind,
+  rewindOption,
+  canAccuse,
+  rewindSlotsLeft,
+  keepSavedRun,
+  gradeCapOf,
+  endingTitle,
+  core,
+  RECALL_ELIGIBLE,
+  tutorialEvidence,
+  recallable,
+  recallPlan,
+  absorbFound,
+  isRecalled,
+  endInvestigation as endInv,
   roomStatus,
   setSlot,
   setStatus,
@@ -52,9 +67,11 @@ import {
   verdictScript,
   visibleHotspots,
   visibleLines,
+  type Accusation,
   type EngineEvent,
   type RunState,
   type Step,
+  type WitnessMeta,
 } from './engine';
 import { freeClosure, playPath } from './validate';
 
@@ -821,5 +838,470 @@ describe('규칙 상수(시스템 7-1)', () => {
     const r = freeClosure(newRun());
     expect(r.broken).toEqual(['C01']);
     expect(r.actions).toBe(13);
+  });
+});
+
+// ═══════════════════════════════ 다시 하기(docs/planning/witness-replay.md h-2) ═══════════════════════════════
+
+const PERFECT_PATH = ['L3', 'T05', 'L1', 'T03', 'T02', 'L2', 'T04', 'P:L2.h3'];
+const SOL = CASE.solution;
+const INNOCENT = (['S1', 'S2', 'S3', 'S4'] as const).find((x) => x !== CULPRIT)!;
+const RIGHT: Accusation = { culprit: CULPRIT, means: SOL.accept.means[0], opportunity: SOL.accept.opportunity[0], motive: SOL.accept.motive[0] };
+/** 범인·수단·기회 맞고 동기만 틀림(증거 부족 B) — 완벽 경로에서 손에 있는 카드 */
+const SHORT: Accusation = { ...RIGHT, motive: 'E06' };
+const WRONG: Accusation = { ...RIGHT, culprit: INNOCENT };
+
+/** 지목 3단계를 한 번에(시작 → 범인 → 칸 → 제출) */
+function judge(run: RunState, a: Accusation): Step {
+  let r = must(startAccuse(run));
+  r = must(pickCulprit(r, a.culprit));
+  for (const sl of ['means', 'opportunity', 'motive'] as const) r = must(setSlot(r, sl, a[sl]));
+  return submitAccusation(r);
+}
+const judged = (run: RunState, a: Accusation): RunState => must(judge(run, a));
+
+/** 행동 0 → 사이렌 → [계속] → [수사 종료] = 시간 초과(★ < 3 일 때). 마지막 유료 행동은 수첩 정리 */
+function timeoutVia(run: RunState): RunState {
+  const h = hint({ ...run, actions: 1 });
+  expect(h.events.some((e) => e.t === 'siren')).toBe(true);
+  return must(endInv(must(continueAfterSiren(h.run))));
+}
+
+describe('다시 하기 — 되감기 3종(사양 a)', () => {
+  it('E1 완벽 최단 경로 → 칸만 틀림(short) → 되감기: accuse·칸 1·허브·신뢰 ≥ 2·행동 불변·지난 지목 미리 채움', () => {
+    const before = playPath(PERFECT_PATH);
+    const end = judged(before, SHORT);
+    expect(end.result).toMatchObject({ ending: 'short', grade: 'B', attempt: 1 });
+    expect(rewindOption(end)).toEqual({ kind: 'accuse', cost: 1, last: false });
+    const s = rewind(end);
+    const back = must(s);
+    expect(s.events[0]).toEqual({ t: 'rewound', kind: 'accuse', cost: 1, gateClosed: false });
+    expect(back).toMatchObject({ phase: 'play', screen: { name: 'hub' }, actions: before.actions, rewound: true, rewinds: { judged: 1, excluded: 0 }, attempts: 1 });
+    expect(back.trust).toBeGreaterThanOrEqual(2);
+    expect(back.result).toBeUndefined();
+    // 칸만 틀림: 범인 그대로 + 안 통한 칸(동기) 표시
+    expect(back.prevAccuse).toEqual({ ...SHORT, miss: ['motive'] });
+    // 지목 화면은 '칸' 단계부터, 지난 선택이 채워져 있다(miss 는 초안에 안 들어간다)
+    const acc = must(startAccuse(back)).accuse;
+    expect(acc).toEqual({ stage: 'slots', ...SHORT, forced: false });
+    expect(rewindSlotsLeft(back)).toBe(1);
+  });
+
+  it('E2 칸 오답 3번 — 3번째 판정 뒤엔 선택지 null · rewind → no-rewind · 판 그대로', () => {
+    let r = playPath(PERFECT_PATH);
+    r = must(rewind(judged(r, SHORT)));
+    const second = judged(r, SHORT);
+    expect(second.result?.attempt).toBe(2);
+    expect(rewindOption(second)).toEqual({ kind: 'accuse', cost: 1, last: true });
+    r = must(rewind(second));
+    const third = judged(r, SHORT);
+    expect(third.result?.attempt).toBe(3);
+    expect(rewindOption(third)).toBeNull();
+    const s = rewind(third);
+    expect(s.error).toBe('no-rewind');
+    expect(s.run).toBe(third);
+    expect(rewindSlotsLeft(third)).toBe(0);
+  });
+
+  it('E2b 범인 오답 1번 → 칸 2개(last) → 다음 판정 뒤 null — 범인 적중 4명 중 2번 기회(찍기 방지 X1)', () => {
+    const end = judged(playPath(PERFECT_PATH), WRONG);
+    expect(end.result?.ending).toBe(`wrong-${INNOCENT}`);
+    expect(rewindOption(end)).toEqual({ kind: 'accuse', cost: 2, last: true });
+    const back = must(rewind(end));
+    expect(back.rewinds).toEqual({ judged: 2, excluded: 0 });
+    // 칸만 틀려도, 범인을 또 틀려도 그 뒤엔 없다
+    expect(rewindOption(judged(back, SHORT))).toBeNull();
+    expect(rewindOption(judged(back, WRONG))).toBeNull();
+    // QA-RP-02: 범인이 틀렸으면 범인은 비우고(그 인물은 notCulprit) 카드만 채워 '범인' 단계부터 — 같은 오답으로 마지막 판정을 날리지 않게
+    expect(back.prevAccuse).toEqual({ means: WRONG.means, opportunity: WRONG.opportunity, motive: WRONG.motive, notCulprit: INNOCENT });
+    expect(must(startAccuse(back)).accuse).toEqual({ stage: 'suspect', means: WRONG.means, opportunity: WRONG.opportunity, motive: WRONG.motive, forced: false });
+    // 칸 하나 남았을 때 범인 틀림은 남은 1칸만 쓴다
+    const one = judged(must(rewind(judged(playPath(PERFECT_PATH), SHORT))), WRONG);
+    expect(rewindOption(one)).toEqual({ kind: 'accuse', cost: 1, last: true });
+  });
+
+  it('E3 ① 행동 1 수첩 정리 → 사이렌 뒤 오답 → 지목 되감기: 사이렌 뒤 허브·행동 0·수첩 정리 횟수 판 전체 값(공짜 힌트 0)', () => {
+    const at1 = { ...playPath(PERFECT_PATH), actions: 1 };
+    const h = must(hint(at1));
+    expect(h).toMatchObject({ phase: 'siren', actions: 0, hints: 1 });
+    const end = judged(must(continueAfterSiren(h)), SHORT);
+    const back = must(rewind(end));
+    expect(back).toMatchObject({ phase: 'siren', actions: 0, hints: 1, screen: { name: 'hub' } });
+    expect(back.hintLog).toHaveLength(1);
+  });
+
+  it('E3 ①′ 시간 초과 한 수 전(action)은 수첩 정리 직전으로 가도 횟수·기록은 되돌리지 않는다(C2)', () => {
+    const star2 = playPath(['L2', 'T04', 'T05']);
+    expect(stars(star2)).toBe(2);
+    const end = timeoutVia(star2);
+    expect(end.result?.ending).toBe('timeout');
+    const back = must(rewind(end));
+    expect(back).toMatchObject({ phase: 'play', actions: 1, hints: 1, final: [], screen: { name: 'hub' } });
+    expect(back.hintLog).toHaveLength(1);
+    // 수첩 정리는 판당 2번 — 되감아도 이미 쓴 1번은 쓴 것
+    expect(must(hint(back)).hints).toBe(2);
+  });
+
+  it('E3 ② 행동 1 자발 오답 → 되감기 → 마지막 행동 → 사이렌 뒤 오답 → 되감기: 행동 0 유지(되살아나지 않는다)', () => {
+    const at1 = { ...playPath(PERFECT_PATH), actions: 1 };
+    let r = must(rewind(judged(at1, SHORT)));
+    expect(r.actions).toBe(1);
+    r = must(enterLocation(r, 'L4'));
+    r = must(continueAfterSiren(must(exit(r))));
+    expect(r).toMatchObject({ phase: 'siren', actions: 0 });
+    const end = judged(r, SHORT);
+    expect(rewindOption(end)).toEqual({ kind: 'accuse', cost: 1, last: true });
+    const back = must(rewind(end));
+    expect(back).toMatchObject({ phase: 'siren', actions: 0 });
+    expect(back.actions).toBeLessThanOrEqual(1);
+  });
+
+  it('E4 되감기 종류별 스냅샷 정리(a-4)', () => {
+    // accuse: checkpoint = accuseCp, accuseCp 삭제, actCp 유지
+    const end = judged(playPath(PERFECT_PATH), SHORT);
+    const a = must(rewind(end));
+    expect(a.checkpoint).toEqual(end.accuseCp);
+    expect(a.accuseCp).toBeUndefined();
+    expect(a.actCp).toEqual(end.actCp);
+    // action: checkpoint = actCp, 둘 다 삭제
+    const t = timeoutVia(playPath(['L2', 'T04', 'T05']));
+    const b = must(rewind(t));
+    expect(b.checkpoint).toEqual(t.actCp);
+    expect(b.accuseCp).toBeUndefined();
+    expect(b.actCp).toBeUndefined();
+    // excluded: checkpoint 그대로, 나머지 둘 삭제
+    let x = must(openSet(playPath(PERFECT_PATH), 'T01'));
+    x = { ...x, trust: 1, accuseCp: core(x) };
+    const dead = must(present(x, 'T01.1', ['E01']));
+    expect(rewindOption(dead)).toEqual({ kind: 'excluded', cost: 0, last: false });
+    const c = must(rewind(dead));
+    expect(c.checkpoint).toEqual(dead.checkpoint);
+    expect(c.accuseCp).toBeUndefined();
+    expect(c.actCp).toBeUndefined();
+    expect(c.rewinds).toEqual({ judged: 0, excluded: 1 });
+  });
+
+  it('E5 core()·JSON 은 스냅샷 중첩 0', () => {
+    const end = judged(playPath(PERFECT_PATH), SHORT);
+    expect(end.checkpoint && end.accuseCp && end.actCp).toBeTruthy();
+    for (const k of ['checkpoint', 'accuseCp', 'actCp'] as const) {
+      const snap = JSON.parse(JSON.stringify(end[k])) as Record<string, unknown>;
+      for (const j of ['checkpoint', 'accuseCp', 'actCp']) expect(snap[j]).toBeUndefined();
+    }
+    const c = core(end) as unknown as Record<string, unknown>;
+    for (const j of ['checkpoint', 'accuseCp', 'actCp']) expect(c[j]).toBeUndefined();
+  });
+
+  it('E6 actCp 는 유료 4곳(첫 입장·정밀 첫 조사·첫 열람 cost 1·수첩 정리)에서만 바뀐다', () => {
+    let r = tutorial();
+    expect(r.actCp).toBeUndefined(); // 튜토리얼(L0·T00)은 무료
+    const paid = (s: Step) => {
+      const n = must(s);
+      expect(n.actCp).toEqual(core(r));
+      r = n;
+    };
+    const free = (s: Step) => {
+      const n = must(s);
+      expect(n.actCp).toBe(r.actCp);
+      r = n;
+    };
+    paid(enterLocation(r, 'L2'));
+    free(examine(r, 'L2.h1'));
+    paid(examine(r, 'L2.h3'));
+    free(exit(r));
+    free(enterLocation(r, 'L2')); // 재입장
+    free(exit(r));
+    free(enterLocation(r, 'L0'));
+    free(exit(r));
+    paid(openSet(r, 'T04'));
+    free(press(r, 'T04.1'));
+    free(present(r, 'T04.2', ['E06'])); // C08 → T07(비용 0) 해금
+    free(exit(r));
+    free(openSet(r, 'T04')); // 재열람
+    free(exit(r));
+    free(openSet(r, 'T07')); // 비용 0 세트
+    free(exit(r));
+    paid(hint(r));
+  });
+
+  it('E7 행동 0 → 사이렌 → [수사 종료] → 시간 초과: ★2 → action(행동 1·final []·허브·사이렌 해제) / ★1 → null', () => {
+    const t2 = timeoutVia(playPath(['L2', 'T04', 'T05']));
+    expect(rewindOption(t2)).toEqual({ kind: 'action', cost: 1, last: false });
+    const back = must(rewind(t2));
+    expect(back).toMatchObject({ phase: 'play', actions: 1, final: [], screen: { name: 'hub' }, rewinds: { judged: 1, excluded: 0 } });
+    expect(canAccuse(back)).toBe(false);
+    const one = playPath(['L3', 'T05']);
+    expect(stars(one)).toBe(1);
+    const t1 = timeoutVia(one);
+    expect(t1.result?.ending).toBe('timeout');
+    expect(rewindOption(t1)).toBeNull();
+    // 완벽·숨은은 되감기 없음
+    expect(rewindOption(judged(playPath(PERFECT_PATH), RIGHT))).toBeNull();
+  });
+
+  it('E8 actCp 가 없는 판(배포 전)의 시간 초과 ★ ≥ 2 → 오류 없이 null', () => {
+    const t = timeoutVia(playPath(['L2', 'T04', 'T05']));
+    const old = { ...t, actCp: undefined };
+    expect(rewindOption(old)).toBeNull();
+    expect(rewind(old).error).toBe('no-rewind');
+    // 배포 전 지목 판(accuseCp 없음)도 마찬가지
+    const w = judged(playPath(PERFECT_PATH), SHORT);
+    expect(rewindOption({ ...w, accuseCp: undefined })).toBeNull();
+  });
+
+  it('지목 조건이 되감기로 다시 닫히면 rewound 이벤트 gateClosed', () => {
+    // 수사 배제 체크포인트가 ★ 3 이전이면 닫힌다
+    let r = playPath(['L2', 'T04', 'T05']);
+    r = must(openSet(r, 'T01'));
+    r = { ...r, broken: [...r.broken, ...['C05', 'C08', 'C10'].filter((b) => !r.broken.includes(b))] };
+    expect(stars(r)).toBeGreaterThanOrEqual(3);
+    const dead = must(present({ ...r, trust: 1 }, 'T01.1', ['E01']));
+    const s = rewind(dead);
+    expect(s.events[0]).toMatchObject({ t: 'rewound', kind: 'excluded', gateClosed: true });
+  });
+
+  it('keepSavedRun — 진행 중·되감기 가능한 끝난 판은 저장 유지, 선택지 없으면 지운다(C1/X4)', () => {
+    const end = judged(playPath(PERFECT_PATH), SHORT);
+    expect(keepSavedRun(playPath(PERFECT_PATH))).toBe(true);
+    expect(keepSavedRun(end)).toBe(true);
+    expect(keepSavedRun(judged(playPath(PERFECT_PATH), RIGHT))).toBe(false);
+    const t1 = timeoutVia(playPath(['L3', 'T05']));
+    expect(keepSavedRun(t1)).toBe(false);
+  });
+});
+
+describe('다시 하기 — 판정 횟수·meta(사양 b-2.4 · d-2)', () => {
+  it('E9 한 판 판정 3번 + 수사 배제 1번 → plays +1 · 도감 합집합 · 배제 엔딩에서도 found 갱신', () => {
+    let m: WitnessMeta = newMeta();
+    let r = playPath(PERFECT_PATH);
+    let end = judged(r, SHORT);
+    m = applyResultToMeta(m, end.result!, 1);
+    expect(m.plays).toBe(1);
+    r = must(rewind(end));
+    // 수사 배제 한 번(되감기 칸 안 씀)
+    let x = must(openSet(r, 'T01'));
+    while (x.phase !== 'ended') x = must(present(x, 'T01.1', ['E01']));
+    expect(x.result?.ending).toBe('excluded');
+    const mx = applyResultToMeta({ ...m, found: [] }, x.result!, 2);
+    expect(mx.plays).toBe(1);
+    expect(mx.found?.length).toBeGreaterThan(0);
+    expect(mx.found).toEqual(RECALL_ELIGIBLE.filter((id) => !x.result!.missed.some((mm) => mm.id === id)));
+    m = applyResultToMeta(m, x.result!, 2);
+    r = must(rewind(x));
+    end = judged(r, WRONG);
+    expect(end.result?.attempt).toBe(2);
+    m = applyResultToMeta(m, end.result!, 3);
+    r = must(rewind(end));
+    end = judged(r, SHORT);
+    expect(end.result?.attempt).toBe(3);
+    m = applyResultToMeta(m, end.result!, 4);
+    expect(m.plays).toBe(1);
+    expect([...m.endings].sort()).toEqual(['excluded', 'short', `wrong-${INNOCENT}`].sort());
+    expect(m.lastEnding).toMatchObject({ ending: 'short', rewinds: 3, at: 4 });
+    expect(caseFileUnlocked(m)).toBe(false); // 같은 판 되감기로 사건 파일이 열리지 않는다
+  });
+
+  it('E10 등급 상한 — 되감기 A · 기억 B(칭호는 A 용) · 둘 다 B · 실력 업적은 처음부터·무되감기만 · allclear 는 기억 판 제외', () => {
+    const S_PATH = [...PERFECT_PATH, 'T01', 'L5', 'P:L5.h3'];
+    const clean = judged(playPath(S_PATH), RIGHT).result!;
+    expect(clean.grade).toBe('S');
+    expect(clean.achievements).toEqual(expect.arrayContaining(['flawless', 'nohint']));
+    // 되감기(지목) 뒤 같은 완벽 → A, 실력 업적 0, allclear 는 그대로
+    const rw = judged(must(rewind(judged(playPath(S_PATH), SHORT))), RIGHT).result!;
+    expect(rw).toMatchObject({ grade: 'A', title: CASE.titles.A, rewinds: 1, attempt: 2 });
+    for (const a of ['flawless', 'lightning', 'nohint'] as const) expect(rw.achievements).not.toContain(a);
+    expect(rw.achievements.includes('allclear')).toBe(clean.achievements.includes('allclear'));
+    // 기억 판 완벽 → B, 칭호는 A 용
+    const memStartRun = freeClosure(newRun({ recall: RECALL_ELIGIBLE, recallN: 3 }));
+    const mem = judged(playPath(['T02', 'T03', 'T04', 'T05', 'T01', 'L5'], memStartRun), RIGHT).result!;
+    expect(mem).toMatchObject({ grade: 'B', title: CASE.titles.A, recallRun: 3 });
+    expect(stars(playPath(['T02', 'T03', 'T04', 'T05', 'T01', 'L5'], memStartRun))).toBe(STAR_TOTAL);
+    for (const a of ['flawless', 'lightning', 'nohint', 'allclear'] as const) expect(mem.achievements).not.toContain(a);
+    // 기억 + 되감기 → B
+    const both = judged(must(rewind(judged(playPath(['T02', 'T03', 'T04', 'T05'], memStartRun), SHORT))), RIGHT).result!;
+    expect(both).toMatchObject({ grade: 'B', title: CASE.titles.A, recallRun: 3, rewinds: 1 });
+    // 기억 판 증거 부족(2칸) → B 칭호 그대로
+    expect(judged(playPath(['T02', 'T03', 'T04', 'T05'], memStartRun), SHORT).result).toMatchObject({ grade: 'B', title: CASE.titles.B });
+    // 새로고침 뒤(lastEnding 은 등급만) 칭호 복원도 같은 규칙
+    expect(endingTitle('perfect', 'B')).toBe(CASE.titles.A);
+    expect(endingTitle('hidden', 'S')).toBe(CASE.titles.S);
+    expect(endingTitle('short', 'B')).toBe(CASE.titles.B);
+    expect(endingTitle('timeout', 'C')).toBe(CASE.titles.timeout);
+    expect(gradeCapOf({ rewound: false })).toBeNull();
+    expect(gradeCapOf({ rewound: true })).toBe('A');
+    expect(gradeCapOf({ rewound: false, recall: { n: 2, ids: ['E05'] } })).toBe('B');
+  });
+
+  it('E11 미리 채우기는 지금 손에 있는 카드만(범인은 유지) — 더 이른 시점으로 돌아가면 칸이 빈다', () => {
+    let r = playPath(['L2', 'T04', 'T05']);
+    r = must(openSet(r, 'T01'));
+    r = { ...r, trust: 1, prevAccuse: { culprit: CULPRIT, means: 'E02', opportunity: 'E03b', motive: 'E09' } };
+    const dead = must(present(r, 'T01.1', ['E01']));
+    const back = must(rewind(dead));
+    expect(back.evidence).not.toContain('E03b');
+    expect(back.prevAccuse).toEqual({ culprit: CULPRIT, means: 'E02' });
+    for (const sl of ['means', 'opportunity', 'motive'] as const) {
+      const c = back.prevAccuse?.[sl];
+      if (c) expect(back.evidence).toContain(c);
+    }
+    // ★ 3 이 되면 지목 화면이 '칸' 단계부터 — 들고 있는 카드만 채워져 있다
+    const s3 = { ...back, broken: [...back.broken, 'C10'] };
+    expect(must(startAccuse(s3)).accuse).toMatchObject({ stage: 'slots', culprit: CULPRIT, means: 'E02' });
+    expect(must(startAccuse(s3)).accuse?.opportunity).toBeUndefined();
+  });
+
+  it('E12 최단 기록(best) — 처음부터·무되감기 완벽/숨은만, 쓴 행동 수 기준(같으면 유지)', () => {
+    const fast = judged(playPath(PERFECT_PATH), RIGHT).result!;
+    let m = applyResultToMeta(newMeta(), fast, 10);
+    expect(m.best).toEqual({ used: 8, ms: fast.playMs, grade: 'A', at: 10 });
+    m = applyResultToMeta(m, { ...fast, actionsLeft: 4 }, 11); // 9 — 더 느림
+    expect(m.best?.at).toBe(10);
+    m = applyResultToMeta(m, fast, 12); // 같음 — 유지
+    expect(m.best?.at).toBe(10);
+    m = applyResultToMeta(m, { ...fast, actionsLeft: 7, rewinds: 1 }, 13); // 되감기 판
+    expect(m.best?.at).toBe(10);
+    m = applyResultToMeta(m, { ...fast, actionsLeft: 9, recallRun: 2 }, 14); // 기억 판
+    expect(m.best?.at).toBe(10);
+    m = applyResultToMeta(m, { ...fast, actionsLeft: 6 }, 15);
+    expect(m.best).toMatchObject({ used: 7, at: 15 });
+    m = applyResultToMeta(m, { ...fast, ending: 'short', actionsLeft: 12, attempt: 1 }, 16);
+    expect(m.best?.used).toBe(7);
+  });
+});
+
+describe('다시 하기 — 수사 기억(사양 c)', () => {
+  const ALL_IDS = CASE.evidence.map((e) => e.id);
+
+  it('이월 범위 = 방에서 줍는 원본 15장 — 돌파·추궁·갱신 카드(E03a·E03b·E14·E14b·E15·E16)는 안 넘어간다', () => {
+    expect(RECALL_ELIGIBLE).toHaveLength(15);
+    expect(tutorialEvidence()).toEqual(['E01', 'E02', 'E03']);
+    expect(recallable(ALL_IDS)).toEqual(RECALL_ELIGIBLE.filter((id) => !['E01', 'E02', 'E03'].includes(id)));
+    const r = newRun({ recall: ALL_IDS, recallN: 4 });
+    for (const id of ['E03a', 'E03b', 'E14', 'E14b', 'E15', 'E16']) expect(r.evidence).not.toContain(id);
+    expect(r.evidence).toEqual(expect.arrayContaining([...RECALL_ELIGIBLE]));
+    expect(r.recall).toEqual({ n: 4, ids: recallable(ALL_IDS) });
+    // 머리 쓰는 부분은 0 부터
+    expect(r).toMatchObject({ actions: 13, trust: 5, wrong: 0, hints: 0, rewound: false, broken: ['C01'], opened: ['T00'], pressed: [], revealed: [], flags: [], secrets: [], phase: 'play', screen: { name: 'hub' } });
+    // 장소는 거실만 '들어간 곳' — 나머지 장소 입장은 행동 1 그대로
+    expect(r.visited.filter((v) => CASE.locations.some((l) => l.id === v))).toEqual(['L0']);
+    expect(costOf(r, { location: 'L2' })).toBe(1);
+    // 정밀 조사(L2.h3)는 조사 완료로 들어와 다시 돈이 들지 않는다
+    expect(costOf(r, { hotspot: 'L2.h3' })).toBe(0);
+    const in2 = must(enterLocation(r, 'L2'));
+    expect(in2.actions).toBe(12);
+    expect(visibleHotspots(in2, 'L2').filter((h) => h.examined).map((h) => h.hotspot.id)).toEqual(expect.arrayContaining(['L2.h1', 'L2.h2', 'L2.h3']));
+    // NEW 점 0 · 「기억」 표시
+    for (const id of r.recall!.ids) {
+      expect(r.seen).toContain(id);
+      expect(isRecalled(r, id)).toBe(true);
+    }
+    expect(isRecalled(r, 'E01')).toBe(false);
+    // 지도: 기억으로 다 가진 방 ✓, 잠긴 방은 표시 안 함
+    expect(roomStatus(r, 'L1').allRecalled).toBe(true);
+    expect(roomStatus(r, 'L5').state).toBe('locked');
+    expect(roomStatus(r, 'L5').allRecalled).toBeUndefined();
+    const part = newRun({ recall: ['E05'] });
+    expect(roomStatus(part, 'L1').allRecalled).toBeUndefined();
+    expect(roomStatus(newRun({ skipTutorial: true }), 'L1').allRecalled).toBeUndefined();
+  });
+
+  it('기억 판도 행동 13 · 22:50(rulesOf) · 튜토리얼만 지급된 건 기억 판이 아니다', () => {
+    const r = newRun({ recall: RECALL_ELIGIBLE });
+    expect(r.actions).toBe(RULES.normal.actions);
+    expect(clock(r)).toBe('22:50');
+    expect(r.recall?.n).toBe(2);
+    const t = newRun({ recall: ['E01', 'E02', 'E03'] });
+    expect(t.recall).toBeUndefined();
+    expect(newRun({ recall: [] }).screen.name).toBe('intro');
+  });
+
+  it('recallPlan — 1회차·들고 갈 게 없으면 null, 그 밖엔 ids·회차(plays+1)·개수', () => {
+    const m: WitnessMeta = { ...newMeta(), plays: 0, found: [...RECALL_ELIGIBLE] };
+    expect(recallPlan(m)).toBeNull();
+    expect(recallPlan({ ...m, plays: 2, found: ['E01', 'E02', 'E03'] })).toBeNull();
+    expect(recallPlan({ ...m, plays: 2, found: undefined })).toBeNull();
+    expect(recallPlan({ ...m, plays: 2, found: ['E01', 'E05', 'E09'] })).toEqual({ ids: ['E05', 'E09'], n: 3, count: 2 });
+  });
+
+  it('absorbFound — 버리는 판에서 방에서 찾은 것만 더한다(갱신본을 들었으면 원본 칸으로)', () => {
+    const r = playPath(PERFECT_PATH);
+    const m = absorbFound(newMeta(), r);
+    expect(m.found).toEqual(RECALL_ELIGIBLE.filter((id) => missed(r).every((x) => x.id !== id)));
+    expect(m.found).toContain('E03'); // E03b 를 들고 있어도 원본 칸 E03 으로
+    expect(absorbFound(m, r)).toBe(m); // 멱등 — 바뀐 게 없으면 같은 객체
+  });
+});
+
+describe('다시 하기 — 무작위 걸음(되감기 전부 · 기억 판 · v2 저장 왕복)', () => {
+  it('시드 고정 150판: 행동 범위 · 판정 ≤ 3 · 칸 ≤ 2 · 저장 왕복', async () => {
+    const { parseRun, serializeRun } = await import('./storage');
+    let a = 99;
+    const rnd = () => {
+      a = (Math.imul(a, 1664525) + 1013904223) >>> 0;
+      return a / 4294967296;
+    };
+    const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(rnd() * xs.length)];
+    let rewinds = 0;
+    const kinds = new Set<string>();
+    for (let seed = 0; seed < 150; seed++) {
+      const run0 = seed % 3 === 0 ? newRun({ recall: RECALL_ELIGIBLE, recallN: 2 }) : newRun({ skipTutorial: true });
+      let run = seed % 2 === 0 ? freeClosure(run0) : run0;
+      for (let k = 0; k < 80; k++) {
+        let s: Step;
+        if (run.phase === 'ended') {
+          if (!rewindOption(run)) break;
+          s = rewind(run);
+          rewinds++;
+          for (const e of s.events)
+            if (e.t === 'rewound') {
+              kinds.add(e.kind);
+              // QA-RP-04: 지목 조건이 다시 닫히는 건 수사 배제 되감기뿐(시간 초과는 ★<3 에서만, 지목 직전 스냅샷은 ★ 같음)
+              if (e.kind !== 'excluded') expect(e.gateClosed).toBe(false);
+            }
+        } else {
+          const choices: (() => Step)[] = [
+            () => enterLocation(run, pick(CASE.locations).id),
+            () => openSet(run, pick(CASE.sets).id),
+            () => exit(run),
+            () => hint(run),
+            () => continueAfterSiren(run),
+            () => endInv(run),
+          ];
+          if (canAccuse(run))
+            choices.push(() => {
+              // 손에 든 카드로 아무렇게나(가끔 정답 카드를 섞는다) — 실패하면 그 단계 오류를 그대로
+              const held = run.evidence.filter((id) => getEvidence(id));
+              const cards = [...new Set([pick(held), pick(held), pick(held), ...held])].slice(0, 3);
+              if (cards.length < 3) return { run, events: [], error: 'bad-accusation' };
+              const a = rnd() < 0.3 && [RIGHT.means, RIGHT.opportunity, RIGHT.motive].every((c) => held.includes(c)) ? RIGHT : { culprit: pick(['S1', 'S2', 'S3', 'S4'] as const), means: cards[0], opportunity: cards[1], motive: cards[2] };
+              let st = startAccuse(run);
+              if (!st.error) st = pickCulprit(st.run, a.culprit);
+              for (const sl of ['means', 'opportunity', 'motive'] as const) if (!st.error) st = setSlot(st.run, sl, a[sl]);
+              return st.error ? st : submitAccusation(st.run);
+            });
+          const st = run.screen;
+          if (st.name === 'testimony' && st.ref) {
+            const ls = visibleLines(run, st.ref);
+            if (ls.length && run.evidence.length) choices.push(() => present(run, pick(ls).line.id, [pick(run.evidence)]));
+          }
+          const c = pick(choices)();
+          // 실패한 행동 자리에 가끔 '할 수 있는 무료 행동 전부'(돌파 포함)를 끼워 진행시킨다
+          s = c.error ? { run: rnd() < 0.2 ? freeClosure(run) : run, events: [] } : c;
+        }
+        const r = s.run;
+        expect(r.actions).toBeGreaterThanOrEqual(0);
+        expect(r.actions).toBeLessThanOrEqual(RULES.normal.actions);
+        expect(r.attempts ?? 0).toBeLessThanOrEqual(3);
+        expect(r.rewinds?.judged ?? 0).toBeLessThanOrEqual(RULES.normal.rewindSlots);
+        if (r.phase === 'play') expect(r.trust).toBeGreaterThan(0);
+        if (r.recall && r.result) expect(['B', 'C']).toContain(r.result.grade);
+        if (r.rewound && r.result) expect(r.result.grade).not.toBe('S');
+        const back = parseRun(serializeRun(r));
+        expect(back, `seed ${seed} step ${k}`).not.toBeNull();
+        run = r;
+      }
+    }
+    expect(rewinds).toBeGreaterThan(20);
+    expect([...kinds].sort()).toEqual(['accuse', 'action', 'excluded']);
   });
 });

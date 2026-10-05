@@ -84,6 +84,18 @@ describe('/witness/og', () => {
     expect(calls.some((c) => c.endsWith('/witness/og.jpg'))).toBe(false); // 결과 카드는 정적 커버를 읽지 않는다
   });
 
+  it('판 종류 m(1~3) 이 붙은 쿼리도 결과 카드 PNG 200 · m 범위 밖이면 커버', async () => {
+    stubFetch({ cover: 'ok' });
+    for (const m of [1, 2, 3]) {
+      const res = await GET(req(`?${OK}&m=${m}`));
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toContain('image/png');
+    }
+    const bad = await GET(req(`?${OK}&m=7`));
+    expect(bad.status).toBe(200);
+    expect(bad.headers.get('content-type')).toBe('image/jpeg');
+  });
+
   it('폰트가 로드되면 결과 카드는 장기 캐시', async () => {
     vi.stubGlobal(
       'fetch',
