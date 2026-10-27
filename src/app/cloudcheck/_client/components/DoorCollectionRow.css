@@ -1,0 +1,10 @@
+/* components/DoorCollectionRow.css — DoorCollectionRow. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-dcr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--cc-sp-2)}
+.cc-dcr__i{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:8px 10px;border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-1);font-size:var(--cc-fs-13)}
+.cc-dcr__i b{font-size:var(--cc-fs-14)}
+.cc-dcr__i--partial{font-weight:700}
+.cc-dcr__i--none{border-style:dashed;color:var(--cc-ink-2)}
+.cc-dcr--compact{grid-template-columns:repeat(5,auto);justify-content:start}
+/* 추가(컴포넌트개발자): 경로 카드 안 축약형은 항목째 줄바꿈 — 5열 고정은 카드가 좁을 때(≤1023px 두 열, 모바일) '수집 안 함'이 글자 중간에서 세 줄로 꺾인다 */
+.cc-dcr--compact{display:flex;flex-wrap:wrap}
+.cc-dcr--compact .cc-dcr__i{white-space:nowrap}

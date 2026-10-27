@@ -1,0 +1,3 @@
+/* components/PromiseBlock.css — PromiseBlock. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-promise{font-size:var(--cc-fs-16)}
+.cc-caveat{margin-top:var(--cc-sp-2);color:var(--cc-ink-2);font-size:var(--cc-fs-14)}

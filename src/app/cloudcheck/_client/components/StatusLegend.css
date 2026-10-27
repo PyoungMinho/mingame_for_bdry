@@ -1,0 +1,4 @@
+/* components/StatusLegend.css — StatusLegend — 상태 범례. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-legend{display:flex;flex-wrap:wrap;gap:var(--cc-sp-1) var(--cc-sp-4);font-size:var(--cc-fs-13);color:var(--cc-ink-2)}
+.cc-legend>div{display:flex;align-items:center;gap:6px}
+.cc-legend dt{font-weight:600;color:var(--cc-ink)}

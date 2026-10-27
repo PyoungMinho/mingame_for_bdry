@@ -1,0 +1,4 @@
+/* components/ManualCheckList.css — ManualCheckList. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* ManualCheckList(화면은 번호 목록, 체크 칸·메모 열은 인쇄 전용) */
+.cc-mc__no{width:4em;font-weight:700}
+.cc-mc__perm{display:inline-block;margin-top:2px;padding:0 6px;border-radius:var(--cc-r-1);background:var(--cc-ph-bg);font-family:var(--cc-mono);font-size:var(--cc-fs-13)}

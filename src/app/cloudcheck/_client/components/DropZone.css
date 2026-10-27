@@ -1,0 +1,9 @@
+/* components/DropZone.css — DropZone · InputTabs. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-drop{display:flex;flex-direction:column;align-items:center;gap:var(--cc-sp-3);padding:var(--cc-sp-6) var(--cc-sp-4);border:2px dashed var(--cc-line-strong);border-radius:var(--cc-r-2);background:var(--cc-surface);text-align:center}
+.cc-drop--over{border-style:solid;border-color:var(--cc-ink);background:var(--cc-hover)}
+.cc-drop:focus-within{outline:2px solid var(--cc-focus);outline-offset:2px}
+.cc-drop__hint{display:none}
+@media (min-width:600px){.cc-drop{padding:var(--cc-sp-8) var(--cc-sp-4)}.cc-drop__hint{display:block}}
+.cc-tabs{display:flex;gap:var(--cc-sp-2);border-bottom:1px solid var(--cc-line-strong)}
+.cc-tab{min-height:var(--cc-hit);padding:0 var(--cc-sp-4);border:0;border-bottom:3px solid transparent;background:none;font:inherit;font-weight:600;cursor:pointer}
+.cc-tab[aria-selected="true"]{border-bottom-color:var(--cc-ink);font-weight:700}

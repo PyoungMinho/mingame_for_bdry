@@ -1,0 +1,14 @@
+/* components/Chip.css — Chip · LabelChip · ImpactChip · ExceptionLabel. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* LabelChip · ImpactChip */
+.cc-chip{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-1);background:var(--cc-bg);color:var(--cc-ink-2);font-size:var(--cc-fs-13);font-weight:600;line-height:1.4}
+.cc-chip--hint,.cc-chip--soon{border-style:dashed}
+.cc-chip--soon{color:var(--cc-ink-3)}
+.cc-chip--strong{border:1.5px solid var(--cc-ink);color:var(--cc-ink)}
+.cc-chip--inv{border-color:var(--cc-inv-bg);background:var(--cc-inv-bg);color:var(--cc-inv-ink)}
+.cc-impact{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border:1px solid var(--cc-ink);border-radius:var(--cc-r-1);font-size:var(--cc-fs-13)}
+.cc-impact--medium{border-width:1.5px;font-weight:600}
+.cc-impact--high{border-width:2px;font-weight:700}
+.cc-excl{display:inline-flex;min-height:24px;padding:0 8px;border:1px solid var(--cc-exc);border-radius:var(--cc-r-1);background:var(--cc-exc-bg);color:var(--cc-exc-ink);font-size:var(--cc-fs-13);font-weight:600}
+.cc-excl--expired{border-style:dashed}
+/* 추가(컴포넌트개발자): 칩 줄(대상 표 '표시' 칸). .cc-actions는 인쇄에서 숨겨지므로 라벨·예외 표시가 종이에서 사라지지 않게 별도 클래스 */
+.cc-chips{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}

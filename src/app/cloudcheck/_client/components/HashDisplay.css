@@ -1,0 +1,5 @@
+/* components/HashDisplay.css — HashDisplay. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-hash{display:block;padding:var(--cc-sp-3);border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-1);background:var(--cc-surface);font-family:var(--cc-mono);font-size:var(--cc-fs-16);line-height:1.7;-webkit-user-select:all;user-select:all}
+.cc-hash__g{margin-right:.75em}
+.cc-hash__g:last-child{margin-right:0}
+.cc-hash__src{font-size:var(--cc-fs-13);font-weight:600}

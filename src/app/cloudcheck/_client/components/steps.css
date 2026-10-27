@@ -1,0 +1,6 @@
+/* components/steps.css — 번호 상자 — GuideCard · FixSteps 공용. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* GuideCard · FixSteps 공용 번호 상자(채운 사각은 상태 도형과 헷갈리므로 외곽선) */
+.cc-steps{counter-reset:st}
+.cc-steps>li{position:relative;padding-left:44px;counter-increment:st}
+.cc-steps>li+li{margin-top:var(--cc-sp-4)}
+.cc-steps>li::before{content:counter(st);position:absolute;left:0;top:0;width:28px;height:28px;border:1.5px solid var(--cc-ink);border-radius:var(--cc-r-1);font-weight:700;line-height:25px;text-align:center}

@@ -1,0 +1,5 @@
+/* components/StickyContextBar.css — StickyContextBar. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-ctx{position:sticky;top:var(--cc-band-h);z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:var(--cc-sp-1) var(--cc-sp-3);min-height:40px;padding:6px var(--cc-gutter);border-bottom:1px solid var(--cc-line-strong);background:var(--cc-bg);font-size:var(--cc-fs-14)}
+.cc-ctx .cc-acct__alias{display:inline-block;max-width:16em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+/* 추가(프론트팀장 STEP 6 디자인 검수 F3): 높이 600px 이하(200~400% 확대·가로 폰)에서 맥락 줄 스티키 해제. base.css의 같은 규칙은 번들에서 이 파일의 .cc-ctx{position:sticky}보다 앞이라 덮였다 */
+@media (max-height:600px){.cc-ctx{position:static}}

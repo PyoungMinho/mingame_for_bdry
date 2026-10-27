@@ -1,0 +1,55 @@
+{
+  "schema": "cloudcheck.answers/1",
+  "set": "D",
+  "cloud": "aws",
+  "company": "반쯤본상회",
+  "authoredFrom": "룰 명세(docs/planning/cloudcheck-plan.md §6, 각 룰 파일 머리 주석)와 companies/worlds-aws.ts의 AWS_D 정의를 읽고 사람이 먼저 썼다. 엔진 출력에서 복사하지 않았다.",
+  "rules": {
+    "AWS-STO-2": {
+      "status": "caution", "why": "isolated-denial",
+      "items": [
+        ["caution", "amzn-s3-demo-halfseen-beta", "isolated-denial"],
+        ["unknown", "amzn-s3-demo-halfseen-alpha", "denied"],
+        ["unknown", "amzn-s3-demo-halfseen-gamma", "field-missing"]
+      ]
+    },
+    "AWS-NET-1": {
+      "status": "unknown", "why": "region-missing", "gaps": ["region-missing"], "resolution": "permission:ec2:DescribeSecurityGroups",
+      "items": [
+        ["clear", "sg-0d0d0d01", "sg-closed"],
+        ["clear", "sg-0d0d0d02", "sg-closed"],
+        ["clear", "sg-0d0d0d03", "sg-closed"]
+      ]
+    },
+    "AWS-KEY-4": {
+      "status": "unknown", "why": "truncated", "gaps": ["truncated", "clear-without-evidence"], "resolution": "rerun",
+      "items": [["unknown", "app-lambda-exec", "clear-without-evidence"]]
+    },
+    "AWS-MFA-1": { "status": "na", "why": "no-targets-proven", "basis": "AWS-MFA-1:na-no-root-credentials", "items": [] },
+    "AWS-MFA-2": { "status": "na", "why": "no-targets-proven", "basis": "AWS-MFA-2:na-no-console-users", "items": [] },
+    "AWS-KEY-3": { "status": "na", "why": "no-targets-proven", "basis": "AWS-KEY-3:na-no-admin-keys", "items": [] },
+    "AWS-KEY-1": { "status": "na", "why": "no-targets-proven", "basis": "AWS-KEY-1:na-no-active-keys", "items": [] },
+    "AWS-KEY-2": { "status": "na", "why": "no-targets-proven", "basis": "AWS-KEY-2:na-no-active-credentials", "items": [] },
+    "AWS-STO-1": {
+      "status": "unknown", "why": "denied", "gaps": ["denied"], "resolution": "permission:s3:GetAccountPublicAccessBlock",
+      "items": [["unknown", "111122223333", "denied"]]
+    },
+    "AWS-LOG-1": { "status": "unknown", "why": "not-collected", "gaps": ["not-collected"], "resolution": "rerun", "items": [] }
+  },
+  "distribution": {
+    "rules": { "risk": 0, "caution": 1, "unknown": 4, "clear": 0, "na": 5 },
+    "items": { "risk": 0, "caution": 1, "unknown": 4, "clear": 3, "na": 0 }
+  },
+  "firstLook": { "mode": "findings", "ruleIds": ["AWS-STO-2", "AWS-NET-1", "AWS-KEY-4"] },
+  "banners": ["doors-skipped"],
+  "unlockHints": [
+    { "permission": "s3:GetAccountPublicAccessBlock", "unlocks": [["AWS-STO-2", 2], ["AWS-STO-1", 1]] },
+    { "permission": "ec2:DescribeSecurityGroups", "unlocks": [["AWS-NET-1", 1]] }
+  ],
+  "manual": ["auto-notice:AWS-MFA-2", "unknown-item:AWS-KEY-4", "unknown-rule:AWS-NET-1", "unknown-item:AWS-STO-2", "unknown-item:AWS-STO-2", "unknown-item:AWS-STO-1", "out-of-scope:log"],
+  "scope": { "proven": false, "missing": 2, "outOfScope": 0 },
+  "doors": { "mfa": ["collected", "full"], "key": ["partial", "full"], "net": ["partial", "full"], "sto": ["partial", "full"], "log": ["not-collected", "none"] },
+  "notes": [
+    "문별 수집 현황(doors): 회사 정의(worlds-aws.ts)에서 먼저 썼다. log는 --doors로 건너뜀(not-collected/none, 알림 doors-skipped · 직접 볼 목록 out-of-scope:log). 열쇠(ListRoles 잘림) · 창문(리전 하나 거부 · 다른 리전 ENI 조회 제한) · 창고(계정 공개 차단 설정 거부 · 버킷 조회 거부)는 일부만(partial). 현관은 장애가 없어 collected. 조회 범위 목록(리전)은 받았으므로 선택된 문의 판정 수준은 full."
+  ]
+}

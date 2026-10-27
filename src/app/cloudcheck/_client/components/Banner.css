@@ -1,0 +1,11 @@
+/* components/Banner.css — Banner. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-banner{padding:var(--cc-sp-3) var(--cc-sp-4);border:1px solid var(--cc-line-strong);border-left:var(--cc-bar) solid var(--cc-ink-2);border-radius:var(--cc-r-2);background:var(--cc-surface);font-size:var(--cc-fs-14);line-height:var(--cc-lh-ui)}
+.cc-banner+.cc-banner{margin-top:var(--cc-sp-2)}
+.cc-banner__t{font-weight:700}
+.cc-banner__b{margin-top:var(--cc-sp-1)}
+.cc-banner--strong{border-color:var(--cc-inv-bg);background:var(--cc-inv-bg);color:var(--cc-inv-ink);font-size:var(--cc-fs-16)}
+.cc-banner--exception{border-color:var(--cc-exc);background:var(--cc-exc-bg);color:var(--cc-exc-ink)}
+.cc-banner--demo{border-color:var(--cc-demo);background:var(--cc-demo-bg);color:var(--cc-demo-ink)}
+/* 추가(프론트팀장 STEP 5 QA CC-QA-22 확인 중 발견): 강한 공지는 잉크를 반전하는데 링크는 var(--cc-ink) 그대로라 배경과 같은 색이 되어 보이지 않았다
+   (정적 셸의 부팅 대체 안내·<noscript>의 '오프라인판 내려받기' — 스크립트가 돌면 숨어서 axe에 잡히지 않았다). base.css의 .cc-inv와 같은 처리 */
+.cc-banner--strong a,.cc-banner--strong .cc-link{color:inherit}

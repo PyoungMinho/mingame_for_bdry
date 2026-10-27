@@ -1,0 +1,9 @@
+/* components/CliBlock.css — CliBlock. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-cmd{margin:0;border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-1);background:var(--cc-surface)}
+.cc-cmd__cap{padding:var(--cc-sp-1) var(--cc-sp-3);border-bottom:1px solid var(--cc-line-strong);color:var(--cc-ink-2);font-size:var(--cc-fs-13);font-weight:600}
+.cc-cmd__pre{padding:var(--cc-sp-3);font-size:var(--cc-fs-14);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.cc-cmd--write{border:3px solid var(--cc-ink)}
+.cc-cmd--write .cc-cmd__cap{border-bottom:0;background:var(--cc-inv-bg);color:var(--cc-inv-ink);font-size:var(--cc-fs-14);font-weight:700}
+.cc-cmd--typed{border-width:1.5px;border-color:var(--cc-ink)}
+.cc-cmd--kql .cc-cmd__pre{-webkit-user-select:all;user-select:all}
+.cc-ph{padding:0 2px;border-radius:2px;background:var(--cc-ph-bg);font-weight:700;text-decoration:underline dotted 2px;text-underline-offset:3px}

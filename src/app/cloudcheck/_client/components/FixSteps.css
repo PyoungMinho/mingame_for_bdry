@@ -1,0 +1,6 @@
+/* components/FixSteps.css — FixSteps · AccountCheck. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-fix__acct{padding:var(--cc-sp-3) var(--cc-sp-4);border:2px solid var(--cc-ink);border-radius:var(--cc-r-2)}
+.cc-fix__meta{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2);align-items:center}
+/* 추가(프론트팀장 STEP 5 QA CC-QA-21): 단계 제목을 h3 → h2로 올렸다(h1 다음 h3 건너뜀 해소). 모양은 base.css의 h3 그대로 */
+.cc-fixstep__h{font-size:var(--cc-fs-16);font-weight:600}
+@media (min-width:600px){.cc-fixstep__h{font-size:var(--cc-fs-18)}}

@@ -1,0 +1,5 @@
+/* components/AccountLabel.css — AccountLabel. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-acct__alias{font-weight:700}
+.cc-acct__l4{margin-left:4px;font-family:var(--cc-mono)}
+/* 추가(컴포넌트개발자): ••••1234는 글자 중간에서 줄바꿈하지 않는다 */
+.cc-acct__l4{white-space:nowrap}

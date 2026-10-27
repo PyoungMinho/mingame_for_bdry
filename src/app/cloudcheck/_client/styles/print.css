@@ -1,0 +1,76 @@
+/* styles/print.css — 마스킹 전환 · 인쇄 (design-final 확정본). main.tsx에서 반드시 마지막에 import한다.
+ * 원칙: 의미는 모양·글자·테두리에만 싣는다(배경은 장식). 인쇄 펼침은 JS 이벤트(beforeprint)에 기대지 않고 CSS로 강제한다. */
+
+/* ① 마스킹 이중 렌더(화면): 기본은 전체 값. 화면 가리기(P1)는 루트 cc-screen-mask */
+.cc-mask-short{display:none}
+.cc-screen-mask .cc-mask-full{display:none}
+.cc-screen-mask .cc-mask-short{display:inline}
+
+/* ② 화면에서는 숨기는 인쇄 전용 요소(인쇄 머리·바닥 면책·체험 제목·직접 볼 목록의 체크 칸과 메모 열) */
+.cc-print-only,.cc-mc__box,.cc-mc__memo{display:none}
+
+@page{size:A4 portrait;margin:14mm 12mm 16mm}
+
+@media print{
+  html{font-size:10.5pt;scroll-padding-top:0}
+  body{background:#fff;color:#000;line-height:1.5}
+  *,*::before,*::after{background:transparent!important;box-shadow:none!important;text-shadow:none!important;animation:none!important;transition:none!important}
+  .cc-sb,.cc-dc{background:var(--cc-st-bg)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}   /* 배지·분포 칩만 배경 보존 */
+  .cc-dc--zero{background:transparent!important}   /* 0 칩은 인쇄에서도 바탕 없음(위 규칙보다 뒤) */
+
+  /* 숨김 */
+  .cc-noprint,.cc-skip,.cc-hdr,.cc-ctx,.cc-jump,.cc-demo-frame,.cc-boot,.cc-drop,.cc-paste,.cc-sv,.cc-actions,.cc-popt,.cc-xf,.cc-btn,.cc-chev,.cc-ext__i,dialog{display:none!important}
+  .cc-print-only{display:revert}
+  .cc-wrap,.cc-wrap--wide{width:auto;margin:0}
+  .cc-band{position:static;padding:2mm 3mm;border:1pt solid #000}
+  .cc-band__more{max-height:none}
+  .cc-print-demo{margin:0 0 4mm;padding:3mm 4mm;border:2.5pt solid #000;font-size:1.6rem;font-weight:700;text-align:center}
+
+  /* 마스킹: 인쇄 기본 = 마스킹 값(Ctrl+P·브라우저 메뉴 인쇄 포함).
+     '이름·ID 표시'는 인쇄 버튼 흐름에서만 루트에 cc-print-unmask를 붙였다가 print() 직후 뗀다 */
+  .cc-mask-full,.cc-screen-mask .cc-mask-full{display:none}
+  .cc-mask-short,.cc-screen-mask .cc-mask-short{display:inline}
+  .cc-print-unmask .cc-mask-full{display:inline}
+  .cc-print-unmask .cc-mask-short{display:none}
+
+  /* 접힘: cc-po가 붙은 접힌 영역은 인쇄에서 펼친다. 수집하지 않은 문 묶음(cc-ncg)의 점검은 요약줄만 */
+  .cc-fold.cc-po{display:revert!important}
+  .cc-ncg .cc-rule__body{display:none!important}
+  .cc-tog{min-height:0}
+  .cc-rule{border-left-width:3pt;border-radius:0}
+  .cc-rule.cc-st--unknown{border-left-width:4pt}
+  /* 대상 표: 위험·주의·확인 불가 대상은 전부, 이상 없음 대상은 생략(생략 줄은 cc-print-only 행) */
+  .cc-tt tr.cc-tt__row--clear{display:none!important}
+
+  /* 쪽 나눔 */
+  h1,h2,h3,.cc-door__h,.cc-rule__sum{break-after:avoid}
+  .cc-rule__sum,.cc-pl__i,.cc-tt tr,.cc-mc tr,.cc-cmd,.cc-banner,.cc-card{break-inside:avoid}
+  .cc-manual{break-before:page}
+  thead{display:table-header-group}
+  p,li{orphans:3;widows:3}
+
+  /* 링크: 제목 + 호스트 글자만 남긴다(URL 전체는 쓰지 않는다) */
+  a,.cc-link{color:#000}
+
+  /* 반전 요소 → 테두리형(배경이 안 찍혀도 글자가 사라지지 않게) */
+  .cc-banner--strong,.cc-inv,.cc-chip--inv{color:#000;border:2pt double #000}
+  .cc-mv--redacted{color:#000;border:1pt solid #000}
+  .cc-cmd--write{border:2.5pt solid #000}
+  .cc-cmd--write .cc-cmd__cap{color:#000;border-bottom:1.5pt solid #000;font-weight:700}
+  .cc-cmd__pre{white-space:pre-wrap;font-size:9pt}
+  .cc-chip,.cc-impact{border-color:#000}
+  .cc-disc{max-width:none;border:0;border-top:.75pt solid #000;border-radius:0}
+
+  /* 직접 볼 목록: 손으로 체크하는 표(체크 칸·메모 열은 인쇄에만) */
+  .cc-mc th,.cc-mc td{padding:2mm 2.5mm;border:.5pt solid #000}
+  .cc-mc tr{height:10mm}
+  .cc-mc__box{display:inline-block;width:5mm;height:5mm;margin-right:2mm;border:1pt solid #000;vertical-align:-1mm}
+  .cc-mc__memo{display:table-cell;min-width:38mm}
+
+  /* 인쇄 머리: 전체 리포트 / 직접 볼 목록만 */
+  .cc-phead--list{display:none}
+  .cc-print-list-only .cc-report>:not(.cc-manual):not(.cc-print-only){display:none!important}
+  .cc-print-list-only .cc-phead--full{display:none}
+  .cc-print-list-only .cc-phead--list{display:revert}
+  .cc-print-list-only .cc-manual{break-before:auto}
+}

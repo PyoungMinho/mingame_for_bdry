@@ -1,0 +1,79 @@
+{
+  "schema": "cloudcheck.answers/1",
+  "set": "C",
+  "cloud": "aws",
+  "company": "아슬아슬상회",
+  "authoredFrom": "룰 명세(docs/planning/cloudcheck-plan.md §6, 각 룰 파일 머리 주석)와 companies/worlds-aws.ts의 AWS_C 정의를 읽고 사람이 먼저 썼다. 엔진 출력에서 복사하지 않았다.",
+  "rules": {
+    "AWS-STO-2": {
+      "status": "risk", "why": "AWS-STO-2:buckets-public",
+      "items": [
+        ["risk", "amzn-s3-demo-acme-customer-export", "bucket-public-policy"],
+        ["caution", "amzn-s3-demo-acme-public-site", "website-public", ["intended-public-candidate:static-website", "name-hint:public"]],
+        ["clear", "amzn-s3-demo-acme-logs", "block-all-on"]
+      ]
+    },
+    "AWS-NET-1": {
+      "status": "risk", "why": "AWS-NET-1:exposed-with-public-ip",
+      "items": [
+        ["risk", "sg-0c0ffee1", "sg-public"],
+        ["caution", "sg-0c0ffee2", "sg-private"],
+        ["clear", "sg-0c0ffee3", "sg-closed"],
+        ["clear", "sg-0c0ffee4", "sg-closed"]
+      ]
+    },
+    "AWS-KEY-4": {
+      "status": "risk", "why": "AWS-KEY-4:roles-open",
+      "items": [
+        ["risk", "cross-acct-admin", "trust-wildcard-open"],
+        ["caution", "vendor-access", "trust-external-no-external-id"]
+      ]
+    },
+    "AWS-MFA-1": { "status": "risk", "why": "AWS-MFA-1:root-key-active", "items": [["risk", "root", "root-key-active"]] },
+    "AWS-MFA-2": {
+      "status": "risk", "why": "AWS-MFA-2:console-no-mfa",
+      "items": [
+        ["risk", "dev-kim", "user-no-mfa"],
+        ["risk", "ex-employee", "user-no-mfa"],
+        ["clear", "admin-lee", "user-has-mfa"]
+      ]
+    },
+    "AWS-KEY-3": {
+      "status": "caution", "why": "AWS-KEY-3:admin-users-with-keys",
+      "items": [["caution", "admin-lee", "admin-active-key"], ["caution", "dev-kim", "admin-active-key"]]
+    },
+    "AWS-KEY-1": {
+      "status": "caution", "why": "AWS-KEY-1:keys-too-old",
+      "items": [
+        ["caution", "admin-lee", "key-too-old"],
+        ["caution", "ci-runner", "key-too-old"],
+        ["caution", "ci-runner", "key-too-old"],
+        ["caution", "dev-kim", "key-too-old"]
+      ]
+    },
+    "AWS-KEY-2": {
+      "status": "caution", "why": "AWS-KEY-2:unused-credentials",
+      "items": [
+        ["caution", "ci-runner", "credential-unused"],
+        ["caution", "ex-employee", "credential-unused"],
+        ["clear", "admin-lee", "credentials-used"],
+        ["clear", "dev-kim", "credentials-used"]
+      ]
+    },
+    "AWS-STO-1": { "status": "caution", "why": "AWS-STO-1:block-partial", "items": [["caution", "111122223333", "block-partial"]] },
+    "AWS-LOG-1": { "status": "caution", "why": "AWS-LOG-1:trail-not-logging", "items": [["caution", "111122223333", "trail-not-logging"]] }
+  },
+  "distribution": {
+    "rules": { "risk": 5, "caution": 5, "unknown": 0, "clear": 0, "na": 0 },
+    "items": { "risk": 6, "caution": 13, "unknown": 0, "clear": 6, "na": 0 }
+  },
+  "firstLook": { "mode": "findings", "ruleIds": ["AWS-STO-2", "AWS-NET-1", "AWS-KEY-4"] },
+  "banners": [],
+  "unlockHints": [],
+  "manual": [],
+  "scope": { "proven": true, "missing": 0, "outOfScope": 0 },
+  "doors": { "mfa": ["collected", "full"], "key": ["collected", "full"], "net": ["collected", "full"], "sto": ["collected", "full"], "log": ["collected", "full"] },
+  "notes": [
+    "문별 수집 현황(doors): 회사 정의(worlds-aws.ts)에서 먼저 썼다. 장애도 건너뛴 문(skipDoors)도 없어 다섯 문 모두 모든 목록이 완결이고(collected), 수집기 결과 파일이라 조회 범위 목록(리전)을 얻어 판정 수준은 full이다."
+  ]
+}

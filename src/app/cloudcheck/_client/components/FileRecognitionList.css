@@ -1,0 +1,4 @@
+/* components/FileRecognitionList.css — FileRecognitionList. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-fr__size{color:var(--cc-ink-3);font-size:var(--cc-fs-13)}
+.cc-fr__row--superseded>td{color:var(--cc-ink-2)}
+.cc-fr__panel>*+*{margin-top:var(--cc-sp-1)}

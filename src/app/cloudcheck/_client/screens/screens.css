@@ -1,0 +1,37 @@
+/* screens/screens.css — 화면 배치 전용(목표 1KiB · 상한 2KiB). 컴포넌트 클래스와 .cc-stack·.cc-wrap·.cc-cards·.cc-actions를 먼저 재사용하고, 여기에는 화면에만 있는 배치를 둔다.
+ * 규칙: 토큰만 쓴다(16진 색 0, prefers-color-scheme 0, !important 0). main.tsx에서 컴포넌트 CSS 뒤·print.css 앞에 import한다. */
+.cc-ul,.cc-ol{padding-left:1.4em;list-style:disc}
+.cc-ol{list-style:decimal}
+.cc-ul>li+li,.cc-ol>li+li{margin-top:var(--cc-sp-1)}
+main.cc-wrap{padding-top:var(--cc-sp-6)}
+.cc-wide-hdr .cc-hdr__in{width:min(100% - 2*var(--cc-gutter),var(--cc-w-wide))}
+.cc-foot{display:grid;gap:var(--cc-sp-1);margin-top:var(--cc-sp-12);padding:var(--cc-sp-4) 0 var(--cc-sp-6);border-top:1px solid var(--cc-line);color:var(--cc-ink-3)}
+.cc-doors{display:flex;flex-wrap:wrap;gap:var(--cc-sp-4) var(--cc-sp-6)}
+.cc-doors__i{display:flex;flex-direction:column;align-items:center;gap:var(--cc-sp-1);min-width:5.5em;text-align:center}
+.cc-start__cta{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}
+.cc-start__cta>*{flex:1 1 100%}
+.cc-prep__steps>li+li{margin-top:var(--cc-sp-8)}
+/* D4 통합(프론트팀장): Azure 권한 이름은 최대 약 90자(Microsoft.Storage/…/diagnosticSettings/read)라 인라인 블록 칩이 360px 화면을 넘쳤다(V7·V1, 실브라우저) → 칩 폭을 줄 폭으로 묶고 칩 안에서 줄을 나눈다 */
+.cc-pm{display:inline-block;max-width:100%;margin:0 var(--cc-sp-2) var(--cc-sp-1) 0;padding:0 6px;border-radius:var(--cc-r-1);background:var(--cc-ph-bg);font-family:var(--cc-mono);overflow-wrap:anywhere}
+.cc-input__list:focus{outline:0}
+.cc-report__head>*+*{margin-top:var(--cc-sp-1)}
+.cc-cat{border:1px solid var(--cc-line);border-radius:var(--cc-r-2)}
+.cc-cat--off{border-style:dashed;color:var(--cc-ink-3)}
+.cc-cat__list>li+li{margin-top:var(--cc-sp-2)}
+.cc-cat__sum{display:flex;flex-wrap:wrap;align-items:center;gap:var(--cc-sp-2);min-height:var(--cc-hit);padding:var(--cc-sp-2) var(--cc-sp-4)}
+.cc-cat__body{padding:0 var(--cc-sp-4) var(--cc-sp-4)}
+.cc-cat__dl>div{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2);margin-top:var(--cc-sp-2)}
+.cc-cat__id{color:var(--cc-ink-3);font-size:var(--cc-fs-13)}
+@media (min-width:600px){.cc-start__cta>*{flex:0 0 auto}.cc-prep__mobile{display:none}}
+/* STEP 5 QA CC-QA-20(프론트팀장 — WCAG 1.4.10 리플로): 공백 없는 긴 식별자(권한 이름·호출 id·GUID·ARN)와 정의 목록 설명 때문에 360px·200%·400% 확대에서 문서가 넓어졌다.
+   본문의 overflow-wrap:break-word는 최소 폭(min-content) 계산에 들어가지 않아 grid·flex 칸이 식별자 길이만큼 늘어난다 → 식별자·설명에는 anywhere(넘칠 때만 나누고 최소 폭에도 반영),
+   정의 목록의 grid·flex 칸은 min-width:0으로 줄 수 있게 한다 */
+.cc-wrap code,.cc-wrap bdi,.cc-wrap dd{overflow-wrap:anywhere}
+.cc-scope__dl>div>*,.cc-cat__dl>div>*{min-width:0}
+/* V4 머리·'바꿀 속성' 줄(flex): 속성 이름(예: keyPolicy.keyExpirationPeriodInDays)이 400% 확대에서 줄을 넘지 않게 */
+.cc-fix__meta>*{min-width:0;overflow-wrap:anywhere}
+/* 직접 볼 목록의 권한 이름 칩(인라인 블록)도 .cc-pm처럼 줄 폭을 넘지 않고 칩 안에서 나눈다 */
+.cc-mc__perm{max-width:100%;overflow-wrap:anywhere}
+/* STEP 6 디자인 검수 F1(프론트팀장): 인쇄 머리(.cc-print-only) 두 벌이 header 앞의 .cc-report 직계 자식이 됐다. 화면에서는 숨지만
+   형제 선택자 .cc-report>*+*(32px)가 header에 걸려 리포트가 내려가므로, 화면에서 처음 보이는 header의 위 여백은 0으로 둔다 */
+.cc-report>.cc-report__head{margin-top:0}

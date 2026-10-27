@@ -1,0 +1,2 @@
+/* components/MaskedValue.css — MaskedValue. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-mv--redacted{display:inline-block;padding:0 6px;border-radius:var(--cc-r-1);background:var(--cc-inv-bg);color:var(--cc-inv-ink);font-family:var(--cc-mono);font-size:var(--cc-fs-13)}

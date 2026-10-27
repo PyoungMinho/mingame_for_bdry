@@ -1,0 +1,72 @@
+/* styles/tokens.css — 문단속 5 디자인 토큰 v1.0 (design-final 확정본)
+ * ① 색은 판정(5상태)에만 쓴다. 예외(파랑)·체험(보라)은 띠·테두리 전용.
+ * ② 다크는 'screen and'로만 건다 → 인쇄는 OS 테마와 무관하게 :root(라이트) 값을 쓴다.
+ * ③ 16진 색은 이 파일에만 둔다. 컴포넌트 CSS에는 다크용 @media를 쓰지 않는다.
+ * ④ style="" 속성 금지. 동적 값은 클래스·data-* 속성으로 표현한다.
+ * ⑤ 새 토큰은 디자인팀장 승인 후 추가한다. */
+:root{
+  color-scheme:light dark;
+
+  /* 종이와 잉크 */
+  --cc-bg:#FFFFFF;
+  --cc-surface:#F5F6F8;
+  --cc-hover:#EDEFF3;
+  --cc-line:#D3D8DF;          /* 장식 구분선 전용(1.43:1). 의미를 싣지 않는다 */
+  --cc-line-strong:#848D99;   /* 입력·카드 경계(3:1 이상). hover 바탕 위에서는 쓰지 않는다 */
+  --cc-ink:#15181D;
+  --cc-ink-2:#444B57;
+  --cc-ink-3:#5B6370;         /* 보조 글자(AA). 상태 글자로 쓰지 않는다 */
+  --cc-ph-bg:#E4E7EC;         /* 명령 자리표시자 강조 바탕 */
+  --cc-glyph:#FFFFFF;         /* 상태 도형 위 글리프(뚫린 색) */
+  --cc-scrim:rgba(21,24,29,.55);
+
+  /* 5상태: ink=글자 · bg=바탕 · icon=도형·띠·테두리(글자색 금지) */
+  --cc-risk-ink:#9B1C1C;    --cc-risk-bg:#FDEDED;    --cc-risk-icon:#C42121;
+  --cc-caution-ink:#74470A; --cc-caution-bg:#FFF4D9; --cc-caution-icon:#A86200;
+  --cc-clear-ink:#14532D;   --cc-clear-bg:#E9F6EE;   --cc-clear-icon:#1C7A43;
+  --cc-unknown-ink:#1F2937; --cc-unknown-bg:#ECEFF3; --cc-unknown-icon:#4A5361; --cc-unknown-line:#7D8796;
+  --cc-na-ink:#444B57;      --cc-na-icon:#6A7280;    --cc-na-line:#848D99;
+
+  /* 예외(파랑) · 체험(보라) — 띠·테두리·라벨 전용 */
+  --cc-exc:#2459D6;  --cc-exc-ink:#1D3F99;  --cc-exc-bg:#EBF1FE;
+  --cc-demo:#6B33C9; --cc-demo-ink:#4A1F94; --cc-demo-bg:#F3EDFD;
+
+  /* 파생(var 참조라 테마 값이 바뀌면 따라간다) */
+  --cc-focus:var(--cc-ink);
+  --cc-inv-bg:var(--cc-ink);
+  --cc-inv-ink:var(--cc-bg);
+
+  /* 타이포 */
+  --cc-font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI","Malgun Gothic","맑은 고딕","Noto Sans KR","Noto Sans CJK KR",Roboto,sans-serif;
+  --cc-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"D2Coding","Noto Sans Mono CJK KR",monospace;
+  --cc-fs-13:.8125rem; --cc-fs-14:.875rem; --cc-fs-16:1rem; --cc-fs-18:1.125rem;
+  --cc-fs-20:1.25rem;  --cc-fs-24:1.5rem;  --cc-fs-30:1.875rem;
+  --cc-lh-body:1.6; --cc-lh-ui:1.5; --cc-lh-head:1.35;
+
+  /* 간격(N×4px) · 형태 · 크기 */
+  --cc-sp-1:4px; --cc-sp-2:8px; --cc-sp-3:12px; --cc-sp-4:16px;
+  --cc-sp-6:24px; --cc-sp-8:32px; --cc-sp-12:48px; --cc-sp-16:64px;
+  --cc-r-1:4px; --cc-r-2:6px;
+  --cc-bar:4px; --cc-bar-unknown:6px;
+  --cc-hit:44px;
+  --cc-w-main:880px; --cc-w-wide:1040px; --cc-gutter:16px; --cc-band-h:28px;
+  --cc-dur:120ms;
+}
+@media (min-width:600px){:root{--cc-gutter:24px}}
+@media (min-width:1024px){:root{--cc-gutter:32px}}
+
+@media screen and (prefers-color-scheme:dark){:root{
+  --cc-bg:#0F1115; --cc-surface:#171A20; --cc-hover:#1C2027; --cc-line:#2B3038; --cc-line-strong:#646C79;
+  --cc-ink:#E7E9EC; --cc-ink-2:#B3B9C3; --cc-ink-3:#9AA1AC;
+  --cc-ph-bg:#2F353F; --cc-glyph:#0F1115; --cc-scrim:rgba(0,0,0,.65);
+  --cc-risk-ink:#FFB3B3;    --cc-risk-bg:#3A1517;    --cc-risk-icon:#FF6B6B;
+  --cc-caution-ink:#FFD98C; --cc-caution-bg:#33250B; --cc-caution-icon:#F0B341;
+  --cc-clear-ink:#A3E4BA;   --cc-clear-bg:#102A1B;   --cc-clear-icon:#4DC27B;
+  --cc-unknown-ink:#E5E7EB; --cc-unknown-bg:#20242C; --cc-unknown-icon:#B0B7C2; --cc-unknown-line:#737C8A;
+  --cc-na-ink:#B3B9C3;      --cc-na-icon:#8E95A1;    --cc-na-line:#646C79;
+  --cc-exc:#6E9FFF;  --cc-exc-ink:#BCD1FF;  --cc-exc-bg:#15223F;
+  --cc-demo:#A98BFF; --cc-demo-ink:#DCCFFF; --cc-demo-bg:#231B3A;
+}}
+
+/* 인쇄는 위 :root 라이트 값을 그대로 쓴다(다크 블록이 screen 전용). 폼 컨트롤 기본색만 라이트로 고정 */
+@media print{:root{color-scheme:light}}

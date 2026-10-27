@@ -1,0 +1,2 @@
+/* components/Disclaimer.css — Disclaimer. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-disc{max-width:44em;padding:var(--cc-sp-3) var(--cc-sp-4);border:1px solid var(--cc-line);border-radius:var(--cc-r-2);color:var(--cc-ink-2);font-size:var(--cc-fs-13);line-height:var(--cc-lh-body)}

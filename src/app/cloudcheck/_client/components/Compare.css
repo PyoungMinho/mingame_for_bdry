@@ -1,0 +1,7 @@
+/* components/Compare.css — BeforeAfterTable · IdentityCompare. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-ba__chg{font-weight:700;box-shadow:inset 2px 0 var(--cc-ink)}
+.cc-ba__note{font-size:var(--cc-fs-14)}
+.cc-idc{display:grid;gap:var(--cc-sp-3)}
+.cc-idc__side{padding:var(--cc-sp-4);border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-2)}
+.cc-idc__diff{text-decoration:underline 2px;text-underline-offset:3px}
+@media (min-width:600px){.cc-idc{grid-template-columns:1fr 1fr}}

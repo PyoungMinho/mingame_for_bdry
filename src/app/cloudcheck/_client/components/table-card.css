@@ -1,0 +1,14 @@
+/* components/table-card.css — 표 → 카드(600px 미만) 공용 — 카드로 바꿀 표에 cc-ct를 붙인다. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* 프론트팀장 STEP 5 QA CC-QA-20: 카드 전환 기준을 600px → 768px 미만(화면만)으로. 7열 대상 표는 약 620px가 필요해 200% 확대(1280px 창 → 640px)에서 문서를 넓혔다.
+   screen으로 한정해 인쇄는 그대로 표(직접 볼 목록의 빈 칸·메모 열 유지). 디자인 §10-3에서 기준 확인 */
+@media screen and (max-width:767.98px){
+  .cc-ct,.cc-ct tbody,.cc-ct tr,.cc-ct td{display:block}
+  .cc-ct thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .cc-ct tr{margin-top:var(--cc-sp-2);padding:var(--cc-sp-3) var(--cc-sp-4);border:1px solid var(--cc-line);border-radius:var(--cc-r-2)}
+  .cc-ct td{padding:var(--cc-sp-1) 0;border:0}
+  .cc-ct td[data-label]::before{content:attr(data-label);display:block;color:var(--cc-ink-3);font-size:var(--cc-fs-13)}
+  .cc-ct tr.cc-exc{border-left:var(--cc-bar) solid var(--cc-exc)}
+  .cc-ct tr.cc-exc>td:first-child{border-left:0}
+  /* 추가(컴포넌트개발자): 카드 변환(display:block)이 화면에서 숨기는 요소를 되살리지 않게 — 인쇄 전용 줄·메모 칸·빈 칸(라벨만 남는 것 방지) */
+  .cc-ct tr.cc-print-only,.cc-ct td:empty{display:none}
+}

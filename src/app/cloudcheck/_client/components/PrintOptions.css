@@ -1,0 +1,2 @@
+/* components/PrintOptions.css — PrintOptions. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-popt{display:flex;flex-wrap:wrap;align-items:center;gap:var(--cc-sp-2) var(--cc-sp-4)}

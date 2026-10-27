@@ -1,0 +1,6 @@
+/* components/FirstLook.css — FirstLook (먼저 볼 3개). 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-pl{display:grid;gap:var(--cc-sp-2)}
+.cc-pl__i{display:grid;gap:var(--cc-sp-1) var(--cc-sp-3);padding:var(--cc-sp-3) var(--cc-sp-4);border:1px solid var(--cc-line);border-left:var(--cc-bar) solid var(--cc-st-icon);border-radius:var(--cc-r-2)}
+.cc-pl__i.cc-st--unknown{border-color:var(--cc-unknown-line);border-left:var(--cc-bar-unknown) solid var(--cc-unknown-icon)}
+.cc-pl__act{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}
+@media (min-width:600px){.cc-pl__i{grid-template-columns:1fr auto;align-items:center}.cc-pl__act{grid-column:2;grid-row:1/span 2;justify-content:flex-end}}

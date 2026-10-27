@@ -1,0 +1,10 @@
+/* components/DoorSection.css — DoorSection. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-door{border-top:2px solid var(--cc-ink)}
+.cc-door+.cc-door{margin-top:var(--cc-sp-8)}
+.cc-door__head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--cc-sp-2) var(--cc-sp-3);padding:var(--cc-sp-4) 0 var(--cc-sp-3)}
+.cc-door__h{display:flex;align-items:center;gap:var(--cc-sp-2)}
+.cc-door__term{color:var(--cc-ink-3);font-size:var(--cc-fs-14);font-weight:400}
+.cc-door__counts{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}
+.cc-door__collect{margin-bottom:var(--cc-sp-3);color:var(--cc-ink-2);font-size:var(--cc-fs-13)}
+.cc-door__inc{margin-top:var(--cc-sp-3);font-size:var(--cc-fs-14)}
+@media (min-width:600px){.cc-door+.cc-door{margin-top:var(--cc-sp-12)}.cc-door__counts{margin-left:auto}}

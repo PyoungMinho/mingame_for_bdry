@@ -1,0 +1,9 @@
+/* components/ScopePanel.css — ScopePanel (+ V3 루트 .cc-report 간격). 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-report>*+*{margin-top:var(--cc-sp-8)}
+.cc-scope{padding:var(--cc-sp-4);border:1px solid var(--cc-line-strong);border-radius:var(--cc-r-2);background:var(--cc-surface)}
+.cc-scope__dl>div{display:grid;gap:var(--cc-sp-1);padding:var(--cc-sp-2) 0;border-bottom:1px solid var(--cc-line);break-inside:avoid}
+.cc-scope dt{color:var(--cc-ink-3);font-size:var(--cc-fs-14);font-weight:600}
+.cc-scope dd{font-size:var(--cc-fs-14)}
+.cc-scope__cannot{display:grid;gap:2px var(--cc-sp-6);font-size:var(--cc-fs-14)}
+@media (min-width:600px){.cc-scope{padding:var(--cc-sp-6)}.cc-scope__dl>div{grid-template-columns:6em 1fr;gap:var(--cc-sp-3)}.cc-scope__cannot{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.cc-scope__dl{columns:2;column-gap:var(--cc-sp-8)}}

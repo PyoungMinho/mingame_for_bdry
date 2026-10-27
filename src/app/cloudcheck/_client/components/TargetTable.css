@@ -1,0 +1,11 @@
+/* components/TargetTable.css — TargetTable — 예외 행 띠 + 대상 표. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* 예외 표시(파랑: 행 왼쪽 띠 + 라벨). 상태 배지는 그대로 */
+.cc-exc>td:first-child,.cc-exc.cc-card{border-left:var(--cc-bar) solid var(--cc-exc)}
+.cc-exc--expired>td:first-child{border-left-style:dashed}
+.cc-tt__name{display:block;font-weight:600}
+.cc-tt__type{color:var(--cc-ink-3);font-size:var(--cc-fs-13)}
+.cc-tt__facts{font-size:var(--cc-fs-14)}
+.cc-tt__form>td{padding:0}
+/* 추가(컴포넌트개발자): 대상 이름·위치 칸이 사유 칸에 눌려 하이픈에서 꺾이지 않게 최소 폭 */
+.cc-tt td:nth-child(2){min-width:9em}
+.cc-tt td:nth-child(3){min-width:7em}

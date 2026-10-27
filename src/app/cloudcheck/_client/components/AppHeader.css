@@ -1,0 +1,7 @@
+/* components/AppHeader.css — AppHeader. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-hdr{border-bottom:1px solid var(--cc-line);background:var(--cc-bg)}
+.cc-hdr__in{display:flex;align-items:center;flex-wrap:wrap;gap:var(--cc-sp-2);min-height:56px}
+.cc-hdr__brand{padding:0;border:0;background:none;color:var(--cc-ink);font:inherit;font-size:var(--cc-fs-18);font-weight:700;min-height:var(--cc-hit);cursor:pointer}
+.cc-hdr__brand:hover{text-decoration:underline}
+.cc-hdr__nav{display:flex;gap:var(--cc-sp-2);margin-left:auto}
+.cc-hdr__off{padding:var(--cc-sp-1) var(--cc-gutter);border-top:1px solid var(--cc-line);background:var(--cc-surface);font-size:var(--cc-fs-13)}

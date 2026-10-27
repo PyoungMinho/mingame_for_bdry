@@ -1,0 +1,9 @@
+/* components/DistributionChips.css — DistributionChips — 분포 칩(.cc-dc 공통 선언은 StatusBadge.css). 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-dist{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}
+.cc-dist__lead{font-weight:700}
+.cc-dc{min-height:36px;padding:4px 12px 4px 8px}
+.cc-dc__n{font-size:var(--cc-fs-18);font-weight:700;line-height:1.2}
+.cc-dc--sm{min-height:28px;padding:2px 8px 2px 6px;font-size:var(--cc-fs-13)}
+.cc-dc--sm .cc-dc__n{font-size:var(--cc-fs-14)}
+.cc-dc--zero{border:1px solid var(--cc-line);background:transparent;color:var(--cc-ink-2);font-weight:400}
+.cc-dc--zero .cc-dc__n{font-weight:400}

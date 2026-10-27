@@ -1,0 +1,58 @@
+{
+  "schema": "cloudcheck.answers/1",
+  "set": "C",
+  "cloud": "azure",
+  "company": "아슬아슬상회",
+  "authoredFrom": "룰 명세(docs/planning/cloudcheck-plan.md §6, 각 룰 파일 머리 주석)와 companies/worlds-azure.ts의 AZURE_C 정의를 읽고 사람이 먼저 썼다. 엔진 출력에서 복사하지 않았다.",
+  "rules": {
+    "AZ-STO-2": {
+      "status": "risk", "why": "AZ-STO-2:containers-public",
+      "items": [
+        ["risk", "exports", "container-public"],
+        ["risk", "reports", "container-public"],
+        ["clear", "private-data", "container-private"],
+        ["clear", "tmp", "container-private"]
+      ]
+    },
+    "AZ-NET-1": {
+      "status": "risk", "why": "AZ-NET-1:exposed-with-public-ip",
+      "items": [
+        ["risk", "nsg-acme-db", "nsg-public"],
+        ["risk", "nsg-acme-jump", "nsg-public"],
+        ["clear", "nsg-acme-dev", "nsg-closed"]
+      ]
+    },
+    "AZ-MFA-G": { "status": "unknown", "why": "guide-only", "gaps": ["guide-only"], "resolution": "guide", "items": [] },
+    "AZ-KEY-1": {
+      "status": "caution", "why": "AZ-KEY-1:keys-stale",
+      "items": [["caution", "stacmeexports01", "key-not-rotated"], ["clear", "stacmedev02", "shared-key-off"]]
+    },
+    "AZ-STO-1": {
+      "status": "caution", "why": "AZ-STO-1:allow-not-blocked",
+      "items": [["caution", "stacmedev02", "allow-unset"], ["caution", "stacmeexports01", "allow-true"]]
+    },
+    "AZ-LOG-1": {
+      "status": "caution", "why": "AZ-LOG-1:subscriptions-no-export",
+      "items": [["caution", "아슬아슬상회-개발", "no-export"], ["caution", "아슬아슬상회-운영", "no-export"]]
+    },
+    "AZ-LOG-2": {
+      "status": "caution", "why": "AZ-LOG-2:accounts-not-logged",
+      "items": [["caution", "stacmedev02", "no-diagnostics"], ["caution", "stacmeexports01", "no-diagnostics"]]
+    }
+  },
+  "distribution": {
+    "rules": { "risk": 2, "caution": 4, "unknown": 1, "clear": 0, "na": 0 },
+    "items": { "risk": 4, "caution": 7, "unknown": 0, "clear": 4, "na": 0 }
+  },
+  "firstLook": { "mode": "findings", "ruleIds": ["AZ-STO-2", "AZ-NET-1", "AZ-KEY-1"] },
+  "banners": [],
+  "unlockHints": [],
+  "manual": ["guide-card:AZ-MFA-G"],
+  "scope": { "proven": true, "missing": 0, "outOfScope": 0 },
+  "doors": { "mfa": ["not-collected", "none"], "key": ["collected", "full"], "net": ["collected", "full"], "sto": ["collected", "full"], "log": ["collected", "full"] },
+  "notes": [
+    "현관(mfa)은 not-collected/none이다: 실제 Azure 수집기는 mfa 문을 늘 'skipped'로 적고(Entra 정보는 읽지 않는다 · collector/cloudcheck-azure.sh의 run.doors), 파서는 이를 '이 입력에 없는 문(absent)'으로 읽는다(contract/NORMALIZED.md §6). 체험 데이터도 같은 표기를 쓴다(예전에는 collected로 적어 '일부만 수집됨'으로 보였다).",
+    "직접 볼 목록(manual)에 현관의 '범위 밖(out-of-scope)' 항목은 없고 가이드 카드(AZ-MFA-G)만 있다: UX §10-1은 out-of-scope를 '이 파일이 다루지 않는 영역 고지'(안내는 '다른 방법')로 정하고, 이 항목은 점검마다 나열하는 것을 대신하려고 자동 판정 룰이 있는 문에만 낸다. Azure 현관에는 자동 룰이 없고 '다른 방법'이 가이드 카드이며, 수집기에는 mfa 문이 없어 '수집기를 다시 실행할 때 이 문을 포함'이라는 안내도 맞지 않는다.",
+    "나머지 문(열쇠 · 창문 · 창고 · CCTV)은 회사 정의(worlds-azure.ts)에 장애가 없고 구독을 모두 조회해 목록이 완결이라 collected이며, 구독 목록을 얻었으므로 판정 수준은 full이다."
+  ]
+}

@@ -1,0 +1,5 @@
+/* components/actions.css — 버튼·링크를 한 줄에 늘어놓는 flex 줄(.cc-actions) — ScopePanel·PrintOptions·ExceptionForm 등이 공유. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+.cc-actions{display:flex;flex-wrap:wrap;gap:var(--cc-sp-2)}
+.cc-actions__new{margin-left:auto}
+/* 추가(컴포넌트개발자): 제목 줄(제목 + 오른쪽 링크·버튼). .cc-actions는 인쇄에서 통째로 숨겨지므로(print.css) 제목을 그 안에 두면 종이에서 제목이 사라진다 → 인쇄에 남는 별도 클래스 */
+.cc-hrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--cc-sp-2)}

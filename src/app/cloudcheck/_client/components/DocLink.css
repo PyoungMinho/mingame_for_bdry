@@ -1,0 +1,4 @@
+/* components/DocLink.css — DocLink. 디자인 최종안 §4-5 기준안에서 옮김(값 변경 없음) */
+/* DocLink */
+.cc-ext__x{display:inline-flex;align-items:center;gap:2px;white-space:nowrap;margin-left:4px}
+.cc-ext__host{font-family:var(--cc-mono);font-size:var(--cc-fs-13);color:var(--cc-ink-2)}
