@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, render, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { useHideKeys, hideKeyKind, isSaveShortcut } from './useHideKeys';
+import { useHideKeys, hideKeyKind, isSaveShortcut, HIDDEN_TAB_GRACE_MS } from './useHideKeys';
 import { ViewStore, useViewSnapshot } from './viewStore';
 import React from 'react';
 
@@ -115,9 +115,19 @@ describe('useHideKeys', () => {
     const { store } = setup();
     key('Tab');
     expect(store.view).toBe('disguise');
+    // 숨긴 직후(HIDDEN_TAB_GRACE_MS 안)의 Tab은 삼킨다 — 연타해도 칸이 달려가지 않게. ESC는 그대로 시트가 처리
+    const mashed = [key('Tab'), key('Tab', { shiftKey: true })];
+    for (const e of mashed) expect(e.defaultPrevented).toBe(true);
+    expect(key('Escape').defaultPrevented).toBe(false);
+    expect(store.view).toBe('disguise');
+    // 유예가 지난 뒤 따로 누른 Tab은 소비하지 않는다(시트가 다음 칸으로 처리)
+    const now = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + HIDDEN_TAB_GRACE_MS + 1);
     const results = [key('Tab'), key('Tab', { shiftKey: true }), key('Escape'), key('Escape')];
     expect(store.view).toBe('disguise');
     for (const e of results) expect(e.defaultPrevented).toBe(false); // 시트가 처리한다
+    // 꾹 눌러 생기는 자동 반복은 유예가 지나도 삼킨다
+    expect(key('Tab', { repeat: true }).defaultPrevented).toBe(true);
+    now.mockRestore();
     // 창 왕복에도 유지
     window.dispatchEvent(new Event('blur'));
     window.dispatchEvent(new Event('focus'));

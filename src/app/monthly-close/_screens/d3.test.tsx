@@ -15,16 +15,24 @@ import { ViewStore } from '@/lib/monthly-close/client/viewStore';
 import { createStaticController } from '@/lib/monthly-close/client/staticController';
 import { mockPlayingView } from '@/lib/monthly-close/client/mockViews';
 import { commandItems } from '@/lib/monthly-close/client/useCommandMode';
+import { HIDDEN_TAB_GRACE_MS } from '@/lib/monthly-close/client/useHideKeys';
 import { keyboardOffsetOf } from '@/lib/monthly-close/client/useViewport';
 import { markFreshRoom } from '@/lib/monthly-close/client/identity';
 import type { PlacingView } from '@/lib/monthly-close/protocol';
 import type { RoomController } from '@/lib/monthly-close/client/controller';
 
 const nameBox = () => screen.getByLabelText('이름 상자') as HTMLInputElement;
-const tabKey = (target: EventTarget = window, shiftKey = false) =>
+const tabKey = (target: EventTarget = window, shiftKey = false, repeat = false) =>
   act(() => {
-    target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', code: 'Tab', shiftKey, bubbles: true, cancelable: true }));
+    target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', code: 'Tab', shiftKey, repeat, bubbles: true, cancelable: true }));
   });
+/** 숨긴 직후 Tab 유예(HIDDEN_TAB_GRACE_MS)를 넘긴다 */
+let nowSpy: { mockRestore: () => void } | null = null;
+const passGrace = () => {
+  const t = Date.now() + HIDDEN_TAB_GRACE_MS + 1;
+  nowSpy?.mockRestore();
+  nowSpy = vi.spyOn(Date, 'now').mockReturnValue(t);
+};
 
 function setMobile(on: boolean) {
   vi.stubGlobal(
@@ -36,6 +44,8 @@ function setMobile(on: boolean) {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  nowSpy?.mockRestore();
+  nowSpy = null;
 });
 
 describe('숨기기 시트 안 Tab = 다음 칸 (진행자 확인 버그: 숨긴 뒤 Tab이 D4에 멈춤)', () => {
@@ -49,6 +59,15 @@ describe('숨기기 시트 안 Tab = 다음 칸 (진행자 확인 버그: 숨긴
     expect(document.activeElement).toBe(grid);
     const before = nameBox().value;
     expect(before).toMatch(/^[A-J]\d+$/);
+    // 숨긴 직후의 연타는 칸을 옮기지 않는다(PM 피드백: "탭기능때문에 칸이 우르르 움직이네")
+    tabKey(document.activeElement!);
+    tabKey(document.activeElement!);
+    tabKey(document.activeElement!, true);
+    expect(nameBox().value).toBe(before);
+    passGrace();
+    // 꾹 눌러 생기는 자동 반복도 옮기지 않는다
+    tabKey(document.activeElement!, false, true);
+    expect(nameBox().value).toBe(before);
     tabKey(document.activeElement!);
     const after = nameBox().value;
     expect(after).not.toBe(before);
@@ -65,6 +84,9 @@ describe('숨기기 시트 안 Tab = 다음 칸 (진행자 확인 버그: 숨긴
     tabKey();
     const before = nameBox().value;
     act(() => nameBox().focus());
+    tabKey(nameBox()); // 유예 안: 삼킴
+    expect(nameBox().value).toBe(before);
+    passGrace();
     tabKey(nameBox());
     expect(nameBox().value.charCodeAt(0)).toBe(before.charCodeAt(0) + 1);
     expect(document.activeElement).toBe(container.querySelector('[data-layer="disguise"] [role="grid"]'));

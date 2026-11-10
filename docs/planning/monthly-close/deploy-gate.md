@@ -127,3 +127,27 @@ docs/qa/monthly-close-test-plan.md docs/qa/monthly-close-bug-report.md)
 7. **보고**: 라이브 URL·배포 SHA·각 POST 결과.
 
 **롤백**(review-backend §5): 다른 앱까지 깨지거나 유출 징후 → Vercel Instant Rollback(직전 운영 `46df171` 배포 Promote; 이후 push 반영엔 Undo Rollback 필요). 월마감만 실패 → `git revert --no-edit <SHA> && git push mingame main`. DB는 되돌릴 것 없음(mc_ 4개, RLS·권한 회수).
+
+---
+
+## 9. 배포 결과 (2026-11-10, 진행자 기록)
+
+- **승인**: PM "올려" (미리보기 6장 전달 후).
+- **Supabase SQL**: 사전 확인 A=0·C=false(B: dongne_dau,hands,homes,items,locations,room_players,rooms / D: hands,room_players,rooms) → `monthly-close-schema.sql` 실행(편집기 내용의 주석 제외 정규화 SHA-256이 파일과 일치함을 확인 후 Run) → 확인 표 4줄 모두 true/true/0/false/false/false → 사후 A=4, B·C 사전과 동일, D=true, E=true, F=0.
+- **커밋·push**: `92f3bc0a2599689b827c9f4da2a2893c0a13db3a` (185 files, flight 0·무관 파일 0, flight 45개는 staged 유지) → `git push mingame main` (46df171..92f3bc0). 롤백 기준선 `46df171`.
+- **라이브 검증** (https://project-orsrw.vercel.app/monthly-close):
+  - push 약 2분 뒤 health 200 `{"db":"ok"}`, 홈·연습 제목 "월마감", `noindex, nofollow`, API `X-Robots-Tag: noindex`·`Cache-Control: no-store`.
+  - POST-01 연기 시험 전부 통과(방 95382, 매치 80d14446-…, 테스트 표시).
+  - POST-06 질의 3: events production/is_test=true 4행, matches production/is_test=true 1행 → 운영 기록이 `env=production`으로 남음.
+  - POST-02 공개 키(`sb_publishable_…`) `apikey` 헤더로 `mc_rooms`·`mc_players`·`mc_matches`·`mc_events` 조회 → 4개 모두 401 + `42501 permission denied`.
+  - POST-05 `/pae`·`/moira`·`/exam`·`/liar`·`/dongne` 200, `POST /api/pae/rooms`(무인증) 401.
+  - 브라우저 실전(테스트 표시, 방 58995): 방 만들기 → 손님 입장 시 공유 패널 닫힘·배치 화면 → 자동 배치·완료 → 대전. 손님 발사가 서버 응답 약 0.1초 뒤 방장 화면에 표시(초인종 동작) → 손님 기권 → 결과 탭 `품의서` 생성.
+  - POST-04 (15:31): 위조 `x-forwarded-for` 회전 70회 중 60번째부터 `429 RATE_LIMITED` 11건 → IP 제한 우회 불가(BUG-11 닫힘).
+  - POST-03(초인종 페이로드 키가 `["v"]`뿐인지)은 프레임을 직접 캡처하지 않았다(코드·테스트로만 확인) — 미실행.
+- **참고**: 라이브 DOM에 `ins.adsbygoogle` 1개가 있으나 루트 layout의 AdSense 로더가 넣은 숨김 자리표시(`display:none !important`, 0×0, `data-ad-status="unfilled"`)이며 보이는 광고는 없다. 자체 도메인에서 자동 광고를 켤 때 /monthly-close 제외 필요(기획팀장 지적 그대로).
+
+## 10. 후속 수정 (2026-11-10, 배포 당일)
+
+- **PM 피드백**: "탭으로 페이크 화면을 하니깐 탭기능때문에 칸이 우르르 움직이네 / 컨트롤같은걸로 해둬야하나" → 진행자 판단: Ctrl은 조합키(Ctrl+C 등)와 충돌하고 뗄 때 숨겨야 해 늦으므로 Tab 유지. PM 승인("고쳐서 올려").
+- **수정**: `src/lib/monthly-close/client/useHideKeys.ts` — 숨긴 직후 `HIDDEN_TAB_GRACE_MS`(1.5초) 동안의 Tab·Shift+Tab과 꾹 눌러 생기는 자동 반복(`e.repeat`) Tab은 캡처 단계에서 삼킨다(선택 칸이 움직이지 않음). 그 뒤 따로 누른 Tab은 기존대로 다음 칸. 숨기기 자체(Tab·ESC 즉시 숨김, 한 방향)는 그대로.
+- **검증**: tsc 0, 월마감 테스트 804 통과·1 건너뜀, `QA_SHOW_BUGS=1` qa 259 통과, 회귀 테스트 갱신(`_screens/d3.test.tsx`, `client/viewStore.test.tsx`). 로컬 브라우저: Tab 5연타 후 이름 상자 D4 유지 → 1.7초 뒤 Tab 1회 → E4. HEAD 기준 worktree에서 클린 빌드 성공.
